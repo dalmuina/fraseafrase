@@ -1,0 +1,27 @@
+# Configuración de detekt (ADR-0007).
+# Se construye sobre la configuración por defecto (buildUponDefaultConfig = true):
+# aquí solo se declaran las diferencias.
+
+formatting:
+  active: true
+  android: true
+  autoCorrect: true
+
+naming:
+  FunctionNaming:
+    # Los composables se nombran en PascalCase.
+    ignoreAnnotated: ['Composable']
+
+complexity:
+  LongParameterList:
+    # Los composables reciben muchos parámetros opcionales por diseño.
+    ignoreAnnotated: ['Composable']
+
+style:
+  MagicNumber:
+    # Tokens del design system y previsualizaciones contienen valores literales legítimos.
+    ignorePropertyDeclaration: true
+    ignoreAnnotated: ['Preview', 'PreviewLightDark']
+  UnusedPrivateMember:
+    # Las funciones @Preview son privadas y solo las usa el IDE.
+    ignoreAnnotated: ['Preview', 'PreviewLightDark']

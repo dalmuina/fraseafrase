@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build, análisis y tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configurar JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Análisis estático (detekt + ktlint)
+        run: ./gradlew detekt -PwarningsAsErrors=true
+
+      - name: Tests unitarios y lint de Android
+        run: ./gradlew check -PwarningsAsErrors=true
+
+      - name: Cobertura mínima (Kover)
+        run: ./gradlew koverVerify
+
+      - name: Compilar APK debug
+        run: ./gradlew assembleDebug -PwarningsAsErrors=true
+
+      - name: Publicar informes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informes
+          path: |
+            **/build/reports/
+            **/build/test-results/
+          retention-days: 7

@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      kotlin-y-build:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "com.android.tools.build*"
+          - "com.google.devtools.ksp*"
+      androidx:
+        patterns:
+          - "androidx.*"
+      testing:
+        patterns:
+          - "org.junit*"
+          - "io.kotest*"
+          - "io.mockk*"
+          - "app.cash.turbine*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

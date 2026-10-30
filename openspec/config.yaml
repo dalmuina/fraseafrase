@@ -1,0 +1,62 @@
+schema: spec-driven
+
+context: |
+  Producto: app Android para aprender portugués europeo (pt-PT) desde español mediante la
+  repetición diaria de 15-30 frases con contexto claro, autoevaluación y repetición espaciada.
+
+  Decisiones vigentes: leer docs/adr/ antes de proponer o diseñar. Un cambio que contradiga
+  un ADR aceptado debe incluir un ADR nuevo que lo sustituya. Alcance del MVP: ADR-0009.
+
+  Stack:
+  - Kotlin, JVM toolchain 17, Gradle con version catalog (gradle/libs.versions.toml) y convention plugins (build-logic/).
+  - Android minSdk 26. Jetpack Compose + Material 3. MVVM con flujo unidireccional (UiState + Action).
+  - Hilt para DI. Corrutinas y Flow. Room (progreso), DataStore (ajustes), catálogo de frases precargado.
+  - Offline-first: sin backend, sin cuentas, sin IA en tiempo de ejecución.
+
+  Módulos (Clean Architecture, dependencias solo hacia dentro; ver ADR-0010):
+  - :core:domain (Kotlin puro, sin Android) - entidades, casos de uso, puertos XxxRepository.
+  - :core:data - data sources y repositorios (Room, DataStore, assets). :core:platform - TTS, voz, reloj.
+  - :core:designsystem - AppTheme, tokens, motion y componentes Ds* sin estado; no depende de ningún módulo del proyecto.
+  - :core:testing - fakes y builders.
+  - :feature:session, :feature:settings - dependen solo de :core:domain y :core:designsystem.
+  - :app - navegación y grafo de DI.
+
+  Capa de datos: el dominio solo declara interfaces XxxRepository. Con una única fuente, un
+  <Tecnología><Entidad>DataSource las implementa directamente; con dos o más, un
+  <Estrategia><Entidad>Repository las implementa componiendo data sources.
+
+  Calidad: TDD obligatorio (rojo -> verde -> refactor), Clean Code, SOLID.
+  Tests: JUnit 5, Kotest assertions, MockK, Turbine, kotlinx-coroutines-test, Compose UI Test.
+  Cobertura Kover: dominio 90 %, ViewModels 80 %, global 70 %. ktlint y detekt sin errores.
+
+  Idiomas: identificadores BCP-47 (pt-PT, es-ES); nunca valores de idioma fijos en el dominio.
+  Documentación y especificaciones en español; código, nombres de tests e identificadores en inglés.
+
+rules:
+  proposal:
+    - Indicar qué ADR afectan al cambio y confirmar que respeta el alcance del ADR-0009.
+    - Incluir una sección "Fuera de alcance" explícita.
+    - Si el cambio requiere una nueva decisión de arquitectura, proponer el ADR correspondiente.
+    - Mantener la propuesta proporcional al cambio; no rellenar secciones vacías.
+  specs:
+    - Cada requisito usa SHALL/MUST y tiene al menos un escenario GIVEN / WHEN / THEN.
+    - Los escenarios deben ser verificables con un test automático, sin ambigüedad ni términos subjetivos.
+    - Cubrir casos límite y de error (catálogo agotado, sin voz TTS disponible, primer día de uso, cambio de día).
+    - Describir comportamiento observable, no detalles de implementación.
+    - Los valores numéricos (intervalos, límites, umbrales) se especifican de forma explícita.
+  design:
+    - Indicar en qué módulo vive cada clase nueva y verificar que respeta la regla de dependencias del ADR-0010.
+    - Definir puertos (interfaces XxxRepository) en :core:domain antes que sus implementaciones.
+    - Para cada puerto de datos, indicar cuántas fuentes tiene y nombrar la implementación según el ADR-0010 (DataSource si es una, Repository si son varias).
+    - Usar componentes Ds* y tokens de :core:designsystem; no introducir colores, dimensiones, tipografías ni duraciones literales en las features.
+    - Si un componente de una feature pasa a usarse en una segunda feature, planificar su promoción a :core:designsystem sin dependencias del dominio.
+    - Justificar cada dependencia o librería nueva; preferir las ya presentes en el version catalog.
+    - Modelar errores esperables como tipos sellados, no como excepciones.
+    - Inyectar Clock y dispatchers en toda lógica dependiente del tiempo o de corrutinas.
+    - Indicar la estrategia de test de cada componente (unitario, integración, UI) y los fakes necesarios.
+  tasks:
+    - Ordenar las tareas de dentro hacia fuera - dominio, datos/plataforma, design system, presentación, integración en :app.
+    - Cada tarea de implementación va precedida de su tarea de test, que debe fallar antes de implementar.
+    - Cada tarea referencia el escenario de la especificación que satisface.
+    - Tareas pequeñas, completables y verificables de forma independiente.
+    - La última sección incluye - ejecutar tests, ktlint, detekt y verificación de cobertura Kover.
