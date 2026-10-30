@@ -36,8 +36,8 @@ Cada tarea de implementación va precedida de su test, que debe fallar por el mo
 
 ## 4. Frases pendientes
 
-- [ ] 4.1 Escribir el test de `PhraseProgress.isPendingOn`, uno por escenario: "Repaso de hoy está pendiente", "Repaso futuro no está pendiente", "Cambio de día hace pendiente una frase" y "Nivel 0 nunca está pendiente". Ejecutarlo y comprobar que falla porque la función no existe. (Requisito: Frase pendiente de repaso)
-- [ ] 4.2 Implementar `isPendingOn(today: LocalDate)` en `PhraseProgress`; verificar que el test de 4.1 pasa.
+- [x] 4.1 Escribir el test de `PhraseProgress.isPendingOn`, uno por escenario: "Repaso de hoy está pendiente", "Repaso futuro no está pendiente", "Cambio de día hace pendiente una frase" y "Nivel 0 nunca está pendiente". Ejecutarlo y comprobar que falla porque la función no existe. (Requisito: Frase pendiente de repaso)
+- [x] 4.2 Implementar `isPendingOn(today: LocalDate)` en `PhraseProgress`; verificar que el test de 4.1 pasa.
 
 ## 5. Verificación de integración
 
