@@ -1,6 +1,6 @@
 # ADR-0009: Alcance del MVP
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por [ADR-0012](0012-modelo-de-practica-por-tandas.md)
 - **Fecha:** 2026-10-29
 
 ## Contexto

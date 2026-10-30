@@ -16,7 +16,8 @@ Tu trabajo es **revisar**, no implementar: nunca modificas ficheros.
 ## Qué compruebas
 
 **Alcance**
-- El cambio encaja en el alcance del MVP (ADR-0009) o justifica explícitamente por qué no.
+- El cambio encaja en el alcance del MVP (ADR-0012) o justifica explícitamente por qué no.
+- Las reglas del método (tandas, rachas, certificación, niveles, intervalos, composición) coinciden exactamente con el ADR-0012, con su misma terminología.
 - Hay una sección "Fuera de alcance" y no se cuela funcionalidad no pedida.
 
 **Especificaciones**

@@ -13,9 +13,10 @@ si una decisión cambia, se crea un ADR nuevo que **sustituye** al anterior (y e
 | [0006](0006-ui-compose-mvvm-udf-hilt.md) | UI con Jetpack Compose, MVVM/UDF e inyección con Hilt | Aceptado |
 | [0007](0007-estrategia-de-testing-tdd.md) | Estrategia de testing y TDD obligatorio | Aceptado |
 | [0008](0008-minsdk-26.md) | minSdk 26 | Aceptado |
-| [0009](0009-alcance-del-mvp.md) | Alcance del MVP | Aceptado |
+| [0009](0009-alcance-del-mvp.md) | Alcance del MVP | Sustituido por 0012 |
 | [0010](0010-clean-architecture-modular-design-system-y-data-sources.md) | Clean Architecture modular con design system y data sources | Aceptado |
 | [0011](0011-detekt-1-23-con-daemon-gradle-jdk-21.md) | detekt 1.23 con el daemon de Gradle en JDK 21 | Aceptado |
+| [0012](0012-modelo-de-practica-por-tandas.md) | Modelo de práctica por tandas y alcance del MVP | Aceptado |
 
 ## Plantilla
 

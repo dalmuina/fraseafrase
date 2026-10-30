@@ -1,8 +1,10 @@
 # Frase a Frase
 
-App Android para aprender portugués europeo (`pt-PT`) desde español: cada día el usuario practica
-entre 10 y 30 frases con contexto claro, revela la traducción, se autoevalúa y las frases falladas
-vuelven antes mediante repetición espaciada. Offline-first, sin backend ni IA en tiempo de ejecución.
+App Android para aprender portugués europeo (`pt-PT`) desde español. El usuario practica **tandas**
+de 10 a 30 frases en una lista circular, revela la traducción y se autoevalúa. Una frase con 3 aciertos
+seguidos queda certificada y se espacia con repetición espaciada; el usuario decide cuándo empezar una
+tanda nueva y las no certificadas se arrastran. Reglas completas en el ADR-0012.
+Offline-first, sin backend ni IA en tiempo de ejecución.
 
 ## Reglas de oro
 
@@ -12,7 +14,7 @@ vuelven antes mediante repetición espaciada. Offline-first, sin backend ni IA e
    antes de escribir el código. Nunca escribas test y código de producción en el mismo paso.
 3. **Los ADR mandan.** Lee `docs/adr/` antes de proponer o diseñar. Si algo contradice un ADR aceptado,
    para y propón un ADR nuevo que lo sustituya; no lo ignores ni lo edites.
-4. **Alcance del MVP: ADR-0009.** Lo que esté fuera es un cambio posterior, no una mejora "de paso".
+4. **Método y alcance del MVP: ADR-0012.** Usa su terminología (tanda, nivel, racha, certificada, pendiente, arrastrada). Lo que esté fuera es un cambio posterior, no una mejora "de paso".
 5. **No amplíes el alcance.** Implementa exactamente lo que dice la tarea. Si ves algo mejorable, anótalo y avisa.
 
 ## Flujo de trabajo (OpenSpec)
@@ -33,7 +35,7 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 
 ```
 :app                → navegación y grafo de DI. Único módulo que conoce todas las implementaciones.
-:feature:session    → sesión diaria
+:feature:session    → práctica de la tanda activa
 :feature:settings   → ajustes
 :core:designsystem  → AppTheme, tokens, motion, componentes Ds*. No depende de ningún módulo del proyecto.
 :core:data          → data sources y repositorios (Room, DataStore, assets)

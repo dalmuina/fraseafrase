@@ -1,11 +1,12 @@
 schema: spec-driven
 
 context: |
-  Producto: app Android para aprender portugués europeo (pt-PT) desde español mediante la
-  repetición diaria de 15-30 frases con contexto claro, autoevaluación y repetición espaciada.
+  Producto: app Android para aprender portugués europeo (pt-PT) desde español practicando por
+  tandas de 10-30 frases con contexto claro, autoevaluación y repetición espaciada.
 
   Decisiones vigentes: leer docs/adr/ antes de proponer o diseñar. Un cambio que contradiga
-  un ADR aceptado debe incluir un ADR nuevo que lo sustituya. Alcance del MVP: ADR-0009.
+  un ADR aceptado debe incluir un ADR nuevo que lo sustituya.
+  Método de práctica (tandas, rachas, certificación, niveles e intervalos) y alcance del MVP: ADR-0012.
 
   Stack:
   - Kotlin, JVM toolchain 17, Gradle con version catalog (gradle/libs.versions.toml) y convention plugins (build-logic/).
@@ -34,14 +35,15 @@ context: |
 
 rules:
   proposal:
-    - Indicar qué ADR afectan al cambio y confirmar que respeta el alcance del ADR-0009.
+    - Indicar qué ADR afectan al cambio y confirmar que respeta el alcance del ADR-0012.
     - Incluir una sección "Fuera de alcance" explícita.
     - Si el cambio requiere una nueva decisión de arquitectura, proponer el ADR correspondiente.
     - Mantener la propuesta proporcional al cambio; no rellenar secciones vacías.
   specs:
     - Cada requisito usa SHALL/MUST y tiene al menos un escenario GIVEN / WHEN / THEN.
     - Los escenarios deben ser verificables con un test automático, sin ambigüedad ni términos subjetivos.
-    - Cubrir casos límite y de error (catálogo agotado, sin voz TTS disponible, primer día de uso, cambio de día).
+    - Cubrir casos límite y de error (catálogo agotado, sin voz TTS disponible, primera tanda, cierre de tanda, cambio de fecha).
+    - Usar la terminología del ADR-0012 (tanda, nivel, racha, certificada, pendiente, arrastrada) de forma consistente.
     - Describir comportamiento observable, no detalles de implementación.
     - Los valores numéricos (intervalos, límites, umbrales) se especifican de forma explícita.
   design:
