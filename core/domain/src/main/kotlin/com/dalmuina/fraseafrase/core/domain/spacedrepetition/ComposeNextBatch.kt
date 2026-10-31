@@ -50,10 +50,10 @@ class ComposeNextBatch @Inject constructor(private val clock: Clock) {
     ) {
         val progressIds = progress.map { it.id }.toSet()
         val catalogIds = catalog.map { it.id }.toSet()
-        require(progressIds.size == progress.size) { "El progreso no admite ids duplicados" }
-        require(catalogIds.size == catalog.size) { "El catálogo no admite ids duplicados" }
-        require(progressIds.all { it in catalogIds }) { "Hay progreso de frases que no están en el catálogo" }
-        require(carry.ids.all { it in progressIds }) { "Hay frases arrastradas sin progreso" }
+        require(progressIds.size == progress.size) { "Progress does not allow duplicate ids" }
+        require(catalogIds.size == catalog.size) { "The catalog does not allow duplicate ids" }
+        require(progressIds.all { it in catalogIds }) { "Some progress belongs to phrases missing from the catalog" }
+        require(carry.ids.all { it in progressIds }) { "Some carried phrases have no progress" }
     }
 
     /** Racha inicial de cada tanda nueva: 0 y sin respuesta en la tanda (ADR-0012). Guarda de robustez. */

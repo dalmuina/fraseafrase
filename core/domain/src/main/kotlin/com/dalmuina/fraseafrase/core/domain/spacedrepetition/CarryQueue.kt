@@ -8,7 +8,7 @@ package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 data class CarryQueue(val ids: List<PhraseId>) {
 
     init {
-        require(ids.distinct().size == ids.size) { "La cola de arrastradas no admite ids duplicados" }
+        require(ids.distinct().size == ids.size) { "The carry queue does not allow duplicate ids" }
     }
 
     companion object {

@@ -14,10 +14,10 @@ data class PracticeBatch(
 
     init {
         require(entries.map { it.id }.distinct().size == entries.size) {
-            "La tanda no admite ids duplicados"
+            "The batch does not allow duplicate ids"
         }
         require(entries.size <= capacity.value) {
-            "La tanda tiene ${entries.size} frases y su tamaño es ${capacity.value}"
+            "The batch has ${entries.size} phrases but its size is ${capacity.value}"
         }
     }
 
@@ -26,7 +26,7 @@ data class PracticeBatch(
      * Responder una frase que no está en la tanda es un error de programación.
      */
     fun answer(id: PhraseId, assessment: SelfAssessment): PracticeBatch {
-        require(entries.any { it.id == id }) { "La frase ${id.value} no está en la tanda" }
+        require(entries.any { it.id == id }) { "Phrase ${id.value} is not in the batch" }
         val answered = entries.first { it.id == id }.record(assessment)
         return copy(entries = entries.filterNot { it.id == id } + answered)
     }

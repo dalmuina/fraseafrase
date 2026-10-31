@@ -9,7 +9,7 @@ package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 value class BatchSize(val value: Int) {
 
     init {
-        require(value in MIN..MAX) { "El tamaño de tanda debe estar entre $MIN y $MAX, recibido $value" }
+        require(value in MIN..MAX) { "Batch size must be between $MIN and $MAX, got $value" }
     }
 
     companion object {
