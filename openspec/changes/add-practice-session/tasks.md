@@ -19,17 +19,17 @@
 
 ## 3. Presentación: estado y ViewModel
 
-- [ ] 3.1 Escribir tests de `PracticeSessionViewModel` con Turbine y `MainDispatcherExtension`, con los casos de uso reales sobre los fakes, para "Frase en español con traducción oculta" (estado `Practicing` sin revelar y con el texto de origen) y "Revelar muestra la traducción en portugués"; verificar que fallan porque el ViewModel aún no existe.
-- [ ] 3.2 Implementar `PracticeSessionViewModel`, `PracticeSessionUiState` (`Loading`, `Practicing`, `NothingToPractice`, `CatalogError`) y `PracticeSessionAction` con `Reveal`; cargar la sesión al iniciar con `ObtainPracticeSession`; verificar que los tests de 3.1 pasan.
-- [ ] 3.3 Escribir tests para "Acierto muestra la siguiente frase", "Fallo muestra la siguiente frase", "Sin revelar no hay autoevaluación", "La tanda da la vuelta sin desaparecer frases" y "Doble toque no registra dos respuestas"; verificar que fallan.
-- [ ] 3.4 Implementar `Answer(SelfAssessment)` con las reglas de D3 (ignorada sin revelar, con `busy` o con diálogo abierto), `busy` síncrono antes de `AnswerPhrase` y recarga de la sesión; verificar que los tests de 3.3 pasan.
-- [ ] 3.5 Escribir tests para "Racha visible tras un acierto", "Fallo reinicia la racha visible" y "Frase con racha 3 marcada como sabida" (campos `streak` e `isKnown` del estado); verificar que fallan.
-- [ ] 3.6 Exponer `streak` e `isKnown` en el estado sin cambiar el orden de la lista; verificar que pasan los tests de 3.5.
-- [ ] 3.7 Escribir tests para "Aviso con frases no certificadas", "Aviso sin frases no certificadas", "Cancelar el cierre no cambia nada", "Confirmar el cierre usa el número del aviso" y "Con el aviso abierto no se puede autoevaluar" (`RequestClose`, `CancelClose`, `ConfirmClose` con `CloseActiveBatch` y su expectativa); verificar que fallan.
-- [ ] 3.8 Implementar `RequestClose`, `CancelClose` y `ConfirmClose` con `closeWarning` en el estado; `ConfirmClose` sin aviso se ignora; tras confirmar, recargar la sesión, que compone la tanda siguiente; verificar que pasan los tests de 3.7.
-- [ ] 3.9 Escribir tests para "Cierre con arrastradas muestra la tanda siguiente", "Cierre con todas certificadas deja la tanda siguiente sin arrastradas", "Aviso desfasado recarga la tanda" y "Cierre sin tanda activa recarga la pantalla" (`Stale` y `NoActiveBatch` solo recargan sin error); verificar que fallan.
-- [ ] 3.10 Implementar el manejo de `Closed`, `Stale` y `NoActiveBatch`; verificar que pasan los tests de 3.9.
-- [ ] 3.11 Verificar cobertura de presentación con `./gradlew :feature:session:koverVerify` (mínimo 80 %).
+- [x] 3.1 Escribir tests de `PracticeSessionViewModel` con Turbine y `MainDispatcherExtension`, con los casos de uso reales sobre los fakes, para "Frase en español con traducción oculta" (estado `Practicing` sin revelar y con el texto de origen) y "Revelar muestra la traducción en portugués"; verificar que fallan porque el ViewModel aún no existe.
+- [x] 3.2 Implementar `PracticeSessionViewModel`, `PracticeSessionUiState` (`Loading`, `Practicing`, `NothingToPractice`, `CatalogError`) y `PracticeSessionAction` con `Reveal`; cargar la sesión al iniciar con `ObtainPracticeSession`; verificar que los tests de 3.1 pasan.
+- [x] 3.3 Escribir tests para "Acierto muestra la siguiente frase", "Fallo muestra la siguiente frase", "Sin revelar no hay autoevaluación", "La tanda da la vuelta sin desaparecer frases" y "Doble toque no registra dos respuestas"; verificar que fallan.
+- [x] 3.4 Implementar `Answer(SelfAssessment)` con las reglas de D3 (ignorada sin revelar, con `busy` o con diálogo abierto), `busy` síncrono antes de `AnswerPhrase` y recarga de la sesión; verificar que los tests de 3.3 pasan.
+- [x] 3.5 Escribir tests para "Racha visible tras un acierto", "Fallo reinicia la racha visible" y "Frase con racha 3 marcada como sabida" (campos `streak` e `isKnown` del estado); verificar que fallan.
+- [x] 3.6 Exponer `streak` e `isKnown` en el estado sin cambiar el orden de la lista; verificar que pasan los tests de 3.5.
+- [x] 3.7 Escribir tests para "Aviso con frases no certificadas", "Aviso sin frases no certificadas", "Cancelar el cierre no cambia nada", "Confirmar el cierre usa el número del aviso" y "Con el aviso abierto no se puede autoevaluar" (`RequestClose`, `CancelClose`, `ConfirmClose` con `CloseActiveBatch` y su expectativa); verificar que fallan.
+- [x] 3.8 Implementar `RequestClose`, `CancelClose` y `ConfirmClose` con `closeWarning` en el estado; `ConfirmClose` sin aviso se ignora; tras confirmar, recargar la sesión, que compone la tanda siguiente; verificar que pasan los tests de 3.7.
+- [x] 3.9 Escribir tests para "Cierre con arrastradas muestra la tanda siguiente", "Cierre con todas certificadas deja la tanda siguiente sin arrastradas", "Aviso desfasado recarga la tanda" y "Cierre sin tanda activa recarga la pantalla" (`Stale` y `NoActiveBatch` solo recargan sin error); verificar que fallan.
+- [x] 3.10 Implementar el manejo de `Closed`, `Stale` y `NoActiveBatch`; verificar que pasan los tests de 3.9.
+- [x] 3.11 Verificar cobertura de presentación con `./gradlew :feature:session:koverVerify` (mínimo 80 %).
 
 ## 4. Presentación: pantalla
 
