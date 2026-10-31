@@ -4,6 +4,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -54,6 +55,29 @@ class AssetsCatalogDataSourceTest {
 
         // Then
         result shouldBe CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)
+    }
+
+    // Cancelación (design D9): una cancelación no es un asset ilegible y no se memoiza
+    @Test
+    fun `given a cancelled read when loading then the cancellation propagates and is not memoized`() = runTest {
+        // Given
+        var reads = 0
+        val source = AssetsCatalogDataSource(
+            readAsset = {
+                reads++
+                if (reads == 1) throw CancellationException("cancelled") else document
+            },
+            dispatcher = UnconfinedTestDispatcher(testScheduler),
+        )
+
+        // When
+        val cancelled = runCatching { source.phrases() }.exceptionOrNull()
+        val retried = source.phrases()
+
+        // Then
+        cancelled.shouldBeInstanceOf<CancellationException>()
+        reads shouldBe 2
+        retried.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
     }
 
     // Memoización (design D9): la segunda llamada reutiliza la carga y no vuelve a leer el asset

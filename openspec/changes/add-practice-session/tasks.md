@@ -14,6 +14,8 @@
 
 - [x] 2.1 Escribir tests de `AssetsCatalogDataSource` que comprueben que una segunda llamada a `phrases()` no vuelve a leer el asset (contador de lecturas en un asset de prueba) y que un `Failed` también se memoiza; verificar que fallan porque la memoización aún no existe.
 - [x] 2.2 Implementar la memoización de la carga con un `Mutex` en `AssetsCatalogDataSource`, sin cambiar el puerto `CatalogRepository`; verificar que los tests de 2.1 pasan con `./gradlew :core:data:testDebugUnitTest` y que el contrato de ids sigue en verde.
+- [x] 2.3 Escribir un test de `AssetsCatalogDataSource` para "cancelación durante la lectura": una `CancellationException` en la lectura se propaga y no se convierte en `Failed`, y la siguiente llamada vuelve a leer el asset (no se memoiza una cancelación); verificar que falla por el motivo esperado (el resultado es `Failed` en lugar de propagar la excepción).
+- [x] 2.4 Implementar en `AssetsCatalogDataSource` que la `CancellationException` se relance sin capturarla como `AssetUnreadable`, sin memoizar la cancelación; verificar que pasa el test de 2.3 y que los tests de 2.1 siguen en verde con `./gradlew :core:data:testDebugUnitTest` y `./gradlew detekt`.
 
 ## 3. Presentación: estado y ViewModel
 

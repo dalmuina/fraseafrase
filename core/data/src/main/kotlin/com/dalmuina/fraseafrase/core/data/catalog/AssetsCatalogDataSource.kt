@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -40,12 +41,14 @@ class AssetsCatalogDataSource internal constructor(
         cached ?: load().also { cached = it }
     }
 
+    // Solo un IOException es un asset ilegible. Una cancelación u otro error de programación se propaga sin
+    // memoizarse (design D9): la cancelación no es un fallo del asset.
     private suspend fun load(): CatalogLoadResult = withContext(dispatcher) {
-        runCatching { readAsset() }
-            .fold(
-                onSuccess = { text -> CatalogJson.parse(text) },
-                onFailure = { CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable) },
-            )
+        val text = runCatching { readAsset() }.getOrElse { error ->
+            if (error is IOException) return@withContext CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)
+            throw error
+        }
+        CatalogJson.parse(text)
     }
 
     private companion object {
