@@ -74,15 +74,15 @@ Al cerrar la tanda, las frases no certificadas MUST quedar en una cola de arrast
 
 #### Scenario: Arrastrada entra primera en la siguiente tanda
 
-- **GIVEN** una cola de arrastradas con Z, una pendiente P de nivel 1 con repaso el 09-03-2026, ambas en el catálogo A1 con progreso, y N igual a 2
+- **GIVEN** una cola sobrante con Z, una pendiente P de nivel 1 con repaso el 09-03-2026, ambas en el catálogo A1 con progreso, y N igual a 10
 - **WHEN** se compone la tanda el 10-03-2026
 - **THEN** la tanda contiene Z en la posición 0 y P en la posición 1
 
 #### Scenario: Arrastrada que no cabe conserva su progreso
 
-- **GIVEN** una cola de arrastradas [X, P], donde X y P están en el catálogo A1 con progreso, P es de nivel 3 con próximo repaso el 20-03-2026, y N igual a 1
+- **GIVEN** una cola de arrastradas formada por las frases X1 a X10 seguidas de P, todas en el catálogo A1 con progreso, donde P es de nivel 3 con próximo repaso el 20-03-2026, y N igual a 10
 - **WHEN** se compone la tanda el 10-03-2026
-- **THEN** la tanda contiene X, P sigue en la cola sobrante y su progreso (nivel 3, repaso 20-03-2026) no cambia
+- **THEN** la tanda contiene X1 a X10, P queda en la posición 0 de la cola sobrante y su progreso (nivel 3, repaso 20-03-2026) no cambia
 
 ### Requirement: Composición de la tanda nueva por prioridad
 
@@ -328,6 +328,6 @@ Al cerrar la tanda, la cola de la tanda siguiente MUST ser la cola sobrante segu
 
 #### Scenario: La cola sobrante entra primera tras el cierre
 
-- **GIVEN** la cola Z, C, A, las tres en el catálogo A1 con progreso, y una pendiente P de nivel 1 con repaso el 09-03-2026, también en el catálogo A1, con N igual a 2
+- **GIVEN** la cola Z, C, A, las tres en el catálogo A1 con progreso, y nueve pendientes P1 a P9 de nivel 1 con repaso el 09-03-2026, también en el catálogo A1, con N igual a 10
 - **WHEN** se compone la tanda el 10-03-2026
-- **THEN** la tanda contiene Z y C, y A queda en la cola
+- **THEN** la tanda empieza por Z, C y A, seguidas de P1
