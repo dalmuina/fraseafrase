@@ -44,10 +44,10 @@ Cada tarea sigue TDD: primero el test, que debe fallar por el motivo esperado; d
 
 ## 5. Verificación de integración
 
-- [ ] 5.1 Ejecutar `./gradlew :core:domain:test` y verificar que todos los tests de `spacedrepetition` y `catalog` pasan, incluidos los existentes de `spaced-repetition`
-- [ ] 5.2 Ejecutar `./gradlew detekt` y verificar que no hay incidencias nuevas en `:core:domain` ni en `:core:testing`
-- [ ] 5.3 Ejecutar `./gradlew koverVerify` y verificar que el dominio mantiene al menos el 90 % de cobertura
-- [ ] 5.4 Ejecutar `./gradlew check` y verificar que termina en verde
+- [x] 5.1 Ejecutar `./gradlew :core:domain:test` y verificar que todos los tests de `spacedrepetition` y `catalog` pasan, incluidos los existentes de `spaced-repetition`
+- [x] 5.2 Ejecutar `./gradlew detekt` y verificar que no hay incidencias nuevas en `:core:domain` ni en `:core:testing`
+- [x] 5.3 Ejecutar `./gradlew koverVerify` y verificar que el dominio mantiene al menos el 90 % de cobertura
+- [x] 5.4 Ejecutar `./gradlew check` y verificar que termina en verde
 
 ## Workflow follow-up
 
