@@ -27,7 +27,7 @@ context: |
   <Estrategia><Entidad>Repository las implementa componiendo data sources.
 
   Calidad: TDD obligatorio (rojo -> verde -> refactor), Clean Code, SOLID.
-  Tests: JUnit 5, Kotest assertions, MockK, Turbine, kotlinx-coroutines-test, Compose UI Test.
+  Tests: JUnit 6 (Jupiter), Kotest assertions, MockK, Turbine, kotlinx-coroutines-test, Compose UI Test.
   Cobertura Kover: dominio 90 %, ViewModels 80 %, global 70 %. ktlint y detekt sin errores.
 
   Idiomas: identificadores BCP-47 (pt-PT, es-ES); nunca valores de idioma fijos en el dominio.
