@@ -55,4 +55,51 @@ class AssetsCatalogDataSourceTest {
         // Then
         result shouldBe CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)
     }
+
+    // Memoización (design D9): la segunda llamada reutiliza la carga y no vuelve a leer el asset
+    @Test
+    fun `given a loaded catalog when loading twice then the asset is read only once`() = runTest {
+        // Given
+        var reads = 0
+        val source = AssetsCatalogDataSource(
+            readAsset = {
+                reads++
+                document
+            },
+            dispatcher = UnconfinedTestDispatcher(testScheduler),
+        )
+
+        // When
+        val first = source.phrases()
+        val second = source.phrases()
+
+        // Then
+        reads shouldBe 1
+        second shouldBe first
+        second.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+    }
+
+    // Memoización (design D9): un fallo de lectura también se guarda y no se reintenta
+    @Test
+    fun `given an unreadable asset when loading twice then the failure is memoized and the asset is read only once`() =
+        runTest {
+            // Given
+            var reads = 0
+            val source = AssetsCatalogDataSource(
+                readAsset = {
+                    reads++
+                    throw IOException("asset missing")
+                },
+                dispatcher = UnconfinedTestDispatcher(testScheduler),
+            )
+
+            // When
+            val first = source.phrases()
+            val second = source.phrases()
+
+            // Then
+            reads shouldBe 1
+            first shouldBe CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)
+            second shouldBe first
+        }
 }

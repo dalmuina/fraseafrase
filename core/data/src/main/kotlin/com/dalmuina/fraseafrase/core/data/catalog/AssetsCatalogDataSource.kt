@@ -7,6 +7,8 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -29,7 +31,16 @@ class AssetsCatalogDataSource internal constructor(
         dispatcher = dispatcher,
     )
 
-    override suspend fun phrases(): CatalogLoadResult = withContext(dispatcher) {
+    // Memoización (design D9, ADR-0013 "cargado en memoria"): la primera llamada carga y guarda el resultado, sea
+    // Loaded o Failed. El Mutex evita que dos llamadas concurrentes lean y parseen el asset por duplicado.
+    private val mutex = Mutex()
+    private var cached: CatalogLoadResult? = null
+
+    override suspend fun phrases(): CatalogLoadResult = mutex.withLock {
+        cached ?: load().also { cached = it }
+    }
+
+    private suspend fun load(): CatalogLoadResult = withContext(dispatcher) {
         runCatching { readAsset() }
             .fold(
                 onSuccess = { text -> CatalogJson.parse(text) },

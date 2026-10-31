@@ -12,8 +12,8 @@
 
 ## 2. Datos: catálogo en memoria
 
-- [ ] 2.1 Escribir tests de `AssetsCatalogDataSource` que comprueben que una segunda llamada a `phrases()` no vuelve a leer el asset (contador de lecturas en un asset de prueba) y que un `Failed` también se memoiza; verificar que fallan porque la memoización aún no existe.
-- [ ] 2.2 Implementar la memoización de la carga con un `Mutex` en `AssetsCatalogDataSource`, sin cambiar el puerto `CatalogRepository`; verificar que los tests de 2.1 pasan con `./gradlew :core:data:testDebugUnitTest` y que el contrato de ids sigue en verde.
+- [x] 2.1 Escribir tests de `AssetsCatalogDataSource` que comprueben que una segunda llamada a `phrases()` no vuelve a leer el asset (contador de lecturas en un asset de prueba) y que un `Failed` también se memoiza; verificar que fallan porque la memoización aún no existe.
+- [x] 2.2 Implementar la memoización de la carga con un `Mutex` en `AssetsCatalogDataSource`, sin cambiar el puerto `CatalogRepository`; verificar que los tests de 2.1 pasan con `./gradlew :core:data:testDebugUnitTest` y que el contrato de ids sigue en verde.
 
 ## 3. Presentación: estado y ViewModel
 
