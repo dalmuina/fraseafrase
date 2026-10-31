@@ -40,6 +40,19 @@ data class PhraseProgress(
      */
     fun isPendingOn(today: LocalDate): Boolean = nextReview?.let { it <= today } ?: false
 
+    /**
+     * Registra la autoevaluación de esta frase dentro de la tanda: un acierto suma 1 a la racha y un
+     * fallo la reinicia; en ambos casos la frase queda respondida en la tanda (ADR-0012).
+     * Es una función pura: no depende del reloj ni del orden de la tanda.
+     */
+    fun record(assessment: SelfAssessment): PhraseProgress {
+        val updatedStreak = when (assessment) {
+            SelfAssessment.HIT -> streak.afterHit()
+            SelfAssessment.MISS -> streak.afterMiss()
+        }
+        return copy(streak = updatedStreak, answeredInBatch = true)
+    }
+
     companion object {
         /** Racha mínima dentro de la tanda para certificar una frase (ADR-0012). */
         const val CERTIFICATION_STREAK = 3

@@ -15,11 +15,11 @@ Cada tarea sigue TDD: primero el test, que debe fallar por el motivo esperado; d
 
 ## 2. Tanda activa como lista circular
 
-- [ ] 2.1 Refactor en verde: extraer `PhraseProgress.record(assessment)` y hacer que `RecordSelfAssessment` delegue en él. Los tests existentes de `RecordSelfAssessmentTest` no se modifican; verificar con `./gradlew :core:domain:test --rerun` que siguen pasando
-- [ ] 2.2 Escribir `PracticeBatchTest` con los escenarios "Acierto mueve la frase al final", "Fallo mueve la frase al final" y "Responder la última frase no cambia el orden", y con la aserción de capacidad de D1 (tanda de 30 entradas con `capacity = BatchSize(30)`; tras `answer`, `capacity == BatchSize(30)`; cita "Tamaño de tanda N"); verificar que falla por clase inexistente
-- [ ] 2.3 Implementar `PracticeBatch(entries, capacity: BatchSize)` con `answer` que usa `PhraseProgress.record` y mueve la frase al final; verificar que 2.2 pasa
-- [ ] 2.4 Escribir tests de "Varias respuestas mantienen las mismas entradas", "Responder una frase que no está en la tanda", "Tanda con ids duplicados" y "Tanda con más frases que su tamaño"; verificar que fallan por el motivo esperado, implementar las validaciones y verificar que pasan
-- [ ] 2.5 Escribir, en el mismo rojo, los tests de `uncertifiedCount()` con "Aviso con frases no certificadas", "Aviso sin frases no certificadas", "Frase nunca respondida cuenta como no certificada" y "Calcular el aviso no modifica la tanda" (compara tanda, rachas y progreso antes y después); verificar que fallan por ausencia de `uncertifiedCount`; implementar `uncertifiedCount` como función pura y verificar que pasan
+- [x] 2.1 Refactor en verde: extraer `PhraseProgress.record(assessment)` y hacer que `RecordSelfAssessment` delegue en él. Los tests existentes de `RecordSelfAssessmentTest` no se modifican; verificar con `./gradlew :core:domain:test --rerun` que siguen pasando
+- [x] 2.2 Escribir `PracticeBatchTest` con los escenarios "Acierto mueve la frase al final", "Fallo mueve la frase al final" y "Responder la última frase no cambia el orden", y con la aserción de capacidad de D1 (tanda de 30 entradas con `capacity = BatchSize(30)`; tras `answer`, `capacity == BatchSize(30)`; cita "Tamaño de tanda N"); verificar que falla por clase inexistente
+- [x] 2.3 Implementar `PracticeBatch(entries, capacity: BatchSize)` con `answer` que usa `PhraseProgress.record` y mueve la frase al final; verificar que 2.2 pasa
+- [x] 2.4 Escribir tests de "Varias respuestas mantienen las mismas entradas", "Responder una frase que no está en la tanda", "Tanda con ids duplicados" y "Tanda con más frases que su tamaño"; verificar que fallan por el motivo esperado, implementar las validaciones y verificar que pasan
+- [x] 2.5 Escribir, en el mismo rojo, los tests de `uncertifiedCount()` con "Aviso con frases no certificadas", "Aviso sin frases no certificadas", "Frase nunca respondida cuenta como no certificada" y "Calcular el aviso no modifica la tanda" (compara tanda, rachas y progreso antes y después); verificar que fallan por ausencia de `uncertifiedCount`; implementar `uncertifiedCount` como función pura y verificar que pasan
 
 ## 3. Composición de la tanda siguiente
 

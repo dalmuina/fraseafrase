@@ -8,11 +8,6 @@ import javax.inject.Inject
  */
 class RecordSelfAssessment @Inject constructor() {
 
-    operator fun invoke(progress: PhraseProgress, assessment: SelfAssessment): PhraseProgress {
-        val streak = when (assessment) {
-            SelfAssessment.HIT -> progress.streak.afterHit()
-            SelfAssessment.MISS -> progress.streak.afterMiss()
-        }
-        return progress.copy(streak = streak, answeredInBatch = true)
-    }
+    operator fun invoke(progress: PhraseProgress, assessment: SelfAssessment): PhraseProgress =
+        progress.record(assessment)
 }
