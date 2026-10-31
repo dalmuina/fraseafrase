@@ -9,10 +9,13 @@ package com.dalmuina.fraseafrase.core.domain.catalog
 value class LanguageTag(val value: String) {
 
     init {
-        require(BCP47_PATTERN.matches(value)) { "Invalid BCP-47 language tag: '$value'" }
+        require(isWellFormed(value)) { "Invalid BCP-47 language tag: '$value'" }
     }
 
-    private companion object {
-        val BCP47_PATTERN = Regex("^[a-z]{2,3}(-[A-Za-z0-9]{1,8})*$")
+    companion object {
+        private val BCP47_PATTERN = Regex("^[a-z]{2,3}(-[A-Za-z0-9]{1,8})*$")
+
+        /** Indica si [value] tiene la forma básica de una etiqueta BCP-47. No valida el registro de subtags. */
+        fun isWellFormed(value: String): Boolean = BCP47_PATTERN.matches(value)
     }
 }

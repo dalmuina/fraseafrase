@@ -22,4 +22,7 @@ sealed interface CatalogLoadError {
     data class DuplicateId(val id: String) : CatalogLoadError
 
     data object AssetUnreadable : CatalogLoadError
+
+    /** El texto no es JSON válido. No aparece en la spec: se modela para no confundirlo con un asset ilegible. */
+    data object MalformedDocument : CatalogLoadError
 }
