@@ -24,6 +24,12 @@ composeBom = "2026.09.00"
 
 # --- Kotlin ---
 coroutines = "1.11.0"
+kotlinxSerialization = "1.12.0"
+
+# --- Persistencia (ADR-0013) ---
+room3 = "3.0.3"
+sqlite = "2.7.1"
+datastore = "1.3.0"
 
 # --- Testing ---
 junit = "6.1.3"
@@ -59,6 +65,17 @@ javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "j
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+# --- Persistencia (ADR-0013) ---
+room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room3" }
+room3-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room3" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
+# Driver de escritorio para tests JVM locales: la variante Android no carga su librería nativa fuera del dispositivo (ADR-0013).
+androidx-sqlite-bundled-jvm = { group = "androidx.sqlite", name = "sqlite-bundled-jvm", version.ref = "sqlite" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+room3-gradle-plugin = { group = "androidx.room3", name = "room3-gradle-plugin", version.ref = "room3" }
+kotlin-serialization-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
 
 # --- Testing ---
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
@@ -91,3 +108,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+room3 = { id = "androidx.room3", version.ref = "room3" }

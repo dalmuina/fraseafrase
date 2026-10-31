@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "targetLocale": "pt-PT",
+  "sourceLocale": "es-ES",
+  "phrases": [
+    {
+      "id": "a1-saludos-001",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Bom dia, tudo bem?",
+      "source": "Buenos días, ¿qué tal?"
+    },
+    {
+      "id": "a1-comida-001",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Tenho fome.",
+      "source": "Tengo hambre."
+    }
+  ]
+}

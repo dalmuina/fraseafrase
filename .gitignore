@@ -21,3 +21,6 @@ local.properties
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Contexto de sesión (ver CLAUDE.md, "Contexto y sesiones")
+.claude/handoff.md

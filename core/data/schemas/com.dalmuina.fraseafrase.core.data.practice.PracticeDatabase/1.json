@@ -1,0 +1,108 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "a0c2da18ee085c826515eff24bb3fa37",
+    "entities": [
+      {
+        "tableName": "phrase_progress",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`phrase_id` TEXT NOT NULL, `level` INTEGER NOT NULL, `streak` INTEGER NOT NULL, `answered_in_batch` INTEGER NOT NULL, `next_review` TEXT, `batch_position` INTEGER, `carry_position` INTEGER, PRIMARY KEY(`phrase_id`))",
+        "fields": [
+          {
+            "fieldPath": "phraseId",
+            "columnName": "phrase_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "level",
+            "columnName": "level",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "streak",
+            "columnName": "streak",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "answeredInBatch",
+            "columnName": "answered_in_batch",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextReview",
+            "columnName": "next_review",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "batchPosition",
+            "columnName": "batch_position",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "carryPosition",
+            "columnName": "carry_position",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "phrase_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_phrase_progress_batch_position",
+            "unique": true,
+            "columnNames": [
+              "batch_position"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_phrase_progress_batch_position` ON `${TABLE_NAME}` (`batch_position`)"
+          },
+          {
+            "name": "index_phrase_progress_carry_position",
+            "unique": true,
+            "columnNames": [
+              "carry_position"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_phrase_progress_carry_position` ON `${TABLE_NAME}` (`carry_position`)"
+          }
+        ]
+      },
+      {
+        "tableName": "active_batch",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `capacity` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capacity",
+            "columnName": "capacity",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a0c2da18ee085c826515eff24bb3fa37')"
+    ]
+  }
+}

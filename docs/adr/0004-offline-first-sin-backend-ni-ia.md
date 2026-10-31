@@ -1,6 +1,6 @@
 # ADR-0004: Offline-first, sin backend ni IA en el MVP
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por [ADR-0013](0013-persistencia-catalogo-json-y-estado-en-room.md)
 - **Fecha:** 2026-10-29
 
 ## Contexto

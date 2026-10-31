@@ -35,4 +35,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
+    // El proveedor de la base de datos (PersistenceModule) expone su tipo de Room a Hilt.
+    implementation(libs.room3.runtime)
 }

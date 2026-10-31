@@ -25,3 +25,6 @@ style:
   UnusedPrivateMember:
     # Las funciones @Preview son privadas y solo las usa el IDE.
     ignoreAnnotated: ['Preview', 'PreviewLightDark']
+  UnnecessaryAbstractClass:
+    # La base de datos de Room es abstracta por requisito de la API y solo declara miembros abstractos (ADR-0013).
+    ignoreAnnotated: ['Database']

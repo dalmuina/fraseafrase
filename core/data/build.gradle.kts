@@ -1,6 +1,9 @@
+import com.dalmuina.fraseafrase.buildlogic.requireCoverage
+
 plugins {
     id("fraseafrase.android.library")
     id("fraseafrase.hilt")
+    id("fraseafrase.persistence")
 }
 
 android {
@@ -8,11 +11,13 @@ android {
 }
 
 // ADR-0010: data sources y repositorios que implementan los puertos de :core:domain.
-// Las librerías de persistencia (Room, DataStore) se añaden en el cambio de OpenSpec
-// que introduzca el catálogo y el progreso.
+// Room 3, DataStore, SQLite empaquetado y serialización se aplican en fraseafrase.persistence (ADR-0013).
 dependencies {
     implementation(projects.core.domain)
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(projects.core.testing)
 }
+
+// ADR-0013: 80 % de líneas en la capa de datos. El código generado por Room se excluye en Quality.kt.
+requireCoverage(ruleName = "Datos", minPercent = 80)

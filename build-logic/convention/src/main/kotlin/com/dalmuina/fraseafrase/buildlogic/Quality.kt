@@ -76,6 +76,9 @@ private val GENERATED_CLASSES = arrayOf(
     "*_MembersInjector",
     "*_HiltModules*",
     "Hilt_*",
+    // Código generado por Room (base de datos, DAOs): la lógica está en las fuentes, no en lo generado (ADR-0013).
+    "*_Impl",
+    "*_Impl\$*",
     "*ComposableSingletons*",
     "*.BuildConfig",
     // Puntos de entrada de Android: solo enlazan el framework con la app.
