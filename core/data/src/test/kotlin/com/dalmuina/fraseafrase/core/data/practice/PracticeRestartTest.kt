@@ -4,6 +4,7 @@ import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -13,6 +14,7 @@ import java.time.LocalDate
 
 // Escenario "Progreso sobrevive al reinicio" de practice-persistence: el progreso se lee igual tras cerrar y reabrir
 // la base en disco.
+@OptIn(ExperimentalCoroutinesApi::class)
 class PracticeRestartTest {
 
     @TempDir
