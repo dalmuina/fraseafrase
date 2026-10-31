@@ -34,13 +34,11 @@ data class PhraseProgress(
         get() = streak.value >= CERTIFICATION_STREAK
 
     /**
-     * Pendiente en la fecha [today] si su nivel es al menos 1 y su próximo repaso es igual o anterior a [today].
-     * Una frase de nivel 0 nunca está pendiente. Es una función pura: la fecha llega como dato, nunca del reloj.
+     * Pendiente en la fecha [today] si su próximo repaso es igual o anterior a [today].
+     * Una frase de nivel 0 nunca está pendiente: la invariante nivel 0 ⇔ sin próximo repaso lo garantiza.
+     * Es una función pura: la fecha llega como dato, nunca del reloj.
      */
-    fun isPendingOn(today: LocalDate): Boolean {
-        val review = nextReview ?: return false
-        return level.value >= 1 && !review.isAfter(today)
-    }
+    fun isPendingOn(today: LocalDate): Boolean = nextReview?.let { it <= today } ?: false
 
     companion object {
         /** Racha mínima dentro de la tanda para certificar una frase (ADR-0012). */

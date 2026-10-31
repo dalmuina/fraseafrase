@@ -109,7 +109,8 @@ Konsist.
 
 - Tests unitarios JVM en `:core:domain` con JUnit 6 (Jupiter) y aserciones de Kotest. No hay Turbine ni
   corrutinas, y no se usa MockK porque no hay fronteras que simular.
-- `FixedClock` en `:core:testing` es la única fuente de fechas en los tests.
+- `FixedClock` en `:core:testing` es la única fuente de la fecha de hoy en los tests; las fechas de los escenarios
+  se escriben como `LocalDate.of(...)` porque son datos deterministas.
 - Sin tests de integración ni de UI: este cambio no tiene datos ni presentación.
 - Cada test lleva el nombre del escenario en inglés con comillas invertidas y un comentario con el escenario de la spec (ADR-0007).
 - `PhraseId` no tiene comportamiento propio; se ejercita a través de los tests de `PhraseProgress`.
