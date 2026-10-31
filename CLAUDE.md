@@ -27,7 +27,7 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
 | Implementar tareas | `/opsx:apply` | `tdd-implementer` (un grupo de tareas por invocación) |
 | Revisar el código | – | `code-reviewer` |
 | Verificar contra la especificación | `/opsx:verify` | – |
-| Cerrar | `/opsx:archive` | – |
+| Cerrar (en la rama del cambio, antes de la PR) | `/opsx:archive` | – |
 
 Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas de los artefactos: `openspec/config.yaml`.
 
@@ -41,8 +41,10 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 - Los commits van a la rama actual: uno por grupo de tareas, siempre en verde y con Conventional Commits
   en inglés. No se commitean rojos ni se reescribe el historial (sin rebase, sin amend de commits ya
   publicados, sin force push).
-- Al terminar el cambio, haz push de la rama actual (`git push -u origin HEAD`) y para. El usuario abre la
-  pull request a `develop`, la revisa con la CI y la mergea.
+- Al terminar el cambio, en su misma rama y antes de la PR: ejecuta `/opsx:archive` y haz un último commit con el
+  archivo del cambio y las specs sincronizadas. Después haz push de la rama actual (`git push -u origin HEAD`) y
+  para. El usuario abre la pull request a `develop`, la revisa con la CI y la mergea. El archivo nunca va en una
+  rama aparte ni después de la integración en `develop`.
 - No crees ni borres ramas, no hagas merge ni abras pull requests.
 
 ## Arquitectura (ADR-0010)
