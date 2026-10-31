@@ -19,10 +19,10 @@
 
 ## 3. Dominio: catálogo y value classes
 
-- [ ] 3.1 Escribir tests de `Topic` y `LanguageTag` que rechacen valores vacíos y formatos no BCP-47 según `phrase-catalog` (Requisitos "Campos obligatorios de cada frase" y "Locales por frase"); verificar que fallan por el motivo esperado.
-- [ ] 3.2 Implementar `Topic` y `LanguageTag` como value classes con `require` de no vacío y de formato BCP-47 en `LanguageTag`; verificar que los tests de 3.1 pasan.
-- [ ] 3.3 Escribir tests de `CatalogPhrase` ampliado con `topic`, `targetLocale`, `sourceLocale`, `target` y `source`; verificar que fallan.
-- [ ] 3.4 Ampliar `CatalogPhrase` con los campos nuevos y actualizar `aCatalogPhrase()` en `:core:testing` con defaults; verificar que `./gradlew :core:domain:test` pasa, incluido `ComposeNextBatchTest` sin cambios.
+- [x] 3.1 Escribir tests de `Topic` y `LanguageTag` que rechacen valores vacíos y formatos no BCP-47 según `phrase-catalog` (Requisitos "Campos obligatorios de cada frase" y "Locales por frase"); verificar que fallan por el motivo esperado.
+- [x] 3.2 Implementar `Topic` y `LanguageTag` como value classes con `require` de no vacío y de formato BCP-47 en `LanguageTag`; verificar que los tests de 3.1 pasan.
+- [x] 3.3 Escribir tests de `CatalogPhrase` ampliado con `topic`, `targetLocale`, `sourceLocale`, `target` y `source`; verificar que fallan.
+- [x] 3.4 Ampliar `CatalogPhrase` con los campos nuevos y actualizar `aCatalogPhrase()` en `:core:testing` con defaults; verificar que `./gradlew :core:domain:test` pasa, incluido `ComposeNextBatchTest` sin cambios.
 
 ## 4. Dominio: puertos, fakes y casos de uso
 
