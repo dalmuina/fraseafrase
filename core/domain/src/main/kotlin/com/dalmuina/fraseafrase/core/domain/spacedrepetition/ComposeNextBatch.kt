@@ -27,8 +27,9 @@ class ComposeNextBatch @Inject constructor(private val clock: Clock) {
 
         val fromQueue = carry.ids.take(size.value).map { byId.getValue(it) }
         val leftover = carry.ids.drop(size.value)
+        val queued = carry.ids.toSet()
         val pending = progress
-            .filter { it.isPendingOn(today) && it.id !in carry.ids }
+            .filter { it.isPendingOn(today) && it.id !in queued }
             .sortedWith(compareBy({ it.level.value }, { it.nextReview }, { catalogIndex[it.id] }))
             .take(size.value - fromQueue.size)
         val freeSlots = size.value - fromQueue.size - pending.size
