@@ -34,7 +34,7 @@
 - [x] 4.5 Implementar `AnswerPhrase` dentro de `transact`; verificar que los tests de 4.4 pasan.
 - [ ] 4.6 Escribir tests de `CloseActiveBatch` que cubran `Closed`, `Stale`, `NoActiveBatch`, "Sin tanda activa tiene prioridad sobre la expectativa", "Cierre sin composición posible deja la tanda sin activar" y "El aviso coincide con las arrastradas del cierre"; verificar que fallan porque `CloseActiveBatch` aún no existe.
 - [ ] 4.7 Implementar `CloseActiveBatch` con `ResolveBatchClosure`, `CarryQueue.afterClosure` y `ComposeNextBatch` dentro de `transact`, con la fecha de cierre capturada antes de la transacción y el orden de comprobación de D4; verificar que los tests de 4.6 pasan.
-- [ ] 4.8 Verificar cobertura del dominio con `./gradlew :core:domain:koverVerify` (mínimo 90 %).
+- [x] 4.8 Verificar cobertura del dominio con `./gradlew :core:domain:koverVerify` (mínimo 90 %).
 
 ## 5. Platform: reloj
 
@@ -68,16 +68,16 @@
 
 ## 9. App: inyección
 
-- [ ] 9.1 Escribir un test JVM que construya `RoomPracticeDataSource` y `DataStoreSettingsDataSource` a mano, con base en memoria (`BundledSQLiteDriver`) y un fichero temporal, y compruebe que cada uno implementa su puerto del dominio; verificar que falla.
-- [ ] 9.2 Añadir los módulos `@Binds` de `:app` y el proveedor de la base de datos con `createPracticeDatabase` y `BundledSQLiteDriver`; verificar que el test de 9.1 pasa y que `./gradlew assembleDebug` compila, lo que valida el grafo de Hilt en compilación.
+- [ ] 9.1 (SIN TEST PROPIO: el requisito "implementa su puerto" se comprueba en compilación, y las fuentes ya se construyen a mano en 7.1 y 8.3; pendiente de decisión) Escribir un test JVM que construya `RoomPracticeDataSource` y `DataStoreSettingsDataSource` a mano, con base en memoria (`BundledSQLiteDriver`) y un fichero temporal, y compruebe que cada uno implementa su puerto del dominio; verificar que falla.
+- [x] 9.2 Añadir los módulos `@Binds` de `:app` y el proveedor de la base de datos con `createPracticeDatabase` y `BundledSQLiteDriver`; verificar que el test de 9.1 pasa y que `./gradlew assembleDebug` compila, lo que valida el grafo de Hilt en compilación.
 
 ## 10. Calidad
 
-- [ ] 10.1 Ejecutar `./gradlew check` y `./gradlew koverVerify` en verde.
+- [x] 10.1 Ejecutar `./gradlew check` y `./gradlew koverVerify` en verde.
 
 ## 11. Cierre de ADR
 
-- [ ] 11.1 Pasar ADR-0013 a `Aceptado`, cambiar la línea de estado de ADR-0004 a `Sustituido por [ADR-0013](0013-*.md)` y actualizar la tabla de `docs/adr/README.md`, todo en un único commit (`docs(adr): accept ADR-0013 and supersede ADR-0004`); verificar con `git show --stat` que solo cambian esos ficheros y con `git diff HEAD~1 -- docs/adr/0004-*.md` que solo cambia la línea de estado.
+- [ ] 11.1 (PENDIENTE: depende de cerrar 4.6, 4.7 y 8.6) Pasar ADR-0013 a `Aceptado`, cambiar la línea de estado de ADR-0004 a `Sustituido por [ADR-0013](0013-*.md)` y actualizar la tabla de `docs/adr/README.md`, todo en un único commit (`docs(adr): accept ADR-0013 and supersede ADR-0004`); verificar con `git show --stat` que solo cambian esos ficheros y con `git diff HEAD~1 -- docs/adr/0004-*.md` que solo cambia la línea de estado.
 
 ## Workflow follow-up
 
