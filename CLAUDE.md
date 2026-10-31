@@ -31,6 +31,20 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
 
 Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas de los artefactos: `openspec/config.yaml`.
 
+## Ramas y commits
+
+- Cada cambio se trabaja en su propia rama, que crea el usuario desde `develop` con el formato
+  `<versión>/<nombre-del-cambio>`, por ejemplo `1.0.0/add-practice-batch`. La versión es la de la
+  release objetivo (actual: `1.0.0`) y el nombre coincide con el del cambio de OpenSpec.
+- Antes de cada commit, comprueba con `git branch --show-current` que no estás en `develop` ni en `main`.
+  Si lo estás, para y avisa.
+- Los commits van a la rama actual: uno por grupo de tareas, siempre en verde y con Conventional Commits
+  en inglés. No se commitean rojos ni se reescribe el historial (sin rebase, sin amend de commits ya
+  publicados, sin force push).
+- Al terminar el cambio, haz push de la rama actual (`git push -u origin HEAD`) y para. El usuario abre la
+  pull request a `develop`, la revisa con la CI y la mergea.
+- No crees ni borres ramas, no hagas merge ni abras pull requests.
+
 ## Arquitectura (ADR-0010)
 
 ```
@@ -102,6 +116,7 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 
 ## No hacer
 
+- No hagas commit, push ni merge en `develop` ni en `main`.
 - No modifiques `gradle/gradle-daemon-jvm.properties` ni el JDK del daemon (ADR-0011).
 - No uses sintaxis de Kotlin 2.2+ que detekt 1.23 no analiza: parámetros de contexto, guardas en `when`, interpolación con varios `$` (ADR-0011).
 - No añadas librerías sin justificarlo en el `design.md` del cambio; las versiones van en `gradle/libs.versions.toml`.
