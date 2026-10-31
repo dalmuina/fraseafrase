@@ -122,4 +122,6 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 - No añadas librerías sin justificarlo en el `design.md` del cambio; las versiones van en `gradle/libs.versions.toml`.
 - No apliques `org.jetbrains.kotlin.android`: con AGP 9 Kotlin viene integrado en el plugin de Android.
 - No desactives reglas de detekt ni bajes umbrales de cobertura para que algo pase; corrige el código o propón un ADR.
-- No edites ADR aceptados. En `openspec/specs/`, los requisitos y escenarios solo cambian mediante deltas de OpenSpec; la única edición manual permitida es la sección `## Purpose`, que OpenSpec no gestiona con deltas, y siempre sin añadir comportamiento.
+- No edites ADR aceptados: solo se cambia su línea de estado a `Sustituido por ADR-XXXX` cuando un ADR nuevo lo sustituye (ver `docs/adr/README.md`). Un ADR `Propuesto` puede editarse.
+- No borres ni reutilices ids del catálogo de frases, y añade las frases nuevas siempre al final de la lista `phrases` (ADR-0013; test de contrato en `:core:data`).
+- No edites `openspec/specs/` a mano: los requisitos y escenarios solo cambian mediante deltas de OpenSpec; la única edición manual permitida es la sección `## Purpose`, que OpenSpec no gestiona con deltas, y siempre sin añadir comportamiento.

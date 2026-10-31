@@ -2,6 +2,7 @@
 
 Registro de decisiones de arquitectura del proyecto. Cada ADR es inmutable una vez aceptado:
 si una decisión cambia, se crea un ADR nuevo que **sustituye** al anterior (y el antiguo pasa a estado `Sustituido por ADR-XXXX`).
+Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Aceptado` es el cambio de su línea de estado al aceptar el ADR que lo sustituye.
 
 | ADR | Título | Estado |
 |-----|--------|--------|
@@ -17,6 +18,7 @@ si una decisión cambia, se crea un ADR nuevo que **sustituye** al anterior (y e
 | [0010](0010-clean-architecture-modular-design-system-y-data-sources.md) | Clean Architecture modular con design system y data sources | Aceptado |
 | [0011](0011-detekt-1-23-con-daemon-gradle-jdk-21.md) | detekt 1.23 con el daemon de Gradle en JDK 21 | Aceptado |
 | [0012](0012-modelo-de-practica-por-tandas.md) | Modelo de práctica por tandas y alcance del MVP | Aceptado |
+| [0013](0013-persistencia-catalogo-json-y-estado-en-room.md) | Persistencia con catálogo JSON en assets y estado del usuario en Room 3 | Propuesto |
 
 ## Plantilla
 

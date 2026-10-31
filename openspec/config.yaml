@@ -7,11 +7,15 @@ context: |
   Decisiones vigentes: leer docs/adr/ antes de proponer o diseñar. Un cambio que contradiga
   un ADR aceptado debe incluir un ADR nuevo que lo sustituya.
   Método de práctica (tandas, rachas, certificación, niveles e intervalos) y alcance del MVP: ADR-0012.
+  Idiomas y modelo multivariante: ADR-0003. Offline-first y persistencia: ADR-0013, que sustituye al ADR-0004.
+  Arquitectura de módulos y data sources: ADR-0010. Versión del JDK del daemon de Gradle: ADR-0011.
 
   Stack:
-  - Kotlin, JVM toolchain 17, Gradle con version catalog (gradle/libs.versions.toml) y convention plugins (build-logic/).
+  - Kotlin con target JVM 17. Gradle con version catalog (gradle/libs.versions.toml) y convention plugins (build-logic/).
+    El daemon de Gradle usa JDK 21 (ADR-0011).
   - Android minSdk 26. Jetpack Compose + Material 3. MVVM con flujo unidireccional (UiState + Action).
-  - Hilt para DI. Corrutinas y Flow. Room (progreso), DataStore (ajustes), catálogo de frases precargado.
+  - Hilt para DI. Corrutinas y Flow. Room 3 (estado del usuario: progreso, tanda activa y cola), DataStore (ajustes)
+    y catálogo de frases JSON en assets, cargado en memoria (ADR-0013).
   - Offline-first: sin backend, sin cuentas, sin IA en tiempo de ejecución.
 
   Módulos (Clean Architecture, dependencias solo hacia dentro; ver ADR-0010):
