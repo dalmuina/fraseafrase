@@ -41,12 +41,12 @@ Cada tarea de implementación va precedida de su test, que debe fallar por el mo
 
 ## 5. Verificación de integración
 
-- [ ] 5.1 Ejecutar `./gradlew :core:domain:test` y comprobar que todos los tests pasan.
-- [ ] 5.2 Ejecutar `./gradlew detekt` y comprobar que no hay errores de ktlint ni de detekt.
-- [ ] 5.3 Ejecutar `./gradlew koverVerify` y comprobar que la cobertura de `:core:domain` es al menos del 90 %.
-- [ ] 5.4 Buscar en `core/domain/src/main` los patrones `System\.|\.now\(|Instant\.|Clock\.system|systemUTC|systemDefaultZone|java\.time\.Clock` con `rg -n -e` (o la herramienta Grep) y comprobar que no hay coincidencias, según la restricción de design.md. Es un paso de verificación manual, no un test ni una regla de CI.
-- [ ] 5.5 Revisar con `code-reviewer` el resultado de 5.4 y el resto del cambio.
-- [ ] 5.6 Ejecutar `./gradlew check` y comprobar que termina en verde.
+- [x] 5.1 Ejecutar `./gradlew :core:domain:test` y comprobar que todos los tests pasan.
+- [x] 5.2 Ejecutar `./gradlew detekt` y comprobar que no hay errores de ktlint ni de detekt.
+- [x] 5.3 Ejecutar `./gradlew koverVerify` y comprobar que la cobertura de `:core:domain` es al menos del 90 %.
+- [x] 5.4 Buscar en `core/domain/src/main` los patrones `System\.|\.now\(|Instant\.|Clock\.system|systemUTC|systemDefaultZone|java\.time\.Clock` con `rg -n -e` (o la herramienta Grep) y comprobar que no hay coincidencias, según la restricción de design.md. Es un paso de verificación manual, no un test ni una regla de CI.
+- [x] 5.5 Revisar con `code-reviewer` el resultado de 5.4 y el resto del cambio.
+- [x] 5.6 Ejecutar `./gradlew check` y comprobar que termina en verde.
 
 ## Workflow follow-up
 

@@ -249,16 +249,18 @@ class ResolveBatchClosureTest {
 
     // Scenario: Frase sin autoevaluaciones cuenta como nunca respondida (spec: Frase respondida en la tanda)
     @Test
-    fun `given a phrase without self assessments when closing then it is carried as never answered`() {
+    fun `given a phrase without self assessments when closing then it keeps its level and review`() {
         // Given
-        val progress = progressWith(level = 0, streak = 0, answeredInBatch = false, nextReview = null)
+        val progress =
+            progressWith(level = 2, streak = 0, answeredInBatch = false, nextReview = LocalDate.of(2026, 3, 13))
 
         // When
         val outcome = closeSingle(progress)
 
         // Then
         outcome.shouldBeInstanceOf<BatchClosureOutcome.Carried>()
-        outcome.progress.answeredInBatch shouldBe false
+        outcome.progress.level shouldBe Level(2)
+        outcome.progress.nextReview shouldBe LocalDate.of(2026, 3, 13)
     }
 
     // Scenario: Nunca respondida conserva su nivel y su repaso

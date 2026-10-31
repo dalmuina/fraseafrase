@@ -46,6 +46,19 @@ class RecordSelfAssessmentTest {
         updated.answeredInBatch shouldBe true
     }
 
+    // Scenario: Frase con un acierto cuenta como respondida (spec: Frase respondida en la tanda)
+    @Test
+    fun `given a phrase never answered when the user assesses a hit then the phrase counts as answered`() {
+        // Given
+        val progress = progressWith(streak = Streak(0), answeredInBatch = false)
+
+        // When
+        val updated = recordSelfAssessment(progress, SelfAssessment.HIT)
+
+        // Then
+        updated.answeredInBatch shouldBe true
+    }
+
     private fun progressWith(streak: Streak, answeredInBatch: Boolean) = PhraseProgress(
         id = PhraseId("p-1"),
         level = Level(0),
