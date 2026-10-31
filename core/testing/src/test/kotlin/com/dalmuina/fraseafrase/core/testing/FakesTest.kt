@@ -2,7 +2,6 @@ package com.dalmuina.fraseafrase.core.testing
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
-import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import io.kotest.matchers.shouldBe
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test
 class FakesTest {
 
     @Test
-    fun `given an empty fake practice repository when transacting then the change is stored and its result returned`() = runTest {
+    fun `given an empty fake repository when transacting then the change is stored`() = runTest {
         // Given
         val fake = FakePracticeRepository()
         val carried = PhraseId("a")

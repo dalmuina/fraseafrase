@@ -3,11 +3,11 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
-import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
@@ -78,7 +78,7 @@ class ObtainActiveBatchTest {
 
     // Scenario: Composición sin frases disponibles (spec: practice-batch)
     @Test
-    fun `given a catalog with no phrases when obtaining the batch then returns nothing available and stores no batch`() = runTest {
+    fun `given a catalog with no phrases when obtaining the batch then returns nothing available`() = runTest {
         // Given
         val practice = FakePracticeRepository()
 
@@ -105,7 +105,7 @@ class ObtainActiveBatchTest {
 
     // Scenario: Cambio de fecha con tanda activa (spec: practice-persistence) — regresión de 4.8
     @Test
-    fun `given an active batch and a new day when obtaining it then the batch is kept and the due phrase stays out`() = runTest {
+    fun `given an active batch and a new day when obtaining it then the batch is kept`() = runTest {
         // Given
         val batchPhrases = listOf("A", "B", "C", "D", "E")
         val active = PracticeSnapshot(

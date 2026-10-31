@@ -25,6 +25,10 @@ class FakePracticeRepository(initial: PracticeSnapshot = emptySnapshot()) : Prac
     }
 
     private companion object {
-        fun emptySnapshot() = PracticeSnapshot(progress = emptyList(), activeBatch = null, carry = CarryQueue(emptyList()))
+        fun emptySnapshot() = PracticeSnapshot(
+            progress = emptyList(),
+            activeBatch = null,
+            carry = CarryQueue(emptyList())
+        )
     }
 }

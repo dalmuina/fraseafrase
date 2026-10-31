@@ -8,7 +8,8 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PracticeBatch
 
 /**
  * Instantánea del estado del usuario. [progress] tiene una entrada por cada frase con progreso o con posición en la
- * tanda activa o en la cola. [activeBatch] indica si hay tanda activa y en qué orden; [carry] es la cola de arrastradas.
+ * tanda activa o en la cola. [activeBatch] indica si hay tanda activa y en qué orden;
+ * [carry] es la cola de arrastradas.
  */
 data class PracticeSnapshot(
     val progress: List<PhraseProgress>,
@@ -29,7 +30,9 @@ data class PracticeSnapshot(
     fun storing(batch: PracticeBatch): PracticeSnapshot {
         val updated = batch.entries.associateBy { it.id }
         return copy(
-            progress = progress.map { updated[it.id] ?: it } + batch.entries.filter { entry -> progress.none { it.id == entry.id } },
+            progress = progress.map {
+                updated[it.id] ?: it
+            } + batch.entries.filter { entry -> progress.none { it.id == entry.id } },
             activeBatch = ActiveBatch(order = batch.entries.map { it.id }, capacity = batch.capacity),
         )
     }
