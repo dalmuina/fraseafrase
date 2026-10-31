@@ -117,6 +117,10 @@ Su existencia indica si hay tanda activa.
 
 Exportación del esquema a `core/data/schemas/` con `schemaDirectory`, versionado en git.
 
+**Desviación de D5 (tarea 8.2):** Room 3 no expresa `CHECK` en sus anotaciones. Las mismas invariantes se aplican con triggers `BEFORE INSERT` y `BEFORE UPDATE` creados en `RoomDatabase.Callback.onCreate` (`PracticeSchema`): nivel entre 0 y 5, no ambas posiciones a la vez, nivel 0 siempre en tanda o cola, `next_review` nulo exactamente si el nivel es 0, y una sola fila de `active_batch` con id 1 y capacidad entre 10 y 30. Los UNIQUE de posición sí son índices de Room y aparecen en el esquema exportado.
+
+**Escritura en dos fases (tarea 8.7):** `RoomPracticeDataSource.transact` lee la instantánea, calcula la transición y escribe. Primero, cada fila que deja una posición ocupada recibe una posición temporal negativa y única. Después, cada fila recibe su posición final. Así ninguna sentencia viola un UNIQUE ni deja una fila de nivel 0 sin posición.
+
 ### D6. Catálogo JSON
 
 Archivo `core/data/src/main/assets/catalog/phrases.json`, con `schemaVersion: 1`, locales en la raíz y `phrases` en orden de catálogo. `CatalogJson.parse(text)` es una función pura en `:core:data`, testable en JVM. `AssetsCatalogDataSource : CatalogRepository` solo lee el asset y delega en el parser. El parseo usa `kotlinx.serialization` con el plugin `org.jetbrains.kotlin.plugin.serialization` 2.4.21.

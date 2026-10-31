@@ -1,3 +1,5 @@
+import com.dalmuina.fraseafrase.buildlogic.requireCoverage
+
 plugins {
     id("fraseafrase.android.library")
     id("fraseafrase.hilt")
@@ -16,3 +18,6 @@ dependencies {
 
     testImplementation(projects.core.testing)
 }
+
+// ADR-0013: 80 % de líneas en la capa de datos. El código generado por Room se excluye en Quality.kt.
+requireCoverage(ruleName = "Datos", minPercent = 80)
