@@ -93,14 +93,16 @@ class RoomPracticeDataSourceWriteTest {
     // Scenario: Fallo a mitad del cierre no deja estado parcial (spec: practice-persistence)
     @Test
     fun `given a failure in the middle of a close then the state is identical to the state before it`() = runTest {
-        // Given: A y B en la tanda; un trigger de prueba hace fallar la escritura de B después de la de A
+        // Given: A y B en la tanda; un trigger de prueba hace fallar la fase 2 de B (asigna posición de cola),
+        // que se ejecuta después de la escritura final de A
         val dao = database.phraseProgressDao()
         dao.insert(entry(id = "A", level = 0, batchPosition = 0))
         dao.insert(entry(id = "B", level = 0, batchPosition = 1))
         database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
         database.useWriterConnection { transactor ->
             transactor.executeSQL(
-                "CREATE TRIGGER fail_on_b BEFORE UPDATE ON phrase_progress WHEN NEW.phrase_id = 'B' " +
+                "CREATE TRIGGER fail_on_b BEFORE UPDATE ON phrase_progress " +
+                    "WHEN NEW.phrase_id = 'B' AND NEW.carry_position IS NOT NULL " +
                     "BEGIN SELECT RAISE(ABORT, 'injected failure'); END",
             )
         }
