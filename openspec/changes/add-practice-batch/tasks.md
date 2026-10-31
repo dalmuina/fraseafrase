@@ -38,9 +38,9 @@ Cada tarea sigue TDD: primero el test, que debe fallar por el motivo esperado; d
 
 ## 4. Ciclo completo: cierre y composición
 
-- [ ] 4.1 Escribir `PracticeCycleTest` con "Arrastradas conservan el orden de la lista al cerrar", "La cola sobrante va antes que las arrastradas del cierre", "El aviso coincide con las arrastradas del cierre" y "Cierre con un id ya en la cola"; verificar que falla por ausencia de `CarryQueue.afterClosure`
-- [ ] 4.2 Implementar `CarryQueue.afterClosure(leftover, outcomes)` como función de companion pura; verificar que 4.1 pasa
-- [ ] 4.3 Escribir "La cola sobrante entra primera tras el cierre"; nace verde, porque lo cubren 3.4 y 4.1: anotarlo en el informe de la tarea
+- [x] 4.1 Escribir `PracticeCycleTest` con "Arrastradas conservan el orden de la lista al cerrar", "La cola sobrante va antes que las arrastradas del cierre", "El aviso coincide con las arrastradas del cierre" y "Cierre con un id ya en la cola"; verificar que falla por ausencia de `CarryQueue.afterClosure`
+- [x] 4.2 Implementar `CarryQueue.afterClosure(leftover, outcomes)` como función de companion pura; verificar que 4.1 pasa
+- [x] 4.3 Escribir "La cola sobrante entra primera tras el cierre"; nace verde, porque lo cubren 3.4 y 4.1: anotarlo en el informe de la tarea
 
 ## 5. Verificación de integración
 
