@@ -25,6 +25,10 @@ dependencies {
     compileOnly(libs.hilt.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.kover.gradlePlugin)
+    // Room 3 se aplica por id desde PersistenceConventionPlugin: el plugin debe estar en el classpath
+    // del build-logic porque el marcador de Gradle Plugin Portal no se resuelve para 3.0.3 (ADR-0013).
+    implementation(libs.room3.gradle.plugin)
+    implementation(libs.kotlin.serialization.gradlePlugin)
 }
 
 tasks {
@@ -63,6 +67,10 @@ gradlePlugin {
         register("jvmLibrary") {
             id = "fraseafrase.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
+        }
+        register("persistence") {
+            id = "fraseafrase.persistence"
+            implementationClass = "PersistenceConventionPlugin"
         }
     }
 }
