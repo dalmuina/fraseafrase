@@ -1,5 +1,6 @@
 # spaced-repetition Specification
 
+## Purpose
 
 Define las reglas deterministas de racha, certificación, resolución al cerrar una tanda y niveles con intervalos de repaso en días naturales, según ADR-0012. Son independientes de cómo se guarde el progreso y de cómo se componga la tanda.
 
