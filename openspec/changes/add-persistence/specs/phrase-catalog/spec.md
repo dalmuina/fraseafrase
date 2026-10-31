@@ -129,3 +129,13 @@ Un catálogo sin `schemaVersion` MUST rechazar la carga.
 - **GIVEN** un catálogo sin el campo `schemaVersion`
 - **WHEN** se carga el catálogo
 - **THEN** la carga falla con un error de versión ausente
+
+### Requirement: Documento malformado
+
+Si el contenido del catálogo no es un documento JSON válido, la carga MUST fallar con `MalformedDocument`. Este error es distinto de `AssetUnreadable`: el asset se leyó, pero su contenido no se puede interpretar.
+
+#### Scenario: Texto que no es JSON rechaza la carga
+
+- **GIVEN** un catálogo cuyo contenido no es JSON válido
+- **WHEN** se carga el catálogo
+- **THEN** la carga falla con `MalformedDocument` y no se devuelve ninguna frase

@@ -48,6 +48,18 @@ Si el valor guardado de N no es un entero entre 10 y 30 inclusive, o no puede le
 - **WHEN** se leen los ajustes
 - **THEN** N es 25
 
+#### Scenario: N guardado con otro tipo usa el valor por defecto
+
+- **GIVEN** un valor guardado de N de tipo booleano `true`
+- **WHEN** se leen los ajustes
+- **THEN** N es 20 y no se lanza ningún error de tipo
+
+#### Scenario: N guardado como texto con forma de entero usa el valor por defecto
+
+- **GIVEN** un valor guardado de N igual al texto `"25"`
+- **WHEN** se leen los ajustes
+- **THEN** N es 20, porque el valor guardado no es un entero
+
 #### Scenario: N guardado como texto no entero usa el valor por defecto
 
 - **GIVEN** un valor guardado de N igual al texto `veinte`

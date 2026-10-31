@@ -80,15 +80,23 @@ data class PracticeChange<T>(val next: PracticeSnapshot, val result: T)
 
 ### D4. Casos de uso
 
-- **`ObtainActiveBatch(clock, settingsRepository, catalogRepository, practiceRepository)`**: si hay tanda activa, la devuelve; si no, compone la siguiente con `ComposeNextBatch` dentro de `transact`. Resultado: `Existing`, `Created` o `NothingAvailable`.
+- **`ObtainActiveBatch(clock, settingsRepository, catalogRepository, practiceRepository)`**: si hay tanda activa, la devuelve (`Existing`); si no, compone la siguiente con `ComposeNextBatch` dentro de `transact` y la guarda en la misma transacción (`Created`), o devuelve `NothingAvailable` sin escribir. Es el único punto que compone tandas. Así, tras un cierre, la composición ocurre una sola vez, con la fecha de la llamada, y al día siguiente las pendientes ya vencidas entran sin lógica extra.
 - **`AnswerPhrase`**: `RecordSelfAssessment` y `PracticeBatch.answer` dentro de `transact`. Actualiza la fila y la posición (al final).
-- **`CloseActiveBatch(expectedUncertified)`**: dentro de `transact`, verifica que `uncertifiedCount()` coincide; si no, `Stale`. Si no hay tanda, `NoActiveBatch`. Si coincide: `ResolveBatchClosure`, `CarryQueue.afterClosure`, la tanda nueva con `ComposeNextBatch` sobre el progreso ya resuelto y, dentro de la misma transacción, la persistencia. Resultado: `Closed`.
+- **`CloseActiveBatch(expectedUncertified)`**: dentro de `transact`, verifica que `uncertifiedCount()` coincide; si no, `Stale`. Si no hay tanda, `NoActiveBatch`. Si coincide: `ResolveBatchClosure` y `CarryQueue.afterClosure`, y dentro de la misma transacción persiste el progreso, la nueva cola y la desactivación de la tanda. **No compone la tanda siguiente.** Resultado: `Closed`, sin tanda nueva en el resultado.
 
 El aviso se calcula con `uncertifiedCount()`, que es pura sobre una tanda inmutable, así que el orden de cálculo no es un riesgo. El riesgo está en la escritura (colisiones de posiciones, cubierto por la escritura en dos fases de D3) y en el aviso obsoleto (cubierto por `expectedUncertified`).
 
 **Orden de comprobación de `CloseActiveBatch`:** 1) si no hay tanda activa, `NoActiveBatch`; 2) si `uncertifiedCount()` no coincide con `expectedUncertified`, `Stale`. Si se dan ambas condiciones, gana `NoActiveBatch`.
 
-**Fecha del cierre y de la composición:** `CloseActiveBatch` compone la tanda siguiente con la fecha de cierre (`clock.today()` capturada antes de `transact`). `ObtainActiveBatch` compone con la fecha de la llamada. Si el día cambia con una tanda activa, la tanda no se recompone: sigue activa hasta que el usuario la cierre, y las frases con repaso del nuevo día entran en la tanda siguiente.
+**Fecha de la composición:** `ObtainActiveBatch` compone con `clock.today()` del momento en que el usuario practica, leído antes de `transact`. Si cierras a las 23:59 y practicas al día siguiente, la tanda se compone con la fecha de ese día. Si el día cambia con una tanda activa, la tanda no se recompone: sigue activa hasta que el usuario la cierre, y las frases con repaso del nuevo día entran en la tanda siguiente.
+
+**Revisión tras la validación de la spec (decisiones del usuario):**
+- El cierre no compone; la composición va en `ObtainActiveBatch` (ver D4 y la spec `practice-persistence`, "Composición única tras el cierre").
+- Los triggers de D5 se crean en `onOpen`, no en `onCreate` (ver siguiente sección).
+- `MalformedDocument` forma parte de la spec `phrase-catalog`.
+- `batch_size` acepta solo un `Int` (ver D7).
+- `DeviceClock` lee la zona en cada llamada a `today()` (ver D8).
+- KSP se queda en 2.3.11 (ver D10).
 
 ### D5. Esquema de Room (versión 1)
 
@@ -117,7 +125,12 @@ Su existencia indica si hay tanda activa.
 
 Exportación del esquema a `core/data/schemas/` con `schemaDirectory`, versionado en git.
 
-**Desviación de D5 (tarea 8.2):** Room 3 no expresa `CHECK` en sus anotaciones. Las mismas invariantes se aplican con triggers `BEFORE INSERT` y `BEFORE UPDATE` creados en `RoomDatabase.Callback.onCreate` (`PracticeSchema`): nivel entre 0 y 5, no ambas posiciones a la vez, nivel 0 siempre en tanda o cola, `next_review` nulo exactamente si el nivel es 0, y una sola fila de `active_batch` con id 1 y capacidad entre 10 y 30. Los UNIQUE de posición sí son índices de Room y aparecen en el esquema exportado.
+**Desviación de D5 (tarea 8.2):** Room 3 no expresa `CHECK` en sus anotaciones. Las mismas invariantes se aplican con triggers `BEFORE INSERT` y `BEFORE UPDATE` (`PracticeSchema`): nivel entre 0 y 5, no ambas posiciones a la vez, nivel 0 siempre en tanda o cola, `next_review` nulo exactamente si el nivel es 0, y una sola fila de `active_batch` con id 1 y capacidad entre 10 y 30. Los UNIQUE de posición sí son índices de Room y aparecen en el esquema exportado.
+
+**Triggers en `onOpen`, no en `onCreate` (revisión):** los triggers se crean en `RoomDatabase.Callback.onOpen` con `CREATE TRIGGER IF NOT EXISTS`. Así se regeneran en cada apertura, también después de una migración que recree una tabla, porque las auto-migraciones de Room recrean las tablas y los triggers desaparecen sin aviso. Room no los conoce: no están en el esquema exportado ni los valida. Consecuencias:
+- Un test abre la base y comprueba en `sqlite_master` que existen los doce triggers (seis guardas, cada una en INSERT y UPDATE), además de los tests que verifican que cada uno rechaza una fila inválida.
+- Un test abre una base en fichero temporal, borra los triggers, la cierra y la vuelve a abrir; comprueba que se recrean.
+- Cambiar la definición de un trigger exige una migración con `DROP TRIGGER` antes del `CREATE TRIGGER`, porque `IF NOT EXISTS` no sustituye una definición existente. Queda anotado en ADR-0013.
 
 **Escritura en dos fases (tarea 8.7):** `RoomPracticeDataSource.transact` lee la instantánea, calcula la transición y escribe. Primero, cada fila que deja una posición ocupada recibe una posición temporal negativa y única. Después, cada fila recibe su posición final. Así ninguna sentencia viola un UNIQUE ni deja una fila de nivel 0 sin posición.
 
@@ -129,14 +142,10 @@ Test de contrato: lee `src/main/assets/catalog/phrases.json` desde la ruta del m
 
 ### D7. Ajustes
 
-`DataStoreSettingsDataSource : SettingsRepository` (`:core:data`) con DataStore Preferences 1.3.0. Claves `cefr_level` (String) y `batch_size`. DataStore compara las claves por nombre y, si el valor guardado tiene otro tipo, leer con una clave tipada lanza `ClassCastException` (comprobado en los tests). Por eso `batch_size` se lee del mapa completo (`asMap()`), sin castear: se acepta un `Int` o un texto con forma de entero, y cualquier otra cosa cae al valor por defecto:
+`DataStoreSettingsDataSource : SettingsRepository` (`:core:data`) con DataStore Preferences 1.3.0. Claves `cefr_level` (String) y `batch_size`. DataStore compara las claves por nombre y, si el valor guardado tiene otro tipo, leer con una clave tipada lanza `ClassCastException` (comprobado en los tests). Por eso `batch_size` se lee del mapa completo (`asMap()`), sin castear. Solo se acepta un `Int` dentro de rango; cualquier otro tipo, incluido un texto con forma de entero, cae al valor por defecto, como exige la spec `user-settings` ("no es un entero"). Esta regla corrige una versión anterior de este diseño que aceptaba `"25"`:
 
 ```kotlin
-val stored = when (val raw = preferences.asMap().entries.firstOrNull { it.key.name == "batch_size" }?.value) {
-    is Int -> raw
-    is String -> raw.toIntOrNull()
-    else -> null
-}
+val stored = (preferences.asMap().entries.firstOrNull { it.key.name == "batch_size" }?.value as? Int)
 val n = stored?.takeIf { it in BatchSize.MIN..BatchSize.MAX } ?: BatchSize.DEFAULT.value
 ```
 
@@ -144,7 +153,7 @@ Un `IOException` al leer devuelve `UserSettings.DEFAULT`. El nivel CEFR no váli
 
 ### D8. Reloj
 
-`DeviceClock` implementa `Clock` en `:core:platform`, usa `LocalDate.now(zone)` con la zona inyectada y `java.time`, que es nativo desde API 26. El binding de Hilt (`@Binds`) vive en `:app`. El nombre evita colisionar con `android.os.SystemClock`.
+`DeviceClock` implementa `Clock` en `:core:platform` y usa `java.time`, que es nativo desde API 26. La zona no se guarda en el constructor: se obtiene con un proveedor (`ZoneId.systemDefault()` en producción) en **cada** llamada a `today()`. Así, si el usuario viaja o cambia la zona horaria con la app abierta, la fecha local lo sigue. El binding de Hilt (`@Binds`) vive en `:app`. El nombre evita colisionar con `android.os.SystemClock`.
 
 ### D9. Detekt
 
@@ -159,7 +168,7 @@ Un `IOException` al leer devuelve `UserSettings.DEFAULT`. El nivel CEFR no váli
 | DataStore Preferences | 1.3.0 | ADR-0004 exige DataStore. Última estable. |
 | `kotlinx-serialization-json` | 1.12.0 | Parseo del JSON sin depender de Android; testable en JVM. Última estable. |
 | Plugin serialization | 2.4.21 | Alineado con Kotlin 2.4.21. La 2.5.0-Beta2 es beta. |
-| KSP | 2.3.11 | Se intentó 2.3.13 (tarea 1.1): el POM del plugin Gradle existe, pero el JAR `com.google.devtools.ksp.gradle.plugin-2.3.13.jar` devuelve 404 en Gradle Plugin Portal, así que no se puede resolver. Se mantiene 2.3.11 hasta que el artefacto esté publicado. |
+| KSP | 2.3.11 | Aceptado como versión definitiva de este cambio. Se intentó 2.3.13 (tarea 1.1): el POM del plugin Gradle existe, pero el JAR `com.google.devtools.ksp.gradle.plugin-2.3.13.jar` devuelve 404 en Gradle Plugin Portal, probablemente porque aún no está propagado. 2.3.11 es la alternativa prevista. Dependabot propondrá la subida cuando el artefacto esté disponible; esa subida es un cambio aparte. |
 
 Diferencias con Room 2 que el código debe reflejar: `@ColumnTypeConverter` en lugar de `@TypeConverter`; `withWriteTransaction` en lugar de `runInTransaction`; DAO con funciones `suspend` o `Flow`; `SQLiteDriver` obligatorio al construir la base de datos.
 
@@ -196,7 +205,8 @@ Diferencias con Room 2 que el código debe reflejar: `@ColumnTypeConverter` en l
 - **Tests JVM (1.4)**: la variante Android de `sqlite-bundled` no encuentra `sqliteJni` fuera del dispositivo. En el classpath de test se excluye `sqlite-bundled-android` y se añade `sqlite-bundled-jvm` 2.7.1, que trae `natives/windows_x64/sqliteJni.dll`. Producción sigue usando `sqlite-bundled`.
 - **KSP para tests**: los tests de Room necesitan `kspTest` además de `ksp`. Está en el convention plugin.
 - **Serialization (1.5)**: el plugin compila con el Kotlin integrado de AGP 9, probado con una clase `@Serializable` y un test de ida y vuelta. Ambos spikes se eliminaron tras pasar.
-- **Entorno**: Gradle no valida el certificado TLS de `dl.google.com` con el truststore del JDK (PKIX). Para resolver las dependencias de Google se usa `JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStoreType=Windows-ROOT`, que usa el almacén del sistema. No se ha modificado ningún fichero de configuración del JDK ni del daemon (ADR-0011).
+- **Entorno**: en esta máquina, un antivirus (Norton) inspecciona el HTTPS y firma los certificados con una raíz que no está en el truststore del JDK del daemon, así que Gradle no resuelve dependencias (PKIX). La solución permanente, fuera del repositorio, es `systemProp.javax.net.ssl.trustStoreType=Windows-ROOT` en `%USERPROFILE%\.gradle\gradle.properties`, que usa el almacén de certificados de Windows y sigue las rotaciones de la raíz. No se modifica ningún fichero del proyecto, del JDK ni del daemon (ADR-0011), y no afecta a la CI.
+- **Tests JVM en Linux (CI)**: `sqlite-bundled-jvm` debe incluir también la librería nativa de Linux. Las pruebas locales han usado la `.dll` de Windows; la primera ejecución de la CI lo confirma.
 
 ## Evolución prevista
 

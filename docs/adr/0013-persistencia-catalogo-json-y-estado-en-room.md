@@ -52,6 +52,14 @@ Este ADR sustituye por completo al ADR-0004. Conserva lo vigente y cambia el alm
 - **Ajuste de variante (ADR-0003):** la variante activa como ajuste del usuario queda diferida. En el MVP no es
   seleccionable, como dice el ADR-0003 en sus consecuencias. El locale de la raíz del catálogo es la única fuente
   de locales en este cambio.
+- **Invariantes en triggers:** Room no expresa `CHECK` en sus anotaciones, así que las invariantes del estado de
+  práctica se aplican con triggers `BEFORE INSERT` y `BEFORE UPDATE`. Se crean en `onOpen` con
+  `CREATE TRIGGER IF NOT EXISTS`, para que se regeneren en cada apertura, también después de una migración que
+  recree tablas. Cambiar la definición de un trigger exige una migración con `DROP TRIGGER` antes de crearlo de
+  nuevo, porque `IF NOT EXISTS` no sustituye una definición existente. Un test comprueba en `sqlite_master` que
+  existen todos.
+- **Versión de KSP:** se usa KSP 2.3.11. La 2.3.13 no estaba publicada en Gradle Plugin Portal cuando se intentó
+  (tarea 1.1). Subirla es un cambio aparte, que Dependabot propondrá.
 
 ## Consecuencias
 - **Positivas:**

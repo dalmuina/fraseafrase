@@ -82,11 +82,11 @@ La tanda activa MUST recuperarse en el mismo orden en que se guardó, según `ba
 
 ### Requirement: Cierre atómico de la tanda
 
-El cierre de la tanda MUST persistir en una única transacción los resultados de cada frase, la nueva cola de arrastradas y la nueva tanda activa, o bien no persistir nada. Si cualquier paso falla, el estado MUST quedar exactamente como antes del cierre.
+El cierre de la tanda MUST persistir en una única transacción los resultados de cada frase, la nueva cola de arrastradas y la desactivación de la tanda activa, o bien no persistir nada. Si cualquier paso falla, el estado MUST quedar exactamente como antes del cierre. El cierre MUST NOT componer la tanda siguiente: esa composición la hace `ObtainActiveBatch`.
 
 #### Scenario: Fallo a mitad del cierre no deja estado parcial
 
-- **GIVEN** una tanda activa con tres frases y un fallo de escritura al persistir la nueva tanda
+- **GIVEN** una tanda activa con tres frases y un fallo de escritura al persistir la cola de arrastradas
 - **WHEN** se intenta cerrar la tanda
 - **THEN** la tanda activa, el progreso y la cola quedan iguales a los de antes del cierre
 
@@ -94,7 +94,23 @@ El cierre de la tanda MUST persistir en una única transacción los resultados d
 
 - **GIVEN** una tanda activa con dos certificadas y una arrastrada
 - **WHEN** se cierra la tanda
-- **THEN** el progreso, la cola y la tanda nueva quedan persistidos en la misma operación
+- **THEN** el progreso, la cola y la desactivación de la tanda quedan persistidos en la misma operación
+
+### Requirement: Composición única tras el cierre
+
+Tras un cierre, `ObtainActiveBatch` MUST componer la tanda siguiente una sola vez y dentro de la misma transacción de escritura que la guarda, solo cuando no hay tanda activa. Las llamadas siguientes MUST devolver la tanda ya compuesta sin componer otra.
+
+#### Scenario: Cierre no compone la tanda siguiente
+
+- **GIVEN** una tanda con dos frases certificadas, con composición posible para la tanda siguiente
+- **WHEN** se cierra la tanda el 10-03-2026
+- **THEN** el resultado es `Closed`, no hay tanda activa y el progreso no contiene frases nuevas añadidas por el cierre
+
+#### Scenario: Obtener dos veces tras el cierre compone una sola vez
+
+- **GIVEN** una tanda cerrada el 10-03-2026 con composición posible para la tanda siguiente
+- **WHEN** se obtiene la tanda activa dos veces seguidas el 10-03-2026
+- **THEN** la primera llamada devuelve `Created` con la tanda compuesta, la segunda devuelve `Existing` con la misma tanda, y no se compone otra
 
 ### Requirement: Cierre con expectativa de aviso
 
@@ -116,7 +132,7 @@ Cerrar la tanda MUST recibir el número de frases no certificadas que el usuario
 
 - **GIVEN** un aviso de dos frases no certificadas y una tanda con exactamente dos, con la cola sobrante vacía
 - **WHEN** se solicita el cierre con el número del aviso el 10-03-2026
-- **THEN** el resultado es `Closed`, la tanda activa queda vacía y la cola contiene las dos frases no certificadas en orden de tanda
+- **THEN** el resultado es `Closed`, no queda tanda activa, la cola contiene las dos frases no certificadas en orden de tanda y el resultado no incluye tanda nueva
 
 #### Scenario: Sin tanda activa tiene prioridad sobre la expectativa
 
@@ -127,14 +143,14 @@ Cerrar la tanda MUST recibir el número de frases no certificadas que el usuario
 #### Scenario: Cierre con reasignación cruzada de posiciones
 
 - **GIVEN** una tanda con la certificada C en la posición 0 y una arrastrada X en la cola en la posición 0
-- **WHEN** se cierra la tanda y X entra en la posición 0 de la nueva tanda
-- **THEN** el cierre se persiste sin colisión de posiciones y el resultado es `Closed`
+- **WHEN** se cierra la tanda y, después, `ObtainActiveBatch` compone la tanda siguiente con X en la posición 0
+- **THEN** el cierre se persiste sin colisión de posiciones, el resultado es `Closed` y X ocupa la posición 0 de la nueva tanda
 
 #### Scenario: Cierre sin composición posible deja la tanda sin activar
 
 - **GIVEN** una tanda con dos frases certificadas, cola sobrante vacía y sin pendientes ni frases nuevas disponibles
-- **WHEN** se cierra la tanda con expectativa 0 el 10-03-2026
-- **THEN** el resultado es `Closed`, no hay tanda activa y la cola queda vacía
+- **WHEN** se cierra la tanda con expectativa 0 el 10-03-2026 y después se obtiene la tanda activa el mismo día
+- **THEN** el cierre devuelve `Closed`, no hay tanda activa y la cola queda vacía; `ObtainActiveBatch` devuelve `NothingAvailable`
 
 ### Requirement: Primer uso
 
