@@ -125,13 +125,18 @@ Test de contrato: lee `src/main/assets/catalog/phrases.json` desde la ruta del m
 
 ### D7. Ajustes
 
-`DataStoreSettingsDataSource : SettingsRepository` (`:core:data`) con DataStore Preferences 1.3.0. Claves `cefr_level` y `batch_size`, ambas leídas como `stringPreferencesKey` para que un valor guardado con otro tipo no lance `ClassCastException`. `batch_size` se parsea con `toIntOrNull` y se comprueba el rango de forma explícita, sin `try` alrededor de constructores:
+`DataStoreSettingsDataSource : SettingsRepository` (`:core:data`) con DataStore Preferences 1.3.0. Claves `cefr_level` (String) y `batch_size`. DataStore compara las claves por nombre y, si el valor guardado tiene otro tipo, leer con una clave tipada lanza `ClassCastException` (comprobado en los tests). Por eso `batch_size` se lee del mapa completo (`asMap()`), sin castear: se acepta un `Int` o un texto con forma de entero, y cualquier otra cosa cae al valor por defecto:
 
 ```kotlin
-val n = prefs[BATCH_SIZE]?.toIntOrNull()?.takeIf { it in BatchSize.MIN..BatchSize.MAX } ?: BatchSize.DEFAULT.value
+val stored = when (val raw = preferences.asMap().entries.firstOrNull { it.key.name == "batch_size" }?.value) {
+    is Int -> raw
+    is String -> raw.toIntOrNull()
+    else -> null
+}
+val n = stored?.takeIf { it in BatchSize.MIN..BatchSize.MAX } ?: BatchSize.DEFAULT.value
 ```
 
-Un `IOException` al leer devuelve `emptyPreferences()`. El nivel CEFR no válido cae a `A1`. Los dispatchers se inyectan en `DataStoreSettingsDataSource` y `AssetsCatalogDataSource`, como exige CLAUDE.md.
+Un `IOException` al leer devuelve `UserSettings.DEFAULT`. El nivel CEFR no válido cae a `A1`. Los dispatchers se inyectan en `DataStoreSettingsDataSource` y `AssetsCatalogDataSource`, como exige CLAUDE.md. En los tests, DataStore no admite dos instancias activas sobre el mismo fichero, y en Windows su renombrado falla si el destino ya existe: cada test usa una ruta nueva.
 
 ### D8. Reloj
 

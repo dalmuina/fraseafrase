@@ -38,22 +38,22 @@
 
 ## 5. Platform: reloj
 
-- [ ] 5.1 Escribir un test de `DeviceClock` con una zona inyectada que compruebe que `today()` devuelve la fecha local de esa zona; verificar que falla.
-- [ ] 5.2 Implementar `DeviceClock : Clock` en `:core:platform` con `LocalDate.now(zone)`; verificar que el test de 5.1 pasa con `./gradlew :core:platform:test`.
+- [x] 5.1 Escribir un test de `DeviceClock` con una zona inyectada que compruebe que `today()` devuelve la fecha local de esa zona; verificar que falla.
+- [x] 5.2 Implementar `DeviceClock : Clock` en `:core:platform` con `LocalDate.now(zone)`; verificar que el test de 5.1 pasa con `./gradlew :core:platform:test`.
 
 ## 6. Data: catálogo JSON
 
-- [ ] 6.1 Escribir tests de `CatalogJson.parse` que cubran "Formato del catálogo", "Locales por frase", "Campos obligatorios de cada frase", "Versión del esquema ausente", "Ids duplicados rechazan la carga" e "Id vacío rechaza la carga" de `phrase-catalog`, incluidos el rechazo de `schemaVersion` 2 y de CEFR inválido; verificar que fallan porque `CatalogJson` aún no existe.
-- [ ] 6.2 Implementar `CatalogJson.parse` con `kotlinx.serialization` que copie los locales de la raíz a cada frase, valide formato BCP-47 y devuelva `CatalogLoadError` tipados; verificar que los tests de 6.1 pasan.
-- [ ] 6.3 Crear el fichero de referencia `core/data/src/test/resources/catalog/released-ids.txt` con los ids publicados (en esta primera versión, los dos ids de ejemplo de 6.4). Escribir los tests de contrato sobre fixtures de catálogo que cubran "Ids publicados siguen presentes y en el mismo orden", "Alta de frase nueva al final" y "Catálogo que quita un id publicado devuelve el id retirado". La comprobación de contrato devuelve el id retirado; verificar que los tests fallan porque la comprobación aún no existe, no porque falte el fichero.
-- [ ] 6.4 Implementar la comprobación de contrato sobre el catálogo; verificar que los tests de 6.3 pasan. Crear `core/data/src/main/assets/catalog/phrases.json` con `schemaVersion: 1`, locales en la raíz y dos frases de ejemplo de nivel A1 con topic, de modo que sus ids coincidan con `released-ids.txt`; verificar que el contrato pasa sobre el catálogo real. Todos los tests terminan en verde.
-- [ ] 6.5 Escribir el test de integración de `AssetsCatalogDataSource`, que recibe un lector inyectado, que devuelve las frases en orden de catálogo, y el de "Asset no legible falla la carga" con un lector que lanza error (`AssetUnreadable`); verificar que fallan.
-- [ ] 6.6 Implementar `AssetsCatalogDataSource : CatalogRepository`, con el lector y el dispatcher inyectados, que lea el asset y delegue en `CatalogJson.parse`; verificar que el test de 6.5 pasa.
+- [x] 6.1 Escribir tests de `CatalogJson.parse` que cubran "Formato del catálogo", "Locales por frase", "Campos obligatorios de cada frase", "Versión del esquema ausente", "Ids duplicados rechazan la carga" e "Id vacío rechaza la carga" de `phrase-catalog`, incluidos el rechazo de `schemaVersion` 2 y de CEFR inválido; verificar que fallan porque `CatalogJson` aún no existe.
+- [x] 6.2 Implementar `CatalogJson.parse` con `kotlinx.serialization` que copie los locales de la raíz a cada frase, valide formato BCP-47 y devuelva `CatalogLoadError` tipados; verificar que los tests de 6.1 pasan.
+- [x] 6.3 Crear el fichero de referencia `core/data/src/test/resources/catalog/released-ids.txt` con los ids publicados (en esta primera versión, los dos ids de ejemplo de 6.4). Escribir los tests de contrato sobre fixtures de catálogo que cubran "Ids publicados siguen presentes y en el mismo orden", "Alta de frase nueva al final" y "Catálogo que quita un id publicado devuelve el id retirado". La comprobación de contrato devuelve el id retirado; verificar que los tests fallan porque la comprobación aún no existe, no porque falte el fichero.
+- [x] 6.4 Implementar la comprobación de contrato sobre el catálogo; verificar que los tests de 6.3 pasan. Crear `core/data/src/main/assets/catalog/phrases.json` con `schemaVersion: 1`, locales en la raíz y dos frases de ejemplo de nivel A1 con topic, de modo que sus ids coincidan con `released-ids.txt`; verificar que el contrato pasa sobre el catálogo real. Todos los tests terminan en verde.
+- [x] 6.5 Escribir el test de integración de `AssetsCatalogDataSource`, que recibe un lector inyectado, que devuelve las frases en orden de catálogo, y el de "Asset no legible falla la carga" con un lector que lanza error (`AssetUnreadable`); verificar que fallan.
+- [x] 6.6 Implementar `AssetsCatalogDataSource : CatalogRepository`, con el lector y el dispatcher inyectados, que lea el asset y delegue en `CatalogJson.parse`; verificar que el test de 6.5 pasa.
 
 ## 7. Data: ajustes
 
-- [ ] 7.1 Escribir tests de `DataStoreSettingsDataSource` con un fichero temporal que cubran "Valores por defecto", "Persistencia de los ajustes", "N guardado como entero se lee correctamente", los fallbacks de N ("N guardado como texto no entero usa el valor por defecto" y el resto de escenarios de rango), el fallback del nivel CEFR y "Lectura de un almacén ilegible"; verificar que fallan por el motivo esperado.
-- [ ] 7.2 Implementar `DataStoreSettingsDataSource : SettingsRepository` con claves `stringPreferencesKey`, `toIntOrNull`, comprobación de rango y `emptyPreferences()` ante `IOException`, con el dispatcher inyectado; verificar que los tests de 7.1 pasan.
+- [x] 7.1 Escribir tests de `DataStoreSettingsDataSource` con un fichero temporal que cubran "Valores por defecto", "Persistencia de los ajustes", "N guardado como entero se lee correctamente", los fallbacks de N ("N guardado como texto no entero usa el valor por defecto" y el resto de escenarios de rango), el fallback del nivel CEFR y "Lectura de un almacén ilegible"; verificar que fallan por el motivo esperado.
+- [x] 7.2 Implementar `DataStoreSettingsDataSource : SettingsRepository` con claves `stringPreferencesKey`, `toIntOrNull`, comprobación de rango y `emptyPreferences()` ante `IOException`, con el dispatcher inyectado; verificar que los tests de 7.1 pasan.
 
 ## 8. Data: Room y estado de práctica
 
