@@ -75,7 +75,7 @@ ignora `MagicNumber` en ese caso (`ignorePropertyDeclaration: true`); `min(nivel
   frases "en el orden que tenían" (ADR-0012). Con lista vacía devuelve lista vacía.
 
 **Resultado de cierre sellado.** `BatchClosureOutcome` tiene dos variantes:
-- `Certified(progress: PhraseProgress)`: nivel `min(nivel + 1, 5)` y próximo repaso desde la fecha de cierre
+- `Certified(progress: PhraseProgress)`: nivel `min(nivel + 1, MAX_LEVEL)`, con `MAX_LEVEL = 5`, y próximo repaso desde la fecha de cierre
   con `ReviewSchedule`; sale de la tanda.
 - `Carried(progress: PhraseProgress)`: arrastrada a la siguiente tanda. Nivel 0 y sin repaso si fue respondida y no
   certificada; nivel y repaso sin cambios si nunca fue respondida.

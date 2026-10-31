@@ -58,7 +58,7 @@ Una frase MUST considerarse respondida en una tanda cuando haya recibido al meno
 
 - **GIVEN** una frase de la tanda sin autoevaluaciones en esa tanda
 - **WHEN** se cierra la tanda el 10-03-2026
-- **THEN** la frase queda marcada como nunca respondida en esa tanda
+- **THEN** la frase se arrastra a la siguiente tanda y conserva su nivel y su fecha de repaso
 
 ### Requirement: Resolución de frase certificada al cerrar la tanda
 

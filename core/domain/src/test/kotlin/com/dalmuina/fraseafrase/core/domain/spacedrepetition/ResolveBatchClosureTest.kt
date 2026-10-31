@@ -86,7 +86,8 @@ class ResolveBatchClosureTest {
     }
 
     // Scenario: Certificada de nivel 0 pasa a nivel 1
-    // (spec: Resolución de frase certificada al cerrar la tanda)
+    // (spec: Resolución de frase certificada al cerrar la tanda; también cubre
+    // "Frase certificada sale con racha 0 y sin respuestas", spec: Estado de la frase tras cerrar la tanda)
     @Test
     fun `given a certified phrase of level 0 when closing then it moves to level 1 with review on 11-03-2026`() {
         // Given
