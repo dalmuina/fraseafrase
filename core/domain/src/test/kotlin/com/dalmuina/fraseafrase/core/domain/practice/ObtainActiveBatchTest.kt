@@ -8,12 +8,14 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -125,4 +127,43 @@ class ObtainActiveBatchTest {
         result.batch.entries.map { it.id.value } shouldBe batchPhrases
         result.batch.entries.map { it.id.value } shouldNotContain "P"
     }
+
+    // Scenario: Repaso del nuevo día entra en la tanda siguiente (spec: practice-persistence)
+    @Test
+    fun `given a batch closed on the day of a due review when composing the next batch then the review enters it`() =
+        runTest {
+            // Given: tanda de cinco frases (A y B certificadas, C, D y E sin certificar) cerrada el 11-03 con
+            // expectativa 3; P, de nivel 1, tiene repaso el 11-03
+            val day = LocalDate.of(2026, 3, 11)
+            val batchPhrases = listOf("A", "B", "C", "D", "E")
+            val certifiedPhrases = listOf("A", "B").map { id ->
+                aPhraseProgress(
+                    id = id,
+                    level = 1,
+                    streak = 3,
+                    answeredInBatch = true,
+                    nextReview = day.plusDays(1),
+                )
+            }
+            val uncertifiedPhrases = listOf("C", "D", "E").map { aPhraseProgress(id = it) }
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = certifiedPhrases + uncertifiedPhrases +
+                        aPhraseProgress(id = "P", level = 1, nextReview = day),
+                    activeBatch = ActiveBatch(order = batchPhrases.map { PhraseId(it) }, capacity = BatchSize(10)),
+                    carry = CarryQueue(emptyList()),
+                ),
+            )
+            CloseActiveBatch(practice, ResolveBatchClosure(FixedClock(day))).invoke(expectedUncertified = 3)
+
+            // When
+            val catalog = CatalogLoadResult.Loaded(
+                (batchPhrases + "P").map { aCatalogPhrase(id = it, level = CefrLevel.A1) },
+            )
+            val result = useCase(practice, catalog, clock = FixedClock(day)).invoke()
+
+            // Then
+            result.shouldBeInstanceOf<ActiveBatchResult.Created>()
+            result.batch.entries.map { it.id.value } shouldContain "P"
+        }
 }
