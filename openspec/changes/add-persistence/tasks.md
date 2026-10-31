@@ -92,7 +92,7 @@
 
 ## 11. Cierre de ADR
 
-- [ ] 11.1 (PENDIENTE: depende de cerrar 4.6, 4.7, 4.9 y 8.6) Pasar ADR-0013 a `Aceptado`, cambiar la línea de estado de ADR-0004 a `Sustituido por [ADR-0013](0013-*.md)` y actualizar la tabla de `docs/adr/README.md`, todo en un único commit (`docs(adr): accept ADR-0013 and supersede ADR-0004`); verificar con `git show --stat` que solo cambian esos ficheros y con `git diff HEAD~1 -- docs/adr/0004-*.md` que solo cambia la línea de estado.
+- [x] 11.1 (HECHA: dependencias 4.6, 4.7, 4.9 y 8.6 cerradas.) Pasar ADR-0013 a `Aceptado`, cambiar la línea de estado de ADR-0004 a `Sustituido por [ADR-0013](0013-*.md)` y actualizar la tabla de `docs/adr/README.md`, todo en un único commit (`docs(adr): accept ADR-0013 and supersede ADR-0004`); verificar con `git show --stat` que solo cambian esos ficheros y con `git diff HEAD~1 -- docs/adr/0004-*.md` que solo cambia la línea de estado.
 
 ## Workflow follow-up
 
