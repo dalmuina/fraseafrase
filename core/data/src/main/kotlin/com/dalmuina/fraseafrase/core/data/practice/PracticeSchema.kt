@@ -10,7 +10,9 @@ import androidx.sqlite.execSQL
 /**
  * Invariantes del estado de práctica que Room no expresa con sus anotaciones (design D5, spec practice-persistence).
  * Room no tiene CHECK en sus anotaciones, así que cada invariante es un trigger BEFORE INSERT y BEFORE UPDATE que
- * aborta la sentencia. Los triggers se crean al crear la base. Los UNIQUE de posición sí son índices de Room.
+ * aborta la sentencia. Los triggers se crean en cada apertura con `IF NOT EXISTS`, no solo al crear la base: una
+ * migración que recrea tablas los elimina sin aviso y Room no los conoce (design D5, revisión). Los UNIQUE de posición
+ * sí son índices de Room.
  */
 internal object PracticeSchema {
 
@@ -60,9 +62,9 @@ internal object PracticeSchema {
         ),
     ).flatten()
 
-    /** Crea las invariantes al crear la base. */
+    /** Crea las invariantes en cada apertura de la base. `IF NOT EXISTS` las deja intactas si ya existen. */
     val callback: RoomDatabase.Callback = object : RoomDatabase.Callback() {
-        override suspend fun onCreate(connection: SQLiteConnection) {
+        override suspend fun onOpen(connection: SQLiteConnection) {
             triggers.forEach { connection.execSQL(it) }
         }
     }

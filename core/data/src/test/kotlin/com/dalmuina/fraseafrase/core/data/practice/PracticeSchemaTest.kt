@@ -1,5 +1,7 @@
 package com.dalmuina.fraseafrase.core.data.practice
 
+import androidx.room3.executeSQL
+import androidx.room3.useWriterConnection
 import androidx.sqlite.SQLiteException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
@@ -9,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 // Invariantes del esquema de práctica (spec practice-persistence, design D5). Room no expresa CHECK en sus
-// anotaciones: las invariantes se aplican con triggers creados en onCreate, y los UNIQUE, con índices de Room.
+// anotaciones: las invariantes se aplican con triggers creados en onOpen, y los UNIQUE, con índices de Room.
 class PracticeSchemaTest {
 
     private lateinit var database: PracticeDatabase
@@ -107,6 +109,77 @@ class PracticeSchemaTest {
 
         // Then
         database.phraseProgressDao().all().map { it.phraseId } shouldContainExactly listOf("A")
+    }
+
+    // Cada guarda también se dispara en UPDATE (design D5, revisión de triggers). Se inserta una fila válida y se
+    // actualiza a una inválida con SQL directo, porque un UPDATE de Room va por clave primaria.
+    @Test
+    fun `given a valid phrase when updating its level to 6 then throws SQLiteException`() = runTest {
+        // Given
+        database.phraseProgressDao().insert(progress(id = "A", level = 1))
+
+        // When / Then
+        shouldThrow<SQLiteException> {
+            executeSql("UPDATE phrase_progress SET level = 6 WHERE phrase_id = 'A'")
+        }
+    }
+
+    @Test
+    fun `given a batch phrase when updating it to both positions then throws SQLiteException`() = runTest {
+        // Given
+        database.phraseProgressDao().insert(progress(id = "A", level = 0, batchPosition = 0))
+
+        // When / Then
+        shouldThrow<SQLiteException> {
+            executeSql("UPDATE phrase_progress SET carry_position = 0 WHERE phrase_id = 'A'")
+        }
+    }
+
+    @Test
+    fun `given a level 1 phrase when clearing its next review then throws SQLiteException`() = runTest {
+        // Given
+        database.phraseProgressDao().insert(progress(id = "A", level = 1))
+
+        // When / Then
+        shouldThrow<SQLiteException> {
+            executeSql("UPDATE phrase_progress SET next_review = NULL WHERE phrase_id = 'A'")
+        }
+    }
+
+    @Test
+    fun `given a batch phrase when moving it to level 0 without position then throws SQLiteException`() = runTest {
+        // Given
+        database.phraseProgressDao().insert(progress(id = "A", level = 1, batchPosition = 0))
+
+        // When / Then
+        shouldThrow<SQLiteException> {
+            executeSql(
+                "UPDATE phrase_progress SET level = 0, next_review = NULL, batch_position = NULL " +
+                    "WHERE phrase_id = 'A'",
+            )
+        }
+    }
+
+    @Test
+    fun `given an active batch when changing its id to 2 then throws SQLiteException`() = runTest {
+        // Given
+        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
+
+        // When / Then
+        shouldThrow<SQLiteException> { executeSql("UPDATE active_batch SET id = 2") }
+    }
+
+    @Test
+    fun `given an active batch when raising its capacity to 31 then throws SQLiteException`() = runTest {
+        // Given
+        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
+
+        // When / Then
+        shouldThrow<SQLiteException> { executeSql("UPDATE active_batch SET capacity = 31") }
+    }
+
+    private suspend fun executeSql(sql: String) {
+        database.useWriterConnection { transactor -> transactor.executeSQL(sql) }
     }
 
     private fun progress(

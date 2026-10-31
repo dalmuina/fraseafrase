@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.core.data.settings
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -62,7 +63,7 @@ class DataStoreSettingsDataSourceTest {
         val writerScope = CoroutineScope(UnconfinedTestDispatcher(testScheduler) + Job())
         newStore(file, writerScope).edit {
             it[cefrKey] = "B1"
-            it[batchSizeText] = "25"
+            it[batchSizeInt] = 25
         }
         writerScope.cancel()
 
@@ -93,6 +94,39 @@ class DataStoreSettingsDataSourceTest {
 
         // When / Then
         newSource(store).settings().batchSize shouldBe BatchSize.DEFAULT
+    }
+
+    // Scenario: N guardado como texto con forma de entero usa el valor por defecto (spec: user-settings)
+    @Test
+    fun `given N saved as text with integer form when reading then uses 20 because it is not an integer`() = runTest {
+        // Given
+        val store = newStore(freshFile(), backgroundScope)
+        store.edit { it[batchSizeText] = "25" }
+
+        // When / Then
+        newSource(store).settings().batchSize shouldBe BatchSize.DEFAULT
+    }
+
+    // Scenario: N guardado con otro tipo usa el valor por defecto (spec: user-settings)
+    @Test
+    fun `given N saved as a boolean when reading then uses 20 without error`() = runTest {
+        // Given
+        val store = newStore(freshFile(), backgroundScope)
+        store.edit { it[booleanPreferencesKey("batch_size")] = true }
+
+        // When / Then
+        newSource(store).settings().batchSize shouldBe BatchSize.DEFAULT
+    }
+
+    // Scenario: Nivel CEFR guardado con otro tipo usa A1 sin error (spec: user-settings, "Nivel CEFR no válido")
+    @Test
+    fun `given cefr level saved as an integer when reading then uses A1 without error`() = runTest {
+        // Given
+        val store = newStore(freshFile(), backgroundScope)
+        store.edit { it[intPreferencesKey("cefr_level")] = 2 }
+
+        // When / Then
+        newSource(store).settings().cefrLevel shouldBe CefrLevel.A1
     }
 
     // Scenario: N guardado como entero se lee correctamente (spec: user-settings)

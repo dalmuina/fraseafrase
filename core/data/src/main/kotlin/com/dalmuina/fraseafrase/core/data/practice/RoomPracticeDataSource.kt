@@ -89,12 +89,18 @@ class RoomPracticeDataSource @Inject constructor(
             }
         }
 
+        // Solo se escriben las filas que cambian (design D3). Una fila movida en la fase 1 siempre difiere de su
+        // original, así que nunca se omite por error.
         next.progress.forEach { progress ->
             val entity = progress.toEntity(
                 batchPosition = finalBatch[progress.id],
                 carryPosition = finalCarry[progress.id],
             )
-            if (current.containsKey(progress.id)) phrases.update(entity) else phrases.insert(entity)
+            val row = current[progress.id]
+            when {
+                row == null -> phrases.insert(entity)
+                row != entity -> phrases.update(entity)
+            }
         }
 
         writeActiveBatch(next.activeBatch?.capacity?.value)
@@ -102,10 +108,11 @@ class RoomPracticeDataSource @Inject constructor(
 
     private suspend fun writeActiveBatch(capacity: Int?) {
         val activeBatches = database.activeBatchDao()
+        val existing = activeBatches.all().firstOrNull()
         when {
-            capacity == null -> activeBatches.clear()
-            activeBatches.all().isEmpty() -> activeBatches.insert(ActiveBatchEntity(id = 1, capacity = capacity))
-            else -> activeBatches.update(ActiveBatchEntity(id = 1, capacity = capacity))
+            capacity == null -> if (existing != null) activeBatches.clear()
+            existing == null -> activeBatches.insert(ActiveBatchEntity(id = 1, capacity = capacity))
+            existing.capacity != capacity -> activeBatches.update(ActiveBatchEntity(id = 1, capacity = capacity))
         }
     }
 }
