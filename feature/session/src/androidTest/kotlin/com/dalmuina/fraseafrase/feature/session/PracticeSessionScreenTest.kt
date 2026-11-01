@@ -93,6 +93,18 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("0 frases pasarán a la siguiente tanda").assertIsDisplayed()
     }
 
+    // Scenario: Aviso con una sola frase no certificada (spec: practice-session)
+    @Test
+    fun givenOneUncertifiedPhraseWhenCloseWarningIsOpenThenDialogUsesTheSingularForm() {
+        // Given: el aviso de cierre indica una frase no certificada
+        setScreen(practicing(current = item(), revealed = true, closeWarning = 1))
+
+        // When: el diálogo está abierto (estado dado)
+
+        // Then: el diálogo muestra la forma singular "1 frase pasará a la siguiente tanda"
+        composeTestRule.onNodeWithText("1 frase pasará a la siguiente tanda").assertIsDisplayed()
+    }
+
     // Scenario: Frase con racha 3 marcada como sabida (spec: practice-session)
     @Test
     fun givenPhraseWithStreakThreeWhenShowingItThenItIsMarkedAsKnown() {
