@@ -45,9 +45,9 @@
 
 ## 5. Integración en :app
 
-- [ ] 5.1 Escribir un test unitario en `:app` que compruebe que `PRACTICE_START_DESTINATION` es la pantalla de práctica; verificar que falla porque la constante aún no existe.
-- [ ] 5.2 Declarar `PRACTICE_START_DESTINATION`, añadir `:feature:session` a `app/build.gradle.kts` y mostrar `PracticeSessionRoute` como destino inicial en `FraseAFraseApp`; verificar que pasa el test de 5.1.
-- [ ] 5.3 Verificar el cableado de Hilt con `./gradlew :app:assembleDebug` (el grafo debe resolver `ObtainPracticeSession`, `AnswerPhrase` y `CloseActiveBatch`).
+- [x] 5.1 Escribir un test unitario en `:app` que compruebe que `PRACTICE_START_DESTINATION` es la pantalla de práctica; verificar que falla porque la constante aún no existe.
+- [x] 5.2 Declarar `PRACTICE_START_DESTINATION`, añadir `:feature:session` a `app/build.gradle.kts` y mostrar `PracticeSessionRoute` como destino inicial en `FraseAFraseApp`; verificar que pasa el test de 5.1.
+- [x] 5.3 Verificar el cableado de Hilt con `./gradlew :app:assembleDebug` (el grafo debe resolver `ObtainPracticeSession`, `AnswerPhrase` y `CloseActiveBatch`).
 - [ ] 5.4 Verificar a mano en el emulador con la skill `run`: abrir la app (primer uso), practicar tres frases, cerrar la tanda con aviso, cancelar, confirmar y reabrir la app con la tanda guardada.
 
 ## 6. Verificación final
