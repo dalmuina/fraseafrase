@@ -105,6 +105,25 @@ class PracticeSessionCloseTest {
             viewModel.uiState.value shouldBe PracticeSessionUiState.NothingToPractice
         }
 
+    // Scenario: Con el aviso abierto no se puede revelar ni autoevaluar (design D3: guardas de Reveal)
+    @Test
+    fun `given an open close warning when revealing then the phrase stays hidden`() = runTest {
+        // Given: tanda A, B con la frase A sin revelar y el aviso de cierre abierto
+        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B")))
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
+
+        // When: el usuario pide revelar con el diálogo abierto
+        viewModel.onAction(PracticeSessionAction.Reveal)
+        advanceUntilIdle()
+
+        // Then: la frase sigue oculta y el aviso sigue abierto
+        viewModel.practicing().revealed shouldBe false
+        viewModel.practicing().closeWarning shouldBe 2
+    }
+
     // Scenario: Aviso sin frases no certificadas (spec: practice-session)
     @Test
     fun `given two certified phrases when requesting close then the warning is zero`() = runTest {

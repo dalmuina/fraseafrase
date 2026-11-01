@@ -83,8 +83,10 @@ class PracticeSessionViewModel @Inject constructor(
         }
     }
 
+    /** Revelar se ignora con una respuesta en curso (`busy`) o con el aviso de cierre abierto (design D3). */
     private fun reveal() {
         val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
+        if (state.busy || state.closeWarning != null) return
         _uiState.value = state.copy(revealed = true)
     }
 
