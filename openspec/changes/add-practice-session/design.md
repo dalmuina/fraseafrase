@@ -91,6 +91,10 @@ La tarjeta de frase y los botones son composables privados de `:feature:session`
 
 `AssetsCatalogDataSource` pasa a cargar el catálogo una vez y reutilizar el resultado en las llamadas siguientes, como exige ADR-0013 ("cargado en memoria"). El resultado de la carga, sea `Loaded` o `Failed`, se guarda; la memoización es thread-safe con un `Mutex`. Sin cambios en el puerto `CatalogRepository`, así que no toca el dominio. Es un cambio de implementación con su test de contrato.
 
+### D10. Espresso 3.7.0 para los UI tests
+
+El BOM de Compose 2026.09.00 resuelve `espresso-core` 3.5.0 de forma transitiva. Esa versión falla al arrancar `createComposeRule` en un emulador con Android 17 (`NoSuchMethodException: android.hardware.input.InputManager.getInstance`), antes de ejecutar ningún test. Se fija `espresso-core` 3.7.0 solo en `androidTest` de `:feature:session`, con una entrada en `gradle/libs.versions.toml`. Verificado en el emulador: con 3.6.1 los 7 UI tests fallan con el mismo error (la llamada que falla está dentro de `espresso-core`), y con 3.7.0 los 7 pasan. Versión estable publicada en Google Maven. No se cambia el BOM ni otras dependencias. Alternativa descartada: Robolectric, que añadiría una librería nueva y se apartaría de ADR-0007.
+
 ## Estrategia de test
 
 | Componente | Tipo de test | Dobles |
