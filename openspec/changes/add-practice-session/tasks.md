@@ -52,5 +52,5 @@
 
 ## 6. Verificación final
 
-- [ ] 6.1 Ejecutar `./gradlew detekt check koverVerify assembleDebug --rerun -PwarningsAsErrors=true` en verde. El proyecto no tiene ktlint propio: el formato lo aporta `detekt-formatting` (ADR-0011).
-- [ ] 6.2 Ejecutar `./gradlew connectedDebugAndroidTest --no-configuration-cache` en verde en un emulador (los tests de 4.2, 4.2b y 4.2a).
+- [x] 6.1 Ejecutar `./gradlew detekt check koverVerify assembleDebug --rerun -PwarningsAsErrors=true` en verde. El proyecto no tiene ktlint propio: el formato lo aporta `detekt-formatting` (ADR-0011).
+- [x] 6.2 Ejecutar `./gradlew :feature:session:connectedDebugAndroidTest --no-configuration-cache` en verde en un emulador (los tests de 4.2, 4.2a y 4.2b). El comando completo `connectedDebugAndroidTest` falla en `:core:platform` y `:core:data` por configuración del runner, previa a este cambio; ver `docs/deuda-tecnica.md`.

@@ -10,6 +10,13 @@ Registro de mejoras detectadas y aplazadas. Cada entrada indica su origen y el m
 - **Test "Lectura durante un cierre" secuencial.** Origen: revisión de los tests de cierre. Motivo: el test se ejecuta de forma secuencial y no fuerza la concurrencia que pretende verificar; reescribirlo requiere diseñar la sincronización con cuidado.
 - **`writeSnapshot` sin validar filas de progreso.** Origen: revisión de `RoomPracticeDataSource`. Motivo: no se valida que las filas de progreso pertenezcan a la tanda escrita; la validación añade comportamiento nuevo y debe decidirse en su propio cambio.
 
+## Prioridad alta: runner de tests instrumentados
+
+- **Causa.** `build-logic/convention/.../KotlinAndroid.kt` fija `testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"` para todos los módulos Android, pero la dependencia `androidx.test:runner` solo está en `androidTestImplementation` de algunos módulos. Sin ella, la tarea `connectedDebugAndroidTest` falla al arrancar la instrumentación con `ClassNotFoundException: androidx.test.runner.AndroidJUnitRunner`, aunque el módulo no tenga tests.
+- **Módulos afectados.** `:core:platform` y `:core:data` (no tienen `src/androidTest`). Se comprobó que el fallo ya ocurre en `develop` (commit `48d7a11`), así que es previo a `add-practice-session`.
+- **Tests instrumentados sin ejecutar con el comando completo.** Ninguno de código: el único conjunto de tests instrumentados del repositorio es `feature/session/src/androidTest` (7 tests de `PracticeSessionScreenTest`), y ese módulo sí pasa en `Pixel_7a(AVD) - 17`. El riesgo es que `connectedDebugAndroidTest` completo no puede servir de puerta de calidad mientras falle.
+- **Propuesta de cambio propio.** (1) Corregir la configuración del runner en `build-logic` para que solo se aplique cuando el módulo tiene tests instrumentados, o declarar `androidTestImplementation(libs.androidx.test.runner)` en el plugin, y verificar que `connectedDebugAndroidTest` completo termina en verde en el emulador. (2) Valorar ejecutar los tests instrumentados en la CI (`.github/workflows/ci.yml`) con un job de emulador (por ejemplo `reactivecircus/android-emulator-runner`), que hoy solo ejecuta `detekt`, `check`, `koverVerify` y `assembleDebug`.
+
 ## Transversal
 
 - **`progressWith` duplicado en `ResolveBatchClosureTest`.** Origen: revisión de tests de dominio. Motivo: el helper está copiado en vez de compartido; moverlo a `:core:testing` no cambia la cobertura, pero toca un módulo fuera del cambio.
