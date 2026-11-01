@@ -45,6 +45,8 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
   archivo del cambio y las specs sincronizadas. Después haz push de la rama actual (`git push -u origin HEAD`) y
   para. El usuario abre la pull request a `develop`, la revisa con la CI y la mergea. El archivo nunca va en una
   rama aparte ni después de la integración en `develop`.
+- Los artefactos de OpenSpec se commitean en cuanto el cambio recibe el APROBADO de android-architect, antes de
+  `/opsx:apply`, con un commit `docs(openspec): ...` propio. Así no se pierden si se cambia de rama o se limpia el árbol.
 - No crees ni borres ramas, no hagas merge ni abras pull requests.
 
 ## Arquitectura (ADR-0010)
