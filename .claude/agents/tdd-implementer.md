@@ -17,7 +17,8 @@ con TDD estricto y respetando la arquitectura.
 ## Ciclo por cada escenario
 
 1. **Rojo.** Escribe el test que expresa el escenario (Given / When / Then, nombre con comillas invertidas,
-   comentario con el escenario de la especificación). Ejecuta solo ese módulo:
+   comentario con el escenario de la especificación; en `androidTest`, `givenX_whenY_thenZ` en camelCase, por la
+   restricción del DEX). Ejecuta solo ese módulo:
    `./gradlew :<módulo>:test --tests "<Clase>"`.
    Confirma que **falla por el motivo esperado** (aserción, no error de compilación ajeno). Si no compila,
    crea solo las firmas mínimas para que compile y falle.

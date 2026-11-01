@@ -42,6 +42,9 @@ Los tests JVM siguen con JUnit 6 (Jupiter). Solo los tests instrumentados usan J
 
 - Preferir **fakes** (en `:core:testing`) sobre mocks; los mocks solo para verificar interacciones con fronteras externas.
 - Nombres de test descriptivos con comillas invertidas: `` `given a failed phrase when building next session then it is included` ``.
+  **Excepción en tests instrumentados (`androidTest`):** `givenX_whenY_thenZ` en camelCase con guiones bajos. Con minSdk 26
+  el DEX no admite espacios en los nombres de método (fallo real al compilar `:app` con tests de Hilt). Es la forma que ya
+  usan los tests de UI de `:feature:session`.
 - Estructura *Arrange / Act / Assert* (o *Given / When / Then*), una idea por test.
 - Sin `Thread.sleep` ni dependencias de la fecha real: se inyectan `Clock` y dispatchers de test.
 

@@ -96,6 +96,8 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 **Tests (ADR-0007)**
 - JUnit 6 (Jupiter), aserciones de Kotest, Turbine para `Flow`, `runTest`. MockK solo en fronteras: preferir fakes de `:core:testing`.
 - Nombres en inglés con comillas invertidas: `` `given a failed phrase when building next session then it is included` ``.
+  **Excepción en tests instrumentados (`androidTest`):** `givenX_whenY_thenZ` (camelCase con guiones bajos). El DEX de
+  minSdk 26 no admite espacios en nombres de método. Ejemplo: `givenDraft_whenSaving_thenItIsPersisted`.
 - Estructura Given / When / Then, una idea por test. Cada test referencia el escenario de la especificación en un comentario.
 - ViewModels: registra `MainDispatcherExtension` con `@RegisterExtension`.
 - Cobertura mínima (Kover): dominio 90 %, presentación 80 %, global 70 %.

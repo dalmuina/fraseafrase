@@ -64,9 +64,12 @@ el ámbito dentro de un componente. Que ese ámbito sea el proceso depende del c
 comprueba directamente. Los casos límite de la app (primer uso, catálogo agotado, cambio de día, TTS) no aplican a este
 cableado.
 
-Nombres de test en inglés con comillas invertidas, según CLAUDE.md. Ejemplo:
-`` `given the production graph when injecting the catalog twice then both references are the same instance` ``. Cada
-test lleva en un comentario el escenario de spec que cubre.
+Nombres de test en inglés. En los tests JVM, con comillas invertidas según CLAUDE.md. **Excepción en los tests
+instrumentados (`androidTest`):** se usa `givenX_whenY_thenZ` en camelCase con guiones bajos, porque con minSdk 26 el DEX
+no admite espacios en los nombres de método (fallo real de `:app:dexBuilderDebugAndroidTest`). Es la misma forma que
+usan los tests de UI de `:feature:session`. Ejemplo:
+`givenProductionGraph_whenInjectingCatalogTwice_thenBothReferencesAreTheSameInstance`. Cada test lleva en un comentario
+el escenario de spec que cubre.
 
 ### D4. DataStore fuera de la prueba de identidad
 
