@@ -4,6 +4,7 @@ import com.dalmuina.fraseafrase.core.data.practice.PracticeDatabase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
 import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Rule
@@ -38,17 +39,25 @@ class PersistenceWiringTest {
         hiltRule.inject()
     }
 
+    // Cada test crea un grafo nuevo que abre su propia base de datos sobre el mismo fichero. Se cierran ambas
+    // referencias: si la mutación rompe el singleton hay dos instancias abiertas, y cerrar dos veces es inocuo en Room.
+    @After
+    fun tearDown() {
+        firstDatabase.close()
+        secondDatabase.close()
+    }
+
     // Escenario: Dos obtenciones del catálogo desde el grafo de producción devuelven la misma instancia
     // (requisito "Existe una única instancia de `CatalogRepository` en el grafo de la aplicación", phrase-catalog).
     @Test
-    fun givenProductionGraphWhenInjectingCatalogTwiceThenBothReferencesAreTheSameInstance() {
+    fun givenProductionGraph_whenInjectingCatalogTwice_thenBothReferencesAreTheSameInstance() {
         assertSame(firstCatalog, secondCatalog)
     }
 
     // Escenario: Dos obtenciones de la base de datos desde el grafo de producción devuelven la misma instancia
     // (requisito "Existe una única instancia de `PracticeDatabase` en el grafo de la aplicación", practice-persistence).
     @Test
-    fun givenProductionGraphWhenObtainingDatabaseTwiceThenBothReferencesAreTheSameInstance() {
+    fun givenProductionGraph_whenObtainingDatabaseTwice_thenBothReferencesAreTheSameInstance() {
         assertSame(firstDatabase, secondDatabase)
     }
 }
