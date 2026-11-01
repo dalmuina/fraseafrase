@@ -19,6 +19,7 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0011](0011-detekt-1-23-con-daemon-gradle-jdk-21.md) | detekt 1.23 con el daemon de Gradle en JDK 21 | Aceptado |
 | [0012](0012-modelo-de-practica-por-tandas.md) | Modelo de práctica por tandas y alcance del MVP | Aceptado |
 | [0013](0013-persistencia-catalogo-json-y-estado-en-room.md) | Persistencia con catálogo JSON en assets y estado del usuario en Room 3 | Aceptado |
+| [0014](0014-estrategia-de-testing-junit-6-y-junit-4-instrumentado.md) | Estrategia de testing con JUnit 6 y JUnit 4 en instrumentados | Propuesto |
 
 ## Plantilla
 
