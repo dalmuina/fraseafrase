@@ -26,7 +26,6 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension) {
 
         add("androidTestImplementation", libs.library("androidx-compose-ui-test-junit4"))
         add("androidTestImplementation", libs.library("androidx-test-ext-junit"))
-        add("androidTestImplementation", libs.library("androidx-test-runner"))
         add("debugImplementation", libs.library("androidx-compose-ui-test-manifest"))
     }
 }
