@@ -107,8 +107,8 @@ class PracticeSessionScreenTest {
 
     // Scenario: Frase con racha 3 marcada como sabida (spec: practice-session)
     @Test
-    fun givenPhraseWithStreakThreeWhenShowingItThenItIsMarkedAsKnown() {
-        // Given: la frase A tiene racha 3 y está sin revelar
+    fun givenKnownPhraseWhenShowingItThenItIsMarkedAsKnown() {
+        // Given: la frase A llega del dominio marcada como sabida (racha 3), sin revelar
         setScreen(practicing(current = item(streak = 3, isKnown = true)))
 
         // When: la pantalla muestra A (estado dado)
