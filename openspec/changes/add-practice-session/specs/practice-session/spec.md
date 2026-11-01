@@ -172,6 +172,12 @@ Si no hay arrastradas, pendientes ni frases nuevas, la pantalla MUST indicar que
 - **WHEN** el usuario confirma el cierre
 - **THEN** la pantalla indica que no hay frases para practicar y no muestra ninguna frase
 
+#### Scenario: Sin frases disponibles al pedir el cierre
+
+- **GIVEN** la pantalla muestra una tanda, esa tanda ya no está activa y no hay frases disponibles para componer otra
+- **WHEN** el usuario pide cerrar la tanda
+- **THEN** la pantalla indica que no hay frases para practicar, no muestra el diálogo de cierre y no muestra ninguna frase
+
 #### Scenario: Frases con repaso futuro sin tanda
 
 - **GIVEN** un catálogo cuya única frase P tiene nivel 1 con repaso el 11-03-2026, y la fecha actual es 10-03-2026
@@ -187,6 +193,12 @@ Si el catálogo no se puede cargar por cualquiera de sus motivos de error, la pa
 - **GIVEN** un catálogo que no se puede leer
 - **WHEN** el usuario abre la pantalla de práctica
 - **THEN** la pantalla muestra un error que indica que no se puede practicar y no muestra frases
+
+#### Scenario: Catálogo ilegible al pedir el cierre
+
+- **GIVEN** la pantalla de práctica con una tanda activa y un catálogo que deja de poder leerse
+- **WHEN** el usuario pide cerrar la tanda
+- **THEN** la pantalla muestra un error que indica que no se puede practicar, no muestra el diálogo de cierre y no muestra frases
 
 #### Scenario: Documento de catálogo malformado
 

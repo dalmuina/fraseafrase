@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.feature.session
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
+import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
 import com.dalmuina.fraseafrase.core.domain.practice.CloseActiveBatch
@@ -66,8 +67,20 @@ internal fun sessionViewModel(
     catalog: CatalogLoadResult,
     settings: UserSettings = UserSettings.DEFAULT,
     clock: FixedClock = FixedClock(TODAY),
+): PracticeSessionViewModel = sessionViewModelWith(practice, FakeCatalogRepository(catalog), settings, clock)
+
+/** Catálogo cuyo resultado puede cambiar entre lecturas, para simular un catálogo que deja de cargarse. */
+internal class SwitchableCatalogRepository(var result: CatalogLoadResult) : CatalogRepository {
+    override suspend fun phrases(): CatalogLoadResult = result
+}
+
+/** Igual que [sessionViewModel], pero con un catálogo cualquiera, por ejemplo uno que cambia durante el test. */
+internal fun sessionViewModelWith(
+    practice: FakePracticeRepository,
+    catalogRepository: CatalogRepository,
+    settings: UserSettings = UserSettings.DEFAULT,
+    clock: FixedClock = FixedClock(TODAY),
 ): PracticeSessionViewModel {
-    val catalogRepository = FakeCatalogRepository(catalog)
     val obtainActiveBatch = ObtainActiveBatch(
         composeNextBatch = ComposeNextBatch(clock),
         catalogRepository = catalogRepository,

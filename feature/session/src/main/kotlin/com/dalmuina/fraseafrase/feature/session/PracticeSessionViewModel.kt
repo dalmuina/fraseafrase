@@ -54,8 +54,10 @@ class PracticeSessionViewModel @Inject constructor(
         viewModelScope.launch {
             val session = obtainPracticeSession()
             val current = _uiState.value as? PracticeSessionUiState.Practicing ?: return@launch
-            if (session is PracticeSessionResult.Ready && !current.busy) {
-                _uiState.value = current.copy(closeWarning = session.uncertifiedCount)
+            if (current.busy) return@launch
+            _uiState.value = when (session) {
+                is PracticeSessionResult.Ready -> current.copy(closeWarning = session.uncertifiedCount)
+                else -> session.toScreenState()
             }
         }
     }
@@ -108,17 +110,18 @@ class PracticeSessionViewModel @Inject constructor(
 
     /** Vuelve a leer la sesión y reemplaza el estado. La siguiente frase y su orden los decide la persistencia (D2). */
     private suspend fun reload() {
-        _uiState.value = when (val session = obtainPracticeSession()) {
-            is PracticeSessionResult.Ready -> {
-                PracticeSessionUiState.Practicing(
-                    current = session.items.firstOrNull(),
-                    revealed = false,
-                    busy = false,
-                    closeWarning = null,
-                )
-            }
-            PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
-            is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
-        }
+        _uiState.value = obtainPracticeSession().toScreenState()
+    }
+
+    /** Estado de pantalla que produce una lectura de la sesión. Lo usan el arranque, las recargas y el cierre. */
+    private fun PracticeSessionResult.toScreenState(): PracticeSessionUiState = when (this) {
+        is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
+            current = items.firstOrNull(),
+            revealed = false,
+            busy = false,
+            closeWarning = null,
+        )
+        PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
+        is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
     }
 }

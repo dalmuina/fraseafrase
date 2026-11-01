@@ -1,5 +1,7 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
+import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
+import java.time.LocalDate
 
 /** Cierre en dos pasos con aviso y diálogo modal (design D4). Los tests de ViewModel usan los casos de uso reales. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,6 +59,50 @@ class PracticeSessionCloseTest {
 
             // Then
             viewModel.practicing().closeWarning shouldBe 3
+        }
+
+    // Scenario: Catálogo ilegible al pedir el cierre (spec: practice-session, "Error de catálogo")
+    @Test
+    fun `given an unreadable catalog when requesting close then the state is CatalogError`() = runTest {
+        // Given: tanda activa con la frase A y un catálogo que deja de poder leerse
+        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A")))
+        val catalog = SwitchableCatalogRepository(catalogOf("A"))
+        val viewModel = sessionViewModelWith(practice, catalog)
+        advanceUntilIdle()
+        catalog.result = CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)
+
+        // When
+        viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
+
+        // Then: error de catálogo, sin diálogo de cierre
+        viewModel.uiState.value shouldBe PracticeSessionUiState.CatalogError
+    }
+
+    // Scenario: Sin frases disponibles al pedir el cierre (spec: practice-session, "Estado vacío")
+    @Test
+    fun `given no active batch and no phrases left when requesting close then the state is NothingToPractice`() =
+        runTest {
+            // Given: la tanda A ya no está activa; A está en el catálogo con repaso futuro, así que no hay frases
+            // disponibles para componer otra tanda
+            val practice = FakePracticeRepository(
+                activeBatchSnapshot(
+                    order = listOf("A"),
+                    progress = listOf(aPhraseProgress(id = "A", level = 1, nextReview = LocalDate.of(2026, 3, 11))),
+                ),
+            )
+            val viewModel = sessionViewModel(practice, catalogOf("A"))
+            advanceUntilIdle()
+            practice.transact { snapshot ->
+                PracticeChange(next = snapshot.copy(activeBatch = null), result = Unit)
+            }
+
+            // When
+            viewModel.onAction(PracticeSessionAction.RequestClose)
+            advanceUntilIdle()
+
+            // Then: estado vacío, sin diálogo de cierre
+            viewModel.uiState.value shouldBe PracticeSessionUiState.NothingToPractice
         }
 
     // Scenario: Aviso sin frases no certificadas (spec: practice-session)
