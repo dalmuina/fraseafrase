@@ -57,7 +57,8 @@ class PracticeSessionViewModel @Inject constructor(
             if (current.busy) return@launch
             _uiState.value = when (session) {
                 is PracticeSessionResult.Ready -> current.copy(closeWarning = session.uncertifiedCount)
-                else -> session.toScreenState()
+                is PracticeSessionResult.CatalogFailed -> session.toScreenState()
+                PracticeSessionResult.NothingToPractice -> session.toScreenState()
             }
         }
     }
