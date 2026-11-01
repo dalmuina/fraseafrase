@@ -52,8 +52,5 @@
 
 ## 6. Verificación final
 
-- [ ] 6.1 Ejecutar `./gradlew test` en verde.
-- [ ] 6.2 Ejecutar `./gradlew connectedDebugAndroidTest` en verde en un emulador (los tests de 4.2).
-- [ ] 6.3 Ejecutar `./gradlew ktlintCheck`, `./gradlew detekt` y `./gradlew lint` sin errores.
-- [ ] 6.4 Ejecutar `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
-- [ ] 6.5 Ejecutar `./gradlew check` en verde con `-PwarningsAsErrors=true`, igual que la CI.
+- [ ] 6.1 Ejecutar `./gradlew detekt check koverVerify assembleDebug --rerun -PwarningsAsErrors=true` en verde. El proyecto no tiene ktlint propio: el formato lo aporta `detekt-formatting` (ADR-0011).
+- [ ] 6.2 Ejecutar `./gradlew connectedDebugAndroidTest --no-configuration-cache` en verde en un emulador (los tests de 4.2, 4.2b y 4.2a).

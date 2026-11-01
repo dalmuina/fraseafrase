@@ -132,6 +132,9 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 
 - Las decisiones del usuario se escriben en el artefacto que corresponda (spec delta, `design.md` o `tasks.md`) antes de continuar con cualquier otra tarea.
 - `.claude/handoff.md` (en `.gitignore`, nunca se commitea) se actualiza en cada parada con: cambio y rama, grupo y tarea actual, siguiente paso exacto, decisiones pendientes y notas de entorno. Tras un `/clear` o al empezar sesión, es lo primero que se lee, junto con `tasks.md` y `git log`.
+- `handoff.md` lleva siempre dos campos de estado:
+  - **Fase:** `explore` | `propose` | `architect` | `apply grupo N` | `review` | `verify` | `archive` | `pr`.
+  - **Veredicto android-architect:** `pendiente` | `APROBADO` + fecha.
 - Cada parada termina con una línea de estado de contexto:
   - ✅ Seguro para `/clear`: todo commiteado, `tasks.md` y `handoff.md` al día, nada solo en la conversación.
   - ⚠️ Mejor `/compact`: trabajo a medias o decisión todavía no escrita.
