@@ -1,6 +1,6 @@
 # ADR-0014: Estrategia de testing con JUnit 6 y JUnit 4 en instrumentados
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-01
 - **Sustituye a:** ADR-0007
 

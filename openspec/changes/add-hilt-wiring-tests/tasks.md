@@ -43,9 +43,9 @@
 
 ## 5. Revisión y cierre de decisiones de arquitectura
 
-- [ ] 5.1 Pasar `code-reviewer` sobre el cambio y `/opsx:verify`. Registrar en la descripción de la PR que no quedan hallazgos bloqueantes ni incidencias de verificación
-- [ ] 5.2 Pasar ADR-0014 a `Aceptado`, ADR-0007 a `Sustituido por ADR-0014` y actualizar sus filas en `docs/adr/README.md`. Solo después de 5.1, justo antes de `/opsx:archive`
-- [ ] 5.3 Verificar con la herramienta de búsqueda que los estados de ADR-0007 y ADR-0014 son los del punto anterior
+- [x] 5.1 Pasar `code-reviewer` sobre el cambio y `/opsx:verify`. Registrar en la descripción de la PR que no quedan hallazgos bloqueantes ni incidencias de verificación
+- [x] 5.2 Pasar ADR-0014 a `Aceptado`, ADR-0007 a `Sustituido por ADR-0014` y actualizar sus filas en `docs/adr/README.md`. Solo después de 5.1, justo antes de `/opsx:archive`
+- [x] 5.3 Verificar con la herramienta de búsqueda que los estados de ADR-0007 y ADR-0014 son los del punto anterior
 
 ## Workflow follow-up
 
