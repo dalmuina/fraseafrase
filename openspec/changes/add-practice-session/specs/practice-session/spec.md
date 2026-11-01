@@ -86,7 +86,7 @@ La pantalla MUST mostrar la racha de la frase revelada dentro de la tanda activa
 
 ### Requirement: Aviso de cierre antes de confirmar
 
-Cuando el usuario pide cerrar la tanda, la pantalla MUST mostrar un diálogo modal con el número de frases no certificadas que pasarían a la siguiente tanda, incluido el caso de cero. El usuario MUST poder confirmar el cierre o cancelarlo. Mientras el diálogo esté abierto, MUST NOT ser posible autoevaluar frases. Cancelar MUST dejar la tanda, las rachas y el progreso sin cambios.
+Cuando el usuario pide cerrar la tanda, la pantalla MUST mostrar un diálogo modal con el número de frases no certificadas que pasarían a la siguiente tanda, incluido el caso de cero. El usuario MUST poder confirmar el cierre o cancelarlo. Mientras el diálogo esté abierto, MUST NOT ser posible autoevaluar frases. Mientras haya una respuesta en curso, pedir el cierre MUST NOT abrir el diálogo. Cancelar MUST dejar la tanda, las rachas y el progreso sin cambios.
 
 #### Scenario: Aviso con frases no certificadas
 
@@ -111,6 +111,12 @@ Cuando el usuario pide cerrar la tanda, la pantalla MUST mostrar un diálogo mod
 - **GIVEN** el diálogo de cierre abierto con una frase revelada
 - **WHEN** el usuario intenta autoevaluarla
 - **THEN** la autoevaluación no se registra y la tanda no cambia
+
+#### Scenario: Cerrar mientras hay una respuesta en curso no abre el aviso
+
+- **GIVEN** una frase revelada cuya autoevaluación se está registrando, todavía sin confirmar en la tanda
+- **WHEN** el usuario pide cerrar la tanda
+- **THEN** el diálogo de cierre no se muestra y la tanda no cambia
 
 #### Scenario: Cancelar el cierre no cambia nada
 

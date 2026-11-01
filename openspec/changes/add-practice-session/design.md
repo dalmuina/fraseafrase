@@ -54,7 +54,7 @@ Tras `AnswerPhrase` o `CloseActiveBatch`, el ViewModel vuelve a llamar a `Obtain
 
 `PracticeSessionUiState` (inmutable):
 - `Loading`
-- `Practicing(current: PracticeItem?, revealed: Boolean, busy: Boolean, closeWarning: Int?)`, donde `closeWarning` es el número de no certificadas del aviso (null si no hay diálogo abierto)
+- `Practicing(current: PracticeItem?, revealed: Boolean, busy: Boolean, closeWarning: Int?)`, donde `closeWarning` es el número de no certificadas que muestra el diálogo (null si no hay diálogo abierto). Es el único sitio donde vive ese número: el ViewModel no guarda ningún contador privado.
 - `NothingToPractice`
 - `CatalogError`
 
@@ -65,11 +65,11 @@ Acciones `PracticeSessionAction`: `Reveal`, `Answer(SelfAssessment)`, `RequestCl
 Reglas que el ViewModel aplica:
 - `Answer` se ignora si `revealed` es false, si `busy` es true o si `closeWarning` no es null.
 - `ConfirmClose` se ignora si `closeWarning` es null.
-- `RequestClose` se acepta también con cero no certificadas: el diálogo muestra "0 frases pasarán", como exige `practice-batch` con su escenario de aviso sin frases no certificadas.
+- `RequestClose` se ignora si `busy` es true (cerrar con una respuesta en curso no abre el diálogo, spec `practice-session`). Si no, lee la sesión con `ObtainPracticeSession` y abre el diálogo con su `uncertifiedCount`; se acepta también el cero, como exige `practice-batch`.
 
 ### D4. Cierre en dos pasos y diálogo modal
 
-`RequestClose` guarda el número de no certificadas (`uncertifiedCount` de la sesión) en `closeWarning`. La pantalla muestra un `AlertDialog` modal con ese número. `ConfirmClose` llama a `CloseActiveBatch(expectedUncertified = closeWarning)`, después vuelve a llamar a `ObtainPracticeSession`, que compone la tanda siguiente con `ObtainActiveBatch` (regla "Composición única tras el cierre" de `practice-persistence`). Los resultados `Stale` y `NoActiveBatch` solo recargan. `CancelClose` pone `closeWarning` a null.
+`RequestClose` (si no hay `busy`) vuelve a leer la sesión con `ObtainPracticeSession` y pone en `closeWarning` su `uncertifiedCount`. La lectura es asíncrona y no se guarda nada fuera del estado. La pantalla muestra un `AlertDialog` modal con ese número. El botón de cerrar de la pantalla se muestra deshabilitado mientras `busy` es true. `ConfirmClose` llama a `CloseActiveBatch(expectedUncertified = closeWarning)`, el mismo número que vio el usuario, y después vuelve a llamar a `ObtainPracticeSession`, que compone la tanda siguiente con `ObtainActiveBatch` (regla "Composición única tras el cierre" de `practice-persistence`). Los resultados `Stale` y `NoActiveBatch` solo recargan. `CancelClose` pone `closeWarning` a null.
 
 ### D5. Textos en `:feature:session`
 

@@ -52,6 +52,7 @@ class PracticeSessionCloseTest {
 
             // When
             viewModel.onAction(PracticeSessionAction.RequestClose)
+            advanceUntilIdle()
 
             // Then
             viewModel.practicing().closeWarning shouldBe 3
@@ -69,9 +70,27 @@ class PracticeSessionCloseTest {
 
         // When
         viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
 
         // Then
         viewModel.practicing().closeWarning shouldBe 0
+    }
+
+    // Scenario: Cerrar mientras hay una respuesta en curso no abre el aviso (spec: practice-session)
+    @Test
+    fun `given an answer in progress when requesting close then the warning does not open`() = runTest {
+        // Given: tanda A, B y C con A revelada y su autoevaluación encolada, todavía sin registrar
+        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+
+        // When: se pide cerrar antes de que la respuesta termine de registrarse
+        viewModel.onAction(PracticeSessionAction.RequestClose)
+
+        // Then
+        viewModel.practicing().closeWarning shouldBe null
     }
 
     // Scenario: Cancelar el cierre no cambia nada (spec: practice-session)
@@ -83,6 +102,7 @@ class PracticeSessionCloseTest {
         advanceUntilIdle()
         val before = practice.read()
         viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
         viewModel.practicing().closeWarning shouldBe 3
 
         // When
@@ -112,6 +132,7 @@ class PracticeSessionCloseTest {
         val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C", "D"))
         advanceUntilIdle()
         viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
         viewModel.practicing().closeWarning shouldBe 3
 
         // When
@@ -131,6 +152,7 @@ class PracticeSessionCloseTest {
         advanceUntilIdle()
         viewModel.onAction(PracticeSessionAction.Reveal)
         viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
         viewModel.practicing().closeWarning shouldBe 2
         val before = practice.read()
 
@@ -157,6 +179,7 @@ class PracticeSessionCloseTest {
             )
             advanceUntilIdle()
             viewModel.onAction(PracticeSessionAction.RequestClose)
+            advanceUntilIdle()
 
             // When
             viewModel.onAction(PracticeSessionAction.ConfirmClose)
@@ -178,6 +201,7 @@ class PracticeSessionCloseTest {
             val viewModel = sessionViewModel(practice, catalogOf("A", "B", "N1", "N2"))
             advanceUntilIdle()
             viewModel.onAction(PracticeSessionAction.RequestClose)
+            advanceUntilIdle()
 
             // When
             viewModel.onAction(PracticeSessionAction.ConfirmClose)
@@ -197,6 +221,7 @@ class PracticeSessionCloseTest {
         val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"))
         advanceUntilIdle()
         viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
         viewModel.practicing().closeWarning shouldBe 3
         practice.certify("A")
 
@@ -218,6 +243,7 @@ class PracticeSessionCloseTest {
         val viewModel = sessionViewModel(practice, catalogOf("A", "B", "N1"))
         advanceUntilIdle()
         viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
         practice.transact { snapshot -> PracticeChange(snapshot.copy(activeBatch = null), Unit) }
 
         // When

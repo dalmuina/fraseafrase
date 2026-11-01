@@ -29,9 +29,6 @@ class PracticeSessionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PracticeSessionUiState>(PracticeSessionUiState.Loading)
     val uiState: StateFlow<PracticeSessionUiState> = _uiState.asStateFlow()
 
-    /** Frases no certificadas de la última sesión leída: es el número que muestra el aviso de cierre (design D4). */
-    private var uncertifiedCount = 0
-
     init {
         viewModelScope.launch { reload() }
     }
@@ -46,10 +43,21 @@ class PracticeSessionViewModel @Inject constructor(
         }
     }
 
-    /** Abre el aviso con el número de frases no certificadas de la última sesión. Cero también se acepta. */
+    /**
+     * Abre el aviso con el número de frases no certificadas que devuelve una lectura fresca de la sesión (design D3,
+     * D4). Se ignora mientras hay una respuesta en curso (`busy`). Cero también se acepta. Si la respuesta empieza
+     * durante la lectura, el aviso no se abre.
+     */
     private fun requestClose() {
         val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
-        _uiState.value = state.copy(closeWarning = uncertifiedCount)
+        if (state.busy) return
+        viewModelScope.launch {
+            val session = obtainPracticeSession()
+            val current = _uiState.value as? PracticeSessionUiState.Practicing ?: return@launch
+            if (session is PracticeSessionResult.Ready && !current.busy) {
+                _uiState.value = current.copy(closeWarning = session.uncertifiedCount)
+            }
+        }
     }
 
     private fun cancelClose() {
@@ -102,7 +110,6 @@ class PracticeSessionViewModel @Inject constructor(
     private suspend fun reload() {
         _uiState.value = when (val session = obtainPracticeSession()) {
             is PracticeSessionResult.Ready -> {
-                uncertifiedCount = session.uncertifiedCount
                 PracticeSessionUiState.Practicing(
                     current = session.items.firstOrNull(),
                     revealed = false,
