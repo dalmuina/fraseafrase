@@ -41,6 +41,7 @@ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     tasks.withType<Test>().configureEach { useJUnitPlatform() }
     configureKotlinCompilerOptions()
     addUnitTestDependencies()
+    addInstrumentationRunnerDependency()
 }
 
 /** Configuración común a módulos Kotlin puros (sin Android). */
@@ -63,6 +64,17 @@ private fun Project.configureKotlinCompilerOptions() {
         compilerOptions {
             allWarningsAsErrors.set(warningsAsErrors)
         }
+    }
+}
+
+/**
+ * El runner se fija en todos los módulos Android (`defaultConfig`), así que su librería
+ * debe estar en todos ellos; si no, `connectedDebugAndroidTest` falla al arrancar aunque
+ * el módulo no tenga tests instrumentados.
+ */
+private fun Project.addInstrumentationRunnerDependency() {
+    dependencies {
+        add("androidTestImplementation", libs.library("androidx-test-runner"))
     }
 }
 
