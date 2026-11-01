@@ -52,9 +52,9 @@
 
 ## 6. Verificación final
 
-- [x] 6.1 Ejecutar `./gradlew detekt check koverVerify assembleDebug --rerun -PwarningsAsErrors=true` en verde. El proyecto no tiene ktlint propio: el formato lo aporta `detekt-formatting` (ADR-0011). _Nota (verify): cubre las tareas eliminadas 6.3 a 6.5 (ver abajo); las tareas no se restauran._
+- [x] 6.1 Ejecutar `./gradlew detekt check koverVerify assembleDebug --rerun -PwarningsAsErrors=true` en verde. El proyecto no tiene ktlint propio: el formato lo aporta `detekt-formatting` (ADR-0011). _Nota (verify): cubre las tareas eliminadas 6.3 a 6.5 (ver abajo); las tareas no se restauran. Re-ejecutado en `1.0.0/fix-instrumented-test-runner` en verde, lo que cubre también la verificación de 6.3 a 6.5._
   - Eliminada 6.3 (`ktlintCheck`, `detekt`, `lint`): cubierta por `detekt` (incluye el formato de `detekt-formatting`; no hay tarea `ktlintCheck` en el proyecto) y por `lint`, que ejecuta `check`.
   - Eliminada 6.4 (`koverVerify` con dominio 90 %, presentación 80 %, global 70 %): cubierta por `koverVerify` de 6.1.
   - Eliminada 6.5 (`check` con `-PwarningsAsErrors=true`): cubierta por 6.1, que ejecuta ese mismo comando.
   - La parte "test" de la eliminada 6.1 original (`./gradlew test`): cubierta por `check`, que incluye los tests unitarios.
-- [x] 6.2 Ejecutar `./gradlew :feature:session:connectedDebugAndroidTest --no-configuration-cache` en verde en un emulador (los tests de 4.2, 4.2a y 4.2b). El comando completo `connectedDebugAndroidTest` falla en `:core:platform` y `:core:data` por configuración del runner, previa a este cambio; ver `docs/deuda-tecnica.md`.
+- [x] 6.2 Ejecutar `./gradlew :feature:session:connectedDebugAndroidTest --no-configuration-cache` en verde en un emulador (los tests de 4.2, 4.2a y 4.2b). El comando completo `connectedDebugAndroidTest` falla en `:core:platform` y `:core:data` por configuración del runner, previa a este cambio. _Cerrada en `1.0.0/fix-instrumented-test-runner`: el comando completo queda en verde en `Pixel_7a(AVD) - 17`._
