@@ -103,7 +103,7 @@ El BOM de Compose 2026.09.00 resuelve `espresso-core` 3.5.0 de forma transitiva.
 | `AssetsCatalogDataSource` (memoización) | Unitario en `:core:data`: segunda llamada no vuelve a parsear, y el error también se memoiza | Asset de prueba |
 | `PracticeSessionViewModel` | Unitario en `:feature:session` con `MainDispatcherExtension`, Turbine, y los casos de uso reales sobre los fakes | Fakes de `:core:testing`, `FixedClock` |
 | `PracticeSessionScreen` | Compose UI Test en `androidTest` (`ui-test-junit4`, ya en el catálogo): verifica en pantalla "no ofrece acierto ni fallo", el diálogo con su número, "no muestra su texto en portugués", la marca de sabida y el estado vacío | Estado `Practicing` construido a mano |
-| Destino inicial | Unitario en `:app`: una constante `PRACTICE_START_DESTINATION` comprobada en JVM | — |
+| Destino inicial | Manual (tarea 5.4): `FraseAFraseApp` llama directamente a `PracticeSessionRoute`. Sin test automático; ver `docs/deuda-tecnica.md` (test de arranque con Hilt en `:app`) | — |
 | Integración | Verificación manual con la skill `run` en el emulador | — |
 
 Los tests de `androidTest` ejecutan con `./gradlew connectedDebugAndroidTest` y no entran en `./gradlew check`. Hace falta un emulador o dispositivo. Se justifican por ADR-0007, que exige Compose UI Test sobre `XxxScreen`. No se añade Robolectric: `ui-test-junit4` ya está en el catálogo y no hace falta una librería nueva.

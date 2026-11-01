@@ -92,6 +92,23 @@ class PracticeSessionViewModelTest {
         }
     }
 
+    // Scenario: Documento de catálogo malformado (spec: practice-session, "Error de catálogo")
+    @Test
+    fun `given a malformed catalog document when opening the screen then the state is CatalogError`() = runTest {
+        // Given: el documento del catálogo no es JSON válido
+        val practice = FakePracticeRepository()
+        val catalog = CatalogLoadResult.Failed(CatalogLoadError.MalformedDocument)
+
+        // When
+        val viewModel = sessionViewModel(practice, catalog)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            awaitItem() shouldBe PracticeSessionUiState.CatalogError
+        }
+    }
+
     // Scenario: Revelar muestra la traducción en portugués (spec: practice-session)
     @Test
     fun `given a hidden phrase when revealing then the target text is shown`() = runTest {

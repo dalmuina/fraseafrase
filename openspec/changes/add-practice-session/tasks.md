@@ -20,7 +20,7 @@
 ## 3. Presentación: estado y ViewModel
 
 - [x] 3.1 Escribir tests de `PracticeSessionViewModel` con Turbine y `MainDispatcherExtension`, con los casos de uso reales sobre los fakes, para "Frase en español con traducción oculta" (estado `Practicing` sin revelar y con el texto de origen) y "Revelar muestra la traducción en portugués"; verificar que fallan porque el ViewModel aún no existe.
-- [x] 3.2 Implementar `PracticeSessionViewModel`, `PracticeSessionUiState` (`Loading`, `Practicing`, `NothingToPractice`, `CatalogError`) y `PracticeSessionAction` con `Reveal`; cargar la sesión al iniciar con `ObtainPracticeSession`; verificar que los tests de 3.1 pasan.
+- [x] 3.2 Implementar `PracticeSessionViewModel`, `PracticeSessionUiState` (`Loading`, `Practicing`, `NothingToPractice`, `CatalogError`) y `PracticeSessionAction` con `Reveal`; cargar la sesión al iniciar con `ObtainPracticeSession`; verificar que los tests de 3.1 pasan. _Nota (verify): test "Documento de catálogo malformado" añadido después de la implementación; nació verde. Verificado por mutación: `CatalogFailed` → `NothingToPractice` hace fallar ese test y el de catálogo ilegible. Revertido._
 - [x] 3.3 Escribir tests para "Acierto muestra la siguiente frase", "Fallo muestra la siguiente frase", "Sin revelar no hay autoevaluación", "La tanda da la vuelta sin desaparecer frases" y "Doble toque no registra dos respuestas"; verificar que fallan.
 - [x] 3.4 Implementar `Answer(SelfAssessment)` con las reglas de D3 (ignorada sin revelar, con `busy` o con diálogo abierto), `busy` síncrono antes de `AnswerPhrase` y recarga de la sesión; verificar que los tests de 3.3 pasan.
 - [x] 3.5 Escribir tests para "Racha visible tras un acierto", "Fallo reinicia la racha visible" y "Frase con racha 3 marcada como sabida" (campos `streak` e `isKnown` del estado); verificar que fallan. _Verificado por mutación (3.14): M1 mata «racha visible», M3 mata «fallo reinicia», M2 mata «sabida con racha 3», M4 mata «racha 2 no se marca».
@@ -52,5 +52,9 @@
 
 ## 6. Verificación final
 
-- [x] 6.1 Ejecutar `./gradlew detekt check koverVerify assembleDebug --rerun -PwarningsAsErrors=true` en verde. El proyecto no tiene ktlint propio: el formato lo aporta `detekt-formatting` (ADR-0011).
+- [x] 6.1 Ejecutar `./gradlew detekt check koverVerify assembleDebug --rerun -PwarningsAsErrors=true` en verde. El proyecto no tiene ktlint propio: el formato lo aporta `detekt-formatting` (ADR-0011). _Nota (verify): cubre las tareas eliminadas 6.3 a 6.5 (ver abajo); las tareas no se restauran._
+  - Eliminada 6.3 (`ktlintCheck`, `detekt`, `lint`): cubierta por `detekt` (incluye el formato de `detekt-formatting`; no hay tarea `ktlintCheck` en el proyecto) y por `lint`, que ejecuta `check`.
+  - Eliminada 6.4 (`koverVerify` con dominio 90 %, presentación 80 %, global 70 %): cubierta por `koverVerify` de 6.1.
+  - Eliminada 6.5 (`check` con `-PwarningsAsErrors=true`): cubierta por 6.1, que ejecuta ese mismo comando.
+  - La parte "test" de la eliminada 6.1 original (`./gradlew test`): cubierta por `check`, que incluye los tests unitarios.
 - [x] 6.2 Ejecutar `./gradlew :feature:session:connectedDebugAndroidTest --no-configuration-cache` en verde en un emulador (los tests de 4.2, 4.2a y 4.2b). El comando completo `connectedDebugAndroidTest` falla en `:core:platform` y `:core:data` por configuración del runner, previa a este cambio; ver `docs/deuda-tecnica.md`.
