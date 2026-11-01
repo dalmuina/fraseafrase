@@ -109,7 +109,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseWithStreakThreeWhenShowingItThenItIsMarkedAsKnown() {
         // Given: la frase A tiene racha 3 y está sin revelar
-        setScreen(practicing(current = item(streak = 3)))
+        setScreen(practicing(current = item(streak = 3, isKnown = true)))
 
         // When: la pantalla muestra A (estado dado)
 
@@ -163,20 +163,17 @@ class PracticeSessionScreenTest {
         closeWarning = closeWarning,
     )
 
+    /** Frase de presentación. `isKnown` lo decide el dominio (`ObtainPracticeSession`); aquí se pasa tal cual. */
     private fun item(
         source: String = "Buenos días",
         target: String = "Bom dia",
         streak: Int = 0,
+        isKnown: Boolean = false,
     ): PracticeItem = PracticeItem(
         id = PhraseId("A"),
         source = source,
         target = target,
         streak = Streak(streak),
-        isKnown = streak >= KNOWN_STREAK,
+        isKnown = isKnown,
     )
-
-    private companion object {
-        /** Racha a partir de la cual una frase se marca como sabida (spec `practice-session`). */
-        const val KNOWN_STREAK = 3
-    }
 }
