@@ -19,6 +19,18 @@ Registro de mejoras detectadas y aplazadas. Cada entrada indica su origen y el m
 - **Tests de cableado de Hilt: misma instancia de `RoomDatabase`, `DataStore` y `CatalogRepository`.** Origen: revisión de `add-practice-session`. Motivo: la memoización del catálogo depende de que `AssetsCatalogDataSource` sea `@Singleton` (se corrigió con la auditoría de ámbitos). El test exige `hilt-android-testing` con el runner instrumentado, que hoy está roto (entrada anterior), y un test de anotaciones sería tautológico. **Disparador:** arreglo del runner. **Regla futura de Konsist:** los data sources con estado deben tener ámbito `@Singleton`.
 - **Test automático de arranque de `FraseAFraseApp`.** Test de UI instrumentado con Hilt en `:app` que compruebe que la app abre la pantalla de práctica. Se eliminó `StartDestinationTest` (`add-practice-session`, tareas 5.1 y 5.2) por tautológico: comparaba una constante consigo misma. Mientras tanto, el escenario "Arranque muestra la práctica" se verifica de forma manual (5.4). **Disparador:** cambio de navegación con práctica y ajustes, junto con el arreglo del runner.
 
+## Del review de `add-practice-session`
+
+Origen de todas: `code-reviewer add-practice-session` (revisión de `develop...HEAD`). Son sugerencias que no afectan a la spec ni al comportamiento verificado.
+
+- **Estado `Practicing(current = null)` con lista vacía.** Origen: code-reviewer add-practice-session. Motivo: `Ready` con lista vacía produce `current = null`, y la pantalla tiene dos ramas para ese caso. Lo correcto es mapearlo a `NothingToPractice` y eliminar la rama, o usar un tipo que no admita nulo.
+- **Guardas repetidas en el ViewModel.** Origen: code-reviewer add-practice-session. Motivo: cinco acciones repiten `_uiState.value as? Practicing ?: return`. Un helper como `updatePracticing { ... }` dejaría las reglas de D3 más legibles.
+- **Aserción débil en "Confirmar el cierre usa el número del aviso".** Origen: code-reviewer add-practice-session. Motivo: solo comprueba el nivel de A. Falta comprobar explícitamente que la tanda quedó cerrada.
+- **Rama de `withText` sin test.** Origen: code-reviewer add-practice-session. Motivo: `ObtainPracticeSession` devuelve `CatalogFailed` si falla la segunda lectura del catálogo (tarea 1.4), y no hay test de ese caso. Con la memoización bien cableada apenas es alcanzable.
+- **Error de catálogo sin test de UI.** Origen: code-reviewer add-practice-session. Motivo: los tests de estado están en el ViewModel, pero ningún UI test comprueba el texto de `practice_catalog_error`.
+- **`PracticeItem` en el mismo fichero que `PracticeSessionResult`.** Origen: code-reviewer add-practice-session. Motivo: conviene moverlo a `PracticeItem.kt`.
+- **Test de UI que reimplementa el estado.** Origen: code-reviewer add-practice-session. Motivo: el test de "Revelar" reescribe a mano la reacción a `Reveal` en lugar de usar el ViewModel real. Es aceptable como fake, pero el flujo real no se prueba en UI.
+
 ## Transversal
 
 - **`progressWith` duplicado en `ResolveBatchClosureTest`.** Origen: revisión de tests de dominio. Motivo: el helper está copiado en vez de compartido; moverlo a `:core:testing` no cambia la cobertura, pero toca un módulo fuera del cambio.
