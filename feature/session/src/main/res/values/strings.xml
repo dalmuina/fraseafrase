@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="practice_reveal">Mostrar traducción</string>
+    <string name="practice_hit">Acierto</string>
+    <string name="practice_miss">Fallo</string>
+    <string name="practice_known">Sabida</string>
+    <string name="practice_streak">Racha %1$d</string>
+    <string name="practice_close">Cerrar tanda</string>
+    <string name="practice_close_title">Cerrar la tanda</string>
+    <string name="practice_close_confirm">Confirmar</string>
+    <string name="practice_close_cancel">Cancelar</string>
+    <string name="practice_nothing_to_practice">No hay frases para practicar</string>
+    <string name="practice_catalog_error">No se puede practicar: el catálogo no se pudo cargar</string>
+
+    <plurals name="practice_close_warning">
+        <item quantity="one">%1$d frase pasará a la siguiente tanda</item>
+        <item quantity="other">%1$d frases pasarán a la siguiente tanda</item>
+    </plurals>
+</resources>

@@ -36,7 +36,7 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 - Cada cambio se trabaja en su propia rama, que crea el usuario desde `develop` con el formato
   `<versión>/<nombre-del-cambio>`, por ejemplo `1.0.0/add-practice-batch`. La versión es la de la
   release objetivo (actual: `1.0.0`) y el nombre coincide con el del cambio de OpenSpec.
-- Antes de cada commit, comprueba con `git branch --show-current` que no estás en `develop` ni en `main`.
+- Antes de cada commit, comprueba con `git branch --show-current` que no estás en `develop` ni en `master`.
   Si lo estás, para y avisa.
 - Los commits van a la rama actual: uno por grupo de tareas, siempre en verde y con Conventional Commits
   en inglés. No se commitean rojos ni se reescribe el historial (sin rebase, sin amend de commits ya
@@ -118,7 +118,7 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 
 ## No hacer
 
-- No hagas commit, push ni merge en `develop` ni en `main`.
+- No hagas commit, push ni merge en `develop` ni en `master`.
 - No modifiques `gradle/gradle-daemon-jvm.properties` ni el JDK del daemon (ADR-0011).
 - No uses sintaxis de Kotlin 2.2+ que detekt 1.23 no analiza: parámetros de contexto, guardas en `when`, interpolación con varios `$` (ADR-0011).
 - No añadas librerías sin justificarlo en el `design.md` del cambio; las versiones van en `gradle/libs.versions.toml`.
@@ -132,6 +132,9 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 
 - Las decisiones del usuario se escriben en el artefacto que corresponda (spec delta, `design.md` o `tasks.md`) antes de continuar con cualquier otra tarea.
 - `.claude/handoff.md` (en `.gitignore`, nunca se commitea) se actualiza en cada parada con: cambio y rama, grupo y tarea actual, siguiente paso exacto, decisiones pendientes y notas de entorno. Tras un `/clear` o al empezar sesión, es lo primero que se lee, junto con `tasks.md` y `git log`.
+- `handoff.md` lleva siempre dos campos de estado:
+  - **Fase:** `explore` | `propose` | `architect` | `apply grupo N` | `review` | `verify` | `archive` | `pr`.
+  - **Veredicto android-architect:** `pendiente` | `APROBADO` + fecha.
 - Cada parada termina con una línea de estado de contexto:
   - ✅ Seguro para `/clear`: todo commiteado, `tasks.md` y `handoff.md` al día, nada solo en la conversación.
   - ⚠️ Mejor `/compact`: trabajo a medias o decisión todavía no escrita.
