@@ -12,12 +12,16 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Catálogo leído del asset `catalog/phrases.json` (ADR-0013). Es la única fuente del catálogo, así que implementa
  * el puerto directamente. La lectura del asset va detrás de [readAsset]: el constructor de Hilt la conecta al
  * contexto de la aplicación y los tests inyectan una función propia.
+ *
+ * Es `@Singleton` porque guarda en memoria la carga (design D9): dos instancias parsearían el asset por separado.
  */
+@Singleton
 class AssetsCatalogDataSource internal constructor(
     private val readAsset: () -> String,
     private val dispatcher: CoroutineDispatcher,
