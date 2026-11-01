@@ -32,7 +32,9 @@ class PracticeSessionScreenTest {
 
         // When: la pantalla se muestra sin revelar (no hay acción que cambie el estado)
 
-        // Then: no se ofrece acierto ni fallo
+        // Then: se muestra la frase en español, no la traducción en portugués, y no se ofrece acierto ni fallo
+        composeTestRule.onNodeWithText("Buenos días").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Bom dia").assertDoesNotExist()
         composeTestRule.onNodeWithText("Acierto").assertDoesNotExist()
         composeTestRule.onNodeWithText("Fallo").assertDoesNotExist()
     }
