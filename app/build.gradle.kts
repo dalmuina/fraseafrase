@@ -10,6 +10,8 @@ android {
         applicationId = "com.dalmuina.fraseafrase"
         versionCode = 1
         versionName = "0.1.0"
+        // Hilt exige un runner que devuelva HiltTestApplication (design.md D2). Solo :app lo sobrescribe.
+        testInstrumentationRunner = "com.dalmuina.fraseafrase.HiltTestRunner"
     }
 
     buildTypes {
@@ -37,4 +39,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     // El proveedor de la base de datos (PersistenceModule) expone su tipo de Room a Hilt.
     implementation(libs.room3.runtime)
+
+    // Tests de cableado de Hilt (design.md D1 a D3): grafo de producción real, sin módulos de prueba.
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
 }

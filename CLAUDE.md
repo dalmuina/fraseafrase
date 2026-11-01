@@ -45,6 +45,8 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
   archivo del cambio y las specs sincronizadas. Después haz push de la rama actual (`git push -u origin HEAD`) y
   para. El usuario abre la pull request a `develop`, la revisa con la CI y la mergea. El archivo nunca va en una
   rama aparte ni después de la integración en `develop`.
+- Los artefactos de OpenSpec se commitean en cuanto el cambio recibe el APROBADO de android-architect, antes de
+  `/opsx:apply`, con un commit `docs(openspec): ...` propio. Así no se pierden si se cambia de rama o se limpia el árbol.
 - No crees ni borres ramas, no hagas merge ni abras pull requests.
 
 ## Arquitectura (ADR-0010)
@@ -94,6 +96,8 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 **Tests (ADR-0007)**
 - JUnit 6 (Jupiter), aserciones de Kotest, Turbine para `Flow`, `runTest`. MockK solo en fronteras: preferir fakes de `:core:testing`.
 - Nombres en inglés con comillas invertidas: `` `given a failed phrase when building next session then it is included` ``.
+  **Excepción en tests instrumentados (`androidTest`):** `givenX_whenY_thenZ` (camelCase con guiones bajos). El DEX de
+  minSdk 26 no admite espacios en nombres de método. Ejemplo: `givenDraft_whenSaving_thenItIsPersisted`.
 - Estructura Given / When / Then, una idea por test. Cada test referencia el escenario de la especificación en un comentario.
 - ViewModels: registra `MainDispatcherExtension` con `@RegisterExtension`.
 - Cobertura mínima (Kover): dominio 90 %, presentación 80 %, global 70 %.

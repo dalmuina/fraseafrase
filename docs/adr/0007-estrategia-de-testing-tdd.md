@@ -1,6 +1,6 @@
 # ADR-0007: Estrategia de testing y TDD obligatorio
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por ADR-0014
 - **Fecha:** 2026-10-29
 
 ## Contexto

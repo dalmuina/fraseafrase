@@ -12,13 +12,14 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0004](0004-offline-first-sin-backend-ni-ia.md) | Offline-first, sin backend ni IA en el MVP | Sustituido por 0013 |
 | [0005](0005-clean-architecture-modular.md) | Clean Architecture modular | Sustituido por 0010 |
 | [0006](0006-ui-compose-mvvm-udf-hilt.md) | UI con Jetpack Compose, MVVM/UDF e inyección con Hilt | Aceptado |
-| [0007](0007-estrategia-de-testing-tdd.md) | Estrategia de testing y TDD obligatorio | Aceptado |
+| [0007](0007-estrategia-de-testing-tdd.md) | Estrategia de testing y TDD obligatorio | Sustituido por 0014 |
 | [0008](0008-minsdk-26.md) | minSdk 26 | Aceptado |
 | [0009](0009-alcance-del-mvp.md) | Alcance del MVP | Sustituido por 0012 |
 | [0010](0010-clean-architecture-modular-design-system-y-data-sources.md) | Clean Architecture modular con design system y data sources | Aceptado |
 | [0011](0011-detekt-1-23-con-daemon-gradle-jdk-21.md) | detekt 1.23 con el daemon de Gradle en JDK 21 | Aceptado |
 | [0012](0012-modelo-de-practica-por-tandas.md) | Modelo de práctica por tandas y alcance del MVP | Aceptado |
 | [0013](0013-persistencia-catalogo-json-y-estado-en-room.md) | Persistencia con catálogo JSON en assets y estado del usuario en Room 3 | Aceptado |
+| [0014](0014-estrategia-de-testing-junit-6-y-junit-4-instrumentado.md) | Estrategia de testing con JUnit 6 y JUnit 4 en instrumentados | Aceptado |
 
 ## Plantilla
 
