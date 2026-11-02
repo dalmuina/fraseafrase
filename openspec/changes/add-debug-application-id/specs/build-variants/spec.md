@@ -10,7 +10,8 @@ Define qué identificador de aplicación tiene cada variante de build, de modo q
 La variante `debug` de `:app` SHALL tener el identificador de aplicación `com.dalmuina.fraseafrase.debug`.
 
 #### Scenario: Variante debug
-- **WHEN** se evalúa la configuración de la variante `debug` de `:app`
+- **GIVEN** la configuración de build de `:app` del cambio
+- **WHEN** se evalúa la configuración de la variante `debug`
 - **THEN** el identificador de aplicación es `com.dalmuina.fraseafrase.debug`
 - **Verificación:** test JVM `BuildVariantTest` (tarea 1.1), ejecutado en `testDebugUnitTest`.
 
@@ -18,7 +19,8 @@ La variante `debug` de `:app` SHALL tener el identificador de aplicación `com.d
 La variante `release` de `:app` SHALL tener el identificador de aplicación `com.dalmuina.fraseafrase`.
 
 #### Scenario: Variante release
-- **WHEN** se evalúa la configuración de la variante `release` de `:app`
+- **GIVEN** la configuración de build de `:app` del cambio
+- **WHEN** se evalúa la configuración de la variante `release`
 - **THEN** el identificador de aplicación es `com.dalmuina.fraseafrase`
 - **Verificación:** test JVM `BuildVariantTest` (tarea 1.1), ejecutado en `testReleaseUnitTest`.
 
@@ -26,6 +28,7 @@ La variante `release` de `:app` SHALL tener el identificador de aplicación `com
 El identificador de la variante `debug` SHALL ser distinto del de la variante `release`, de modo que ambas puedan instalarse en el mismo dispositivo.
 
 #### Scenario: Identificadores distintos
-- **WHEN** se comparan los identificadores de las variantes `debug` y `release` de `:app`
+- **GIVEN** la configuración de build de `:app` del cambio
+- **WHEN** se comparan los identificadores de las variantes `debug` y `release`
 - **THEN** son distintos
-- **Verificación:** derivada de los dos escenarios anteriores, que fijan cada identificador por separado.
+- **Verificación:** se cumple si `BuildVariantTest` pasa en `testDebugUnitTest` y en `testReleaseUnitTest`, porque cada variante fija un valor distinto.

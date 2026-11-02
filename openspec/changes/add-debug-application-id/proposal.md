@@ -24,7 +24,8 @@ Los tests instrumentados de `:app` se ejecutan contra la app real con su `applic
 
 - `app/build.gradle.kts`: `applicationIdSuffix = ".debug"` en `buildTypes.debug` y `buildFeatures { buildConfig = true }` en `:app`. No cambia `namespace`, que sigue siendo `com.dalmuina.fraseafrase`, por lo que el código Kotlin y los paquetes no se tocan.
 - Tests de `:app` (`app/src/test`): test JVM nuevo con JUnit 6 Jupiter, conforme a ADR-0014. Los tests instrumentados de `app/src/androidTest` no cambian, aunque pasen a ejecutarse contra `.debug`. El runner `HiltTestRunner` no cambia.
-- Dispositivos: quien tenga instalada una build de depuración anterior con el identificador original debe desinstalarla una vez antes de instalar la `release` firmada (ver `design.md`, migración). Los datos de la antigua no se migran.
+- `docs/deuda-tecnica.md`: se cierra la entrada "Build debug con `applicationIdSuffix`" (tarea 3.2).
+- Dispositivos: quien tenga instalada una build de depuración anterior con el identificador original debe desinstalarla una vez antes de instalar la `release` firmada (ver `design.md`, migración). **Desinstalarla borra su base de datos y su progreso de estudio**, sin copia automática. Los datos no se migran.
 - Sin dependencias nuevas ni cambios en el version catalog. No afecta a ADR-0012 (método de práctica), ADR-0010 (módulos) ni ADR-0013 (persistencia).
 
 ## Fuera de alcance

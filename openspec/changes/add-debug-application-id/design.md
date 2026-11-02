@@ -29,28 +29,32 @@ Ver `proposal.md` (motivación y alcance) y `specs/build-variants/spec.md` (requ
 **D4. Verificación mediante `BuildConfig.APPLICATION_ID` en un test JVM.** Se activa `buildFeatures { buildConfig = true }` en `:app`, porque el proyecto no la tiene activa y el test necesita la constante. `BuildConfig.APPLICATION_ID` contiene el identificador de la variante con su sufijo. El test `BuildVariantTest` vive en `app/src/test` (JVM), usa JUnit 6 Jupiter y Kotest, que `KotlinAndroid.kt` ya añade a todos los módulos Android, y calcula el valor esperado a partir de `BuildConfig.DEBUG`: `com.dalmuina.fraseafrase.debug` si es `true`, `com.dalmuina.fraseafrase` si es `false`. Así el mismo test sirve para `testDebugUnitTest` y `testReleaseUnitTest`.
 - Por qué JVM y no instrumentado: el test no necesita dispositivo ni APK, corre en la CI dentro de `check` y no desinstala ninguna aplicación.
 - ADR-0014: los tests JVM usan JUnit 6, como exige para el unitario.
-- Impedimento previsto: si `testReleaseUnitTest` no se ejecuta con `check` en esta configuración, se añade `check` → `dependsOn(testReleaseUnitTest)` en `:app`. Se comprueba en la tarea 1.7.
+- Impedimento previsto: si `testReleaseUnitTest` no se ejecuta con `check` en esta configuración, se añade `tasks.named("check") { dependsOn("testReleaseUnitTest") }` en `:app`. Se comprueba en la tarea 1.6.
+- Nombre del test: frase en comillas invertidas, según la convención de CLAUDE.md para tests JVM. Un comentario en el test referencia los escenarios que cubre.
 
-**D5. Mutación como comprobación del test de `release`.** La variante `release` ya cumple el requisito antes del cambio, así que su test no empieza en rojo. Para comprobar que el test sí detecta un error, la tarea 1.5 introduce temporalmente un sufijo en `release` y comprueba que `testReleaseUnitTest` falla por aserción. La mutación se revierte antes de commitear.
+**D5. Mutación como comprobación de regresión del test de `release`.** La variante `release` ya cumple el requisito antes del cambio, así que su test no empieza en rojo. Para comprobar que el test sí detecta un error, la tarea 1.5 introduce temporalmente un sufijo en `release` y comprueba que `testReleaseUnitTest` falla por aserción. La mutación se revierte antes de commitear.
+- Desviación declarada: ADR-0014 no contempla el rojo por mutación. Se usa como comprobación de regresión porque el comportamiento de `release` ya existe; se anota en la descripción de la PR.
 
 **D6. Propiedades de Android que no se verifican como escenarios.** Estas garantías se derivan de tener identificadores distintos y no requieren comprobación propia en el proyecto:
 - Dos variantes con identificadores distintos se instalan a la vez en el mismo dispositivo.
 - Cada identificador tiene su propio directorio privado de datos, así que `practice.db` y `settings` no se comparten (D3).
 - Desinstalar o ejecutar los tests instrumentados de una variante no toca los datos de la otra.
 
+- **Progreso de `release`.** La variante `release` conserva su identificador, así que su progreso no cambia por este cambio.
+
 Por eso no aparecen como escenarios en `spec.md`. Se comprueban a mano solo como checklist para la descripción de la PR (ver `tasks.md`, grupo 2).
 
 ## Risks / Trade-offs
 
-- **[Instalaciones antiguas y firma]** La build `debug` antigua tiene el identificador `com.dalmuina.fraseafrase`, el mismo que tendrá la `release`, y está firmada con la clave de depuración. Android rechaza instalar una `release` firmada con otra clave sobre una app con el mismo identificador. → Mitigación: el usuario desinstala la build `debug` antigua una vez antes de instalar una `release` (nota de migración abajo). No se migran datos (fuera de alcance).
-- **[Ámbito de `release` en la CI]** Si `check` no ejecuta `testReleaseUnitTest`, el test de `release` no protege la CI. → Mitigación: la tarea 1.7 lo comprueba y, si hace falta, añade la dependencia de `check`.
+- **[Instalaciones antiguas y firma; pérdida de datos]** La build `debug` antigua tiene el identificador `com.dalmuina.fraseafrase`, el mismo que tendrá la `release`, y está firmada con la clave de depuración. Android rechaza instalar una `release` firmada con otra clave sobre una app con el mismo identificador. Desinstalar la build `debug` antigua **borra su base de datos y su progreso de estudio**. Esa build puede ser la que se usa a diario. `allowBackup` no sustituye a una copia manual y no hay copia automática. → Mitigación: antes de desinstalar, decidir si se conserva el progreso (exportarlo a mano) o asumir su pérdida. Esta decisión es del usuario.
+- **[Ámbito de `release` en la CI]** Si `check` no ejecuta `testReleaseUnitTest`, el test de `release` no protege la CI. → Mitigación: la tarea 1.6 lo comprueba y, si hace falta, añade la dependencia de `check`.
 - **[Confusión visual]** Las dos variantes se llaman igual en el lanzador. Se puede practicar en `debug` creyendo que es la app de uso diario. → Mitigación: no se toca `resValue` en este cambio (fuera de alcance); queda como mejora posterior prioritaria.
 - **[Copias de seguridad]** `allowBackup="true"` en el manifiesto. Las copias van por identificador, así que `.debug` queda separado y no se ve afectado.
 - **[Detekt]** detekt no analiza `src/androidTest` (ver `docs/deuda-tecnica.md`). El test nuevo está en `src/test`, sí analizado por detekt.
 
 ## Migration Plan
 
-Nota de migración para quien tenga instalada una build `debug` antigua: desinstalarla una vez antes de instalar una `release` firmada con otra clave. No hay migración de datos.
+Nota de migración para quien tenga instalada una build `debug` antigua: desinstalarla una vez antes de instalar una `release` firmada con otra clave. **Desinstalar la build `debug` antigua borra su base de datos y su progreso de estudio.** No hay copia automática; si se quiere conservar el progreso, exportarlo a mano antes, o asumir su pérdida. No hay migración de datos.
 
 Despliegue: cambiar el build script. Rollback: eliminar `applicationIdSuffix` del tipo `debug` y `buildConfig = true` de `:app`.
 
