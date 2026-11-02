@@ -2,6 +2,11 @@
 
 Registro de mejoras detectadas y aplazadas. Cada entrada indica su origen y el motivo por el que no se aplicó en su momento. Ninguna entrada autoriza a ampliar el alcance de un cambio en curso: se abordan en un cambio propio.
 
+## Limpieza de proceso (resuelto)
+
+- **Referencias a `main` en lugar de `master`.** Resuelto: `.claude/commands/next.md` y `CLAUDE.md` ya usan `master`, y `.claude/agents/code-reviewer.md` pasa a comparar contra `master...HEAD`. La rama principal es `master`.
+- **Fila "Destino inicial" de `design.md` en `add-practice-session`.** No se modifica: el cambio está archivado y sus artefactos son historial. La entrada del test de arranque de `FraseAFraseApp` más abajo recoge el pendiente.
+
 ## Del cambio `add-practice-session`
 
 - **`requireNotNull` en `AnswerPhrase`.** Origen: revisión del grupo 3. Motivo: la validación actual funciona; el cambio a `requireNotNull` mejora el mensaje de error, pero no altera el comportamiento y queda fuera de la tarea.
