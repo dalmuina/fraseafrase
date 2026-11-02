@@ -4,7 +4,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 
-// Scenarios from specs/build-variants (change add-debug-application-id): "Variante debug" and "Identificadores distintos".
+// Scenarios from specs/build-variants (change add-debug-application-id):
+// "Variante debug" and "Identificadores distintos".
 // AGP runs unit tests only against the debug variant (testBuildType), so this test pins its identifier.
 class BuildVariantTest {
 
