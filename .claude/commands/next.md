@@ -27,7 +27,7 @@ Si el handoff y el repositorio no coinciden, para y explica la discrepancia.
 11. Rama archivada y con push hecho: es un paso del usuario, abrir la PR a develop, comprobar la CI y hacer merge.
 
 ## 2b. Presupuesto de revisión
-Aplica el apartado "Presupuesto de revisión" de CLAUDE.md: solo un bloqueante según su definición detiene el avance; máximo dos rondas por fase; las correcciones de texto no reabren revisiones; y el presupuesto va en el prompt de cada subagente de revisión.
+Aplica el apartado "Presupuesto de revisión" de CLAUDE.md: solo un bloqueante (comportamiento incorrecto, escenario sin test, contradicción entre artefactos, pérdida de datos, cierre de la app o seguridad) detiene el avance; los hallazgos "Corregir" se arreglan en una pasada sin nueva revisión; "Descartar" no se hace; máximo dos rondas por fase; el cambio ligero lleva una ronda de android-architect y una de code-reviewer; y el presupuesto va en el prompt de cada subagente de revisión.
 
 ## 3. Límites
 - Ejecuta solo el paso decidido y para. Nunca encadenes dos pasos.
