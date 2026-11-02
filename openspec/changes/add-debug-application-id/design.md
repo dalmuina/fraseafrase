@@ -32,10 +32,23 @@ Ver `proposal.md` (motivación y alcance) y `specs/build-variants/spec.md` (requ
 - ADR-0014: los tests JVM usan JUnit 6, como exige para el unitario.
 - Nombre del test: frase en comillas invertidas, según la convención de CLAUDE.md para tests JVM. Un comentario en el test referencia los escenarios que cubre.
 
-**D5. Verificación de `release` mediante comprobación de configuración.** En `app/build.gradle.kts`, `androidComponents.onVariants(selector().withBuildType("release"))` lee `variant.applicationId.get()` y lanza `GradleException` con el valor esperado y el obtenido si no es `com.dalmuina.fraseafrase`. La constante `PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"` se usa en `defaultConfig` y en la comprobación. Según la documentación de AGP, `onVariants` con `selector().withBuildType(...)` es la API moderna y compatible con el cache de configuración; el valor se lee en configuración y no depende de entradas externas.
-- Efecto: la comprobación se ejecuta en cada invocación de Gradle, no solo cuando se genera `release`. Un fallo también rompe `./gradlew test` y `check`. Es el comportamiento deseado.
-- Comprobación de regresión: la tarea 1.5 introduce temporalmente un sufijo en `release` y comprueba que la configuración falla. La variante `release` ya cumplía el requisito antes del cambio, así que no empieza en rojo.
-- Desviación de ADR-0014:21 (rojo por test). ADR-0014:26-28 limita la mutación a la excepción de DI y declara que no aplica a código nuevo de producción. Aquí se aplica por decisión del usuario, sin ADR-0015. Se registra en la descripción de la PR.
+**D5. Verificación de `release` mediante comprobación de configuración.** En `app/build.gradle.kts`, con los imports `com.android.build.api.variant.selector` (a confirmar con el compilador) y la constante `val PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"` (`val`, no `const val`, que es la forma segura en un script `.gradle.kts`):
+
+```kotlin
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        val actual = variant.applicationId.get()
+        if (actual != PRODUCTION_APP_ID) {
+            throw GradleException("applicationId de release: esperado '$PRODUCTION_APP_ID', obtenido '$actual'")
+        }
+    }
+}
+```
+
+`PRODUCTION_APP_ID` se usa también en `defaultConfig`. La API de `onVariants` con `selector().withBuildType(...)` es la forma moderna de AGP, según la documentación de Android Developers. **No confirmado:** que `variant.applicationId.get()` sea legal dentro del callback con AGP 9.3.3. Si no lo es, la configuración falla ya en el paso "debe pasar" de la tarea 1.5, y la alternativa es comparar en `afterEvaluate` que `buildTypes.release.applicationIdSuffix` es nulo y que `defaultConfig.applicationId` es `PRODUCTION_APP_ID`.
+- Efecto: la comprobación se evalúa en cada configuración del proyecto, no solo cuando se genera `release`. Con `org.gradle.configuration-cache=true` (`gradle.properties`), no se reejecuta cuando la caché se reutiliza, pero cualquier cambio en `build.gradle.kts` la invalida. Un fallo también rompe `./gradlew test` y `check`. Es el comportamiento deseado.
+- Comprobación de regresión: la tarea 1.5 introduce temporalmente un sufijo en `release` y comprueba que la configuración falla, ejecutando con `--no-configuration-cache` para forzar la evaluación. La variante `release` ya cumplía el requisito antes del cambio, así que no empieza en rojo.
+- Desviación de ADR-0014:21 (rojo por test). ADR-0014:26-28 limita la mutación a la excepción de DI y declara que no aplica a código nuevo de producción. El cambio es una aserción de configuración de `build.gradle.kts`, no código de producción de la aplicación. Aquí se aplica por decisión del usuario, sin ADR-0015. Se registra en la descripción de la PR. Si el usuario quiere constancia formal, la alternativa es un ADR-0015.
 - Alternativa descartada: forzar `testReleaseUnitTest` con `enableUnitTest` en `beforeVariants`. No está confirmado en la documentación de AGP y añade una configuración de test que el proyecto no necesita.
 - Alternativa descartada: inspeccionar el manifiesto o un APK firmado en cada build. Requiere firma, que el proyecto no tiene para `release`.
 

@@ -22,7 +22,7 @@ La variante `release` de `:app` SHALL tener el identificador de aplicación `com
 - **GIVEN** la configuración de build de `:app` del cambio
 - **WHEN** se evalúa la configuración de la variante `release`
 - **THEN** el identificador de aplicación es `com.dalmuina.fraseafrase`
-- **Verificación:** comprobación de configuración en `app/build.gradle.kts` (`androidComponents.onVariants` sobre `release`, D5). Se ejecuta en cada invocación de Gradle y falla si el identificador no coincide. Su comprobación de regresión es la mutación de la tarea 1.5.
+- **Verificación:** comprobación de configuración en `app/build.gradle.kts` (`androidComponents.onVariants` sobre `release`, D5). Se evalúa en cada configuración del proyecto y falla si el identificador no coincide. Con la caché de configuración reutilizada no se reejecuta, pero cualquier cambio en `build.gradle.kts` la invalida. Su comprobación de regresión es la mutación de la tarea 1.5, ejecutada con `--no-configuration-cache`. Es una aserción de configuración de Gradle, no un test: decisión del usuario, registrada en la descripción de la PR (D5).
 
 ### Requirement: Los identificadores de depuración y publicación son distintos
 El identificador de la variante `debug` SHALL ser distinto del de la variante `release`, de modo que ambas puedan instalarse en el mismo dispositivo.
@@ -31,4 +31,4 @@ El identificador de la variante `debug` SHALL ser distinto del de la variante `r
 - **GIVEN** la configuración de build de `:app` del cambio
 - **WHEN** se comparan los identificadores de las variantes `debug` y `release`
 - **THEN** son distintos
-- **Verificación:** se cumple si `BuildVariantTest` pasa en `testDebugUnitTest` (identificador `.debug`) y la comprobación de configuración de `release` pasa (identificador base). Cada variante fija un valor distinto.
+- **Verificación (derivada):** se cumple si `BuildVariantTest` pasa en `testDebugUnitTest` (identificador `.debug`) y la comprobación de configuración de `release` pasa (identificador base). Además, `BuildVariantTest` afirma directamente que el identificador de `debug` no es `com.dalmuina.fraseafrase`. Cada variante fija un valor distinto.
