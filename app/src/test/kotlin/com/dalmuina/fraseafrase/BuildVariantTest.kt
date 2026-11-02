@@ -12,6 +12,7 @@ class BuildVariantTest {
     @Test
     fun `given the debug variant when reading application id then it has the debug suffix`() {
         // Given
+        // Local comparison value only. The release identifier is verified by configuration in app/build.gradle.kts (onVariants), not by this test.
         val releaseApplicationId = "com.dalmuina.fraseafrase"
 
         // When
