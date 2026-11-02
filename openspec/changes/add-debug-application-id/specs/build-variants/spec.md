@@ -12,6 +12,7 @@ La build `debug` SHALL instalarse con el identificador de aplicación `com.dalmu
 #### Scenario: Build de depuración instalada
 - **WHEN** se ejecuta la build `debug` de `:app`
 - **THEN** el identificador de aplicación resultante es `com.dalmuina.fraseafrase.debug`
+- **Verificación:** automática (`BuildVariantTest`, tarea 1.1; y `apkanalyzer` sobre el APK de depuración, tarea 3.2).
 
 #### Scenario: Build de publicación sin cambios
 - **WHEN** se configura la variante `release` de `:app`

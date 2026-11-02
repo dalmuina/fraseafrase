@@ -24,7 +24,7 @@ Los tests instrumentados de `:app` se ejecutan contra la app real con su `applic
 - `app/build.gradle.kts`: `applicationIdSuffix = ".debug"` en `buildTypes.debug`. No cambia `namespace`, que sigue siendo `com.dalmuina.fraseafrase`, por lo que el código Kotlin y los paquetes no se tocan.
 - Tests instrumentados de `:app` (`app/src/androidTest`): pasan a ejecutarse contra `com.dalmuina.fraseafrase.debug`. El runner `HiltTestRunner` no cambia.
 - Dispositivos: quien tenga instalada una build de depuración anterior con el identificador original verá una app nueva junto a la antigua. Los datos de la antigua no se migran.
-- Sin dependencias nuevas ni cambios en el version catalog. No afecta a ADR-0012 (método de práctica), ADR-0010 (módulos) ni ADR-0013 (persistencia).
+- Sin dependencias nuevas ni cambios en el version catalog. No afecta a ADR-0012 (método de práctica), ADR-0010 (módulos) ni ADR-0013 (persistencia). ADR-0014 se aplica a la prueba nueva: los tests instrumentados usan JUnit 4.
 
 ## Fuera de alcance
 
