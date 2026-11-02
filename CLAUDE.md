@@ -103,8 +103,8 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 - Cobertura mínima (Kover): dominio 90 %, presentación 80 %, global 70 %.
 
 **Idioma**
-- Documentación, especificaciones, ADR y comentarios explicativos en español.
-- Código, identificadores, nombres de test y mensajes de commit en inglés (Conventional Commits).
+- Documentación, especificaciones y ADR en español.
+- Código, identificadores, nombres de test, comentarios del código y mensajes de commit en inglés (Conventional Commits).
 
 ## Comandos
 
