@@ -21,4 +21,4 @@ No es una verificación de escenario de `spec.md`: son comprobaciones de disposi
 
 ## 3. Verificación final y deuda
 
-- [ ] 3.1 (documental, sin escenario) Cerrar la entrada "Build debug con `applicationIdSuffix`" de `docs/deuda-tecnica.md` moviéndola a una sección "Resuelto en `1.0.0/add-debug-application-id`". No ampliar alcance.
+- [x] 3.1 (documental, sin escenario) Cerrar la entrada "Build debug con `applicationIdSuffix`" de `docs/deuda-tecnica.md` moviéndola a una sección "Resuelto en `1.0.0/add-debug-application-id`". No ampliar alcance.
