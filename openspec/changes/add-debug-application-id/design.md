@@ -32,7 +32,7 @@ Ver `proposal.md` (motivación y alcance) y `specs/build-variants/spec.md` (requ
 - ADR-0014: los tests JVM usan JUnit 6, como exige para el unitario.
 - Nombre del test: frase en comillas invertidas, según la convención de CLAUDE.md para tests JVM. Un comentario en el test referencia los escenarios que cubre.
 
-**D5. Verificación de `release` mediante comprobación de configuración.** En `app/build.gradle.kts`, con los imports `com.android.build.api.variant.selector` (a confirmar con el compilador) y la constante `val PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"` (`val`, no `const val`, que es la forma segura en un script `.gradle.kts`):
+**D5. Verificación de `release` mediante comprobación de configuración.** En `app/build.gradle.kts`, sin imports adicionales (`selector()` es miembro de `androidComponents` y el compilador no resuelve el import `com.android.build.api.variant.selector`), y con la constante `val PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"` (`val`, no `const val`, que es la forma segura en un script `.gradle.kts`):
 
 ```kotlin
 androidComponents {
