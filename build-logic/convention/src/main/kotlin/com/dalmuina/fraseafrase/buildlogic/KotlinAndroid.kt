@@ -1,6 +1,9 @@
 package com.dalmuina.fraseafrase.buildlogic
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.DeviceTestBuilder
+import com.android.build.api.variant.HasDeviceTestsBuilder
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -42,6 +45,25 @@ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     configureKotlinCompilerOptions()
     addUnitTestDependencies()
     addInstrumentationRunnerDependency()
+    disableDeviceTestsWithoutAndroidTestSources()
+}
+
+/**
+ * AGP declara el `AndroidJUnitRunner` por defecto en el manifest de instrumentación aunque
+ * `testInstrumentationRunner` no se asigne (comprobado: sin esta llamada, `:core:data` y
+ * `:core:platform` fallan con `ClassNotFoundException` al no tener la dependencia del runner si
+ * esta se condiciona en su lugar). Por eso el componente `AndroidTest` se desactiva por completo
+ * con la Variant API cuando el módulo no tiene `src/androidTest`, en vez de condicionar el
+ * runner o la dependencia.
+ */
+private fun Project.disableDeviceTestsWithoutAndroidTestSources() {
+    if (layout.projectDirectory.dir("src/androidTest").asFile.exists()) return
+    extensions.getByType(AndroidComponentsExtension::class.java).beforeVariants { variantBuilder ->
+        (variantBuilder as? HasDeviceTestsBuilder)
+            ?.deviceTests
+            ?.get(DeviceTestBuilder.ANDROID_TEST_TYPE)
+            ?.enable = false
+    }
 }
 
 /** Configuración común a módulos Kotlin puros (sin Android). */
