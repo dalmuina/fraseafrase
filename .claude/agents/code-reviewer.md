@@ -10,7 +10,7 @@ pero **no modificas ficheros**: solo informas. Usa Bash únicamente para `git` (
 ## Preparación
 
 1. Lee `CLAUDE.md` y los artefactos del cambio en `openspec/changes/<nombre>/`.
-2. Obtén el diff del cambio: `git diff main...HEAD` (o `git diff` si no hay rama) y `git status`.
+2. Obtén el diff del cambio: `git diff master...HEAD` (o `git diff` si no hay rama) y `git status`.
 3. Ejecuta `./gradlew check` y `./gradlew koverVerify`. Si alguno falla, eso es un bloqueante.
 
 ## Qué revisas

@@ -2,6 +2,15 @@
 
 Registro de mejoras detectadas y aplazadas. Cada entrada indica su origen y el motivo por el que no se aplicó en su momento. Ninguna entrada autoriza a ampliar el alcance de un cambio en curso: se abordan en un cambio propio.
 
+## Resuelto en `1.0.0/add-debug-application-id`
+
+- **Build debug con `applicationIdSuffix = ".debug"`.** Origen: revisión de `add-hilt-wiring-tests`. Motivo: los tests instrumentados de `:app` se ejecutan en la app real, con su `practice.db`, y AGP desinstala la app al terminar `connectedAndroidTest`. Lanzarlos en un móvil personal borraría el progreso de estudio. Hacerlo antes de instalar builds de desarrollo en un dispositivo personal. **Resuelto en `1.0.0/add-debug-application-id`:** la variante `debug` usa `com.dalmuina.fraseafrase.debug` y la de publicación conserva `com.dalmuina.fraseafrase`. Verificado con `BuildVariantTest` (JVM) y una comprobación de configuración en `app/build.gradle.kts`.
+
+## Limpieza de proceso (resuelto)
+
+- **Referencias a `main` en lugar de `master`.** Resuelto: `.claude/commands/next.md` y `CLAUDE.md` ya usan `master`, y `.claude/agents/code-reviewer.md` pasa a comparar contra `master...HEAD`. La rama principal es `master`.
+- **Fila "Destino inicial" de `design.md` en `add-practice-session`.** No se modifica: el cambio está archivado y sus artefactos son historial. La entrada del test de arranque de `FraseAFraseApp` más abajo recoge el pendiente.
+
 ## Del cambio `add-practice-session`
 
 - **`requireNotNull` en `AnswerPhrase`.** Origen: revisión del grupo 3. Motivo: la validación actual funciona; el cambio a `requireNotNull` mejora el mensaje de error, pero no altera el comportamiento y queda fuera de la tarea.
@@ -24,7 +33,6 @@ Registro de mejoras detectadas y aplazadas. Cada entrada indica su origen y el m
 
 ## Del cambio `add-hilt-wiring-tests`
 
-- **Build debug con `applicationIdSuffix = ".debug"` (prioridad alta).** Origen: revisión de `add-hilt-wiring-tests`. Motivo: los tests instrumentados de `:app` se ejecutan en la app real, con su `practice.db`, y AGP desinstala la app al terminar `connectedAndroidTest`. Lanzarlos en un móvil personal borraría el progreso de estudio. Hacerlo antes de instalar builds de desarrollo en un dispositivo personal.
 - **Job de tests instrumentados en la CI (prioridad alta).** Sin este job, los tests instrumentados solo protegen en local: un fallo de cableado solo se detecta si alguien ejecuta `connectedDebugAndroidTest` antes de integrar. Incluye los tests de UI de `:feature:session`, que nunca han pasado por detekt. Es el siguiente cambio de infraestructura.
 - **`src/androidTest` fuera de detekt (prioridad alta).** Comprobado en `add-hilt-wiring-tests` (tarea 3.1): con una infracción temporal en `app/src/androidTest`, `./gradlew :app:detekt` termina en verde y no la reporta. Detekt no analiza ese source set. Su inclusión se añade en el mismo cambio de infraestructura que el job de CI. No se cambió la configuración de detekt en `add-hilt-wiring-tests`.
 - **Runner genérico del convention plugin (deuda nueva, no arreglo pendiente).** `KotlinAndroid.kt` fija `AndroidJUnitRunner` para todos los módulos Android, aunque solo algunos tienen tests instrumentados. `:app` lo sobrescribe con `HiltTestRunner`. Revisar si el runner genérico debe seguir en el convention plugin.
