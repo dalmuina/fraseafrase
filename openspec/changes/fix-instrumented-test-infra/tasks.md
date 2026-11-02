@@ -80,7 +80,7 @@
 
 ## 4. Documentación
 
-- [ ] 4.1 Actualizar `docs/deuda-tecnica.md`: cerrar "Job de tests instrumentados en la CI" y
+- [x] 4.1 Actualizar `docs/deuda-tecnica.md`: cerrar "Job de tests instrumentados en la CI" y
       "`src/androidTest` fuera de detekt" (del cambio `add-hilt-wiring-tests`), y el
       "Pendiente" de la sección "Runner de tests instrumentados", enlazando a este cambio.
 
