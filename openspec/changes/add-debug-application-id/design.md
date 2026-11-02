@@ -26,15 +26,18 @@ Ver `proposal.md` (motivación y alcance) y `specs/build-variants/spec.md` (requ
 
 **D3. La independencia de datos viene del identificador, no de código.** `practice.db` y `settings` se crean en el contexto de la aplicación, que es privado por identificador. No hace falta cambiar `PracticeSchema.kt` ni `DataStoreSettingsDataSource.kt`. Se comprobó que no hay rutas de base de datos ni de DataStore fijadas a un paquete (solo el nombre de fichero relativo) y que el manifiesto no declara `FileProvider` ni otros proveedores con `authorities`.
 
-**D4. Verificación mediante `BuildConfig.APPLICATION_ID` en un test JVM.** Se activa `buildFeatures { buildConfig = true }` en `:app`, porque el proyecto no la tiene activa y el test necesita la constante. `BuildConfig.APPLICATION_ID` contiene el identificador de la variante con su sufijo. El test `BuildVariantTest` vive en `app/src/test` (JVM), usa JUnit 6 Jupiter y Kotest, que `KotlinAndroid.kt` ya añade a todos los módulos Android, y calcula el valor esperado a partir de `BuildConfig.DEBUG`: `com.dalmuina.fraseafrase.debug` si es `true`, `com.dalmuina.fraseafrase` si es `false`. Así el mismo test sirve para `testDebugUnitTest` y `testReleaseUnitTest`.
+**D4. Verificación de la variante `debug` mediante `BuildConfig.APPLICATION_ID` en un test JVM.** Se activa `buildFeatures { buildConfig = true }` en `:app`, porque el proyecto no la tiene activa y el test necesita la constante. `BuildConfig.APPLICATION_ID` contiene el identificador de la variante con su sufijo. El test `BuildVariantTest` vive en `app/src/test` (JVM), usa JUnit 6 Jupiter y Kotest, que `KotlinAndroid.kt` ya añade a todos los módulos Android, y afirma que `BuildConfig.APPLICATION_ID` es `com.dalmuina.fraseafrase.debug`.
+- Por qué solo `debug`: AGP ejecuta los tests unitarios contra `testBuildType`, que por defecto es `debug` y admite un único valor. No se genera `testReleaseUnitTest` (documentación de AGP, "Change the test build type"). La verificación de `release` no puede apoyarse en un test JVM sin cambiar esa configuración, y D5 la cubre.
 - Por qué JVM y no instrumentado: el test no necesita dispositivo ni APK, corre en la CI dentro de `check` y no desinstala ninguna aplicación.
 - ADR-0014: los tests JVM usan JUnit 6, como exige para el unitario.
-- Impedimento previsto: si `testReleaseUnitTest` no se ejecuta con `check` en esta configuración, se añade `tasks.named("check") { dependsOn("testReleaseUnitTest") }` en `:app`. Se comprueba en la tarea 1.6.
 - Nombre del test: frase en comillas invertidas, según la convención de CLAUDE.md para tests JVM. Un comentario en el test referencia los escenarios que cubre.
 
-**D5. Mutación como comprobación de regresión del test de `release`.** La variante `release` ya cumple el requisito antes del cambio, así que su test no empieza en rojo. Para comprobar que el test sí detecta un error, la tarea 1.5 introduce temporalmente un sufijo en `release` y comprueba que `testReleaseUnitTest` falla por aserción. La mutación se revierte antes de commitear.
+**D5. Verificación de `release` mediante comprobación de configuración.** En `app/build.gradle.kts`, `androidComponents.onVariants(selector().withBuildType("release"))` lee `variant.applicationId.get()` y lanza `GradleException` con el valor esperado y el obtenido si no es `com.dalmuina.fraseafrase`. La constante `PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"` se usa en `defaultConfig` y en la comprobación. Según la documentación de AGP, `onVariants` con `selector().withBuildType(...)` es la API moderna y compatible con el cache de configuración; el valor se lee en configuración y no depende de entradas externas.
+- Efecto: la comprobación se ejecuta en cada invocación de Gradle, no solo cuando se genera `release`. Un fallo también rompe `./gradlew test` y `check`. Es el comportamiento deseado.
+- Comprobación de regresión: la tarea 1.5 introduce temporalmente un sufijo en `release` y comprueba que la configuración falla. La variante `release` ya cumplía el requisito antes del cambio, así que no empieza en rojo.
 - Desviación de ADR-0014:21 (rojo por test). ADR-0014:26-28 limita la mutación a la excepción de DI y declara que no aplica a código nuevo de producción. Aquí se aplica por decisión del usuario, sin ADR-0015. Se registra en la descripción de la PR.
-- La tarea 1.2 registra el "pasa" de `release` como verde inicial, no como rojo.
+- Alternativa descartada: forzar `testReleaseUnitTest` con `enableUnitTest` en `beforeVariants`. No está confirmado en la documentación de AGP y añade una configuración de test que el proyecto no necesita.
+- Alternativa descartada: inspeccionar el manifiesto o un APK firmado en cada build. Requiere firma, que el proyecto no tiene para `release`.
 
 **D6. Propiedades de Android que no se verifican como escenarios.** Estas garantías se derivan de tener identificadores distintos y no requieren comprobación propia en el proyecto:
 - Dos variantes con identificadores distintos se instalan a la vez en el mismo dispositivo.
@@ -42,12 +45,12 @@ Ver `proposal.md` (motivación y alcance) y `specs/build-variants/spec.md` (requ
 - Desinstalar o ejecutar los tests instrumentados de una variante no toca los datos de la otra.
 - La variante `release` conserva su identificador, así que su progreso no cambia por este cambio.
 
-Por eso no aparecen como escenarios en `spec.md`. Se comprueban a mano solo como checklist para la descripción de la PR (ver `tasks.md`, grupo 2). La distinción de identificadores sí es un escenario de `spec.md`, y se verifica con una aserción explícita en `BuildVariantTest` (tarea 1.1).
+Por eso no aparecen como escenarios en `spec.md`. Se comprueban a mano solo como checklist para la descripción de la PR (ver `tasks.md`, grupo 2). La distinción de identificadores sí es un escenario de `spec.md`, y se cumple cuando la verificación de `debug` y la de `release` pasan (tareas 1.2 y 1.4).
 
 ## Risks / Trade-offs
 
 - **[Instalaciones antiguas y firma; pérdida de datos]** La build `debug` antigua tiene el identificador `com.dalmuina.fraseafrase`, el mismo que tendrá la `release`, y está firmada con la clave de depuración. Android rechaza instalar una `release` firmada con otra clave sobre una app con el mismo identificador. Desinstalar la build `debug` antigua **borra su base de datos y su progreso de estudio**. Esa build puede ser la que se usa a diario. `allowBackup` no sustituye a una copia manual y no hay copia automática. → Mitigación: antes de desinstalar, decidir si se conserva el progreso (exportarlo a mano) o asumir su pérdida. Esta decisión es del usuario.
-- **[Ámbito de `release` en la CI]** Si `check` no ejecuta `testReleaseUnitTest`, el test de `release` no protege la CI. → Mitigación: la tarea 1.6 lo comprueba y, si hace falta, añade la dependencia de `check`.
+- **[Comprobación de `release` en configuración]** Si la API de `onVariants` cambia o no se comporta como se espera, la comprobación de `release` dejaría de proteger. → Mitigación: la tarea 1.5 demuestra con una mutación que la comprobación falla; si no lo hiciera, la tarea se detiene.
 - **[Confusión visual]** Las dos variantes se llaman igual en el lanzador. Se puede practicar en `debug` creyendo que es la app de uso diario. → Mitigación: no se toca `resValue` en este cambio (fuera de alcance); queda como mejora posterior prioritaria.
 - **[Copias de seguridad]** `allowBackup="true"` en el manifiesto. Las copias van por identificador, así que `.debug` queda separado y no se ve afectado.
 - **[Detekt]** detekt no analiza `src/androidTest` (ver `docs/deuda-tecnica.md`). El test nuevo está en `src/test`, sí analizado por detekt.
@@ -58,7 +61,7 @@ Nota de migración para quien tenga instalada una build `debug` antigua: desinst
 
 Instalar la nueva build `debug` no modifica la antigua. La nueva empieza con base de datos vacía. La pérdida ocurre solo al desinstalar la antigua. Hoy el proyecto no tiene `signingConfig` para `release`, así que la necesidad de desinstalar solo se presenta cuando exista una `release` firmada.
 
-Despliegue: cambiar el build script. Rollback: eliminar `applicationIdSuffix` del tipo `debug` y `buildConfig = true` de `:app`.
+Despliegue: cambiar el build script. Rollback: eliminar `applicationIdSuffix` del tipo `debug`, la comprobación de `onVariants` y `buildConfig = true` de `:app`.
 
 ## Open Questions
 

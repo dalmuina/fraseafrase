@@ -13,7 +13,7 @@ La variante `debug` de `:app` SHALL tener el identificador de aplicación `com.d
 - **GIVEN** la configuración de build de `:app` del cambio
 - **WHEN** se evalúa la configuración de la variante `debug`
 - **THEN** el identificador de aplicación es `com.dalmuina.fraseafrase.debug`
-- **Verificación:** test JVM `BuildVariantTest` (tarea 1.1), ejecutado en `testDebugUnitTest`.
+- **Verificación:** test JVM `BuildVariantTest` (tarea 1.1), ejecutado en `testDebugUnitTest`. AGP ejecuta los tests unitarios solo contra la variante `debug` por defecto (`testBuildType`).
 
 ### Requirement: La build de publicación conserva su identificador
 La variante `release` de `:app` SHALL tener el identificador de aplicación `com.dalmuina.fraseafrase`.
@@ -22,7 +22,7 @@ La variante `release` de `:app` SHALL tener el identificador de aplicación `com
 - **GIVEN** la configuración de build de `:app` del cambio
 - **WHEN** se evalúa la configuración de la variante `release`
 - **THEN** el identificador de aplicación es `com.dalmuina.fraseafrase`
-- **Verificación:** test JVM `BuildVariantTest` (tarea 1.1), ejecutado en `testReleaseUnitTest`.
+- **Verificación:** comprobación de configuración en `app/build.gradle.kts` (`androidComponents.onVariants` sobre `release`, D5). Se ejecuta en cada invocación de Gradle y falla si el identificador no coincide. Su comprobación de regresión es la mutación de la tarea 1.5.
 
 ### Requirement: Los identificadores de depuración y publicación son distintos
 El identificador de la variante `debug` SHALL ser distinto del de la variante `release`, de modo que ambas puedan instalarse en el mismo dispositivo.
@@ -31,4 +31,4 @@ El identificador de la variante `debug` SHALL ser distinto del de la variante `r
 - **GIVEN** la configuración de build de `:app` del cambio
 - **WHEN** se comparan los identificadores de las variantes `debug` y `release`
 - **THEN** son distintos
-- **Verificación:** se cumple si `BuildVariantTest` pasa en `testDebugUnitTest` y en `testReleaseUnitTest`, porque cada variante fija un valor distinto.
+- **Verificación:** se cumple si `BuildVariantTest` pasa en `testDebugUnitTest` (identificador `.debug`) y la comprobación de configuración de `release` pasa (identificador base). Cada variante fija un valor distinto.
