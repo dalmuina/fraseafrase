@@ -33,16 +33,16 @@ Ver `proposal.md` (motivación y alcance) y `specs/build-variants/spec.md` (requ
 - Nombre del test: frase en comillas invertidas, según la convención de CLAUDE.md para tests JVM. Un comentario en el test referencia los escenarios que cubre.
 
 **D5. Mutación como comprobación de regresión del test de `release`.** La variante `release` ya cumple el requisito antes del cambio, así que su test no empieza en rojo. Para comprobar que el test sí detecta un error, la tarea 1.5 introduce temporalmente un sufijo en `release` y comprueba que `testReleaseUnitTest` falla por aserción. La mutación se revierte antes de commitear.
-- Desviación declarada: ADR-0014 no contempla el rojo por mutación. Se usa como comprobación de regresión porque el comportamiento de `release` ya existe; se anota en la descripción de la PR.
+- Desviación de ADR-0014:21 (rojo por test). ADR-0014:26-28 limita la mutación a la excepción de DI y declara que no aplica a código nuevo de producción. Aquí se aplica por decisión del usuario, sin ADR-0015. Se registra en la descripción de la PR.
+- La tarea 1.2 registra el "pasa" de `release` como verde inicial, no como rojo.
 
 **D6. Propiedades de Android que no se verifican como escenarios.** Estas garantías se derivan de tener identificadores distintos y no requieren comprobación propia en el proyecto:
 - Dos variantes con identificadores distintos se instalan a la vez en el mismo dispositivo.
 - Cada identificador tiene su propio directorio privado de datos, así que `practice.db` y `settings` no se comparten (D3).
 - Desinstalar o ejecutar los tests instrumentados de una variante no toca los datos de la otra.
+- La variante `release` conserva su identificador, así que su progreso no cambia por este cambio.
 
-- **Progreso de `release`.** La variante `release` conserva su identificador, así que su progreso no cambia por este cambio.
-
-Por eso no aparecen como escenarios en `spec.md`. Se comprueban a mano solo como checklist para la descripción de la PR (ver `tasks.md`, grupo 2).
+Por eso no aparecen como escenarios en `spec.md`. Se comprueban a mano solo como checklist para la descripción de la PR (ver `tasks.md`, grupo 2). La distinción de identificadores sí es un escenario de `spec.md`, y se verifica con una aserción explícita en `BuildVariantTest` (tarea 1.1).
 
 ## Risks / Trade-offs
 
@@ -55,6 +55,8 @@ Por eso no aparecen como escenarios en `spec.md`. Se comprueban a mano solo como
 ## Migration Plan
 
 Nota de migración para quien tenga instalada una build `debug` antigua: desinstalarla una vez antes de instalar una `release` firmada con otra clave. **Desinstalar la build `debug` antigua borra su base de datos y su progreso de estudio.** No hay copia automática; si se quiere conservar el progreso, exportarlo a mano antes, o asumir su pérdida. No hay migración de datos.
+
+Instalar la nueva build `debug` no modifica la antigua. La nueva empieza con base de datos vacía. La pérdida ocurre solo al desinstalar la antigua. Hoy el proyecto no tiene `signingConfig` para `release`, así que la necesidad de desinstalar solo se presenta cuando exista una `release` firmada.
 
 Despliegue: cambiar el build script. Rollback: eliminar `applicationIdSuffix` del tipo `debug` y `buildConfig = true` de `:app`.
 
