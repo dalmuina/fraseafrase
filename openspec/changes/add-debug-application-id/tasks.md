@@ -16,8 +16,8 @@ Orden: primero la prueba que falla por el motivo esperado, después el cambio de
 
 No es una verificación de escenario de `spec.md`: son comprobaciones de dispositivo que se copian a la descripción de la PR.
 
-- [ ] 2.1 **Advertencia de datos:** si hay instalada una build `debug` antigua con el identificador `com.dalmuina.fraseafrase`, desinstalarla **borra su base de datos y su progreso de estudio**, sin copia automática. Instalar la nueva `debug` no modifica la antigua. Decidir antes si se conserva el progreso (exportarlo a mano) o se asume su pérdida (nota de migración de `design.md`).
-- [ ] 2.2 (omitida por decisión del usuario hasta que exista firma de `release`) Instalar `release` y `debug` en el emulador para comprobar que conviven. Hoy no se puede: el proyecto no tiene `signingConfig` y `assembleRelease` produce un APK sin firmar que no se instala. Omitir esta comprobación y anotarlo en la PR, hasta que exista `signingConfig`.
+- [x] 2.1 **Advertencia de datos:** no se desinstala la build debug antigua. No es necesario mientras no exista una release instalable. Migración diferida, registrada en `docs/deuda-tecnica.md` (sección de este cambio).
+- [x] 2.2 Descartada por decisión del usuario. Para la descripción de la PR: "Instalar release y debug a la vez requiere signingConfig de release (pendiente)". Firma registrada en `docs/deuda-tecnica.md`.
 
 ## 3. Verificación final y deuda
 

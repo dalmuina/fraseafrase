@@ -58,3 +58,8 @@ Origen de todas: `code-reviewer add-practice-session` (revisión de `develop...H
 - **Reglas de arquitectura con Konsist (ADR-0010).** Origen: ADR-0010. Motivo: las dependencias entre módulos se revisan a mano (`android-architect`); automatizarlas con Konsist evitaría regresiones, pero requiere añadir la librería y justificarla en su `design.md`.
 - **Migrar a detekt 2.0 cuando sea estable.** Origen: ADR-0011, que fija detekt 1.23.8 porque 2.0 estaba en alfa. Motivo: la migración sustituirá al ADR-0011 mediante un ADR nuevo cuando detekt 2.0 sea estable.
 - **Proteger `develop` y `main` en GitHub.** Origen: flujo de ramas de CLAUDE.md. Motivo: la protección de ramas (PR obligatoria y CI en verde) se configura en GitHub, fuera del repositorio.
+
+## Del cambio `add-debug-application-id`
+
+- **Migración de la debug antigua (`com.dalmuina.fraseafrase`).** Origen: tarea 2.1 de `add-debug-application-id`. Motivo: desinstalar la build debug antigua borra su `practice.db` y su progreso, y no es necesario mientras no exista una release instalable. Cuando se instale la primera release, copiar con `adb shell run-as` `practice.db`, `practice.db-wal`, `practice.db-shm` y el fichero de DataStore desde la app antigua a la `.debug` (apps detenidas, mismo esquema) y después desinstalar la antigua.
+- **Firma de release.** Origen: tarea 2.2 de `add-debug-application-id`. Motivo: instalar `release` y `debug` a la vez requiere `signingConfig` de release, que no existe. La firma debe hacerse con el keystore fuera del repositorio, con secretos en variables de entorno locales y en secretos de GitHub. Probablemente requiera un ADR propio.
