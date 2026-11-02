@@ -10,12 +10,13 @@ Define qué identificador de aplicación instala cada variante de build y qué d
 La build `debug` SHALL instalarse con el identificador de aplicación `com.dalmuina.fraseafrase.debug`. La build `release` SHALL conservar el identificador `com.dalmuina.fraseafrase`.
 
 #### Scenario: Build de depuración instalada
-- **WHEN** se genera la build `debug` de `:app`
+- **WHEN** se ejecuta la build `debug` de `:app`
 - **THEN** el identificador de aplicación resultante es `com.dalmuina.fraseafrase.debug`
 
 #### Scenario: Build de publicación sin cambios
-- **WHEN** se genera la build `release` de `:app`
+- **WHEN** se configura la variante `release` de `:app`
 - **THEN** el identificador de aplicación resultante es `com.dalmuina.fraseafrase`
+- **Verificación:** automática, mediante la comprobación de configuración de `design.md` (D5). Si el identificador no coincide, el build falla.
 
 ### Requirement: Las variantes no comparten datos de usuario
 Cada variante SHALL guardar sus datos de usuario (progreso, tanda activa y ajustes) en su propio almacenamiento, de modo que las dos variantes puedan instalarse a la vez sin compartir ni sobrescribir la base de datos de la otra.
@@ -23,6 +24,13 @@ Cada variante SHALL guardar sus datos de usuario (progreso, tanda activa y ajust
 #### Scenario: Instalación simultánea
 - **WHEN** la build `debug` y la build `release` están instaladas en el mismo dispositivo
 - **THEN** cada una mantiene su propio progreso de estudio y ninguna lee ni modifica los datos de la otra
+- **Verificación:** de dispositivo (manual, ver `design.md` D6).
+
+#### Scenario: Build de depuración anterior instalada
+- **GIVEN** una build `debug` antigua instalada con el identificador `com.dalmuina.fraseafrase`
+- **WHEN** se instala la nueva build `debug`
+- **THEN** la aplicación antigua no se modifica y la nueva arranca con una base de datos vacía
+- **Verificación:** de dispositivo (manual, ver `design.md` D6).
 
 ### Requirement: Los tests instrumentados de la app solo afectan a la build de depuración
 Los tests instrumentados de `:app` SHALL ejecutarse contra la build `debug`. Al terminar su ejecución, la desinstalación automática SHALL afectar únicamente a la build `debug`.
@@ -30,8 +38,10 @@ Los tests instrumentados de `:app` SHALL ejecutarse contra la build `debug`. Al 
 #### Scenario: Ejecución de tests instrumentados
 - **WHEN** se ejecutan los tests instrumentados de `:app`
 - **THEN** la aplicación probada tiene el identificador `com.dalmuina.fraseafrase.debug`
+- **Verificación:** automática (`BuildVariantTest`).
 
 #### Scenario: Progreso de la build de publicación tras los tests
 - **GIVEN** la build `release` instalada con progreso de estudio guardado
 - **WHEN** termina una ejecución de `connectedDebugAndroidTest`
 - **THEN** la build `release` sigue instalada y conserva su progreso
+- **Verificación:** de dispositivo (manual, ver `design.md` D6).
