@@ -3,18 +3,30 @@ plugins {
     id("fraseafrase.hilt")
 }
 
+// Identificador de la build de publicación (design.md D1 y D5). Es val y no const val: forma segura en un script .gradle.kts.
+val PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"
+
 android {
     namespace = "com.dalmuina.fraseafrase"
 
     defaultConfig {
-        applicationId = "com.dalmuina.fraseafrase"
+        applicationId = PRODUCTION_APP_ID
         versionCode = 1
         versionName = "0.1.0"
         // Hilt exige un runner que devuelva HiltTestApplication (design.md D2). Solo :app lo sobrescribe.
         testInstrumentationRunner = "com.dalmuina.fraseafrase.HiltTestRunner"
     }
 
+    buildFeatures {
+        // Expone BuildConfig.APPLICATION_ID a los tests JVM (BuildVariantTest, design.md D4).
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            // Identificador propio para instalar junto a la build de publicación (design.md D1).
+            applicationIdSuffix = ".debug"
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -22,6 +34,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+    }
+}
+
+// Comprobación de configuración de la variante release (design.md D5): su identificador no cambia por este cambio.
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        val actual = variant.applicationId.get()
+        if (actual != PRODUCTION_APP_ID) {
+            throw GradleException("applicationId de release: esperado '$PRODUCTION_APP_ID', obtenido '$actual'")
         }
     }
 }
