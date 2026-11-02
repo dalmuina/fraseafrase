@@ -8,6 +8,7 @@ Los tests instrumentados de `:app` se ejecutan contra la app real con su `applic
 
 - La build `debug` usa `applicationId` `com.dalmuina.fraseafrase.debug` mediante `applicationIdSuffix`, de modo que se instala junto a cualquier otra build y tiene su propio directorio de datos y su propia base de datos.
 - La build `release` mantiene `applicationId` `com.dalmuina.fraseafrase`, sin cambios.
+- Un test JVM de `:app` comprueba el identificador de cada variante leyendo `BuildConfig.APPLICATION_ID`, y para ello se activa `buildConfig` en `:app`.
 - Los tests instrumentados de `:app` se ejecutan contra la build `debug` y, por tanto, borran solo los datos de `.debug`.
 - No hay cambios de comportamiento de la aplicación ni de su modelo de datos.
 
@@ -21,10 +22,10 @@ Los tests instrumentados de `:app` se ejecutan contra la app real con su `applic
 
 ## Impact
 
-- `app/build.gradle.kts`: `applicationIdSuffix = ".debug"` en `buildTypes.debug`. No cambia `namespace`, que sigue siendo `com.dalmuina.fraseafrase`, por lo que el código Kotlin y los paquetes no se tocan.
-- Tests instrumentados de `:app` (`app/src/androidTest`): pasan a ejecutarse contra `com.dalmuina.fraseafrase.debug`. El runner `HiltTestRunner` no cambia.
-- Dispositivos: quien tenga instalada una build de depuración anterior con el identificador original verá una app nueva junto a la antigua. Los datos de la antigua no se migran.
-- Sin dependencias nuevas ni cambios en el version catalog. No afecta a ADR-0012 (método de práctica), ADR-0010 (módulos) ni ADR-0013 (persistencia). ADR-0014 se aplica a la prueba nueva: los tests instrumentados usan JUnit 4.
+- `app/build.gradle.kts`: `applicationIdSuffix = ".debug"` en `buildTypes.debug` y `buildFeatures { buildConfig = true }` en `:app`. No cambia `namespace`, que sigue siendo `com.dalmuina.fraseafrase`, por lo que el código Kotlin y los paquetes no se tocan.
+- Tests de `:app` (`app/src/test`): test JVM nuevo con JUnit 6 Jupiter, conforme a ADR-0014. Los tests instrumentados de `app/src/androidTest` no cambian, aunque pasen a ejecutarse contra `.debug`. El runner `HiltTestRunner` no cambia.
+- Dispositivos: quien tenga instalada una build de depuración anterior con el identificador original debe desinstalarla una vez antes de instalar la `release` firmada (ver `design.md`, migración). Los datos de la antigua no se migran.
+- Sin dependencias nuevas ni cambios en el version catalog. No afecta a ADR-0012 (método de práctica), ADR-0010 (módulos) ni ADR-0013 (persistencia).
 
 ## Fuera de alcance
 

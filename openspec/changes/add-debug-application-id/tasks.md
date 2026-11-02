@@ -1,31 +1,26 @@
 # Tasks
 
-Orden: primero la prueba que falla por el motivo esperado, después el cambio de build. Un único grupo de implementación (1), que se commitea en verde. Los escenarios referencian `specs/build-variants/spec.md`. Los resultados de verificación se registran en este fichero.
+Orden: primero la prueba que falla por el motivo esperado, después el cambio de build. Un único grupo de implementación (1), que se commitea en verde. Los escenarios referencian `specs/build-variants/spec.md`. Comandos para PowerShell desde la raíz del repositorio.
 
-## 1. Identificador de la build de depuración (rojo → verde)
+## 1. Identificadores de las variantes (rojo → verde)
 
-- [ ] 1.1 (rojo) Crear `app/src/androidTest/kotlin/com/dalmuina/fraseafrase/BuildVariantTest.kt`, con `@RunWith(AndroidJUnit4::class)` y `org.junit.Test` (JUnit 4, ADR-0014). Test `givenDebugBuild_whenRunningInstrumentedTests_thenTargetPackageEndsWithDebug`: afirma con `assertEquals("com.dalmuina.fraseafrase.debug", InstrumentationRegistry.getInstrumentation().targetContext.packageName)`. Escenarios: *"Ejecución de tests instrumentados"* y *"Build de depuración instalada"*.
-- [ ] 1.2 (rojo) Desconectar el móvil personal. Comprobar con `adb devices` que solo aparece el emulador (`emulator-5554`); si aparece otro dispositivo, no ejecutar. Ejecutar `./gradlew :app:connectedDebugAndroidTest --no-configuration-cache` y comprobar que `BuildVariantTest` **falla por aserción** (el paquete es `com.dalmuina.fraseafrase`, no `.debug`). Si falla por otro motivo (cableado, compilación), corregir la prueba antes de continuar. Registrar la salida del fallo en este fichero.
-- [ ] 1.3 (verde) En `app/build.gradle.kts`, añadir `applicationIdSuffix = ".debug"` dentro de `buildTypes.debug`. No cambiar `defaultConfig.applicationId` ni `namespace`. Decisiones D1 y D2 de `design.md`.
-- [ ] 1.4a (rojo) Comprobar que nada detecta un `release` mal configurado. Añadir **temporalmente** `applicationIdSuffix = ".mutante"` a `buildTypes.release`, sin la comprobación, y ejecutar `./gradlew :app:tasks`: el build debe **pasar**, lo que demuestra que el error no se detecta. Revertir la mutación antes de seguir. Escenario *"Build de publicación sin cambios"*; decisión D5.
-- [ ] 1.4b (verde) Añadir a `app/build.gradle.kts` la constante `PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"` y la comprobación de D5 con `androidComponents.onVariants(selector().withBuildType("release"))`, que lanza `GradleException` si `applicationId` no coincide. Usar la constante también en `defaultConfig`. Ejecutar `./gradlew :app:tasks`: debe pasar. Repetir la mutación de 1.4a: el build debe **fallar** con el mensaje esperado y el obtenido. Revertir la mutación y volver a ejecutar `./gradlew :app:tasks`, que debe pasar.
-- [ ] 1.5 (verde) Desconectar el móvil personal y comprobar con `adb devices` que solo aparece el emulador. Ejecutar `./gradlew :app:connectedDebugAndroidTest --no-configuration-cache` y comprobar que `BuildVariantTest` pasa. Comprobar el paquete del APK de test con `apkanalyzer manifest application-id app\build\outputs\apk\androidTest\debug\app-debug-androidTest.apk`, que debe devolver `com.dalmuina.fraseafrase.debug.test`. Ejecutar `./gradlew :app:assembleRelease` y comprobar que pasa la comprobación de 1.4b.
+- [ ] 1.0 (preparación, sin comportamiento) En `app/build.gradle.kts`, activar `buildFeatures { buildConfig = true }` en `:app`, necesario para que el test pueda leer `BuildConfig` (D4).
+- [ ] 1.1 (rojo) Crear `app/src/test/kotlin/com/dalmuina/fraseafrase/BuildVariantTest.kt` con JUnit 6 Jupiter y Kotest (ADR-0014). Test `givenBuildType_whenReadingApplicationId_thenMatchesVariantIdentity`: calcula `expected` como `"com.dalmuina.fraseafrase.debug"` si `BuildConfig.DEBUG` es `true`, y `"com.dalmuina.fraseafrase"` si es `false`; afirma `BuildConfig.APPLICATION_ID == expected`. Escenarios: *"Variante debug"*, *"Variante release"* e *"Identificadores distintos"* (D4).
+- [ ] 1.2 (rojo) Ejecutar `.\gradlew.bat :app:testDebugUnitTest`. Debe **fallar por aserción**: `APPLICATION_ID` vale `com.dalmuina.fraseafrase`, no `.debug`. Ejecutar `.\gradlew.bat :app:testReleaseUnitTest`: debe **pasar** (la variante release ya cumple, D5). Registrar ambas salidas en este fichero.
+- [ ] 1.3 (verde) En `app/build.gradle.kts`, añadir `applicationIdSuffix = ".debug"` dentro de `buildTypes.debug`. No cambiar `defaultConfig.applicationId` ni `namespace`. Decisiones D1 y D2.
+- [ ] 1.4 (verde) Ejecutar `.\gradlew.bat :app:testDebugUnitTest :app:testReleaseUnitTest`. Ambos deben pasar. Escenarios *"Variante debug"*, *"Variante release"* e *"Identificadores distintos"*.
+- [ ] 1.5 (mutación, D5) Añadir **temporalmente** `applicationIdSuffix = ".mutante"` a `buildTypes.release`. Ejecutar `.\gradlew.bat :app:testReleaseUnitTest`: debe **fallar por aserción**. Revertir la mutación y comprobar con `git diff app/build.gradle.kts` que solo quedan los cambios de 1.0 y 1.3.
+- [ ] 1.6 Ejecutar `.\gradlew.bat :app:check` y comprobar en la salida que se ejecutan `testDebugUnitTest` y `testReleaseUnitTest`. Si `testReleaseUnitTest` no se ejecuta, añadir `check` → `dependsOn(testReleaseUnitTest)` en `:app` y repetir.
+- [ ] 1.7 Ejecutar `.\gradlew.bat check` y `.\gradlew.bat koverVerify` en la raíz. Ambos en verde.
 
-## 2. Verificación de dispositivo (decisión D6, manual)
+## 2. Checklist para la descripción de la PR (manual, no es escenario)
 
-Requiere firma local de la build `release`: el proyecto no define `signingConfig` para `release`, así que el APK sale sin firmar y no se puede instalar. Se firma solo para esta verificación, con la clave de depuración de Android, y el APK firmado se guarda fuera del repositorio (carpeta scratchpad). La clave no se commitea.
+No es una verificación de escenario de `spec.md`: son comprobaciones de dispositivo que se copian a la descripción de la PR. Requieren firmar la build `release` para instalarla, porque el proyecto no define `signingConfig`. Si no se quiere firmar, se omite esta sección y se indica en la PR.
 
-Antes de cada tarea de este grupo, comprobar con `adb devices` que solo aparece el emulador.
+- [ ] 2.1 Si hay instalada una build `debug` antigua con el identificador `com.dalmuina.fraseafrase`, desinstalarla (nota de migración de `design.md`).
+- [ ] 2.2 En el emulador, instalar `debug` y `release` firmada y comprobar que conviven. Anotar el resultado en la PR.
 
-- [ ] 2.1 Generar la build de publicación sin firmar (`./gradlew :app:assembleRelease`). Firmar con PowerShell, sustituyendo `<versión>` por la versión de build-tools instalada (ver `ls $env:ANDROID_HOME\build-tools`) y `<scratchpad>` por la carpeta scratchpad:
-  `& "$env:ANDROID_HOME\build-tools\<versión>\apksigner.bat" sign --ks "$env:USERPROFILE\.android\debug.keystore" --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android --out "<scratchpad>\app-release-signed.apk" app\build\outputs\apk\release\app-release-unsigned.apk`
-  Si el instalador rechaza el APK, alinearlo antes con `zipalign -p 4`. Comprobar el identificador con `& "$env:ANDROID_HOME\cmdline-tools\latest\bin\apkanalyzer.bat" manifest application-id "<scratchpad>\app-release-signed.apk"`, que debe devolver `com.dalmuina.fraseafrase`. Escenario *"Build de publicación sin cambios"*.
-- [ ] 2.2 Instalar `release` firmada y `debug` en `Pixel_7a(AVD) - 17`. Practicar y cerrar una tanda en `debug` y comprobar que el progreso de `release` (frases certificadas y nivel) no cambia; después, al revés. Escenario *"Instalación simultánea"*. Registrar fecha, dispositivo, valores antes y después, y resultado en este fichero.
-- [ ] 2.3 Escenario *"Build de depuración anterior instalada"*: obtener una build `debug` con el identificador original con `git worktree add --detach "<scratchpad>\old-debug" master` (no crea rama), ejecutar `./gradlew :app:assembleDebug` dentro de esa carpeta e instalar su APK. Después instalar la nueva `debug`. Comprobar que la antigua no cambia y que la nueva arranca con base de datos vacía. Eliminar el worktree con `git worktree remove "<scratchpad>\old-debug"`. Registrar el resultado en este fichero.
-- [ ] 2.4 Escenario *"Progreso de la build de publicación tras los tests"*: con `release` instalada, practicar una tanda con al menos una frase respondida y cerrarla. Anotar el estado (frases certificadas y nivel). Ejecutar `./gradlew :app:connectedDebugAndroidTest --no-configuration-cache` (tras comprobar `adb devices`). Comprobar que `release` sigue instalada y que el estado es el mismo. Registrar ambos valores en este fichero.
+## 3. Verificación final y deuda
 
-## 3. Verificación final
-
-- [ ] 3.1 Ejecutar `./gradlew check` y `./gradlew koverVerify`. Ambos en verde.
-- [ ] 3.2 Ejecutar `./gradlew :app:assembleDebug` y comprobar con `apkanalyzer manifest application-id app\build\outputs\apk\debug\app-debug.apk` que devuelve `com.dalmuina.fraseafrase.debug`. Escenario *"Build de depuración instalada"*.
-- [ ] 3.3 Cerrar la entrada "Build debug con `applicationIdSuffix`" de `docs/deuda-tecnica.md` moviéndola a una sección "Resuelto en `1.0.0/add-debug-application-id`". No ampliar alcance.
+- [ ] 3.1 Ejecutar `.\gradlew.bat :app:assembleDebug` y `.\gradlew.bat :app:assembleRelease`. Ambos deben compilar.
+- [ ] 3.2 Cerrar la entrada "Build debug con `applicationIdSuffix`" de `docs/deuda-tecnica.md` moviéndola a una sección "Resuelto en `1.0.0/add-debug-application-id`". No ampliar alcance.
