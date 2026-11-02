@@ -2,7 +2,8 @@
 
 ## Context
 
-Ver `proposal.md` - Why. `KotlinAndroid.kt` (`build-logic/convention`) fija
+Ver `proposal.md` - Why (no es un fallo de build con el AGP actual, sino trabajo de más).
+`KotlinAndroid.kt` (`build-logic/convention`) fija
 `testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"` y la dependencia
 `androidx-test-runner` para todos los módulos a los que se aplica `fraseafrase.android.library`
 o `fraseafrase.android.application`, sin mirar si el módulo tiene `src/androidTest`. Hoy solo
@@ -15,8 +16,9 @@ no tiene ningún job con emulador: solo `detekt`, `check`, `koverVerify` y `asse
 ## Goals / Non-Goals
 
 **Goals:**
-- Que `connectedDebugAndroidTest` del proyecto completo no falle en módulos sin tests
-  instrumentados.
+- Que `connectedDebugAndroidTest` del proyecto completo no construya ni instale un APK de test
+  vacío en módulos sin tests instrumentados (hoy no falla con el AGP de este proyecto, pero sí
+  hace trabajo de más: ver D1).
 - Que la CI ejecute esos tests en un emulador, sin bloquear el merge todavía.
 - Que `detekt` analice `src/androidTest` con la misma puerta que ya usa `src/main`.
 
@@ -34,7 +36,14 @@ En `configureKotlinAndroid` (`KotlinAndroid.kt`), comprobar
 `layout.projectDirectory.dir("src/androidTest").asFile.exists()` antes de fijar
 `testInstrumentationRunner` y de llamar a `addInstrumentationRunnerDependency()`. Si el
 directorio no existe, el módulo no declara runner ni dependencia de `androidx-test:runner`, y
-Gradle no genera una tarea `connectedDebugAndroidTest` con un APK de test vacío.
+Gradle no genera una tarea `connectedDebugAndroidTest` que compile, empaquete e instale un APK
+de test vacío.
+
+Verificado que el estado actual (runner forzado en todos los módulos) no hace fallar el build:
+`./gradlew connectedDebugAndroidTest` en el proyecto completo termina en
+`Starting 0 tests... Finished 0 tests... BUILD SUCCESSFUL` para `:core:data` y
+`:core:platform`. D1 no corrige un fallo, sino trabajo innecesario (build, empaquetado e
+instalación de un APK vacío) y una dependencia sin uso.
 
 **Alternativas consideradas:**
 - Mantener el runner global y desactivar la tarea `connectedDebugAndroidTest` con un `onlyIf`

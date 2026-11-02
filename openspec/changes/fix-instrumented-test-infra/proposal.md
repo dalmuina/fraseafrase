@@ -4,9 +4,12 @@
 
 `connectedDebugAndroidTest` fuerza el `testInstrumentationRunner` en todos los módulos Android
 (`KotlinAndroid.kt`), incluidos `:core:data` y `:core:platform`, que no tienen ningún test
-instrumentado (`src/androidTest`). Instalar y arrancar la instrumentación con cero clases de
-test es un modo de fallo distinto y documentado de `AndroidJUnitRunner` ("no tests found" /
-"empty test suite"), separado del `ClassNotFoundException` ya resuelto en
+instrumentado (`src/androidTest`). Con el AGP de este proyecto eso no hace fallar el build: se
+comprobó con `./gradlew connectedDebugAndroidTest` en el proyecto completo y el resultado es
+`Starting 0 tests... Finished 0 tests... BUILD SUCCESSFUL`. Pero sí es trabajo de más: Gradle
+compila, empaqueta e instala un APK de test vacío en el emulador para cada módulo sin
+`src/androidTest`, y esos módulos siguen declarando la dependencia `androidx-test:runner` sin
+usarla. Esto es independiente del `ClassNotFoundException` ya resuelto en
 `1.0.0/fix-instrumented-test-runner`. Además, los tests instrumentados solo se ejecutan en
 local: la CI (`.github/workflows/ci.yml`) no tiene ningún job de emulador, así que un fallo de
 cableado de Hilt o de UI solo se detecta si alguien ejecuta `connectedDebugAndroidTest` antes de
@@ -17,7 +20,8 @@ desapercibida (comprobado con una infracción real de `MaxLineLength` en
 ## What Changes
 
 - El `testInstrumentationRunner` y la dependencia `androidx-test-runner` solo se declaran para
-  módulos Android que tengan `src/androidTest` (deja de forzarse en todos los módulos Android).
+  módulos Android que tengan `src/androidTest` (deja de forzarse en todos los módulos Android),
+  para no construir ni instalar un APK de test vacío en los módulos sin tests instrumentados.
 - Nuevo job de CI que ejecuta `connectedDebugAndroidTest` del proyecto completo en un emulador
   (acción `reactivecircus/android-emulator-runner`, API 34), como paso informativo (no bloquea
   el merge por ahora, a falta de protección de ramas en GitHub).

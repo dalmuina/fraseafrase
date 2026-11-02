@@ -2,9 +2,18 @@
 
 ## 1. Runner e instrumentación condicionales (D1)
 
-- [ ] 1.1 Confirmar en rojo, con un emulador conectado, que `connectedDebugAndroidTest` falla
-      hoy en `:core:data` y/o `:core:platform` (sin `src/androidTest`) con "no tests found" /
-      "empty test suite", y guardar el mensaje exacto como evidencia del motivo del cambio.
+- [x] 1.1 Confirmar, con un emulador conectado, que `connectedDebugAndroidTest` del proyecto
+      completo hoy NO falla en `:core:data` ni `:core:platform` (sin `src/androidTest`): termina
+      en `Starting 0 tests... Finished 0 tests... BUILD SUCCESSFUL`, construyendo e instalando
+      un APK de test vacío en cada uno. Guardar esa salida como evidencia de que D1 no corrige
+      un fallo, sino el trabajo de más (build, empaquetado e instalación de ese APK).
+      Evidencia (`./gradlew connectedDebugAndroidTest --no-configuration-cache`, proyecto
+      completo, `Pixel_7a(AVD) - 17`): `:app:connectedDebugAndroidTest` y
+      `:feature:session:connectedDebugAndroidTest` ejecutan sus tests reales (8 y 2 tests);
+      `:core:platform:connectedDebugAndroidTest`, `:core:data:connectedDebugAndroidTest` y
+      `:feature:settings:connectedDebugAndroidTest` (sin `src/androidTest`) imprimen
+      `Starting 0 tests on Pixel_7a(AVD) - 17` / `Finished 0 tests on Pixel_7a(AVD) - 17` y el
+      build termina en `BUILD SUCCESSFUL`, sin ningún fallo.
 - [ ] 1.2 En `KotlinAndroid.kt`, condicionar `testInstrumentationRunner` y la llamada a
       `addInstrumentationRunnerDependency()` a que el módulo tenga `src/androidTest` (D1).
       Verificar con `./gradlew :core:data:dependencies --configuration androidTestImplementation`
