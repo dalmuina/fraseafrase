@@ -1,6 +1,6 @@
 # Tasks
 
-## 1. Runner e instrumentación condicionales (D1)
+## 1. Componente `AndroidTest` desactivado sin `src/androidTest` (D1)
 
 - [x] 1.1 Confirmar, con un emulador conectado, que `connectedDebugAndroidTest` del proyecto
       completo hoy NO falla en `:core:data` ni `:core:platform` (sin `src/androidTest`): termina
@@ -14,15 +14,22 @@
       `:feature:settings:connectedDebugAndroidTest` (sin `src/androidTest`) imprimen
       `Starting 0 tests on Pixel_7a(AVD) - 17` / `Finished 0 tests on Pixel_7a(AVD) - 17` y el
       build termina en `BUILD SUCCESSFUL`, sin ningún fallo.
-- [ ] 1.2 En `KotlinAndroid.kt`, condicionar `testInstrumentationRunner` y la llamada a
-      `addInstrumentationRunnerDependency()` a que el módulo tenga `src/androidTest` (D1).
-      Verificar con `./gradlew :core:data:dependencies --configuration androidTestImplementation`
-      y el equivalente en `:core:platform` que `androidx-test:runner` ya no aparece, y que
-      `:app:dependencies`/`:feature:session:dependencies` con la misma configuración sigue
-      incluyéndolo.
-- [ ] 1.3 Con un emulador conectado, verificar en verde que `./gradlew connectedDebugAndroidTest`
-      del proyecto completo ya no falla en `:core:data` ni `:core:platform`, y que los tests
-      reales de `:app` y `:feature:session` siguen pasando.
+- [x] 1.2 En `KotlinAndroid.kt`, desactivar el componente `AndroidTest` del `VariantBuilder` con
+      `AndroidComponentsExtension.beforeVariants` cuando el módulo no tiene `src/androidTest`
+      (D1; mecanismo final, tras descartar condicionar `testInstrumentationRunner` y la
+      dependencia del runner — ver D1 en `design.md`). Verificado con
+      `./gradlew :core:data:tasks`: ya no aparece una tarea `connectedDebugAndroidTest`
+      específica para `:core:data` (solo los agregados `connectedAndroidTest`/`connectedCheck`).
+      `testInstrumentationRunner` y la dependencia `androidx-test:runner` se mantienen sin
+      condición en todos los módulos Android (son inertes donde el componente está desactivado).
+- [x] 1.3 Con un emulador conectado, verificar en verde que `./gradlew connectedDebugAndroidTest`
+      del proyecto completo ya no construye ni ejecuta nada en `:core:data` ni `:core:platform`,
+      y que los tests reales de `:app` y `:feature:session` siguen pasando.
+      Evidencia (`./gradlew connectedDebugAndroidTest --no-configuration-cache`, proyecto
+      completo, `Pixel_7a(AVD) - 17`): solo aparecen `:feature:session:connectedDebugAndroidTest`
+      (8 tests) y `:app:connectedDebugAndroidTest` (2 tests), ambos en verde, 0 fallos;
+      `:core:data`, `:core:platform`, `:core:designsystem`, `:core:domain`, `:core:testing` y
+      `:feature:settings` no generan esa tarea. `BUILD SUCCESSFUL`.
 
 ## 2. `detekt` analiza `src/androidTest` (D4)
 

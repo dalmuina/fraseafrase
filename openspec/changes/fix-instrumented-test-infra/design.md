@@ -30,25 +30,55 @@ no tiene ningún job con emulador: solo `detekt`, `check`, `koverVerify` y `asse
 
 ## Decisions
 
-### D1. Runner e instrumentación condicionales a la existencia de `src/androidTest`
+### D1. Desactivar el componente `AndroidTest` cuando no existe `src/androidTest`
 
-En `configureKotlinAndroid` (`KotlinAndroid.kt`), comprobar
-`layout.projectDirectory.dir("src/androidTest").asFile.exists()` antes de fijar
-`testInstrumentationRunner` y de llamar a `addInstrumentationRunnerDependency()`. Si el
-directorio no existe, el módulo no declara runner ni dependencia de `androidx-test:runner`, y
-Gradle no genera una tarea `connectedDebugAndroidTest` que compile, empaquete e instale un APK
-de test vacío.
+Primer intento descartado: condicionar `testInstrumentationRunner` y
+`addInstrumentationRunnerDependency()` a la existencia de `src/androidTest`. Falló al
+verificarlo (tarea 1.3): AGP declara `android:name="androidx.test.runner.AndroidJUnitRunner"`
+en el `<instrumentation>` del manifest de test **aunque `testInstrumentationRunner` no se
+asigne** (es el valor por defecto interno de AGP, no un eco de lo que ponga el build script). Al
+quitar solo la dependencia, `:core:data` y `:core:platform` pasaron de "0 tests, build verde" a
+fallar con `ClassNotFoundException: androidx.test.runner.AndroidJUnitRunner` al arrancar la
+instrumentación. Condicionar el runner/la dependencia no evita que el manifest pida esa clase.
 
-Verificado que el estado actual (runner forzado en todos los módulos) no hace fallar el build:
-`./gradlew connectedDebugAndroidTest` en el proyecto completo termina en
-`Starting 0 tests... Finished 0 tests... BUILD SUCCESSFUL` para `:core:data` y
-`:core:platform`. D1 no corrige un fallo, sino trabajo innecesario (build, empaquetado e
-instalación de un APK vacío) y una dependencia sin uso.
+Mecanismo final: en `configureKotlinAndroid` (`KotlinAndroid.kt`), con la Variant API de AGP
+(`AndroidComponentsExtension.beforeVariants`), desactivar el componente `AndroidTest` del
+`VariantBuilder` cuando `layout.projectDirectory.dir("src/androidTest").asFile.exists()` es
+`false`:
+
+```kotlin
+extensions.getByType(AndroidComponentsExtension::class.java).beforeVariants { variantBuilder ->
+    (variantBuilder as? HasDeviceTestsBuilder)
+        ?.deviceTests
+        ?.get(DeviceTestBuilder.ANDROID_TEST_TYPE)
+        ?.enable = false
+}
+```
+
+`HasDeviceTestsBuilder` (implementada por `ApplicationVariantBuilder` y `LibraryVariantBuilder`,
+`com.android.tools.build:gradle-api:9.3.3`) expone `deviceTests: Map<String, DeviceTestBuilder>`;
+`DeviceTestBuilder.ANDROID_TEST_TYPE` es la clave del test instrumentado y `enable: Boolean` es
+el interruptor soportado por AGP para no crear ese componente. Con `enable = false`, AGP no
+genera ninguna tarea `connectedDebugAndroidTest` para el módulo (verificado con
+`./gradlew :core:data:tasks`: no aparece esa tarea, solo los agregados `connectedAndroidTest` /
+`connectedCheck`), así que no hay manifest de instrumentación, ni APK de test, ni
+`ClassNotFoundException`. `testInstrumentationRunner` y la dependencia `androidx-test:runner`
+vuelven a declararse sin condición en todos los módulos Android: con el componente desactivado,
+son inertes para los módulos sin `src/androidTest`, así que no hace falta un segundo mecanismo
+para ellos (una sola condición, un solo interruptor).
+
+Verificado con `./gradlew connectedDebugAndroidTest` en el proyecto completo: `:core:data`,
+`:core:platform`, `:core:designsystem`, `:core:domain`, `:core:testing` y `:feature:settings` no
+ejecutan ninguna tarea `connectedDebugAndroidTest`; `:app` (8 tests) y `:feature:session`
+(2 tests) siguen pasando. `BUILD SUCCESSFUL`.
 
 **Alternativas consideradas:**
-- Mantener el runner global y desactivar la tarea `connectedDebugAndroidTest` con un `onlyIf`
-  cuando no hay `androidTest`: dos mecanismos (runner forzado + tarea apagada) para un problema
-  que D1 resuelve con uno. Descartada.
+- Condicionar solo `testInstrumentationRunner` y la dependencia del runner (intento inicial):
+  descartada por el `ClassNotFoundException` de arriba.
+- Mantener el runner global y desactivar la tarea `connectedDebugAndroidTest` con un `onlyIf`:
+  sigue construyendo e instalando el APK de test vacío antes de que `onlyIf` salte (el coste que
+  D1 quiere evitar), y es un mecanismo de Gradle por fuera de la Variant API cuando AGP ya ofrece
+  uno dedicado. Descartada.
 - Añadir un test instrumentado trivial a `:core:data` y `:core:platform`: test sin valor que
   oculta que esos módulos no necesitan instrumentación. Descartada.
 
@@ -104,13 +134,16 @@ control fino, pero un paso más que mantener y una puerta de calidad duplicada. 
 - [API 34 en CI diverge del `compileSdk`/`targetSdk` 37 del proyecto] → aceptable porque el
   `minSdk` real es 26 y la instrumentación no depende de comportamiento específico de API 37;
   si en el futuro aparece una diferencia real, se puede alinear sin tocar D1/D2/D4.
-- [Un módulo nuevo con `src/androidTest` pero sin tests reales (cero clases `@Test`) volvería a
-  fallar con "no tests found"] → D1 solo mira si el directorio existe, no si contiene tests;
-  queda igual que hoy para ese caso límite, pero deja de ser un problema de los módulos actuales.
+- [Un módulo nuevo con `src/androidTest` pero sin tests reales (cero clases `@Test`)] → D1 solo
+  mira si el directorio existe, no si contiene tests, así que ese módulo mantendría el
+  componente `AndroidTest` activo y volvería a construir e instalar un APK que reporta
+  "0 tests" sin fallar (el mismo comportamiento verificado hoy para los módulos actuales antes
+  de D1); no es un problema nuevo, solo queda sin resolver para ese caso límite.
 
 ## Migration Plan
 
-1. `KotlinAndroid.kt`: condicionar runner y dependencia (D1).
+1. `KotlinAndroid.kt`: desactivar el componente `AndroidTest` con la Variant API cuando no hay
+   `src/androidTest` (D1).
 2. `Quality.kt`: ampliar `source` de `detekt` (D4).
 3. Corregir el `MaxLineLength` ya encontrado en `PersistenceWiringTest.kt` (hallazgo "Corregir"
    de la exploración), para que `detekt` siga en verde al activarse D4.
