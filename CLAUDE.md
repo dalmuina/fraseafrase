@@ -120,6 +120,15 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 
 Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerrar un cambio: también `./gradlew koverVerify`.
 
+## Presupuesto de revisión
+
+- **Bloqueante** es solo: comportamiento incorrecto; escenario de spec sin test; contradicción entre artefactos que haría implementar algo mal; riesgo de pérdida de datos, cierre de la app o seguridad. Redacción, formato, evidencias o comentarios nunca bloquean: se corrigen en una sola pasada o se descartan.
+- **Máximo dos rondas por fase.** La segunda es una verificación de cierre: solo comprueba los bloqueantes anteriores y no admite hallazgos nuevos, salvo pérdida de datos, cierre de la app o seguridad.
+- **Cambio ligero** (configuración o infraestructura, sin lógica de dominio, diff pequeño): una ronda de `android-architect` y una de `code-reviewer`. Las correcciones de texto posteriores no reabren revisiones.
+- **Evidencias en `tasks.md`** solo cuando son la única prueba de un escenario (por ejemplo, una mutación). En lo demás, el commit y la build en verde son la evidencia.
+- **Sugerencias** no van a `docs/deuda-tecnica.md` por defecto; solo si tienen un valor claro.
+- Los subagentes reciben este presupuesto en su prompt.
+
 ## No hacer
 
 - No hagas commit, push ni merge en `develop` ni en `master`.

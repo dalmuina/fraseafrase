@@ -26,6 +26,9 @@ Si el handoff y el repositorio no coinciden, para y explica la discrepancia.
 10. Verify correcto: tareas de cierre (líneas de estado de los ADR si las hay), /opsx:archive, openspec validate --specs y push de la rama. Antes de archivar, muestra un resumen y pide confirmación.
 11. Rama archivada y con push hecho: es un paso del usuario, abrir la PR a develop, comprobar la CI y hacer merge.
 
+## 2b. Presupuesto de revisión
+Aplica el apartado "Presupuesto de revisión" de CLAUDE.md: solo un bloqueante según su definición detiene el avance; máximo dos rondas por fase; las correcciones de texto no reabren revisiones; y el presupuesto va en el prompt de cada subagente de revisión.
+
 ## 3. Límites
 - Ejecuta solo el paso decidido y para. Nunca encadenes dos pasos.
 - Nunca crees ni borres ramas, hagas merge, abras PR ni lances /opsx:apply sin APROBADO.
