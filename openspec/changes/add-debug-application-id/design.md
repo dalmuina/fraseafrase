@@ -70,7 +70,7 @@ Por eso no aparecen como escenarios en `spec.md`. Se comprueban a mano solo como
 
 ## Migration Plan
 
-Nota de migración para quien tenga instalada una build `debug` antigua: desinstalarla una vez antes de instalar una `release` firmada con otra clave. **Desinstalar la build `debug` antigua borra su base de datos y su progreso de estudio.** No hay copia automática; si se quiere conservar el progreso, exportarlo a mano antes, o asumir su pérdida. No hay migración de datos.
+Nota de migración para quien tenga instalada una build `debug` antigua: desinstalarla una vez antes de instalar una `release` firmada con otra clave. **Desinstalar la build `debug` antigua borra su base de datos y su progreso de estudio.** No hay copia automática; si se quiere conservar el progreso, exportarlo a mano antes, o asumir su pérdida. No hay migración de datos automática. El procedimiento de copia manual de la entrada "Migración de la debug antigua" en `docs/deuda-tecnica.md` solo aplica si el uso diario pasa a `.debug`; si la release arranca vacía, no se copia nada.
 
 Instalar la nueva build `debug` no modifica la antigua. La nueva empieza con base de datos vacía. La pérdida ocurre solo al desinstalar la antigua. Hoy el proyecto no tiene `signingConfig` para `release`, así que la necesidad de desinstalar solo se presenta cuando exista una `release` firmada.
 
