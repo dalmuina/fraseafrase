@@ -8,7 +8,7 @@ Los tests instrumentados de `:app` se ejecutan contra la app real con su `applic
 
 - La build `debug` usa `applicationId` `com.dalmuina.fraseafrase.debug` mediante `applicationIdSuffix`, de modo que se instala junto a cualquier otra build y tiene su propio directorio de datos y su propia base de datos.
 - La build `release` mantiene `applicationId` `com.dalmuina.fraseafrase`, sin cambios.
-- Un test JVM de `:app` comprueba el identificador de cada variante leyendo `BuildConfig.APPLICATION_ID`, y para ello se activa `buildConfig` en `:app`.
+- Un test JVM de `:app` comprueba el identificador de la variante `debug` leyendo `BuildConfig.APPLICATION_ID`, y para ello se activa `buildConfig` en `:app`. La variante `release` se comprueba en la configuración de `app/build.gradle.kts` (`design.md`, D5).
 - Los tests instrumentados de `:app` se ejecutan contra la build `debug` y, por tanto, borran solo los datos de `.debug`.
 - No hay cambios de comportamiento de la aplicación ni de su modelo de datos.
 
@@ -24,7 +24,7 @@ Los tests instrumentados de `:app` se ejecutan contra la app real con su `applic
 
 - `app/build.gradle.kts`: `applicationIdSuffix = ".debug"` en `buildTypes.debug` y `buildFeatures { buildConfig = true }` en `:app`. No cambia `namespace`, que sigue siendo `com.dalmuina.fraseafrase`, por lo que el código Kotlin y los paquetes no se tocan.
 - Tests de `:app` (`app/src/test`): test JVM nuevo con JUnit 6 Jupiter, conforme a ADR-0014. Los tests instrumentados de `app/src/androidTest` no cambian, aunque pasen a ejecutarse contra `.debug`. El runner `HiltTestRunner` no cambia.
-- `docs/deuda-tecnica.md`: se cierra la entrada "Build debug con `applicationIdSuffix`" (tarea 3.2).
+- `docs/deuda-tecnica.md`: se cierra la entrada "Build debug con `applicationIdSuffix`" (tarea 3.1).
 - Dispositivos: quien tenga instalada una build de depuración anterior con el identificador original debe desinstalarla una vez antes de instalar la `release` firmada (ver `design.md`, migración). **Desinstalarla borra su base de datos y su progreso de estudio**, sin copia automática. Los datos no se migran.
 - Sin dependencias nuevas ni cambios en el version catalog. No afecta a ADR-0012 (método de práctica), ADR-0010 (módulos) ni ADR-0013 (persistencia).
 

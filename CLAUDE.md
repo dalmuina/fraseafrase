@@ -103,8 +103,8 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 - Cobertura mínima (Kover): dominio 90 %, presentación 80 %, global 70 %.
 
 **Idioma**
-- Documentación, especificaciones, ADR y comentarios explicativos en español.
-- Código, identificadores, nombres de test y mensajes de commit en inglés (Conventional Commits).
+- Documentación, especificaciones y ADR en español.
+- Código, identificadores, nombres de test, comentarios del código y mensajes de commit en inglés (Conventional Commits).
 
 ## Comandos
 
@@ -119,6 +119,17 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 ```
 
 Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerrar un cambio: también `./gradlew koverVerify`.
+
+## Presupuesto de revisión
+
+- **Niveles de hallazgo:**
+  - **Bloqueante:** solo comportamiento incorrecto; escenario de spec sin test; contradicción entre artefactos que haría implementar algo mal; riesgo de pérdida de datos, cierre de la app o seguridad. Detiene el avance.
+  - **Corregir:** errores reales sin impacto en el funcionamiento (redacción, formato, evidencias, comentarios). Se corrigen en una sola pasada, sin nueva revisión.
+  - **Descartar:** lo que no encaja en los anteriores. No se hace y no va a `docs/deuda-tecnica.md`, salvo que tenga un valor claro.
+- **Máximo dos rondas por fase.** La segunda verifica solo los bloqueantes de la primera, recibe el texto de las observaciones anteriores y no admite hallazgos nuevos, salvo pérdida de datos, cierre de la app o seguridad.
+- **Rigor proporcional.** Cambio ligero (configuración o infraestructura, sin lógica de dominio, diff pequeño): una ronda de `android-architect` y una de `code-reviewer`. Cambio normal: flujo completo con el límite de dos rondas.
+- **Evidencias en `tasks.md`** solo cuando son la única prueba de un escenario (por ejemplo, una mutación). En lo demás, el commit y la build en verde son la evidencia.
+- **Subagentes:** cada subagente de revisión recibe este presupuesto en su prompt.
 
 ## No hacer
 

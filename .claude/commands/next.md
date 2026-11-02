@@ -19,12 +19,15 @@ Si el handoff y el repositorio no coinciden, para y explica la discrepancia.
 3. Estás en develop o master: es un paso del usuario, crear 1.0.0/<cambio> desde develop actualizado. Propón el siguiente cambio a partir del handoff y de docs/deuda-tecnica.md. No crees ramas.
 4. Rama de cambio sin carpeta en openspec/changes: /opsx:explore, o /opsx:propose si el explore ya está resuelto en el handoff.
 5. Propuesta sin veredicto APROBADO: android-architect (verificación de cierre si ya hubo rondas) y openspec validate <cambio> --strict.
-6. APROBADO y tareas pendientes: primero, si la carpeta del cambio no está commiteada, commit `docs(openspec): ...` con sus artefactos. Después, /opsx:apply solo del primer grupo con tareas sin marcar, con tdd-implementer.
+6. Sin la palabra APROBADO como veredicto exacto del último android-architect registrado en .claude/handoff.md, /opsx:apply no se lanza, ni siquiera para un solo grupo. No basta con APROBADO CON AVISOS ni con CAMBIOS REQUERIDOS: tras corregir, se vuelve a pasar android-architect y se registra el nuevo veredicto. Con APROBADO y tareas pendientes: primero, si la carpeta del cambio no está commiteada, commit `docs(openspec): ...` con sus artefactos. Después, /opsx:apply solo del primer grupo con tareas sin marcar, con tdd-implementer.
 7. Todas las tareas marcadas y code-reviewer sin ejecutar: code-reviewer.
 8. Sugerencias del reviewer que afectan a spec o design: aplicarlas.
 9. Revisión limpia y verify sin ejecutar: /opsx:verify.
 10. Verify correcto: tareas de cierre (líneas de estado de los ADR si las hay), /opsx:archive, openspec validate --specs y push de la rama. Antes de archivar, muestra un resumen y pide confirmación.
 11. Rama archivada y con push hecho: es un paso del usuario, abrir la PR a develop, comprobar la CI y hacer merge.
+
+## 2b. Presupuesto de revisión
+Aplica el apartado "Presupuesto de revisión" de CLAUDE.md: solo un bloqueante (comportamiento incorrecto, escenario sin test, contradicción entre artefactos, pérdida de datos, cierre de la app o seguridad) detiene el avance; los hallazgos "Corregir" se arreglan en una pasada sin nueva revisión; "Descartar" no se hace; máximo dos rondas por fase; el cambio ligero lleva una ronda de android-architect y una de code-reviewer; y el presupuesto va en el prompt de cada subagente de revisión.
 
 ## 3. Límites
 - Ejecuta solo el paso decidido y para. Nunca encadenes dos pasos.

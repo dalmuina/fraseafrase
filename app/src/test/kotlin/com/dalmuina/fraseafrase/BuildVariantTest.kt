@@ -4,14 +4,17 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 
-// Escenarios de specs/build-variants (cambio add-debug-application-id): "Variante debug" e "Identificadores distintos".
-// AGP ejecuta los tests unitarios solo contra la variante debug (testBuildType), por eso el test fija su identificador.
+// Scenarios from specs/build-variants (change add-debug-application-id):
+// "Variante debug" and "Identificadores distintos".
+// AGP runs unit tests only against the debug variant (testBuildType), so this test pins its identifier.
 class BuildVariantTest {
 
-    // Scenario: Variante debug (spec: build-variants) e Identificadores distintos (spec: build-variants)
+    // Scenarios: "Variante debug" and "Identificadores distintos" (spec: build-variants)
     @Test
     fun `given the debug variant when reading application id then it has the debug suffix`() {
         // Given
+        // Local comparison value only. The release identifier is verified by configuration
+        // in app/build.gradle.kts (onVariants), not by this test.
         val releaseApplicationId = "com.dalmuina.fraseafrase"
 
         // When
