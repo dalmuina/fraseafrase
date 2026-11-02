@@ -6,6 +6,7 @@ import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
 
 /**
@@ -27,6 +28,14 @@ internal fun Project.configureQuality() {
     // detekt 1.23 analiza el bytecode como JVM 17 (el proyecto compila a 17).
     tasks.withType<Detekt>().configureEach {
         jvmTarget = PROJECT_JAVA_VERSION.toString()
+    }
+    // La tarea `detekt` (no `detektBaseline`/`detektGenerateConfig`) también analiza
+    // `src/androidTest` cuando existe: por defecto solo cubre `src/main`.
+    val androidTestDir = layout.projectDirectory.dir("src/androidTest/kotlin").asFile
+    if (androidTestDir.exists()) {
+        tasks.named<Detekt>("detekt").configure {
+            setSource(files(source, androidTestDir))
+        }
     }
 
     dependencies {

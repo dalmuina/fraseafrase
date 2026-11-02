@@ -33,16 +33,29 @@
 
 ## 2. `detekt` analiza `src/androidTest` (D4)
 
-- [ ] 2.1 Confirmar en rojo que `./gradlew :app:detekt` termina en verde hoy aunque
+- [x] 2.1 Confirmar en rojo que `./gradlew :app:detekt` termina en verde hoy aunque
       `PersistenceWiringTest.kt:58` tenga una línea que excede `MaxLineLength` (hallazgo ya
       localizado en la exploración).
-- [ ] 2.2 En `Quality.kt`, ampliar el `source` de la tarea `detekt` (no `detektBaseline` ni
+      Evidencia: `./gradlew detekt -PwarningsAsErrors=true --no-configuration-cache` termina en
+      `BUILD SUCCESSFUL`; `PersistenceWiringTest.kt:58` tiene 123 caracteres (`MaxLineLength`
+      por defecto es 120, confirmado sin configuración propia en `config/detekt/detekt.yml`).
+- [x] 2.2 En `Quality.kt`, ampliar el `source` de la tarea `detekt` (no `detektBaseline` ni
       `detektGenerateConfig`) para incluir `src/androidTest/kotlin` cuando ese directorio
       exista (D4). Verificar en verde que `./gradlew :app:detekt` ahora falla señalando
       `PersistenceWiringTest.kt:58`.
-- [ ] 2.3 Corregir esa línea (partir el comentario, sin cambiar su contenido) y verificar que
+      Evidencia: `./gradlew :app:detekt --no-configuration-cache` falla con
+      `PersistenceWiringTest.kt:58:1: Line detected, which is longer than the defined maximum
+      line length... [MaxLineLength]` (`Analysis failed with 1 weighted issues`). `source` no
+      acepta directamente una `ConfigurableFileCollection`; se usó `setSource(files(source,
+      androidTestDir))`.
+- [x] 2.3 Corregir esa línea (partir el comentario, sin cambiar su contenido) y verificar que
       `./gradlew :app:detekt :feature:session:detekt :core:data:detekt :core:platform:detekt`
       termina en verde.
+      El `source` ampliado por 2.2 también alcanzó otra línea de 121 caracteres en el mismo
+      fichero (`PersistenceWiringTest.kt:43`, bajo el mismo límite `MaxLineLength`): se partió
+      igual que la de la línea 58, sin cambiar su contenido, para que el comando de verificación
+      termine en verde. Evidencia: `./gradlew :app:detekt :feature:session:detekt
+      :core:data:detekt :core:platform:detekt --no-configuration-cache` → `BUILD SUCCESSFUL`.
 
 ## 3. Job de CI con emulador (D2, D3)
 

@@ -39,8 +39,9 @@ class PersistenceWiringTest {
         hiltRule.inject()
     }
 
-    // Cada test crea un grafo nuevo que abre su propia base de datos sobre el mismo fichero. Se cierran ambas
-    // referencias: si la mutación rompe el singleton hay dos instancias abiertas, y cerrar dos veces es inocuo en Room.
+    // Cada test crea un grafo nuevo que abre su propia base de datos sobre el mismo fichero. Se
+    // cierran ambas referencias: si la mutación rompe el singleton hay dos instancias abiertas,
+    // y cerrar dos veces es inocuo en Room.
     @After
     fun tearDown() {
         firstDatabase.close()
@@ -54,8 +55,9 @@ class PersistenceWiringTest {
         assertSame(firstCatalog, secondCatalog)
     }
 
-    // Escenario: Dos obtenciones de la base de datos desde el grafo de producción devuelven la misma instancia
-    // (requisito "Existe una única instancia de `PracticeDatabase` en el grafo de la aplicación", practice-persistence).
+    // Escenario: Dos obtenciones de la base de datos desde el grafo de producción devuelven la
+    // misma instancia (requisito "Existe una única instancia de `PracticeDatabase` en el grafo
+    // de la aplicación", practice-persistence).
     @Test
     fun givenProductionGraph_whenObtainingDatabaseTwice_thenBothReferencesAreTheSameInstance() {
         assertSame(firstDatabase, secondDatabase)
