@@ -86,9 +86,14 @@
 
 ## 5. Verificación final
 
-- [ ] 5.1 Ejecutar `./gradlew check koverVerify assembleDebug` en verde.
-- [ ] 5.2 Ejecutar `./gradlew detekt -PwarningsAsErrors=true` en verde con los cuatro módulos de
+- [x] 5.1 Ejecutar `./gradlew check koverVerify assembleDebug` en verde.
+      Evidencia: `./gradlew check koverVerify assembleDebug --no-configuration-cache` →
+      `BUILD SUCCESSFUL in 33s` (436 tareas).
+- [x] 5.2 Ejecutar `./gradlew detekt -PwarningsAsErrors=true` en verde con los cuatro módulos de
       la tarea 2.3 incluidos.
+      Evidencia: `./gradlew detekt -PwarningsAsErrors=true --no-configuration-cache` →
+      `BUILD SUCCESSFUL`, incluye `:app:detekt`, `:feature:session:detekt`,
+      `:core:data:detekt` y `:core:platform:detekt`.
 
 ## Workflow follow-up
 
