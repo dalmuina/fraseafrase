@@ -65,9 +65,18 @@
       sin bloquear el resto del workflow (D3). Verificar con una ejecución real en GitHub
       Actions (push a esta rama o `workflow_dispatch`) que el job arranca el emulador y corre
       los tests de `:app` y `:feature:session` en verde.
+      Job `instrumented-tests` añadido (YAML validado con `pyyaml`: `jobs: ['build',
+      'instrumented-tests']`), pero sin marcar `[x]`: la rama actual no dispara CI (el trigger
+      `push` solo cubre `master`/`develop`, no hay `pull_request` abierta ni `workflow_dispatch`)
+      y las reglas del proyecto reservan el push a esta rama para el cierre del cambio. La
+      ejecución real en GitHub Actions queda pendiente del primer push/PR de este cambio
+      (decisión del usuario, 2026-11-02); si falla, se corrige antes de archivar.
 - [ ] 3.2 Publicar los informes de `connectedDebugAndroidTest` (`**/build/reports/androidTests/`)
       como artefacto del job, igual que ya se hace para el resto de informes. Verificar que el
       artefacto aparece en la ejecución de 3.1.
+      Paso `Publicar informes de tests instrumentados` añadido al job de 3.1 (misma acción
+      `actions/upload-artifact@v4` que el job `build`). Verificación del artefacto pendiente de
+      la misma ejecución real de 3.1.
 
 ## 4. Documentación
 

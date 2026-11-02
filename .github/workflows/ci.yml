@@ -52,3 +52,45 @@ jobs:
             **/build/reports/
             **/build/test-results/
           retention-days: 7
+
+  instrumented-tests:
+    name: Tests instrumentados (informativo)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configurar JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Habilitar KVM para el emulador
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Tests instrumentados en emulador (API 34, sin Google APIs)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          disable-animations: true
+          script: ./gradlew connectedDebugAndroidTest
+
+      - name: Publicar informes de tests instrumentados
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informes-instrumentados
+          path: "**/build/reports/androidTests/"
+          retention-days: 7
