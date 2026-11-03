@@ -5,11 +5,8 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -53,34 +50,10 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithText("Guardar").assertIsEnabled()
     }
 
-    // Scenario: Volver sin guardar (spec: settings-screen)
-    @Test
-    fun givenTheScreen_whenBackIsActivated_thenOnBackIsInvokedDirectlyWithoutAnAction() {
-        // Given: la pantalla con un callback de volver y uno de acción, ambos vacíos de inicio
-        var backInvoked = false
-        var actionInvoked = false
-        composeTestRule.setContent {
-            AppTheme {
-                SettingsScreen(
-                    uiState = loaded(),
-                    onAction = { actionInvoked = true },
-                    onBack = { backInvoked = true },
-                )
-            }
-        }
-
-        // When: el usuario activa la acción de volver
-        composeTestRule.onNodeWithText("Volver").performClick()
-
-        // Then: se invoca onBack directamente, sin pasar por onAction
-        assertTrue(backInvoked)
-        assertFalse(actionInvoked)
-    }
-
     private fun setScreen(uiState: SettingsUiState) {
         composeTestRule.setContent {
             AppTheme {
-                SettingsScreen(uiState = uiState, onAction = {}, onBack = {})
+                SettingsScreen(uiState = uiState, onAction = {})
             }
         }
     }

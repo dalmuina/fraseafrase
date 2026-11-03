@@ -73,6 +73,7 @@ androidComponents {
 // :app es el único módulo que conoce todas las implementaciones (ADR-0010).
 dependencies {
     implementation(projects.feature.session)
+    implementation(projects.feature.progress)
     implementation(projects.feature.settings)
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)

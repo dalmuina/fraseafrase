@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="nav_practice">Practicar</string>
+    <string name="nav_progress">Progreso</string>
+    <string name="nav_settings">Ajustes</string>
 </resources>

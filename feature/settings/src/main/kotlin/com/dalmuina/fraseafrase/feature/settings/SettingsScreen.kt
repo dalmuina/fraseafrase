@@ -16,7 +16,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,16 +29,14 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 
 /**
- * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. [onBack] es un
- * callback de UI directo que no pasa por [onAction] (design.md - `SettingsUiState` y `SettingsAction`). La
- * conexión con el ViewModel está en [SettingsRoute].
+ * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión
+ * con el ViewModel está en [SettingsRoute].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
     uiState: SettingsUiState,
     onAction: (SettingsAction) -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -58,7 +55,6 @@ internal fun SettingsScreen(
             is SettingsUiState.Loaded -> LoadedContent(
                 state = uiState,
                 onAction = onAction,
-                onBack = onBack,
                 modifier = Modifier.padding(innerPadding),
             )
         }
@@ -70,7 +66,6 @@ internal fun SettingsScreen(
 private fun LoadedContent(
     state: SettingsUiState.Loaded,
     onAction: (SettingsAction) -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -125,10 +120,6 @@ private fun LoadedContent(
             enabled = state.isBatchSizeValid,
         ) {
             Text(text = stringResource(R.string.settings_save))
-        }
-
-        TextButton(onClick = onBack) {
-            Text(text = stringResource(R.string.settings_back))
         }
     }
 }

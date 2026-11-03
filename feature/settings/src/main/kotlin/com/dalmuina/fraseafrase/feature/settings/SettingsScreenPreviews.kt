@@ -9,7 +9,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 @Composable
 private fun SettingsScreenLoadingPreview() {
     AppTheme {
-        SettingsScreen(uiState = SettingsUiState.Loading, onAction = {}, onBack = {})
+        SettingsScreen(uiState = SettingsUiState.Loading, onAction = {})
     }
 }
 
@@ -24,7 +24,6 @@ private fun SettingsScreenValidPreview() {
                 isBatchSizeValid = true,
             ),
             onAction = {},
-            onBack = {},
         )
     }
 }
@@ -40,7 +39,6 @@ private fun SettingsScreenInvalidBatchSizePreview() {
                 isBatchSizeValid = false,
             ),
             onAction = {},
-            onBack = {},
         )
     }
 }

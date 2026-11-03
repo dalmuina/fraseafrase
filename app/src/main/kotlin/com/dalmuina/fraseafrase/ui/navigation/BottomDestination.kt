@@ -1,9 +1,13 @@
 package com.dalmuina.fraseafrase.ui.navigation
 
 /**
- * Claves de ruta de Navigation 3 (design.md - Decisiones, "Navegación: Navigation 3 básico, sin
- * *back stack* guardable, vive en `:app`"). Solo `:app` conoce ambas features (ADR-0010).
+ * Destinos de la barra de navegación inferior (design.md - Decisions, "Barra de navegación
+ * inferior en `:app`"). Solo `:app` conoce las tres features (ADR-0010).
  */
-data object Practice
+sealed interface BottomDestination {
+    data object Practice : BottomDestination
 
-data object Settings
+    data object Progress : BottomDestination
+
+    data object Settings : BottomDestination
+}
