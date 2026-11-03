@@ -22,7 +22,7 @@
 
 ## 2. Plataforma: `TextToSpeechPlayer`
 
-- [ ] 2.1 Tests de `TextToSpeechPlayerTest` (`:core:platform`, JVM, con fakes de `isReady`,
+- [x] 2.1 Tests de `TextToSpeechPlayerTest` (`:core:platform`, JVM, con fakes de `isReady`,
   `setLanguage` y `speak` inyectados por el constructor interno; design.md - Decisiones, seam de
   test): `given isReady returns false when play is called then speak is never invoked` (spec
   `phrase-audio`, "Motor de TTS no disponible"), `given setLanguage returns LANG_MISSING_DATA or
@@ -30,7 +30,7 @@
   la frase sin voz instalada") y `given play is called twice when the second call runs then speak is
   invoked both times with QUEUE_FLUSH` (spec `phrase-audio`, "Escuchar dos veces reinicia la
   reproducción"); hacerlos fallar porque la clase no existe.
-- [ ] 2.2 Implementar `TextToSpeechPlayer` (constructor interno con el seam de 2.1; constructor
+- [x] 2.2 Implementar `TextToSpeechPlayer` (constructor interno con el seam de 2.1; constructor
   `@Inject` real sobre `android.speech.tts.TextToSpeech` con inicialización asíncrona y bandera
   `ready`) hasta que los tests de 2.1 pasen; verificar con `./gradlew :core:platform:test` y
   `./gradlew :core:platform:compileDebugKotlin`.
