@@ -71,8 +71,8 @@
 
 ## 5. Verificación final
 
-- [ ] 5.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
-- [ ] 5.2 Ejecutar `./gradlew koverVerify` y confirmar los mínimos de cobertura (dominio 90 %,
+- [x] 5.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
+- [x] 5.2 Ejecutar `./gradlew koverVerify` y confirmar los mínimos de cobertura (dominio 90 %,
   presentación 80 %, global 70 %) en los módulos tocados.
 
 ## Workflow follow-up
