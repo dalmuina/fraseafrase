@@ -34,10 +34,9 @@
   `@Inject` real sobre `android.speech.tts.TextToSpeech` con inicialización asíncrona y bandera
   `ready`) hasta que los tests de 2.1 pasen; verificar con `./gradlew :core:platform:test` y
   `./gradlew :core:platform:compileDebugKotlin`.
-- [ ] 2.3 Verificación manual en un emulador/dispositivo (design.md - Risks / Trade-offs, integración
+- [x] 2.3 Verificación manual en un emulador/dispositivo (design.md - Risks / Trade-offs, integración
   real no cubierta por 2.1): reproducir una frase con el motor TTS disponible y comprobar que no se
-  lanza ni se registra ningún error con el idioma `pt-PT` desinstalado. Anotar el resultado en este
-  punto de `tasks.md` al completarlo.
+  lanza ni se registra ningún error con el idioma `pt-PT` desinstalado. Verificado por el usuario.
 
 ## 3. Presentación: `:feature:session`
 
@@ -66,8 +65,9 @@
 - [x] 4.1 Añadir el binding de Hilt `bindPhrasePlayer(player: TextToSpeechPlayer): PhrasePlayer`
   (`PersistenceModule` o un `@Module` nuevo para `:core:platform`, a decidir según legibilidad;
   design.md - Decisiones, Cableado); verificar con `./gradlew :app:assembleDebug`.
-- [ ] 4.2 Prueba manual en la app (emulador o dispositivo): revelar una frase, pulsar "Escuchar" y
-  confirmar que se oye el audio en portugués; confirmar que el botón no aparece sin revelar.
+- [x] 4.2 Prueba manual en la app (emulador o dispositivo): revelar una frase, pulsar "Escuchar" y
+  confirmar que se oye el audio en portugués; confirmar que el botón no aparece sin revelar. Verificado
+  por el usuario.
 
 ## 5. Verificación final
 
