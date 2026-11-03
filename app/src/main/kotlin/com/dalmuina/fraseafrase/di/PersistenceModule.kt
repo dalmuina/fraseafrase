@@ -7,11 +7,13 @@ import com.dalmuina.fraseafrase.core.data.practice.PracticeDatabase
 import com.dalmuina.fraseafrase.core.data.practice.RoomPracticeDataSource
 import com.dalmuina.fraseafrase.core.data.practice.createPracticeDatabase
 import com.dalmuina.fraseafrase.core.data.settings.DataStoreSettingsDataSource
+import com.dalmuina.fraseafrase.core.domain.audio.PhrasePlayer
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.time.Clock
 import com.dalmuina.fraseafrase.core.platform.DeviceClock
+import com.dalmuina.fraseafrase.core.platform.TextToSpeechPlayer
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -41,6 +43,9 @@ abstract class PersistenceModule {
 
     @Binds
     abstract fun bindClock(clock: DeviceClock): Clock
+
+    @Binds
+    abstract fun bindPhrasePlayer(player: TextToSpeechPlayer): PhrasePlayer
 
     companion object {
 

@@ -89,7 +89,7 @@ private fun PracticingContent(
         if (current == null) {
             EmptyMessage(text = stringResource(R.string.practice_nothing_to_practice))
         } else {
-            PhraseCard(item = current, revealed = state.revealed)
+            PhraseCard(item = current, revealed = state.revealed, enabled = !state.busy, onAction = onAction)
             if (state.revealed) {
                 AssessmentButtons(enabled = !state.busy, onAction = onAction)
             } else {
@@ -110,9 +110,17 @@ private fun PracticingContent(
     }
 }
 
-/** Tarjeta con la frase en español, la traducción solo si está revelada, la racha y la marca de sabida. */
+/**
+ * Tarjeta con la frase en español, la traducción y el control de escuchar solo si está revelada, la racha y la marca
+ * de sabida.
+ */
 @Composable
-private fun PhraseCard(item: PracticeItem, revealed: Boolean) {
+private fun PhraseCard(
+    item: PracticeItem,
+    revealed: Boolean,
+    enabled: Boolean,
+    onAction: (PracticeSessionAction) -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
@@ -128,6 +136,12 @@ private fun PhraseCard(item: PracticeItem, revealed: Boolean) {
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
+                TextButton(
+                    onClick = { onAction(PracticeSessionAction.PlayAudio) },
+                    enabled = enabled,
+                ) {
+                    Text(text = stringResource(R.string.practice_listen))
+                }
             }
             Text(
                 text = stringResource(R.string.practice_streak, item.streak.value),

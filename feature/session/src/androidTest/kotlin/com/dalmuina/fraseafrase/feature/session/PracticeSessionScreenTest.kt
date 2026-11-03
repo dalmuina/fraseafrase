@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
@@ -69,6 +70,55 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Bom dia").assertIsDisplayed()
         composeTestRule.onNodeWithText("Acierto").assertIsDisplayed()
         composeTestRule.onNodeWithText("Fallo").assertIsDisplayed()
+    }
+
+    // Scenario: Sin revelar no hay control de escuchar (spec: phrase-audio)
+    @Test
+    fun givenHiddenPhraseWhenShowingTheScreenThenNoListenControlIsShown() {
+        // Given: la frase A sin revelar
+        setScreen(practicing(current = item()))
+
+        // When: la pantalla se muestra sin revelar (no hay acción que cambie el estado)
+
+        // Then: no se muestra ningún control de escuchar
+        composeTestRule.onNodeWithText("Escuchar").assertDoesNotExist()
+    }
+
+    // Scenario: Revelar muestra el control de escuchar / Escuchar reproduce la frase en su locale (spec: phrase-audio)
+    @Test
+    fun givenRevealedPhraseWhenActivatingTheListenControlThenOnActionReceivesPlayAudio() {
+        // Given: la pantalla muestra la frase A revelada
+        var receivedAction: PracticeSessionAction? = null
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = practicing(current = item(), revealed = true),
+                    onAction = { action -> receivedAction = action },
+                    onOpenSettings = {},
+                )
+            }
+        }
+
+        // When: el usuario activa el control de escuchar
+        composeTestRule.onNodeWithText("Escuchar").apply {
+            assertIsDisplayed()
+            performClick()
+        }
+
+        // Then: se despacha PlayAudio
+        assertTrue(receivedAction == PracticeSessionAction.PlayAudio)
+    }
+
+    // Scenario: Ocupado deshabilita el control de escuchar (spec: phrase-audio)
+    @Test
+    fun givenAnswerInProgressWhenShowingTheScreenThenTheListenControlIsDisabled() {
+        // Given: una frase revelada cuya autoevaluación se está registrando (busy = true)
+        setScreen(practicing(current = item(), revealed = true, busy = true))
+
+        // When: la pantalla muestra el estado con la respuesta en curso (estado dado)
+
+        // Then: el control de escuchar está deshabilitado
+        composeTestRule.onNodeWithText("Escuchar").assertIsNotEnabled()
     }
 
     // Scenario: Aviso con frases no certificadas (spec: practice-session)
@@ -197,6 +247,7 @@ class PracticeSessionScreenTest {
         id = PhraseId("A"),
         source = source,
         target = target,
+        targetLocale = LanguageTag("pt-PT"),
         streak = Streak(streak),
         isKnown = isKnown,
     )

@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.feature.session
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dalmuina.fraseafrase.core.domain.audio.PlayPhraseAudio
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
 import com.dalmuina.fraseafrase.core.domain.practice.CloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.CloseBatchResult
@@ -24,6 +25,7 @@ class PracticeSessionViewModel @Inject constructor(
     private val obtainPracticeSession: ObtainPracticeSession,
     private val answerPhrase: AnswerPhrase,
     private val closeActiveBatch: CloseActiveBatch,
+    private val playPhraseAudio: PlayPhraseAudio,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PracticeSessionUiState>(PracticeSessionUiState.Loading)
@@ -37,6 +39,7 @@ class PracticeSessionViewModel @Inject constructor(
         when (action) {
             PracticeSessionAction.Reveal -> reveal()
             is PracticeSessionAction.Answer -> answer(action.assessment)
+            PracticeSessionAction.PlayAudio -> playAudio()
             PracticeSessionAction.RequestClose -> requestClose()
             PracticeSessionAction.CancelClose -> cancelClose()
             PracticeSessionAction.ConfirmClose -> confirmClose()
@@ -105,6 +108,15 @@ class PracticeSessionViewModel @Inject constructor(
                 answerPhrase(current.id, assessment)
                 reload()
             }
+        }
+    }
+
+    /** Escuchar se ignora sin revelar, con una respuesta en curso (`busy`) o con el aviso de cierre abierto. */
+    private fun playAudio() {
+        val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
+        val current = state.current
+        if (current != null && state.isAnswerable()) {
+            playPhraseAudio(current.target, current.targetLocale)
         }
     }
 

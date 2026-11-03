@@ -11,6 +11,9 @@ sealed interface PracticeSessionAction {
     /** Autoevalúa la frase revelada como acierto o fallo (ADR-0012). */
     data class Answer(val assessment: SelfAssessment) : PracticeSessionAction
 
+    /** Reproduce el audio en portugués de la frase revelada (spec: phrase-audio). */
+    data object PlayAudio : PracticeSessionAction
+
     /** Pide cerrar la tanda: abre el aviso con el número de frases no certificadas (ADR-0012). */
     data object RequestClose : PracticeSessionAction
 

@@ -41,6 +41,7 @@ class ObtainPracticeSession @Inject constructor(
                 id = entry.id,
                 source = phrase.source,
                 target = phrase.target,
+                targetLocale = phrase.targetLocale,
                 streak = entry.streak,
                 isKnown = entry.streak.value >= PracticeItem.KNOWN_STREAK,
             )

@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import com.dalmuina.fraseafrase.core.domain.audio.PlayPhraseAudio
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
@@ -18,6 +19,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakePhrasePlayer
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.FixedClock
@@ -67,7 +69,9 @@ internal fun sessionViewModel(
     catalog: CatalogLoadResult,
     settings: UserSettings = UserSettings.DEFAULT,
     clock: FixedClock = FixedClock(TODAY),
-): PracticeSessionViewModel = sessionViewModelWith(practice, FakeCatalogRepository(catalog), settings, clock)
+    phrasePlayer: FakePhrasePlayer = FakePhrasePlayer(),
+): PracticeSessionViewModel =
+    sessionViewModelWith(practice, FakeCatalogRepository(catalog), settings, clock, phrasePlayer)
 
 /** Catálogo cuyo resultado puede cambiar entre lecturas, para simular un catálogo que deja de cargarse. */
 internal class SwitchableCatalogRepository(var result: CatalogLoadResult) : CatalogRepository {
@@ -80,6 +84,7 @@ internal fun sessionViewModelWith(
     catalogRepository: CatalogRepository,
     settings: UserSettings = UserSettings.DEFAULT,
     clock: FixedClock = FixedClock(TODAY),
+    phrasePlayer: FakePhrasePlayer = FakePhrasePlayer(),
 ): PracticeSessionViewModel {
     val obtainActiveBatch = ObtainActiveBatch(
         composeNextBatch = ComposeNextBatch(clock),
@@ -91,5 +96,6 @@ internal fun sessionViewModelWith(
         obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository),
         answerPhrase = AnswerPhrase(practice),
         closeActiveBatch = CloseActiveBatch(practice, ResolveBatchClosure(clock)),
+        playPhraseAudio = PlayPhraseAudio(phrasePlayer),
     )
 }
