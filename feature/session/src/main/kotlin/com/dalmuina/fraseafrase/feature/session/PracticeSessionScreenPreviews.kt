@@ -29,7 +29,7 @@ private val newItem = PracticeItem(
 @Composable
 private fun PracticeSessionScreenLoadingPreview() {
     AppTheme {
-        PracticeSessionScreen(uiState = PracticeSessionUiState.Loading, onAction = {})
+        PracticeSessionScreen(uiState = PracticeSessionUiState.Loading, onAction = {}, onOpenSettings = {})
     }
 }
 
@@ -45,6 +45,7 @@ private fun PracticeSessionScreenHiddenPreview() {
                 closeWarning = null,
             ),
             onAction = {},
+            onOpenSettings = {},
         )
     }
 }
@@ -61,6 +62,7 @@ private fun PracticeSessionScreenRevealedPreview() {
                 closeWarning = null,
             ),
             onAction = {},
+            onOpenSettings = {},
         )
     }
 }
@@ -77,6 +79,7 @@ private fun PracticeSessionScreenCloseWarningPreview() {
                 closeWarning = 3,
             ),
             onAction = {},
+            onOpenSettings = {},
         )
     }
 }
@@ -85,7 +88,7 @@ private fun PracticeSessionScreenCloseWarningPreview() {
 @Composable
 private fun PracticeSessionScreenNothingToPracticePreview() {
     AppTheme {
-        PracticeSessionScreen(uiState = PracticeSessionUiState.NothingToPractice, onAction = {})
+        PracticeSessionScreen(uiState = PracticeSessionUiState.NothingToPractice, onAction = {}, onOpenSettings = {})
     }
 }
 
@@ -93,6 +96,6 @@ private fun PracticeSessionScreenNothingToPracticePreview() {
 @Composable
 private fun PracticeSessionScreenCatalogErrorPreview() {
     AppTheme {
-        PracticeSessionScreen(uiState = PracticeSessionUiState.CatalogError, onAction = {})
+        PracticeSessionScreen(uiState = PracticeSessionUiState.CatalogError, onAction = {}, onOpenSettings = {})
     }
 }

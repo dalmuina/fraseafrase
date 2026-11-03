@@ -94,11 +94,14 @@ entero y está en 10–30) antes de construir un `BatchSize` o de habilitar la a
 (`SettingsViewModel`); un valor no válido nunca llega a `SaveUserSettings`. El nivel CEFR no necesita
 esta validación porque se elige de una lista cerrada (siempre un valor válido del enum).
 
-### Icono de ajustes: Material directo, sin componente `Ds*`
+### Acceso a ajustes: texto, no icono (sin `material-icons-core`)
 
-El icono de ajustes del `TopAppBar` de `PracticeSessionScreen` usa `Icons.Default` (o
-`Icons.AutoMirrored`, si aplica) de Material 3 directamente, igual que el resto de componentes de esa
-pantalla (`Button`, `Card`, `Scaffold`). No se promueve a `:core:designsystem` porque lo usa una única
+El proyecto no tiene el artefacto `androidx.compose.material:material-icons-core` en el catálogo de
+versiones (ninguna pantalla usa `Icons.*` hoy); añadirlo sería una dependencia nueva sin justificar
+solo para un icono. El `TopAppBar` de `PracticeSessionScreen` usa en su lugar un `TextButton` con el
+texto "Ajustes" como acción, igual que el `TextButton` de "Cerrar tanda" que ya usa esa pantalla. Lo
+mismo aplica a la acción de volver de `SettingsScreen` ("Volver"). No se promueve nada a
+`:core:designsystem` porque lo usa una única
 feature; se promovería si una segunda feature necesitara el mismo icono (convención del proyecto).
 
 ### `SettingsUiState` y `SettingsAction`

@@ -62,12 +62,12 @@
 
 ## 5. Punto de entrada desde la práctica
 
-- [ ] 5.1 Test de `PracticeSessionScreen`: con un `onOpenSettings` dado, pulsar la acción de ajustes del
+- [x] 5.1 Test de `PracticeSessionScreen`: con un `onOpenSettings` dado, pulsar la acción de ajustes del
   `TopAppBar` lo invoca (spec `settings-screen`, "Abrir ajustes desde la práctica"); hacerlo fallar
   antes de añadir el `TopAppBar` con un `TextButton` de texto "Ajustes" (sin `material-icons-core`,
   sin componente `Ds*`; design.md - Decisiones, "Acceso a ajustes: texto, no icono") al `Scaffold`
   existente.
-- [ ] 5.2 Añadir el parámetro `onOpenSettings: () -> Unit` a `PracticeSessionRoute` y reenviarlo a
+- [x] 5.2 Añadir el parámetro `onOpenSettings: () -> Unit` a `PracticeSessionRoute` y reenviarlo a
   `PracticeSessionScreen`; verificar con `./gradlew :feature:session:test`.
 
 ## 6. Integración en `:app`: navegación
