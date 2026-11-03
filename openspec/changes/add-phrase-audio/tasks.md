@@ -63,7 +63,7 @@
 
 ## 4. Integración en `:app`
 
-- [ ] 4.1 Añadir el binding de Hilt `bindPhrasePlayer(player: TextToSpeechPlayer): PhrasePlayer`
+- [x] 4.1 Añadir el binding de Hilt `bindPhrasePlayer(player: TextToSpeechPlayer): PhrasePlayer`
   (`PersistenceModule` o un `@Module` nuevo para `:core:platform`, a decidir según legibilidad;
   design.md - Decisiones, Cableado); verificar con `./gradlew :app:assembleDebug`.
 - [ ] 4.2 Prueba manual en la app (emulador o dispositivo): revelar una frase, pulsar "Escuchar" y
