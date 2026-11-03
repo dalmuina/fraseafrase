@@ -37,26 +37,26 @@
 
 ## 4. Presentación: pantalla de ajustes (`:feature:settings`)
 
-- [ ] 4.1 Test de `SettingsViewModel` (`:core:testing`'s `MainDispatcherExtension`): `given settings
+- [x] 4.1 Test de `SettingsViewModel` (`:core:testing`'s `MainDispatcherExtension`): `given settings
   stored when the screen opens then the ui state shows them` (spec `settings-screen`, "Se muestran los
   ajustes guardados"); implementar `SettingsUiState` (`Loading` / `Loaded`), `SettingsAction` y el
   ViewModel con `ObtainUserSettings` hasta que pase.
-- [ ] 4.2 Test: `given a cefr level selected action when dispatched then the ui state shows the new
+- [x] 4.2 Test: `given a cefr level selected action when dispatched then the ui state shows the new
   level` (spec `settings-screen`, "Elegir un nivel CEFR de la lista"); implementar el manejo de
   `SelectCefrLevel`.
-- [ ] 4.3 Tests: `given a batch size text out of range or non numeric when changed then the ui state is
+- [x] 4.3 Tests: `given a batch size text out of range or non numeric when changed then the ui state is
   invalid and saving is disabled` y `given a batch size text in range when changed then saving is
   enabled` (spec `settings-screen`, "N fuera de rango impide guardar", "N no numérico impide guardar",
   "N dentro de rango permite guardar"); implementar la validación de `ChangeBatchSizeText`.
-- [ ] 4.4 Test: `given a valid cefr level and batch size when Save is dispatched then SaveUserSettings
+- [x] 4.4 Test: `given a valid cefr level and batch size when Save is dispatched then SaveUserSettings
   is invoked with them and a later read reflects them` (spec `settings-screen`, "Guardar persiste el
   nuevo nivel CEFR y N"); implementar el manejo de `Save`.
-- [ ] 4.5 Compose UI tests de `SettingsScreen` (sin ViewModel, con `@PreviewLightDark` y
+- [x] 4.5 Compose UI tests de `SettingsScreen` (sin ViewModel, con `@PreviewLightDark` y
   `ui-test-junit4`): muestra el nivel y la N recibidos, deshabilita guardar con un valor inválido, y
   expone una acción de volver que invoca `onBack` sin pasar por el ViewModel (spec `settings-screen`,
   "Volver tras guardar" y "Volver sin guardar"); implementar `SettingsScreen` siguiendo el patrón de
   `PracticeSessionScreen` (Material3 directo, tokens de `AppTheme`, sin literales).
-- [ ] 4.6 Implementar `SettingsRoute` (conecta `SettingsViewModel` con `SettingsScreen`, recibe
+- [x] 4.6 Implementar `SettingsRoute` (conecta `SettingsViewModel` con `SettingsScreen`, recibe
   `onBack: () -> Unit`) y los strings de `feature/settings/src/main/res/values/strings.xml`; verificar
   con `./gradlew :feature:settings:test`.
 

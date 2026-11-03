@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_back">Volver</string>
+    <string name="settings_cefr_level_label">Nivel CEFR</string>
+    <string name="settings_batch_size_label">Tamaño de tanda (N)</string>
+    <string name="settings_batch_size_error">Debe ser un número entero entre 10 y 30</string>
+    <string name="settings_save">Guardar</string>
+</resources>
