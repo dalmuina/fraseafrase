@@ -72,13 +72,13 @@
 
 ## 6. Integración en `:app`: navegación
 
-- [ ] 6.1 Definir las claves de ruta `Practice` y `Settings` (`data object`) en un paquete de
+- [x] 6.1 Definir las claves de ruta `Practice` y `Settings` (`data object`) en un paquete de
   navegación de `:app` (design.md - Decisiones, Navigation 3 básico).
-- [ ] 6.2 Sustituir el `PracticeSessionRoute` directo de `FraseAFraseApp` por un `NavDisplay` con
+- [x] 6.2 Sustituir el `PracticeSessionRoute` directo de `FraseAFraseApp` por un `NavDisplay` con
   `backStack` en memoria (`mutableStateListOf`) que muestre `Practice` al abrir, navegue a `Settings`
   al pulsar el icono de ajustes y vuelva a `Practice` con `onBack` o el botón de volver de la pantalla
   de ajustes.
-- [ ] 6.3 Test instrumentado en `:app` (`androidTest`, nombre `givenAppStart_whenLaunched_thenShowsPracticeThenSettings`):
+- [x] 6.3 Test instrumentado en `:app` (`androidTest`, nombre `givenAppStart_whenLaunched_thenShowsPracticeThenSettings`):
   arranca mostrando la práctica (spec `practice-session`, "Pantalla de práctica como inicio"), navega a
   ajustes con el icono (spec `settings-screen`, "Abrir ajustes desde la práctica") y vuelve a la
   práctica (spec `settings-screen`, "Volver sin guardar"); verificar con
