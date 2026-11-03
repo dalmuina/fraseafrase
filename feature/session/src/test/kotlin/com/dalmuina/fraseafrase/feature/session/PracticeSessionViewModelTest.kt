@@ -3,13 +3,16 @@ package com.dalmuina.fraseafrase.feature.session
 import app.cash.turbine.test
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import com.dalmuina.fraseafrase.core.testing.FakePhrasePlayer
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -324,5 +327,66 @@ class PracticeSessionViewModelTest {
 
         // Then
         viewModel.practicing().current?.isKnown shouldBe false
+    }
+
+    // Scenario: Escuchar reproduce la frase en su locale (spec: phrase-audio)
+    @Test
+    fun `given a revealed phrase when PlayAudio is dispatched then PlayPhraseAudio receives its target and locale`() =
+        runTest {
+            // Given: tanda A revelada, con "Bom dia" en pt-PT como traducción
+            val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B")))
+            val catalog = loaded(
+                aCatalogPhrase(id = "A", source = "Buenos días", target = "Bom dia"),
+                aCatalogPhrase(id = "B"),
+            )
+            val phrasePlayer = FakePhrasePlayer()
+            val viewModel = sessionViewModel(practice, catalog, phrasePlayer = phrasePlayer)
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+
+            // When
+            viewModel.onAction(PracticeSessionAction.PlayAudio)
+            advanceUntilIdle()
+
+            // Then
+            phrasePlayer.calls shouldBe listOf(FakePhrasePlayer.Call("Bom dia", LanguageTag("pt-PT")))
+        }
+
+    // Scenario: Ocupado deshabilita el control de escuchar (spec: phrase-audio)
+    @Test
+    fun `given a response being registered when PlayAudio is dispatched then PlayPhraseAudio is not invoked`() =
+        runTest {
+            // Given: tanda A, B y C con A revelada y su autoevaluación encolada, todavía sin registrar (busy)
+            val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+            val phrasePlayer = FakePhrasePlayer()
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"), phrasePlayer = phrasePlayer)
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+
+            // When: se pide escuchar antes de que la respuesta termine de registrarse
+            viewModel.onAction(PracticeSessionAction.PlayAudio)
+
+            // Then
+            phrasePlayer.calls.shouldBeEmpty()
+        }
+
+    // Scenario: Aviso de cierre abierto deshabilita el control de escuchar (spec: phrase-audio)
+    @Test
+    fun `given the close warning open when PlayAudio is dispatched then PlayPhraseAudio is not invoked`() = runTest {
+        // Given: tanda A, B con A revelada y el aviso de cierre abierto
+        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B")))
+        val phrasePlayer = FakePhrasePlayer()
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B"), phrasePlayer = phrasePlayer)
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+        viewModel.onAction(PracticeSessionAction.RequestClose)
+        advanceUntilIdle()
+
+        // When
+        viewModel.onAction(PracticeSessionAction.PlayAudio)
+
+        // Then
+        phrasePlayer.calls.shouldBeEmpty()
     }
 }

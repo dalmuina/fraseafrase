@@ -41,25 +41,25 @@
 
 ## 3. Presentación: `:feature:session`
 
-- [ ] 3.1 Añadir `PracticeSessionAction.PlayAudio` (`data object`, sin parámetros; design.md -
+- [x] 3.1 Añadir `PracticeSessionAction.PlayAudio` (`data object`, sin parámetros; design.md -
   Decisiones).
-- [ ] 3.2 Test de `PracticeSessionViewModel` (`MainDispatcherExtension`, `FakePhrasePlayer` a través de
+- [x] 3.2 Test de `PracticeSessionViewModel` (`MainDispatcherExtension`, `FakePhrasePlayer` a través de
   `PlayPhraseAudio`): `given a revealed phrase when PlayAudio is dispatched then PlayPhraseAudio
   receives its target text and locale` (spec `phrase-audio`, "Reproducción del audio en el locale de
   la frase"); hacerlo fallar antes de añadir el manejo de `PlayAudio` en `onAction` con
   `PlayPhraseAudio` como nueva dependencia inyectada del ViewModel.
-- [ ] 3.3 Tests del mismo ViewModel: `given a response being registered (busy) when PlayAudio is
+- [x] 3.3 Tests del mismo ViewModel: `given a response being registered (busy) when PlayAudio is
   dispatched then PlayPhraseAudio is not invoked` y `given the close warning open when PlayAudio is
   dispatched then PlayPhraseAudio is not invoked` (spec `phrase-audio`, "Control de escuchar
   deshabilitado fuera de la práctica activa"); hacerlos fallar antes de añadir las guardas de `busy` y
   `closeWarning` al manejo de `PlayAudio`.
-- [ ] 3.4 Compose UI test de `PracticeSessionScreen` (sin ViewModel): el control de escuchar no se
+- [x] 3.4 Compose UI test de `PracticeSessionScreen` (sin ViewModel): el control de escuchar no se
   muestra sin revelar, se muestra revelada la frase e invoca `onAction(PlayAudio)` al pulsarlo, y se
   deshabilita cuando `enabled` es falso (spec `phrase-audio`, "Botón de escuchar tras revelar",
   "Control de escuchar deshabilitado fuera de la práctica activa"); hacerlo fallar antes de añadir el
   `TextButton` de escuchar a `PhraseCard` (sin icono, visible solo con `revealed`, deshabilitado igual
   que `AssessmentButtons`; design.md - Decisiones, UI) y el string `practice_listen`.
-- [ ] 3.5 Verificar con `./gradlew :feature:session:test`.
+- [x] 3.5 Verificar con `./gradlew :feature:session:test`.
 
 ## 4. Integración en `:app`
 
