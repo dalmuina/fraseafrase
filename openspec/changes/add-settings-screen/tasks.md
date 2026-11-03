@@ -10,16 +10,16 @@
 
 ## 2. Dominio: escritura de ajustes y casos de uso
 
-- [ ] 2.1 Test: `SettingsRepository` (puerto) expone `save(settings: UserSettings)`; escribir un test en
+- [x] 2.1 Test: `SettingsRepository` (puerto) expone `save(settings: UserSettings)`; escribir un test en
   `FakeSettingsRepository`-based scenario que falle al compilar porque el método no existe, luego
   añadir la firma a la interfaz en `:core:domain` (spec `user-settings`, "Guardar sustituye los
   ajustes anteriores").
-- [ ] 2.2 Test y caso de uso `ObtainUserSettings` (`:core:domain`, `given no settings saved when
+- [x] 2.2 Test y caso de uso `ObtainUserSettings` (`:core:domain`, `given no settings saved when
   invoked then returns the repository's settings`); hacerlo fallar antes de implementar la clase con
   `operator fun invoke`.
-- [ ] 2.3 Test y caso de uso `SaveUserSettings` (`:core:domain`, `given a new cefr level and batch size
+- [x] 2.3 Test y caso de uso `SaveUserSettings` (`:core:domain`, `given a new cefr level and batch size
   when invoked then the repository receives them`); hacerlo fallar antes de implementar.
-- [ ] 2.4 Actualizar `FakeSettingsRepository` (`:core:testing`) para que `save()` reemplace el valor
+- [x] 2.4 Actualizar `FakeSettingsRepository` (`:core:testing`) para que `save()` reemplace el valor
   devuelto por `settings()`; verificar que los tests de 2.2 y 2.3 pasan con el fake real usado en los
   tests de dominio.
 

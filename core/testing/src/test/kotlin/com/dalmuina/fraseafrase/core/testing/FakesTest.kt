@@ -1,7 +1,10 @@
 package com.dalmuina.fraseafrase.core.testing
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
+import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import io.kotest.matchers.shouldBe
@@ -9,6 +12,20 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 class FakesTest {
+
+    // Scenario: Guardar sustituye los ajustes anteriores (spec: user-settings)
+    @Test
+    fun `given saved settings when save is called then a later read returns the new settings`() = runTest {
+        // Given
+        val fake = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+        val newSettings = UserSettings(CefrLevel.B2, BatchSize(15))
+
+        // When
+        fake.save(newSettings)
+
+        // Then
+        fake.settings() shouldBe newSettings
+    }
 
     @Test
     fun `given an empty fake repository when transacting then the change is stored`() = runTest {

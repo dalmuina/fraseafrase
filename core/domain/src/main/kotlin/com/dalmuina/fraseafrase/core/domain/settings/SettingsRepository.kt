@@ -7,4 +7,7 @@ package com.dalmuina.fraseafrase.core.domain.settings
 interface SettingsRepository {
 
     suspend fun settings(): UserSettings
+
+    /** Sustituye los ajustes guardados (spec `user-settings`, "Guardar sustituye los ajustes anteriores"). */
+    suspend fun save(settings: UserSettings)
 }
