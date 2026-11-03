@@ -1,6 +1,7 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 
@@ -35,6 +36,7 @@ data class PracticeItem(
     val id: PhraseId,
     val source: String,
     val target: String,
+    val targetLocale: LanguageTag,
     val streak: Streak,
     val isKnown: Boolean,
 ) {

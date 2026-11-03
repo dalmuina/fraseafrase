@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
@@ -197,6 +198,7 @@ class PracticeSessionScreenTest {
         id = PhraseId("A"),
         source = source,
         target = target,
+        targetLocale = LanguageTag("pt-PT"),
         streak = Streak(streak),
         isKnown = isKnown,
     )

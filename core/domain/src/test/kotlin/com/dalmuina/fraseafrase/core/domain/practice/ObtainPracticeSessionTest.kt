@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
@@ -80,6 +81,24 @@ class ObtainPracticeSessionTest {
             ready.items.map { it.id.value } shouldBe listOf("A", "B", "C")
             ready.items.first().source shouldBe "Buenos días"
             ready.items.first().target shouldBe "Bom dia"
+        }
+
+    // Scenario: Reproducción del audio en el locale de la frase (spec: phrase-audio)
+    @Test
+    fun `given a catalog phrase with a target locale when read then the practice item carries that locale`() =
+        runTest {
+            // Given: tanda activa con una frase A cuyo locale de destino es "pt-PT"
+            val practice = FakePracticeRepository(
+                activeBatch(order = listOf("A"), progress = listOf(aPhraseProgress(id = "A"))),
+            )
+            val catalog = loaded(aCatalogPhrase(id = "A"))
+
+            // When
+            val result = useCase(practice, catalog).invoke()
+
+            // Then
+            val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
+            ready.items.single().targetLocale shouldBe LanguageTag("pt-PT")
         }
 
     // Scenario: Reabrir devuelve la misma tanda (spec: practice-session, Reanudar la tanda activa)

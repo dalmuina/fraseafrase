@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.feature.session
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
@@ -12,6 +13,7 @@ private val knownItem = PracticeItem(
     id = PhraseId("A"),
     source = "Buenos días",
     target = "Bom dia",
+    targetLocale = LanguageTag("pt-PT"),
     streak = Streak(3),
     isKnown = true,
 )
@@ -21,6 +23,7 @@ private val newItem = PracticeItem(
     id = PhraseId("B"),
     source = "Gracias",
     target = "Obrigado",
+    targetLocale = LanguageTag("pt-PT"),
     streak = Streak(0),
     isKnown = false,
 )

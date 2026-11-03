@@ -2,15 +2,15 @@
 
 ## 1. Dominio: puerto, caso de uso y locale en `PracticeItem`
 
-- [ ] 1.1 Añadir el puerto `PhrasePlayer` (`fun play(text: String, locale: LanguageTag)`) en
+- [x] 1.1 Añadir el puerto `PhrasePlayer` (`fun play(text: String, locale: LanguageTag)`) en
   `com.dalmuina.fraseafrase.core.domain.audio` (`:core:domain`), siguiendo el patrón de `Clock`
   (design.md - Decisiones, puerto sin resultado); verificar con `./gradlew :core:domain:compileKotlin`.
-- [ ] 1.2 Añadir `FakePhrasePlayer` a `:core:testing` que registre las llamadas (`text`, `locale`)
+- [x] 1.2 Añadir `FakePhrasePlayer` a `:core:testing` que registre las llamadas (`text`, `locale`)
   recibidas; verificar con `./gradlew :core:testing:compileKotlin`.
-- [ ] 1.3 Test: `PlayPhraseAudio`, `given a text and a locale when invoked then the player receives
+- [x] 1.3 Test: `PlayPhraseAudio`, `given a text and a locale when invoked then the player receives
   them` (`:core:domain`, usando `FakePhrasePlayer`); hacerlo fallar porque la clase no existe, luego
   implementar `PlayPhraseAudio` (`operator fun invoke`) hasta que pase.
-- [ ] 1.4 Test: `ObtainPracticeSession`, `given a catalog phrase with a target locale when the session
+- [x] 1.4 Test: `ObtainPracticeSession`, `given a catalog phrase with a target locale when the session
   is read then the practice item carries that locale` (spec `phrase-audio`, "Reproducción del audio en
   el locale de la frase"); hacerlo fallar añadiendo primero la aserción sobre `targetLocale`, luego
   añadir el campo `targetLocale: LanguageTag` a `PracticeItem` y rellenarlo en `ObtainPracticeSession`
