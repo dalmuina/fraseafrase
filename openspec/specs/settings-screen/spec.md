@@ -64,29 +64,14 @@ de modo que una lectura posterior de los ajustes los devuelva.
 - **WHEN** el usuario elige el nivel B2, escribe 15 como tamaño de tanda y confirma el guardado
 - **THEN** una lectura posterior de los ajustes devuelve el nivel CEFR B2 y N igual a 15
 
-### Requirement: Acceso a la pantalla de ajustes desde la práctica
+### Requirement: Edición descartada al salir sin guardar
 
-La pantalla de práctica MUST ofrecer una acción visible para abrir la pantalla de ajustes.
+Si el usuario sale de la pantalla de ajustes sin confirmar el guardado, la edición en curso MUST
+descartarse: una lectura posterior de los ajustes MUST NOT reflejarla.
 
-#### Scenario: Abrir ajustes desde la práctica
+#### Scenario: Salir sin guardar no persiste la edición
 
-- **GIVEN** el usuario está en la pantalla de práctica
-- **WHEN** el usuario activa la acción de ajustes
-- **THEN** se muestra la pantalla de ajustes
-
-### Requirement: Vuelta a la práctica desde los ajustes
-
-Desde la pantalla de ajustes, el usuario MUST poder volver a la pantalla de práctica, tanto si
-guardó cambios como si no.
-
-#### Scenario: Volver tras guardar
-
-- **GIVEN** el usuario guardó un cambio de ajustes
-- **WHEN** el usuario activa la acción de volver
-- **THEN** se muestra la pantalla de práctica
-
-#### Scenario: Volver sin guardar
-
-- **GIVEN** el usuario editó el tamaño de tanda sin confirmar el guardado
-- **WHEN** el usuario activa la acción de volver
-- **THEN** se muestra la pantalla de práctica y una lectura posterior de los ajustes no refleja la edición sin guardar
+- **GIVEN** la pantalla de ajustes abierta con nivel CEFR A1 y N igual a 20 guardados, y el usuario
+  edita el tamaño de tanda a 15 sin confirmar el guardado
+- **WHEN** el usuario sale de la pantalla de ajustes
+- **THEN** una lectura posterior de los ajustes devuelve N igual a 20
