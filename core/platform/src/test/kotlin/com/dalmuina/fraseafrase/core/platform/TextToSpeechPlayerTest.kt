@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 
 private const val LANG_MISSING_DATA = -1
 private const val LANG_NOT_SUPPORTED = -2
-private const val QUEUE_FLUSH = 0
 
 class TextToSpeechPlayerTest {
 
@@ -53,14 +52,17 @@ class TextToSpeechPlayerTest {
     }
 
     // Scenario: Escuchar dos veces reinicia la reproducción
+    // El modo de cola real (QUEUE_FLUSH) vive en el lambda de producción de TextToSpeechPlayer.Engine y
+    // solo se puede verificar con el motor real (design.md - Risks / Trade-offs); este test solo cubre
+    // que play() vuelve a invocar speak() en cada llamada, no que la reproducción se reinicia.
     @Test
-    fun `given play is called twice when the second call runs then speak is invoked both times with QUEUE_FLUSH`() {
+    fun `given play is called twice when the second call runs then speak is invoked again`() {
         // Given
-        val queueModes = mutableListOf<Int>()
+        val spoken = mutableListOf<String>()
         val player = TextToSpeechPlayer(
             isReady = { true },
             setLanguage = { 0 },
-            speak = { queueModes.add(QUEUE_FLUSH) },
+            speak = { text -> spoken.add(text) },
         )
 
         // When
@@ -68,6 +70,6 @@ class TextToSpeechPlayerTest {
         player.play("Bom dia", LanguageTag("pt-PT"))
 
         // Then
-        queueModes shouldBe listOf(QUEUE_FLUSH, QUEUE_FLUSH)
+        spoken shouldBe listOf("Bom dia", "Bom dia")
     }
 }
