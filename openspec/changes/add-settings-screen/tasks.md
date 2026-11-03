@@ -25,12 +25,12 @@
 
 ## 3. Datos: persistencia de la escritura
 
-- [ ] 3.1 Test en `DataStoreSettingsDataSourceTest` (`:core:data`): `given cefr level and batch size
+- [x] 3.1 Test en `DataStoreSettingsDataSourceTest` (`:core:data`): `given cefr level and batch size
   saved when settings are read then they match` (spec `user-settings`, "Guardar sustituye los ajustes
   anteriores"); debe fallar porque `save()` no existe todavía.
-- [ ] 3.2 Implementar `DataStoreSettingsDataSource.save()` con un único `dataStore.edit { ... }` que
+- [x] 3.2 Implementar `DataStoreSettingsDataSource.save()` con un único `dataStore.edit { ... }` que
   escriba `cefr_level` y `batch_size`; verificar que el test de 3.1 pasa.
-- [ ] 3.3 Test: `given a settings store that throws IOException on write when save is called then the
+- [x] 3.3 Test: `given a settings store that throws IOException on write when save is called then the
   exception propagates and a subsequent read still returns the previous settings` (spec
   `user-settings`, "Fallo de escritura no mezcla ajustes antiguos y nuevos"); implementar o ajustar
   solo si el test falla con el código de 3.2.
