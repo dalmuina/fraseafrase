@@ -51,18 +51,27 @@ proposal.md - Why.
   ```kotlin
   androidComponents {
       onVariants { variant ->
-          val expected = if (variant.buildType == "debug") "Frase a Frase (Debug)" else "Frase a Frase"
-          val actual = variant.resValues.get()[ResValue.Key("string", "app_name")]?.value
-          if (actual != expected) {
-              throw GradleException(
-                  "app_name de la variante '${variant.name}': esperado '$expected', obtenido '$actual'",
-              )
+          // El MapProperty de resValues no se puede leer con .get() dentro de onVariants (se
+          // lanza "configuration of project has not completed yet"): se difiere a cuando el
+          // grafo de tareas está listo, momento en el que la configuración de todos los
+          // proyectos ya ha terminado. ResValue.Key no tiene constructor público: se crea con
+          // variant.makeResValueKey(...).
+          project.gradle.taskGraph.whenReady {
+              val expected = if (variant.buildType == "debug") "Frase a Frase (Debug)" else "Frase a Frase"
+              val actual = variant.resValues.get()[variant.makeResValueKey("string", "app_name")]?.value
+              if (actual != expected) {
+                  throw GradleException(
+                      "app_name de la variante '${variant.name}': esperado '$expected', obtenido '$actual'",
+                  )
+              }
           }
       }
   }
   ```
   Esta comprobación falla primero sin el `resValue` (tarea 1.1 de `tasks.md`, roja antes de
-  añadirlo) y pasa en cuanto se añade (verde), como exige `openspec/config.yaml` (`rules.tasks`).
+  añadirlo, con el motivo esperado: ausencia del valor, no un error de sintaxis) y pasa en cuanto
+  se añade (verde), como exige `openspec/config.yaml` (`rules.tasks`). Verificado también que
+  detecta un valor incorrecto (tarea 1.2).
 - La verificación manual en dispositivo (tarea 2.1) se mantiene como evidencia adicional de que el
   lanzador muestra de verdad los dos nombres, no como única prueba.
 
