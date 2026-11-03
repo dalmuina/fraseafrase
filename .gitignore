@@ -24,3 +24,4 @@ Thumbs.db
 
 # Contexto de sesión (ver CLAUDE.md, "Contexto y sesiones")
 .claude/handoff.md
+docs/pendientes-mvp.md

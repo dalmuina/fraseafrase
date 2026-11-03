@@ -20,12 +20,16 @@ android {
     buildFeatures {
         // Expone BuildConfig.APPLICATION_ID a los tests JVM (BuildVariantTest, design.md D4).
         buildConfig = true
+        // Habilita resValue(...) para el app_name por variante (design.md - Decisions).
+        resValues = true
     }
 
     buildTypes {
         debug {
             // Identificador propio para instalar junto a la build de publicación (design.md D1).
             applicationIdSuffix = ".debug"
+            // Nombre visible distinto al de release, para distinguir ambas variantes instaladas (design.md - Decisions).
+            resValue("string", "app_name", "Frase a Frase (Debug)")
         }
         release {
             isMinifyEnabled = true
@@ -34,6 +38,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            // Nombre de publicación (design.md - Decisions).
+            resValue("string", "app_name", "Frase a Frase")
         }
     }
 }
@@ -44,6 +50,22 @@ androidComponents {
         val actual = variant.applicationId.get()
         if (actual != PRODUCTION_APP_ID) {
             throw GradleException("applicationId de release: esperado '$PRODUCTION_APP_ID', obtenido '$actual'")
+        }
+    }
+
+    // Comprobación de configuración del nombre visible por variante (design.md - Decisions).
+    // El MapProperty de resValues no se puede leer con .get() dentro de onVariants (se lanza
+    // "configuration of project has not completed yet"): se difiere a cuando el grafo de tareas
+    // está listo, momento en el que la configuración de todos los proyectos ya ha terminado.
+    onVariants { variant ->
+        project.gradle.taskGraph.whenReady {
+            val expected = if (variant.buildType == "debug") "Frase a Frase (Debug)" else "Frase a Frase"
+            val actual = variant.resValues.get()[variant.makeResValueKey("string", "app_name")]?.value
+            if (actual != expected) {
+                throw GradleException(
+                    "app_name de la variante '${variant.name}': esperado '$expected', obtenido '$actual'",
+                )
+            }
         }
     }
 }
