@@ -18,6 +18,7 @@ plugins {
 dependencies {
     kover(projects.feature.session)
     kover(projects.feature.settings)
+    kover(projects.feature.progress)
     kover(projects.core.data)
     kover(projects.core.platform)
     kover(projects.core.domain)
