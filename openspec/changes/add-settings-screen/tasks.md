@@ -2,7 +2,7 @@
 
 ## 1. Dependencia de Navigation 3
 
-- [ ] 1.1 Comprobar la última versión estable (no `alpha`/`beta`) de
+- [x] 1.1 Comprobar la última versión estable (no `alpha`/`beta`) de
   `androidx.navigation3:navigation3-runtime` y `navigation3-ui`; si solo hay prerelease, anotar la
   versión fijada en `design.md` (Risks / Trade-offs) como riesgo aceptado. Añadirlas a
   `gradle/libs.versions.toml` y como dependencia de `:app` (design.md - Decisiones, navegación básica
@@ -62,10 +62,11 @@
 
 ## 5. Punto de entrada desde la práctica
 
-- [ ] 5.1 Test de `PracticeSessionScreen`: con un `onOpenSettings` dado, pulsar el icono de ajustes del
+- [ ] 5.1 Test de `PracticeSessionScreen`: con un `onOpenSettings` dado, pulsar la acción de ajustes del
   `TopAppBar` lo invoca (spec `settings-screen`, "Abrir ajustes desde la práctica"); hacerlo fallar
-  antes de añadir el `TopAppBar` con el icono (`Icons.Default`/`Icons.AutoMirrored` de Material 3
-  directo, sin componente `Ds*`; design.md - Decisiones) al `Scaffold` existente.
+  antes de añadir el `TopAppBar` con un `TextButton` de texto "Ajustes" (sin `material-icons-core`,
+  sin componente `Ds*`; design.md - Decisiones, "Acceso a ajustes: texto, no icono") al `Scaffold`
+  existente.
 - [ ] 5.2 Añadir el parámetro `onOpenSettings: () -> Unit` a `PracticeSessionRoute` y reenviarlo a
   `PracticeSessionScreen`; verificar con `./gradlew :feature:session:test`.
 
