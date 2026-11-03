@@ -42,12 +42,14 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
   en inglés. No se commitean rojos ni se reescribe el historial (sin rebase, sin amend de commits ya
   publicados, sin force push).
 - Al terminar el cambio, en su misma rama y antes de la PR: ejecuta `/opsx:archive` y haz un último commit con el
-  archivo del cambio y las specs sincronizadas. Después haz push de la rama actual (`git push -u origin HEAD`) y
-  para. El usuario abre la pull request a `develop`, la revisa con la CI y la mergea. El archivo nunca va en una
-  rama aparte ni después de la integración en `develop`.
+  archivo del cambio y las specs sincronizadas. El archivo nunca va en una rama aparte ni después de la
+  integración en `develop`.
+- Tras ese commit, haz push de la rama actual (`git push -u origin HEAD`) y abre la pull request a `develop`
+  con `gh pr create`, con título y descripción (resumen y plan de pruebas) a partir del cambio de OpenSpec.
+  Después para: el usuario la revisa con la CI y la mergea.
 - Los artefactos de OpenSpec se commitean en cuanto el cambio recibe el APROBADO de android-architect, antes de
   `/opsx:apply`, con un commit `docs(openspec): ...` propio. Así no se pierden si se cambia de rama o se limpia el árbol.
-- No crees ni borres ramas, no hagas merge ni abras pull requests.
+- No crees ni borres ramas, no hagas merge.
 
 ## Arquitectura (ADR-0010)
 
