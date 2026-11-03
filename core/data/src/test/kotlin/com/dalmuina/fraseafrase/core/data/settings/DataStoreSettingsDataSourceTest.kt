@@ -5,11 +5,13 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -150,6 +152,45 @@ class DataStoreSettingsDataSourceTest {
         // When / Then
         newSource(store).settings().cefrLevel shouldBe CefrLevel.A1
     }
+
+    // Scenario: Guardar sustituye los ajustes anteriores (spec: user-settings)
+    @Test
+    fun `given cefr level and batch size saved when settings are read then they match`() = runTest {
+        // Given
+        val store = newStore(freshFile(), backgroundScope)
+        val source = newSource(store)
+
+        // When
+        source.save(UserSettings(cefrLevel = CefrLevel.B2, batchSize = BatchSize(15)))
+
+        // Then
+        source.settings() shouldBe UserSettings(cefrLevel = CefrLevel.B2, batchSize = BatchSize(15))
+    }
+
+    // Scenario: Fallo de escritura no mezcla ajustes antiguos y nuevos (spec: user-settings)
+    @Test
+    fun `given a write failure when save is called then it throws and a read still returns the previous settings`() =
+        runTest {
+            // Given
+            val stored = emptyPreferences().toMutablePreferences().apply {
+                this[cefrKey] = "B1"
+                this[batchSizeInt] = 25
+            }.toPreferences()
+            val failingOnWriteStore = object : DataStore<Preferences> {
+                override val data: Flow<Preferences> = flow { emit(stored) }
+
+                override suspend fun updateData(transform: suspend (Preferences) -> Preferences): Preferences {
+                    throw IOException("write failed")
+                }
+            }
+            val source = newSource(failingOnWriteStore)
+
+            // When / Then
+            shouldThrow<IOException> {
+                source.save(UserSettings(cefrLevel = CefrLevel.B2, batchSize = BatchSize(15)))
+            }
+            source.settings() shouldBe UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25))
+        }
 
     // Scenario: Almacén ilegible devuelve los valores por defecto (spec: user-settings)
     @Test

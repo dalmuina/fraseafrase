@@ -3,6 +3,9 @@ package com.dalmuina.fraseafrase.core.data.settings
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.dalmuina.fraseafrase.core.data.di.IoDispatcher
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
@@ -44,6 +47,14 @@ class DataStoreSettingsDataSource internal constructor(
         } catch (ignored: IOException) {
             UserSettings.DEFAULT
         }
+    }
+
+    override suspend fun save(settings: UserSettings) = withContext(dispatcher) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(CEFR_LEVEL)] = settings.cefrLevel.name
+            preferences[intPreferencesKey(BATCH_SIZE)] = settings.batchSize.value
+        }
+        Unit
     }
 
     private fun cefrLevelOf(preferences: Preferences): CefrLevel {

@@ -81,10 +81,15 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     // El proveedor de la base de datos (PersistenceModule) expone su tipo de Room a Hilt.
     implementation(libs.room3.runtime)
 
     // Tests de cableado de Hilt (design.md D1 a D3): grafo de producción real, sin módulos de prueba.
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+    // Espresso 3.7.0 en lugar del 3.5.0 del BOM de Compose, que falla en Android 17 (ver
+    // feature/session/build.gradle.kts design.md D10).
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }

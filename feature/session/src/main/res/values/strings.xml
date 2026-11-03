@@ -11,6 +11,7 @@
     <string name="practice_close_cancel">Cancelar</string>
     <string name="practice_nothing_to_practice">No hay frases para practicar</string>
     <string name="practice_catalog_error">No se puede practicar: el catálogo no se pudo cargar</string>
+    <string name="practice_settings">Ajustes</string>
 
     <plurals name="practice_close_warning">
         <item quantity="one">%1$d frase pasará a la siguiente tanda</item>

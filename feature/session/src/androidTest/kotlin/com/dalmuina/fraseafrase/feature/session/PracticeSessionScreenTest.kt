@@ -12,6 +12,7 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -55,6 +56,7 @@ class PracticeSessionScreenTest {
                             uiState = (uiState as PracticeSessionUiState.Practicing).copy(revealed = true)
                         }
                     },
+                    onOpenSettings = {},
                 )
             }
         }
@@ -143,10 +145,32 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Cerrar tanda").assertIsNotEnabled()
     }
 
+    // Scenario: Abrir ajustes desde la práctica (spec: settings-screen)
+    @Test
+    fun givenOnOpenSettingsWhenActivatingTheSettingsActionThenItIsInvoked() {
+        // Given: la pantalla de práctica con un onOpenSettings dado
+        var openSettingsCalled = false
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = practicing(current = item()),
+                    onAction = {},
+                    onOpenSettings = { openSettingsCalled = true },
+                )
+            }
+        }
+
+        // When: el usuario activa la acción de ajustes del TopAppBar
+        composeTestRule.onNodeWithText("Ajustes").performClick()
+
+        // Then: se invoca onOpenSettings
+        assertTrue(openSettingsCalled)
+    }
+
     private fun setScreen(uiState: PracticeSessionUiState) {
         composeTestRule.setContent {
             AppTheme {
-                PracticeSessionScreen(uiState = uiState, onAction = {})
+                PracticeSessionScreen(uiState = uiState, onAction = {}, onOpenSettings = {})
             }
         }
     }

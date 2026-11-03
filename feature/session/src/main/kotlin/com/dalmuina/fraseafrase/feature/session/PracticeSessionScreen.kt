@@ -12,11 +12,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,13 +33,27 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
  * Pantalla de práctica sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión con el
  * ViewModel está en [PracticeSessionRoute].
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PracticeSessionScreen(
     uiState: PracticeSessionUiState,
     onAction: (PracticeSessionAction) -> Unit,
+    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {},
+                actions = {
+                    TextButton(onClick = onOpenSettings) {
+                        Text(text = stringResource(R.string.practice_settings))
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
