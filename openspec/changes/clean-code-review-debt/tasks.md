@@ -69,8 +69,8 @@
 
 ## 6. Verificación final
 
-- [ ] 6.1 Ejecutar `./gradlew check` (tests + detekt + lint) en verde sobre todo el proyecto.
-- [ ] 6.2 Ejecutar `./gradlew koverVerify` en verde (ningún cambio de este grupo debería mover la
+- [x] 6.1 Ejecutar `./gradlew check` (tests + detekt + lint) en verde sobre todo el proyecto.
+- [x] 6.2 Ejecutar `./gradlew koverVerify` en verde (ningún cambio de este grupo debería mover la
   cobertura por debajo de los mínimos, ya que no se añade código de producción nuevo sin test).
 
 ## Workflow follow-up
