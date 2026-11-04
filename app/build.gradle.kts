@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("fraseafrase.android.application.compose")
     id("fraseafrase.hilt")
@@ -5,6 +7,32 @@ plugins {
 
 // Identificador de la build de publicación (design.md D1 y D5). Es val y no const val: forma segura en un script .gradle.kts.
 val PRODUCTION_APP_ID = "com.dalmuina.fraseafrase"
+
+// Credenciales de firma de `release` (design.md - Decisions). Lectura perezosa: el fichero local
+// `keystore.properties` (no versionado) es la vía principal; las variables de entorno son la
+// alternativa para un futuro CI. No se exige nada aquí: solo se comprueba más abajo, al configurar
+// una tarea de la variante release, para no afectar a `debug` ni a `check`.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties =
+    Properties().apply {
+        if (keystorePropertiesFile.exists()) {
+            keystorePropertiesFile.inputStream().use { load(it) }
+        }
+    }
+
+fun releaseSigningCredential(propertyKey: String, environmentVariable: String): String? =
+    keystoreProperties.getProperty(propertyKey) ?: System.getenv(environmentVariable)
+
+val releaseStoreFile = releaseSigningCredential("storeFile", "RELEASE_KEYSTORE_PATH")
+val releaseStorePassword = releaseSigningCredential("storePassword", "RELEASE_KEYSTORE_PASSWORD")
+val releaseKeyAlias = releaseSigningCredential("keyAlias", "RELEASE_KEY_ALIAS")
+val releaseKeyPassword = releaseSigningCredential("keyPassword", "RELEASE_KEY_PASSWORD")
+
+val hasReleaseSigningCredentials =
+    releaseStoreFile != null &&
+        releaseStorePassword != null &&
+        releaseKeyAlias != null &&
+        releaseKeyPassword != null
 
 android {
     namespace = "com.dalmuina.fraseafrase"
@@ -24,6 +52,20 @@ android {
         resValues = true
     }
 
+    signingConfigs {
+        // Solo se declara cuando las cuatro credenciales están disponibles (design.md - Decisions);
+        // si faltan, release se queda sin signingConfig propio y la comprobación de más abajo falla
+        // la build al configurar una tarea de esa variante, en vez de firmar con la clave de depuración.
+        if (hasReleaseSigningCredentials) {
+            create("release") {
+                storeFile = file(releaseStoreFile!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         debug {
             // Identificador propio para instalar junto a la build de publicación (design.md D1).
@@ -40,7 +82,35 @@ android {
             )
             // Nombre de publicación (design.md - Decisions).
             resValue("string", "app_name", "Frase a Frase")
+            if (hasReleaseSigningCredentials) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
+    }
+}
+
+// Nombres de las tareas de empaquetado/firma de la variante release (AGP): son las únicas que
+// necesitan `signingConfigs.release`. Otras tareas de release (compilación, lint, kover) también
+// contienen "Release" en el nombre pero no firman nada, y `check` las incluye en su grafo; si se
+// comprobaran todas, `./gradlew check` fallaría sin motivo (tasks.md 4.1).
+val releasePackagingTaskNames = setOf("assembleRelease", "bundleRelease", "packageRelease")
+
+// Falla pronto si se pide una tarea de empaquetado de la variante release sin credenciales de
+// firma, en vez de dejar que AGP la firme en silencio con la clave de depuración (design.md -
+// Decisions). Perezoso: se comprueba solo cuando el grafo de tareas incluye una de esas tareas de
+// este módulo, así que `./gradlew :app:assembleDebug` y `./gradlew check` no se ven afectados
+// (tasks.md 2.5, 4.1).
+gradle.taskGraph.whenReady {
+    val releaseTaskRequested =
+        allTasks.any { it.path.startsWith(project.path) && it.name in releasePackagingTaskNames }
+    if (releaseTaskRequested && !hasReleaseSigningCredentials) {
+        throw GradleException(
+            "Faltan credenciales de firma para la variante release. Copia " +
+                "'keystore.properties.example' a 'keystore.properties' en la raíz del proyecto y " +
+                "rellena storeFile, storePassword, keyAlias y keyPassword, o define las variables " +
+                "de entorno RELEASE_KEYSTORE_PATH, RELEASE_KEYSTORE_PASSWORD, RELEASE_KEY_ALIAS y " +
+                "RELEASE_KEY_PASSWORD.",
+        )
     }
 }
 
