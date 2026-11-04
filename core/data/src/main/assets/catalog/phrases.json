@@ -422,6 +422,216 @@
       "topic": "tecnologia",
       "target": "A internet está muito lenta.",
       "source": "Internet está muy lenta."
+    },
+    {
+      "id": "b1-trabajo-001",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Estou a pensar em mudar de emprego.",
+      "source": "Estoy pensando en cambiar de trabajo."
+    },
+    {
+      "id": "b1-trabajo-002",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "O meu contrato termina no final do ano.",
+      "source": "Mi contrato termina a final de año."
+    },
+    {
+      "id": "b1-trabajo-003",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Temos de cumprir o prazo desta semana.",
+      "source": "Tenemos que cumplir el plazo esta semana."
+    },
+    {
+      "id": "b1-trabajo-004",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Ela foi promovida depois de dois anos.",
+      "source": "Ella fue ascendida después de dos años."
+    },
+    {
+      "id": "b1-viajes-001",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Perdi a ligação por causa do atraso.",
+      "source": "Perdí la conexión por culpa del retraso."
+    },
+    {
+      "id": "b1-viajes-002",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Alugámos um carro para visitar o interior.",
+      "source": "Alquilamos un coche para visitar el interior."
+    },
+    {
+      "id": "b1-viajes-003",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "A viagem correu melhor do que esperávamos.",
+      "source": "El viaje salió mejor de lo que esperábamos."
+    },
+    {
+      "id": "b1-viajes-004",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Esquecemo-nos de levar o carregador.",
+      "source": "Nos olvidamos de llevar el cargador."
+    },
+    {
+      "id": "b1-relaciones-001",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Conhecemo-nos há mais de dez anos.",
+      "source": "Nos conocemos desde hace más de diez años."
+    },
+    {
+      "id": "b1-relaciones-002",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Ele ainda não se desculpou pelo que disse.",
+      "source": "Él todavía no se ha disculpado por lo que dijo."
+    },
+    {
+      "id": "b1-relaciones-003",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Mantemos contacto apesar da distância.",
+      "source": "Mantenemos contacto a pesar de la distancia."
+    },
+    {
+      "id": "b1-relaciones-004",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Confio bastante na opinião dela.",
+      "source": "Confío bastante en su opinión."
+    },
+    {
+      "id": "b1-medioambiente-001",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "Deveríamos reciclar mais em casa.",
+      "source": "Deberíamos reciclar más en casa."
+    },
+    {
+      "id": "b1-medioambiente-002",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "A seca afetou as colheitas este ano.",
+      "source": "La sequía afectó a las cosechas este año."
+    },
+    {
+      "id": "b1-medioambiente-003",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "Cada vez há menos água disponível na região.",
+      "source": "Cada vez hay menos agua disponible en la región."
+    },
+    {
+      "id": "b1-medioambiente-004",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "É importante poupar energia sempre que possível.",
+      "source": "Es importante ahorrar energía siempre que sea posible."
+    },
+    {
+      "id": "b1-cultura-001",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Este filme ganhou vários premios internacionais.",
+      "source": "Esta película ganó varios premios internacionales."
+    },
+    {
+      "id": "b1-cultura-002",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "A exposição mostra a história da cidade.",
+      "source": "La exposición muestra la historia de la ciudad."
+    },
+    {
+      "id": "b1-cultura-003",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Prefiro ler o livro antes de ver o filme.",
+      "source": "Prefiero leer el libro antes de ver la película."
+    },
+    {
+      "id": "b1-cultura-004",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "O festival atrai turistas de todo o país.",
+      "source": "El festival atrae turistas de todo el país."
+    },
+    {
+      "id": "b1-deportes-001",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "O jogador saiu lesionado no segundo tempo.",
+      "source": "El jugador salió lesionado en el segundo tiempo."
+    },
+    {
+      "id": "b1-deportes-002",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "A equipa treina todos os dias da semana.",
+      "source": "El equipo entrena todos los días de la semana."
+    },
+    {
+      "id": "b1-deportes-003",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Ganhámos a final por um ponto.",
+      "source": "Ganamos la final por un punto."
+    },
+    {
+      "id": "b1-deportes-004",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Ela começou a correr para melhorar a saúde.",
+      "source": "Ella empezó a correr para mejorar su salud."
+    },
+    {
+      "id": "b1-educacion-001",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "O exame final é mais difícil do que pensávamos.",
+      "source": "El examen final es más difícil de lo que pensábamos."
+    },
+    {
+      "id": "b1-educacion-002",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "Os alunos têm de entregar o trabalho até sexta.",
+      "source": "Los alumnos tienen que entregar el trabajo hasta el viernes."
+    },
+    {
+      "id": "b1-educacion-003",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "Decidi inscrever-me num curso de inglês.",
+      "source": "Decidí inscribirme en un curso de inglés."
+    },
+    {
+      "id": "b1-tecnologia-001",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Esta aplicação consome muita bateria.",
+      "source": "Esta aplicación consume mucha batería."
+    },
+    {
+      "id": "b1-tecnologia-002",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Fizeram uma atualização que corrigiu o problema.",
+      "source": "Hicieron una actualización que corrigió el problema."
+    },
+    {
+      "id": "b1-tecnologia-003",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Guardei os ficheiros na nuvem por segurança.",
+      "source": "Guardé los archivos en la nube por seguridad."
     }
   ]
 }
