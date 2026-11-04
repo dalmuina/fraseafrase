@@ -57,12 +57,12 @@
 
 ## 5. Presentación: helpers del ViewModel de sesión (D1)
 
-- [ ] 5.1 Añadir `currentPracticing()` y `updatePracticing { ... }` a `PracticeSessionViewModel`
+- [x] 5.1 Añadir `currentPracticing()` y `updatePracticing { ... }` a `PracticeSessionViewModel`
   (`feature/session/.../PracticeSessionViewModel.kt`) según D1 del diseño.
-- [ ] 5.2 Reescribir `reveal()` y `cancelClose()` con `updatePracticing { ... }`. Verificar con
+- [x] 5.2 Reescribir `reveal()` y `cancelClose()` con `updatePracticing { ... }`. Verificar con
   `./gradlew :feature:session:test --tests "*PracticeSessionViewModelTest*"` en verde, mismos
   escenarios de D3 cubiertos (revelar se ignora con `busy` o aviso de cierre abierto).
-- [ ] 5.3 Reescribir `requestClose()`, `confirmClose()`, `answer()` y `playAudio()` usando
+- [x] 5.3 Reescribir `requestClose()`, `confirmClose()`, `answer()` y `playAudio()` usando
   `currentPracticing()` en vez del cast repetido, sin cambiar su lógica asíncrona. Verificar con
   `./gradlew :feature:session:test --tests "*PracticeSessionViewModelTest*,*PracticeSessionCloseTest*"`
   en verde, mismos escenarios de D3/D4 cubiertos (cierre, autoevaluación, audio).
