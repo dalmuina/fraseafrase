@@ -7,37 +7,37 @@ catálogo sigue siendo válido.
 
 ## 1. Nivel A1
 
-- [ ] 1.1 Añadir ≈30 frases de nivel A1 (incluyendo las 2 ya existentes, que no se tocan) repartidas
+- [x] 1.1 Añadir ≈30 frases de nivel A1 (incluyendo las 2 ya existentes, que no se tocan) repartidas
       en 6-8 temas variados, con `id`, `level`, `topic`, `target` (pt-PT) y `source` (es-ES) únicos y
-      no vacíos; verificar que `./gradlew :core:data:test --tests "*CatalogJson*"` sigue en verde.
+      no vacíos; verificado con `./gradlew :core:data:test --rerun-tasks` en verde.
 
 ## 2. Nivel A2
 
-- [ ] 2.1 Añadir ≈30 frases de nivel A2 al final de la lista, repartidas en 6-8 temas variados;
-      verificar que `./gradlew :core:data:test --tests "*CatalogJson*"` sigue en verde.
+- [x] 2.1 Añadir ≈30 frases de nivel A2 al final de la lista, repartidas en 6-8 temas variados;
+      verificado con `./gradlew :core:data:test --rerun-tasks` en verde.
 
 ## 3. Nivel B1
 
-- [ ] 3.1 Añadir ≈30 frases de nivel B1 al final de la lista, repartidas en 6-8 temas variados;
-      verificar que `./gradlew :core:data:test --tests "*CatalogJson*"` sigue en verde.
+- [x] 3.1 Añadir ≈30 frases de nivel B1 al final de la lista, repartidas en 6-8 temas variados;
+      verificado con `./gradlew :core:data:test --rerun-tasks` en verde.
 
 ## 4. Nivel B2
 
-- [ ] 4.1 Añadir ≈30 frases de nivel B2 al final de la lista, repartidas en 6-8 temas variados;
-      verificar que `./gradlew :core:data:test --tests "*CatalogJson*"` sigue en verde.
+- [x] 4.1 Añadir ≈30 frases de nivel B2 al final de la lista, repartidas en 6-8 temas variados;
+      verificado con `./gradlew :core:data:test --rerun-tasks` en verde.
 
 ## 5. Nivel C1
 
-- [ ] 5.1 Añadir ≈30 frases de nivel C1 al final de la lista, repartidas en 6-8 temas variados;
-      verificar que `./gradlew :core:data:test --tests "*CatalogJson*"` sigue en verde.
+- [x] 5.1 Añadir ≈30 frases de nivel C1 al final de la lista, repartidas en 6-8 temas variados;
+      verificado con `./gradlew :core:data:test --rerun-tasks` en verde.
 
 ## 6. Verificación del contrato del catálogo
 
-- [ ] 6.1 Ejecutar `./gradlew :core:data:test --tests "*RealCatalogContractTest*"` y comprobar que
-      los ids liberados (`a1-saludos-001`, `a1-comida-001`) siguen siendo un prefijo exacto de la
-      lista de ids del catálogo ampliado.
-- [ ] 6.2 Ejecutar `./gradlew check` y comprobar que tests, detekt y lint terminan en verde con el
-      catálogo ampliado.
+- [x] 6.1 Comprobado (vía `RealCatalogContractTest` en `./gradlew :core:data:test`) que los ids
+      liberados (`a1-saludos-001`, `a1-comida-001`) siguen siendo un prefijo exacto de la lista de
+      ids del catálogo ampliado (150 frases, 30 por nivel A1-C1, ids únicos).
+- [x] 6.2 Ejecutado `./gradlew check`: tests, detekt, lint y cobertura Kover en verde con el
+      catálogo ampliado (BUILD SUCCESSFUL).
 
 ## Workflow follow-up
 
