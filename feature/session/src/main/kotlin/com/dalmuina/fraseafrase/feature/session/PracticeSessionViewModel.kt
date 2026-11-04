@@ -95,12 +95,11 @@ class PracticeSessionViewModel @Inject constructor(
      */
     private fun answer(assessment: SelfAssessment) {
         val state = currentPracticing() ?: return
-        val current = state.current
-        if (current != null && state.isAnswerable()) {
+        if (state.isAnswerable()) {
             // `busy` se activa antes de lanzar la corrutina: un segundo toque antes de terminar se descarta (D2).
             _uiState.value = state.copy(busy = true)
             viewModelScope.launch {
-                answerPhrase(current.id, assessment)
+                answerPhrase(state.current.id, assessment)
                 reload()
             }
         }
@@ -109,9 +108,8 @@ class PracticeSessionViewModel @Inject constructor(
     /** Escuchar se ignora sin revelar, con una respuesta en curso (`busy`) o con el aviso de cierre abierto. */
     private fun playAudio() {
         val state = currentPracticing() ?: return
-        val current = state.current
-        if (current != null && state.isAnswerable()) {
-            playPhraseAudio(current.target, current.targetLocale)
+        if (state.isAnswerable()) {
+            playPhraseAudio(state.current.target, state.current.targetLocale)
         }
     }
 
@@ -137,7 +135,7 @@ private fun PracticeSessionUiState.Practicing.isAnswerable(): Boolean =
 /** Estado de pantalla que produce una lectura de la sesión. Lo usan el arranque, las recargas y el cierre. */
 private fun PracticeSessionResult.toScreenState(): PracticeSessionUiState = when (this) {
     is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
-        current = items.firstOrNull(),
+        current = items.first(),
         revealed = false,
         busy = false,
         closeWarning = null,

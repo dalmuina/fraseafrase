@@ -52,7 +52,7 @@ class PracticeSessionViewModelTest {
             // Then
             viewModel.uiState.test {
                 val state = awaitItem().shouldBeInstanceOf<PracticeSessionUiState.Practicing>()
-                state.current?.source shouldBe "Buenos días"
+                state.current.source shouldBe "Buenos días"
                 state.revealed shouldBe false
             }
         }
@@ -132,7 +132,7 @@ class PracticeSessionViewModelTest {
         // Then
         viewModel.uiState.test {
             val state = awaitItem().shouldBeInstanceOf<PracticeSessionUiState.Practicing>()
-            state.current?.target shouldBe "Bom dia"
+            state.current.target shouldBe "Bom dia"
             state.revealed shouldBe true
         }
     }
@@ -152,7 +152,7 @@ class PracticeSessionViewModelTest {
             advanceUntilIdle()
 
             // Then
-            viewModel.practicing().current?.id?.value shouldBe "B"
+            viewModel.practicing().current.id.value shouldBe "B"
             viewModel.practicing().revealed shouldBe false
             practice.activeOrder() shouldBe listOf("B", "C", "A")
         }
@@ -172,7 +172,7 @@ class PracticeSessionViewModelTest {
             advanceUntilIdle()
 
             // Then
-            viewModel.practicing().current?.id?.value shouldBe "B"
+            viewModel.practicing().current.id.value shouldBe "B"
             viewModel.practicing().revealed shouldBe false
             practice.activeOrder() shouldBe listOf("B", "C", "A")
         }
@@ -191,7 +191,7 @@ class PracticeSessionViewModelTest {
         advanceUntilIdle()
 
         // Then
-        viewModel.practicing().current?.id?.value shouldBe "A"
+        viewModel.practicing().current.id.value shouldBe "A"
         viewModel.practicing().revealed shouldBe false
         practice.read() shouldBe before
     }
@@ -233,7 +233,7 @@ class PracticeSessionViewModelTest {
         advanceUntilIdle()
 
         // Then: vuelve A sin revelar y la tanda sigue con A y B
-        viewModel.practicing().current?.id?.value shouldBe "A"
+        viewModel.practicing().current.id.value shouldBe "A"
         viewModel.practicing().revealed shouldBe false
         practice.activeOrder() shouldBe listOf("A", "B")
     }
@@ -258,7 +258,7 @@ class PracticeSessionViewModelTest {
         viewModel.onAction(PracticeSessionAction.Reveal)
 
         // Then
-        viewModel.practicing().current?.streak?.value shouldBe 1
+        viewModel.practicing().current.streak.value shouldBe 1
     }
 
     // Scenario: Fallo reinicia la racha visible (spec: practice-session)
@@ -281,8 +281,8 @@ class PracticeSessionViewModelTest {
         viewModel.onAction(PracticeSessionAction.Reveal)
 
         // Then
-        viewModel.practicing().current?.id?.value shouldBe "A"
-        viewModel.practicing().current?.streak?.value shouldBe 0
+        viewModel.practicing().current.id.value shouldBe "A"
+        viewModel.practicing().current.streak.value shouldBe 0
     }
 
     // Scenario: Frase con racha 3 marcada como sabida (spec: practice-session)
@@ -304,7 +304,7 @@ class PracticeSessionViewModelTest {
         advanceUntilIdle()
 
         // Then
-        viewModel.practicing().current?.isKnown shouldBe true
+        viewModel.practicing().current.isKnown shouldBe true
         practice.activeOrder() shouldBe listOf("A", "B")
     }
 
@@ -328,7 +328,7 @@ class PracticeSessionViewModelTest {
         viewModel.onAction(PracticeSessionAction.Reveal)
 
         // Then
-        viewModel.practicing().current?.isKnown shouldBe false
+        viewModel.practicing().current.isKnown shouldBe false
     }
 
     // Scenario: Escuchar reproduce la frase en su locale (spec: phrase-audio)

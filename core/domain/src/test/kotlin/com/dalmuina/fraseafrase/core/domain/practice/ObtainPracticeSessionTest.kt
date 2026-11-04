@@ -338,6 +338,20 @@ class ObtainPracticeSessionTest {
         result shouldBe PracticeSessionResult.CatalogFailed(CatalogLoadError.MalformedDocument)
     }
 
+    // Scenario: Tanda activa sin frases (design.md D1; el escenario no está en la spec)
+    @Test
+    fun `given an active batch with no entries when opening the session then nothing to practice`() = runTest {
+        // Given: tanda activa sin frases
+        val practice = FakePracticeRepository(activeBatch(order = emptyList(), progress = emptyList()))
+        val catalog = loaded(aCatalogPhrase(id = "A"))
+
+        // When
+        val result = useCase(practice, catalog).invoke()
+
+        // Then
+        result shouldBe PracticeSessionResult.NothingToPractice
+    }
+
     // Scenario: Frase de la tanda ausente del catálogo (design.md D1; el escenario no está en la spec)
     @Test
     fun `given a batch phrase missing from the catalog when opening the session then fails with its id`() =

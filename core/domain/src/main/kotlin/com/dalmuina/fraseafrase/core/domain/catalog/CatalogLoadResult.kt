@@ -23,6 +23,9 @@ sealed interface CatalogLoadError {
 
     data object AssetUnreadable : CatalogLoadError
 
-    /** El texto no es JSON válido. No aparece en la spec: se modela para no confundirlo con un asset ilegible. */
+    /**
+     * El texto no es JSON válido. Se modela como un error distinto de [AssetUnreadable]: el asset se pudo
+     * leer, pero su contenido no se puede interpretar.
+     */
     data object MalformedDocument : CatalogLoadError
 }
