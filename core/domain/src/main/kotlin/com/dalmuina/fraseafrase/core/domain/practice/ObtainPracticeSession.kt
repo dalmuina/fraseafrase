@@ -24,10 +24,17 @@ class ObtainPracticeSession @Inject constructor(
 
     private suspend fun withText(batch: PracticeBatch): PracticeSessionResult =
         when (val loaded = catalogRepository.phrases()) {
-            is CatalogLoadResult.Loaded -> PracticeSessionResult.Ready(
-                items = items(batch, loaded.phrases),
-                uncertifiedCount = batch.uncertifiedCount(),
-            )
+            is CatalogLoadResult.Loaded -> {
+                val practiceItems = items(batch, loaded.phrases)
+                if (practiceItems.isEmpty()) {
+                    PracticeSessionResult.NothingToPractice
+                } else {
+                    PracticeSessionResult.Ready(
+                        items = practiceItems,
+                        uncertifiedCount = batch.uncertifiedCount(),
+                    )
+                }
+            }
             is CatalogLoadResult.Failed -> PracticeSessionResult.CatalogFailed(loaded.error)
         }
 
