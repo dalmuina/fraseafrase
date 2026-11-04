@@ -61,9 +61,9 @@
 
 ## 4. Verificación final
 
-- [ ] 4.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
-- [ ] 4.2 Ejecutar `./gradlew koverVerify` en verde (cobertura dominio 90 %, presentación 80 %, global 70 %).
-- [ ] 4.3 Actualizar `docs/deuda-tecnica.md`: marcar como resueltas las tres entradas de este cambio
+- [x] 4.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
+- [x] 4.2 Ejecutar `./gradlew koverVerify` en verde (cobertura dominio 90 %, presentación 80 %, global 70 %).
+- [x] 4.3 Actualizar `docs/deuda-tecnica.md`: marcar como resueltas las tres entradas de este cambio
       (comentario de `CatalogLoadResult`, `Practicing(current = null)`, las dos reglas de Konsist) con una
       referencia a `clean-remaining-review-debt`. Actualizar `docs/pendientes-mvp.md`: el punto 8 conserva solo
       detekt 2.0 y la protección de ramas en GitHub.
