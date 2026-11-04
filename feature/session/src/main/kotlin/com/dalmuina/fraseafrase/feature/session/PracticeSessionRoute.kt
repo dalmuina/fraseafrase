@@ -12,7 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
  */
 @Composable
 fun PracticeSessionRoute(
-    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PracticeSessionViewModel = hiltViewModel(),
 ) {
@@ -20,7 +19,6 @@ fun PracticeSessionRoute(
     PracticeSessionScreen(
         uiState = uiState,
         onAction = viewModel::onAction,
-        onOpenSettings = onOpenSettings,
         modifier = modifier,
     )
 }

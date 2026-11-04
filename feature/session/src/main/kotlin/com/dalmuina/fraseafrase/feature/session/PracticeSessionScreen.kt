@@ -38,21 +38,11 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 internal fun PracticeSessionScreen(
     uiState: PracticeSessionUiState,
     onAction: (PracticeSessionAction) -> Unit,
-    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {},
-                actions = {
-                    TextButton(onClick = onOpenSettings) {
-                        Text(text = stringResource(R.string.practice_settings))
-                    }
-                },
-            )
-        },
+        topBar = { TopAppBar(title = {}) },
     ) { innerPadding ->
         Box(
             modifier = Modifier

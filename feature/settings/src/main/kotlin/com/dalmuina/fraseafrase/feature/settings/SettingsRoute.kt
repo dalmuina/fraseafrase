@@ -8,12 +8,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Punto de entrada de los ajustes para `:app` (ADR-0006): conecta el [SettingsViewModel] con la pantalla sin
- * estado. [onBack] es un callback de UI que vuelve a la práctica, independiente de haber guardado (spec
- * `settings-screen`, "Vuelta a la práctica desde los ajustes"); no pasa por el ViewModel.
+ * estado. Solo observa el estado y reenvía las acciones; no contiene lógica.
  */
 @Composable
 fun SettingsRoute(
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -21,7 +19,6 @@ fun SettingsRoute(
     SettingsScreen(
         uiState = uiState,
         onAction = viewModel::onAction,
-        onBack = onBack,
         modifier = modifier,
     )
 }

@@ -28,6 +28,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
 
 include(":feature:session")
+include(":feature:progress")
 include(":feature:settings")
 
 include(":core:designsystem")

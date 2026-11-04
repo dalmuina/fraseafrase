@@ -115,4 +115,25 @@ class SettingsViewModelTest {
             // Then: una lectura posterior de los ajustes devuelve el nivel CEFR B2 y N igual a 15
             repository.settings() shouldBe UserSettings(CefrLevel.B2, BatchSize(15))
         }
+
+    // Scenario: Salir sin guardar no persiste la edición (spec: settings-screen)
+    @Test
+    fun `given an unconfirmed batch size edit when discarded then a later read reflects the previous value`() =
+        runTest {
+            // Given: la pantalla de ajustes abierta con nivel CEFR A1 y N igual a 20 guardados, editando sin guardar
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val viewModel = settingsViewModel(repository)
+            advanceUntilIdle()
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
+
+            // When: el usuario sale de la pantalla de ajustes sin confirmar el guardado (el ViewModel se descarta
+            // y uno nuevo lee los ajustes)
+            val newViewModel = settingsViewModel(repository)
+            advanceUntilIdle()
+
+            // Then: una lectura posterior de los ajustes devuelve N igual a 20
+            val state = newViewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.batchSizeText shouldBe "20"
+            repository.settings() shouldBe UserSettings(CefrLevel.A1, BatchSize(20))
+        }
 }

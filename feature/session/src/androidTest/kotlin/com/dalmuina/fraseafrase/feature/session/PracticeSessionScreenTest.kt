@@ -57,7 +57,6 @@ class PracticeSessionScreenTest {
                             uiState = (uiState as PracticeSessionUiState.Practicing).copy(revealed = true)
                         }
                     },
-                    onOpenSettings = {},
                 )
             }
         }
@@ -94,7 +93,6 @@ class PracticeSessionScreenTest {
                 PracticeSessionScreen(
                     uiState = practicing(current = item(), revealed = true),
                     onAction = { action -> receivedAction = action },
-                    onOpenSettings = {},
                 )
             }
         }
@@ -195,32 +193,10 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Cerrar tanda").assertIsNotEnabled()
     }
 
-    // Scenario: Abrir ajustes desde la práctica (spec: settings-screen)
-    @Test
-    fun givenOnOpenSettingsWhenActivatingTheSettingsActionThenItIsInvoked() {
-        // Given: la pantalla de práctica con un onOpenSettings dado
-        var openSettingsCalled = false
-        composeTestRule.setContent {
-            AppTheme {
-                PracticeSessionScreen(
-                    uiState = practicing(current = item()),
-                    onAction = {},
-                    onOpenSettings = { openSettingsCalled = true },
-                )
-            }
-        }
-
-        // When: el usuario activa la acción de ajustes del TopAppBar
-        composeTestRule.onNodeWithText("Ajustes").performClick()
-
-        // Then: se invoca onOpenSettings
-        assertTrue(openSettingsCalled)
-    }
-
     private fun setScreen(uiState: PracticeSessionUiState) {
         composeTestRule.setContent {
             AppTheme {
-                PracticeSessionScreen(uiState = uiState, onAction = {}, onOpenSettings = {})
+                PracticeSessionScreen(uiState = uiState, onAction = {})
             }
         }
     }
