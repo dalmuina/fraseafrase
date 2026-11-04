@@ -16,6 +16,202 @@
       "topic": "comida",
       "target": "Tenho fome.",
       "source": "Tengo hambre."
+    },
+    {
+      "id": "a1-saludos-002",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Boa tarde!",
+      "source": "¡Buenas tardes!"
+    },
+    {
+      "id": "a1-saludos-003",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Boa noite, até amanhã.",
+      "source": "Buenas noches, hasta mañana."
+    },
+    {
+      "id": "a1-saludos-004",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Como te chamas?",
+      "source": "¿Cómo te llamas?"
+    },
+    {
+      "id": "a1-comida-002",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Quero um café, por favor.",
+      "source": "Quiero un café, por favor."
+    },
+    {
+      "id": "a1-comida-003",
+      "level": "A1",
+      "topic": "comida",
+      "target": "O pão está fresco.",
+      "source": "El pan está fresco."
+    },
+    {
+      "id": "a1-comida-004",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Gosto muito de fruta.",
+      "source": "Me gusta mucho la fruta."
+    },
+    {
+      "id": "a1-comida-005",
+      "level": "A1",
+      "topic": "comida",
+      "target": "A sopa está quente.",
+      "source": "La sopa está caliente."
+    },
+    {
+      "id": "a1-familia-001",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Esta é a minha mãe.",
+      "source": "Esta es mi madre."
+    },
+    {
+      "id": "a1-familia-002",
+      "level": "A1",
+      "topic": "familia",
+      "target": "O meu pai trabalha muito.",
+      "source": "Mi padre trabaja mucho."
+    },
+    {
+      "id": "a1-familia-003",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Tenho um irmão e uma irmã.",
+      "source": "Tengo un hermano y una hermana."
+    },
+    {
+      "id": "a1-familia-004",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Os meus avós vivem aqui.",
+      "source": "Mis abuelos viven aquí."
+    },
+    {
+      "id": "a1-numeros-001",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Tenho vinte anos.",
+      "source": "Tengo veinte años."
+    },
+    {
+      "id": "a1-numeros-002",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "São três horas.",
+      "source": "Son las tres."
+    },
+    {
+      "id": "a1-numeros-003",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Isto custa dez euros.",
+      "source": "Esto cuesta diez euros."
+    },
+    {
+      "id": "a1-numeros-004",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Vivo no quinto andar.",
+      "source": "Vivo en el quinto piso."
+    },
+    {
+      "id": "a1-tiempo-001",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Hoje está a chover.",
+      "source": "Hoy está lloviendo."
+    },
+    {
+      "id": "a1-tiempo-002",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Faz muito calor em agosto.",
+      "source": "Hace mucho calor en agosto."
+    },
+    {
+      "id": "a1-tiempo-003",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "O céu está nublado.",
+      "source": "El cielo está nublado."
+    },
+    {
+      "id": "a1-tiempo-004",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "No inverno faz frio.",
+      "source": "En invierno hace frío."
+    },
+    {
+      "id": "a1-casa-001",
+      "level": "A1",
+      "topic": "casa",
+      "target": "A minha casa é pequena.",
+      "source": "Mi casa es pequeña."
+    },
+    {
+      "id": "a1-casa-002",
+      "level": "A1",
+      "topic": "casa",
+      "target": "O quarto tem uma janela grande.",
+      "source": "La habitación tiene una ventana grande."
+    },
+    {
+      "id": "a1-casa-003",
+      "level": "A1",
+      "topic": "casa",
+      "target": "A cozinha está limpa.",
+      "source": "La cocina está limpia."
+    },
+    {
+      "id": "a1-casa-004",
+      "level": "A1",
+      "topic": "casa",
+      "target": "Onde está a casa de banho?",
+      "source": "¿Dónde está el baño?"
+    },
+    {
+      "id": "a1-colores-001",
+      "level": "A1",
+      "topic": "colores",
+      "target": "O carro é vermelho.",
+      "source": "El coche es rojo."
+    },
+    {
+      "id": "a1-colores-002",
+      "level": "A1",
+      "topic": "colores",
+      "target": "Gosto da cor azul.",
+      "source": "Me gusta el color azul."
+    },
+    {
+      "id": "a1-colores-003",
+      "level": "A1",
+      "topic": "colores",
+      "target": "A camisa é branca.",
+      "source": "La camisa es blanca."
+    },
+    {
+      "id": "a1-animales-001",
+      "level": "A1",
+      "topic": "animales",
+      "target": "O cão está no jardim.",
+      "source": "El perro está en el jardín."
+    },
+    {
+      "id": "a1-animales-002",
+      "level": "A1",
+      "topic": "animales",
+      "target": "Tenho um gato preto.",
+      "source": "Tengo un gato negro."
     }
   ]
 }
