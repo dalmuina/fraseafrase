@@ -17,23 +17,31 @@
 
 ## 2. Presentación: `current` no nulable y sin rama vacía
 
-- [ ] 2.1 Actualizar `PracticeSessionUiState.Practicing.current` de `PracticeItem?` a `PracticeItem` y el
+- [x] 2.1 Actualizar `PracticeSessionUiState.Practicing.current` de `PracticeItem?` a `PracticeItem` y el
       KDoc que lo describe. En el mismo paso, cambiar `PracticeSessionViewModel.toScreenState()` de
       `items.firstOrNull()` a `items.first()` (ya no alcanzable vacío tras la tarea 1.3) — es el cambio mínimo
       para que `:feature:session` siga compilando con el tipo no nulable. Verificar con
       `./gradlew :feature:session:compileDebugKotlin` en verde.
-- [ ] 2.2 Actualizar `PracticeSessionViewModelTest` y `PracticeSessionFixtures` (`feature/session`) para
+- [x] 2.2 Actualizar `PracticeSessionViewModelTest` y `PracticeSessionFixtures` (`feature/session`) para
       construir `Practicing` solo con `current` no nulo; eliminar cualquier fixture o caso que construyera
       `Practicing(current = null, ...)`. Ejecutar `:feature:session:test` y comprobar que compila y pasa en
       verde.
-- [ ] 2.3 Simplificar `answer()` y `playAudio()`: la comprobación `current != null && state.isAnswerable()`
+- [x] 2.3 Simplificar `answer()` y `playAudio()`: la comprobación `current != null && state.isAnswerable()`
       pasa a `state.isAnswerable()`, usando `state.current` directamente. Verificar con
       `PracticeSessionViewModelTest` en verde.
-- [ ] 2.4 Eliminar la rama `if (current == null)` de `PracticingContent` (`PracticeSessionScreen.kt`): pintar
+- [x] 2.4 Eliminar la rama `if (current == null)` de `PracticingContent` (`PracticeSessionScreen.kt`): pintar
       siempre `PhraseCard` con `state.current`. Actualizar o eliminar el test de UI instrumentado que cubría el
       mensaje vacío dentro de `Practicing` si existe, y confirmar que el caso `NothingToPractice` (estado de
       nivel superior) sigue cubierto. Verificar con `connectedDebugAndroidTest` de `:feature:session` o, si no
       es viable en este paso, con una revisión manual registrada en el propio `tasks.md`.
+      (Revisión manual: no existía test de UI instrumentado que cubriera el mensaje vacío dentro de
+      `Practicing` — el único `EmptyMessage` de `PracticeSessionScreenTest` corresponde al estado de nivel
+      superior `NothingToPractice`, que sigue cubierto por
+      `givenNoPhrasesAvailableWhenShowingTheScreenThenItSaysThereIsNothingToPractice`. El helper
+      `practicing(current: PracticeItem = item(), ...)` ya no admite `null`. `connectedDebugAndroidTest` no es
+      viable en este entorno sin dispositivo/emulador; se verificó con
+      `./gradlew :feature:session:compileDebugAndroidTestKotlin` en verde y queda pendiente de ejecución manual
+      en un dispositivo o emulador.)
 
 ## 3. Arquitectura: reglas de Konsist (ADR-0010)
 

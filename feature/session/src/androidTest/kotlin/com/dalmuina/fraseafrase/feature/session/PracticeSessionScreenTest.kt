@@ -202,7 +202,7 @@ class PracticeSessionScreenTest {
     }
 
     private fun practicing(
-        current: PracticeItem? = item(),
+        current: PracticeItem = item(),
         revealed: Boolean = false,
         busy: Boolean = false,
         closeWarning: Int? = null,

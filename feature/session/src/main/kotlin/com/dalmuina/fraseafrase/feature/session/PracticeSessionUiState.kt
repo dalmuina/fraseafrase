@@ -11,13 +11,12 @@ sealed interface PracticeSessionUiState {
     data object Loading : PracticeSessionUiState
 
     /**
-     * Práctica de la tanda activa. [current] es la frase que se muestra, o null si la tanda llega vacía.
-     * [revealed] indica si su traducción en portugués está visible. [busy] está a true mientras se registra una
-     * respuesta o se cierra la tanda. [closeWarning] es el número de no certificadas del aviso de cierre, o null si
-     * el diálogo no está abierto.
+     * Práctica de la tanda activa. [current] es la frase que se muestra. [revealed] indica si su traducción en
+     * portugués está visible. [busy] está a true mientras se registra una respuesta o se cierra la tanda.
+     * [closeWarning] es el número de no certificadas del aviso de cierre, o null si el diálogo no está abierto.
      */
     data class Practicing(
-        val current: PracticeItem?,
+        val current: PracticeItem,
         val revealed: Boolean,
         val busy: Boolean,
         val closeWarning: Int?,

@@ -71,21 +71,16 @@ private fun PracticingContent(
     state: PracticeSessionUiState.Practicing,
     onAction: (PracticeSessionAction) -> Unit,
 ) {
-    val current = state.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        if (current == null) {
-            EmptyMessage(text = stringResource(R.string.practice_nothing_to_practice))
+        PhraseCard(item = state.current, revealed = state.revealed, enabled = !state.busy, onAction = onAction)
+        if (state.revealed) {
+            AssessmentButtons(enabled = !state.busy, onAction = onAction)
         } else {
-            PhraseCard(item = current, revealed = state.revealed, enabled = !state.busy, onAction = onAction)
-            if (state.revealed) {
-                AssessmentButtons(enabled = !state.busy, onAction = onAction)
-            } else {
-                Button(onClick = { onAction(PracticeSessionAction.Reveal) }) {
-                    Text(text = stringResource(R.string.practice_reveal))
-                }
+            Button(onClick = { onAction(PracticeSessionAction.Reveal) }) {
+                Text(text = stringResource(R.string.practice_reveal))
             }
         }
         TextButton(

@@ -257,7 +257,7 @@ class PracticeSessionCloseTest {
             advanceUntilIdle()
 
             // Then
-            viewModel.practicing().current?.id?.value shouldBe "C"
+            viewModel.practicing().current.id.value shouldBe "C"
             practice.activeOrder() shouldBe listOf("C", "A") + newIds
         }
 
@@ -279,7 +279,7 @@ class PracticeSessionCloseTest {
             advanceUntilIdle()
 
             // Then
-            viewModel.practicing().current?.id?.value shouldBe "N1"
+            viewModel.practicing().current.id.value shouldBe "N1"
             practice.activeOrder() shouldBe listOf("N1", "N2")
             practice.read().carry.ids.shouldBeEmpty()
         }
@@ -302,7 +302,7 @@ class PracticeSessionCloseTest {
 
         // Then: la pantalla muestra la tanda guardada (A ya con racha 3), sin aviso y sin cerrar
         viewModel.practicing().closeWarning shouldBe null
-        viewModel.practicing().current?.isKnown shouldBe true
+        viewModel.practicing().current.isKnown shouldBe true
         practice.activeOrder() shouldBe listOf("A", "B", "C")
     }
 
@@ -323,7 +323,7 @@ class PracticeSessionCloseTest {
 
         // Then: la pantalla se recarga sin error y muestra la tanda que se compone a partir del estado guardado
         viewModel.uiState.value.shouldBeInstanceOf<PracticeSessionUiState.Practicing>()
-        viewModel.practicing().current?.id?.value shouldBe "N1"
+        viewModel.practicing().current.id.value shouldBe "N1"
         viewModel.practicing().closeWarning shouldBe null
     }
 
