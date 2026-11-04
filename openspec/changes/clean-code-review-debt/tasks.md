@@ -2,11 +2,11 @@
 
 ## 1. Dominio: mensajes de `require` en inglés
 
-- [ ] 1.1 Traducir el mensaje de `require` de `Level.kt` (`core/domain/.../spacedrepetition/Level.kt`)
+- [x] 1.1 Traducir el mensaje de `require` de `Level.kt` (`core/domain/.../spacedrepetition/Level.kt`)
   del español al inglés, sin cambiar la condición. Verificar con
   `./gradlew :core:domain:test --tests "*LevelTest*"` en verde (ningún test afirma sobre el texto
   del mensaje, así que no debe fallar ninguno).
-- [ ] 1.2 Traducir los tres mensajes de `require` de `PhraseProgress.kt`
+- [x] 1.2 Traducir los tres mensajes de `require` de `PhraseProgress.kt`
   (`core/domain/.../spacedrepetition/PhraseProgress.kt`) del español al inglés, sin cambiar las
   condiciones. Verificar con `./gradlew :core:domain:test --tests "*PhraseProgressTest*"` en
   verde.

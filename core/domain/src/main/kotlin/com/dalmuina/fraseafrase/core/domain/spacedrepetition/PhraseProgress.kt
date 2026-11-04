@@ -19,13 +19,13 @@ data class PhraseProgress(
 
     init {
         require(level.value > 0 || nextReview == null) {
-            "Una frase de nivel 0 no puede tener próximo repaso"
+            "A level 0 phrase cannot have a next review"
         }
         require(level.value == 0 || nextReview != null) {
-            "Una frase de nivel ${level.value} debe tener próximo repaso"
+            "A level ${level.value} phrase must have a next review"
         }
         require(streak.value == 0 || answeredInBatch) {
-            "Una racha mayor que 0 exige que la frase haya sido respondida en la tanda"
+            "A streak greater than 0 requires the phrase to have been answered in the batch"
         }
     }
 
