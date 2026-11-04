@@ -45,15 +45,15 @@
 
 ## 3. Arquitectura: reglas de Konsist (ADR-0010)
 
-- [ ] 3.1 Añadir Konsist al catálogo de versiones (`gradle/libs.versions.toml`, versión `0.17.3`) como
+- [x] 3.1 Añadir Konsist al catálogo de versiones (`gradle/libs.versions.toml`, versión `0.17.3`) como
       `testImplementation` de `:app` únicamente. Verificar con `./gradlew :app:dependencies --configuration testImplementation`
       que la librería aparece y con `./gradlew :app:compileTestKotlin` que compila.
-- [ ] 3.2 Escribir `ArchitectureTest` (`app/src/test/.../architecture/ArchitectureTest.kt`) con la regla "una
+- [x] 3.2 Escribir `ArchitectureTest` (`app/src/test/.../architecture/ArchitectureTest.kt`) con la regla "una
       única declaración de `preferencesDataStore` por nombre de fichero". Comprobar en rojo duplicando
       temporalmente una declaración de `preferencesDataStore` con el mismo nombre en un fichero de prueba
       (o con un test que llame directamente a la función de comprobación con una lista de declaraciones
       duplicada) y revertir; en verde con el código real, que hoy solo tiene una declaración (ajustes).
-- [ ] 3.3 Añadir a `ArchitectureTest` la regla "los data sources con estado tienen ámbito `@Singleton`":
+- [x] 3.3 Añadir a `ArchitectureTest` la regla "los data sources con estado tienen ámbito `@Singleton`":
       lista explícita de clases con estado (`AssetsCatalogDataSource`, por su caché en memoria) y comprobación
       de que cada una, y solo esas, declara `@Singleton`. Comprobar en rojo quitando temporalmente la
       anotación de `AssetsCatalogDataSource` y revertir; en verde con el código real.

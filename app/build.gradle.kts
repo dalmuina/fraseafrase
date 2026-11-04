@@ -157,6 +157,9 @@ dependencies {
     // El proveedor de la base de datos (PersistenceModule) expone su tipo de Room a Hilt.
     implementation(libs.room3.runtime)
 
+    // Test de arquitectura (ADR-0010): solo testImplementation, nunca se expone a otros módulos (design.md D2).
+    testImplementation(libs.konsist)
+
     // Tests de cableado de Hilt (design.md D1 a D3): grafo de producción real, sin módulos de prueba.
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
