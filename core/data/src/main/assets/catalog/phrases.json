@@ -632,6 +632,216 @@
       "topic": "tecnologia",
       "target": "Guardei os ficheiros na nuvem por segurança.",
       "source": "Guardé los archivos en la nube por seguridad."
+    },
+    {
+      "id": "b2-politica-001",
+      "level": "B2",
+      "topic": "politica",
+      "target": "O debate centrou-se nas reformas fiscais propostas.",
+      "source": "El debate se centró en las reformas fiscales propuestas."
+    },
+    {
+      "id": "b2-politica-002",
+      "level": "B2",
+      "topic": "politica",
+      "target": "A participação eleitoral caiu em relação ao ano anterior.",
+      "source": "La participación electoral cayó respecto al año anterior."
+    },
+    {
+      "id": "b2-politica-003",
+      "level": "B2",
+      "topic": "politica",
+      "target": "Muitos cidadãos sentem-se pouco representados pelas instituições.",
+      "source": "Muchos ciudadanos se sienten poco representados por las instituciones."
+    },
+    {
+      "id": "b2-politica-004",
+      "level": "B2",
+      "topic": "politica",
+      "target": "A proposta de lei gerou uma forte oposição no parlamento.",
+      "source": "La propuesta de ley generó una fuerte oposición en el parlamento."
+    },
+    {
+      "id": "b2-economia-001",
+      "level": "B2",
+      "topic": "economia",
+      "target": "A inflação afetou sobretudo as famílias com menos rendimentos.",
+      "source": "La inflación afectó sobre todo a las familias con menos ingresos."
+    },
+    {
+      "id": "b2-economia-002",
+      "level": "B2",
+      "topic": "economia",
+      "target": "O desemprego juvenil continua a ser um problema estrutural.",
+      "source": "El desempleo juvenil sigue siendo un problema estructural."
+    },
+    {
+      "id": "b2-economia-003",
+      "level": "B2",
+      "topic": "economia",
+      "target": "As exportações cresceram apesar da instabilidade do mercado.",
+      "source": "Las exportaciones crecieron a pesar de la inestabilidad del mercado."
+    },
+    {
+      "id": "b2-economia-004",
+      "level": "B2",
+      "topic": "economia",
+      "target": "A empresa anunciou cortes significativos no orçamento anual.",
+      "source": "La empresa anunció recortes significativos en el presupuesto anual."
+    },
+    {
+      "id": "b2-salud-001",
+      "level": "B2",
+      "topic": "salud",
+      "target": "O sistema de saúde está sob pressão devido à falta de pessoal.",
+      "source": "El sistema de salud está bajo presión por la falta de personal."
+    },
+    {
+      "id": "b2-salud-002",
+      "level": "B2",
+      "topic": "salud",
+      "target": "A investigação clínica avançou graças a novos financiamentos.",
+      "source": "La investigación clínica avanzó gracias a nuevas financiaciones."
+    },
+    {
+      "id": "b2-salud-003",
+      "level": "B2",
+      "topic": "salud",
+      "target": "Muitos doentes esperam meses por uma consulta especializada.",
+      "source": "Muchos pacientes esperan meses por una consulta especializada."
+    },
+    {
+      "id": "b2-salud-004",
+      "level": "B2",
+      "topic": "salud",
+      "target": "A prevenção é tão importante quanto o próprio tratamento.",
+      "source": "La prevención es tan importante como el propio tratamiento."
+    },
+    {
+      "id": "b2-educacion-001",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "O currículo foi revisto para incluir competências digitais.",
+      "source": "El currículo fue revisado para incluir competencias digitales."
+    },
+    {
+      "id": "b2-educacion-002",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "As desigualdades no acesso à educação continuam a preocupar especialistas.",
+      "source": "Las desigualdades en el acceso a la educación siguen preocupando a los especialistas."
+    },
+    {
+      "id": "b2-educacion-003",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "A universidade investiu em bolsas para alunos com menos recursos.",
+      "source": "La universidad invirtió en becas para alumnos con menos recursos."
+    },
+    {
+      "id": "b2-educacion-004",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "O abandono escolar diminuiu nos últimos cinco anos.",
+      "source": "El abandono escolar disminuyó en los últimos cinco años."
+    },
+    {
+      "id": "b2-cultura-001",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "A obra provocou um debate intenso sobre identidade e memória.",
+      "source": "La obra provocó un debate intenso sobre identidad y memoria."
+    },
+    {
+      "id": "b2-cultura-002",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "O património histórico da cidade está mal conservado.",
+      "source": "El patrimonio histórico de la ciudad está mal conservado."
+    },
+    {
+      "id": "b2-cultura-003",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "A crítica dividiu-se sobre o verdadeiro valor do romance.",
+      "source": "La crítica se dividió sobre el verdadero valor de la novela."
+    },
+    {
+      "id": "b2-cultura-004",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "O realizador optou por uma narrativa não linear.",
+      "source": "El director optó por una narrativa no lineal."
+    },
+    {
+      "id": "b2-trabajo-001",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "A empresa adotou o trabalho remoto de forma permanente.",
+      "source": "La empresa adoptó el trabajo remoto de forma permanente."
+    },
+    {
+      "id": "b2-trabajo-002",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "A rotatividade de pessoal aumentou depois da reestruturação.",
+      "source": "La rotación de personal aumentó tras la reestructuración."
+    },
+    {
+      "id": "b2-trabajo-003",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "Negociámos melhores condições através do sindicato.",
+      "source": "Negociamos mejores condiciones a través del sindicato."
+    },
+    {
+      "id": "b2-trabajo-004",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "O excesso de reuniões reduz a produtividade da equipa.",
+      "source": "El exceso de reuniones reduce la productividad del equipo."
+    },
+    {
+      "id": "b2-medioambiente-001",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "As alterações climáticas intensificaram os fenómenos extremos.",
+      "source": "El cambio climático intensificó los fenómenos extremos."
+    },
+    {
+      "id": "b2-medioambiente-002",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "A transição energética exige investimentos a longo prazo.",
+      "source": "La transición energética exige inversiones a largo plazo."
+    },
+    {
+      "id": "b2-medioambiente-003",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "A perda de biodiversidade ameaça ecossistemas inteiros.",
+      "source": "La pérdida de biodiversidad amenaza ecosistemas enteros."
+    },
+    {
+      "id": "b2-tecnologia-001",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "A inteligência artificial está a transformar vários setores.",
+      "source": "La inteligencia artificial está transformando varios sectores."
+    },
+    {
+      "id": "b2-tecnologia-002",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "A proteção de dados tornou-se uma preocupação central.",
+      "source": "La protección de datos se convirtió en una preocupación central."
+    },
+    {
+      "id": "b2-tecnologia-003",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "A automação substituiu tarefas antes feitas manualmente.",
+      "source": "La automatización sustituyó tareas antes hechas manualmente."
     }
   ]
 }
