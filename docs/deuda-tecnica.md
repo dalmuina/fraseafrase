@@ -2,6 +2,10 @@
 
 Registro de mejoras detectadas y aplazadas. Cada entrada indica su origen y el motivo por el que no se aplicó en su momento. Ninguna entrada autoriza a ampliar el alcance de un cambio en curso: se abordan en un cambio propio.
 
+## Del cambio `expand-phrase-catalog`
+
+- **Cerrar la tanda activa no hace avanzar a la siguiente frase ni recoge el nivel CEFR elegido en ajustes.** Origen: prueba manual del usuario tras ampliar el catálogo a 150 frases. Motivo: con el catálogo ampliado se pudo probar por primera vez el cierre de tanda de principio a fin; al confirmar el cierre, el popup indica que la tanda se cerró pero la pantalla de práctica sigue mostrando la misma frase, y cambiar el nivel CEFR en ajustes (p. ej. a B1) tampoco hace que la siguiente tanda use frases de ese nivel. Según ADR-0012, cerrar una tanda debe certificar/arrastrar sus frases y crear la siguiente con las reglas de composición (arrastradas, pendientes y nuevas del nivel elegido); esto no está pasando. Queda fuera del alcance de `expand-phrase-catalog` (solo contenido de datos, sin lógica); requiere una tarea propia para investigar `ObtainPracticeSession`/el cierre de tanda y su cableado con los ajustes de nivel CEFR.
+
 ## Resuelto en `1.0.0/add-debug-application-id`
 
 - **Build debug con `applicationIdSuffix = ".debug"`.** Origen: revisión de `add-hilt-wiring-tests`. Motivo: los tests instrumentados de `:app` se ejecutan en la app real, con su `practice.db`, y AGP desinstala la app al terminar `connectedAndroidTest`. Lanzarlos en un móvil personal borraría el progreso de estudio. Hacerlo antes de instalar builds de desarrollo en un dispositivo personal. **Resuelto en `1.0.0/add-debug-application-id`:** la variante `debug` usa `com.dalmuina.fraseafrase.debug` y la de publicación conserva `com.dalmuina.fraseafrase`. Verificado con `BuildVariantTest` (JVM) y una comprobación de configuración en `app/build.gradle.kts`.

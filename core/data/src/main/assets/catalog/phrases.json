@@ -16,6 +16,1042 @@
       "topic": "comida",
       "target": "Tenho fome.",
       "source": "Tengo hambre."
+    },
+    {
+      "id": "a1-saludos-002",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Boa tarde!",
+      "source": "¡Buenas tardes!"
+    },
+    {
+      "id": "a1-saludos-003",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Boa noite, até amanhã.",
+      "source": "Buenas noches, hasta mañana."
+    },
+    {
+      "id": "a1-saludos-004",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Como te chamas?",
+      "source": "¿Cómo te llamas?"
+    },
+    {
+      "id": "a1-comida-002",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Quero um café, por favor.",
+      "source": "Quiero un café, por favor."
+    },
+    {
+      "id": "a1-comida-003",
+      "level": "A1",
+      "topic": "comida",
+      "target": "O pão está fresco.",
+      "source": "El pan está fresco."
+    },
+    {
+      "id": "a1-comida-004",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Gosto muito de fruta.",
+      "source": "Me gusta mucho la fruta."
+    },
+    {
+      "id": "a1-comida-005",
+      "level": "A1",
+      "topic": "comida",
+      "target": "A sopa está quente.",
+      "source": "La sopa está caliente."
+    },
+    {
+      "id": "a1-familia-001",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Esta é a minha mãe.",
+      "source": "Esta es mi madre."
+    },
+    {
+      "id": "a1-familia-002",
+      "level": "A1",
+      "topic": "familia",
+      "target": "O meu pai trabalha muito.",
+      "source": "Mi padre trabaja mucho."
+    },
+    {
+      "id": "a1-familia-003",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Tenho um irmão e uma irmã.",
+      "source": "Tengo un hermano y una hermana."
+    },
+    {
+      "id": "a1-familia-004",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Os meus avós vivem aqui.",
+      "source": "Mis abuelos viven aquí."
+    },
+    {
+      "id": "a1-numeros-001",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Tenho vinte anos.",
+      "source": "Tengo veinte años."
+    },
+    {
+      "id": "a1-numeros-002",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "São três horas.",
+      "source": "Son las tres."
+    },
+    {
+      "id": "a1-numeros-003",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Isto custa dez euros.",
+      "source": "Esto cuesta diez euros."
+    },
+    {
+      "id": "a1-numeros-004",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Vivo no quinto andar.",
+      "source": "Vivo en el quinto piso."
+    },
+    {
+      "id": "a1-tiempo-001",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Hoje está a chover.",
+      "source": "Hoy está lloviendo."
+    },
+    {
+      "id": "a1-tiempo-002",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Faz muito calor em agosto.",
+      "source": "Hace mucho calor en agosto."
+    },
+    {
+      "id": "a1-tiempo-003",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "O céu está nublado.",
+      "source": "El cielo está nublado."
+    },
+    {
+      "id": "a1-tiempo-004",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "No inverno faz frio.",
+      "source": "En invierno hace frío."
+    },
+    {
+      "id": "a1-casa-001",
+      "level": "A1",
+      "topic": "casa",
+      "target": "A minha casa é pequena.",
+      "source": "Mi casa es pequeña."
+    },
+    {
+      "id": "a1-casa-002",
+      "level": "A1",
+      "topic": "casa",
+      "target": "O quarto tem uma janela grande.",
+      "source": "La habitación tiene una ventana grande."
+    },
+    {
+      "id": "a1-casa-003",
+      "level": "A1",
+      "topic": "casa",
+      "target": "A cozinha está limpa.",
+      "source": "La cocina está limpia."
+    },
+    {
+      "id": "a1-casa-004",
+      "level": "A1",
+      "topic": "casa",
+      "target": "Onde está a casa de banho?",
+      "source": "¿Dónde está el baño?"
+    },
+    {
+      "id": "a1-colores-001",
+      "level": "A1",
+      "topic": "colores",
+      "target": "O carro é vermelho.",
+      "source": "El coche es rojo."
+    },
+    {
+      "id": "a1-colores-002",
+      "level": "A1",
+      "topic": "colores",
+      "target": "Gosto da cor azul.",
+      "source": "Me gusta el color azul."
+    },
+    {
+      "id": "a1-colores-003",
+      "level": "A1",
+      "topic": "colores",
+      "target": "A camisa é branca.",
+      "source": "La camisa es blanca."
+    },
+    {
+      "id": "a1-animales-001",
+      "level": "A1",
+      "topic": "animales",
+      "target": "O cão está no jardim.",
+      "source": "El perro está en el jardín."
+    },
+    {
+      "id": "a1-animales-002",
+      "level": "A1",
+      "topic": "animales",
+      "target": "Tenho um gato preto.",
+      "source": "Tengo un gato negro."
+    },
+    {
+      "id": "a2-viajes-001",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Quero reservar um quarto de hotel.",
+      "source": "Quiero reservar una habitación de hotel."
+    },
+    {
+      "id": "a2-viajes-002",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "O voo está atrasado uma hora.",
+      "source": "El vuelo está retrasado una hora."
+    },
+    {
+      "id": "a2-viajes-003",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Preciso de um mapa da cidade.",
+      "source": "Necesito un mapa de la ciudad."
+    },
+    {
+      "id": "a2-viajes-004",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Onde fica a estação de comboios?",
+      "source": "¿Dónde está la estación de trenes?"
+    },
+    {
+      "id": "a2-compras-001",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Quanto custa esta camisola?",
+      "source": "¿Cuánto cuesta este jersey?"
+    },
+    {
+      "id": "a2-compras-002",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Posso pagar com cartão?",
+      "source": "¿Puedo pagar con tarjeta?"
+    },
+    {
+      "id": "a2-compras-003",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Este sapato é muito caro.",
+      "source": "Este zapato es muy caro."
+    },
+    {
+      "id": "a2-compras-004",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Há um desconto nesta loja.",
+      "source": "Hay un descuento en esta tienda."
+    },
+    {
+      "id": "a2-trabajo-001",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Trabalho numa escola perto de casa.",
+      "source": "Trabajo en una escuela cerca de casa."
+    },
+    {
+      "id": "a2-trabajo-002",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "A reunião começa às dez.",
+      "source": "La reunión empieza a las diez."
+    },
+    {
+      "id": "a2-trabajo-003",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Preciso de enviar este email hoje.",
+      "source": "Necesito enviar este correo hoy."
+    },
+    {
+      "id": "a2-trabajo-004",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "O meu chefe está de férias.",
+      "source": "Mi jefe está de vacaciones."
+    },
+    {
+      "id": "a2-salud-001",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Não me sinto bem hoje.",
+      "source": "No me siento bien hoy."
+    },
+    {
+      "id": "a2-salud-002",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Tenho dor de cabeça.",
+      "source": "Tengo dolor de cabeza."
+    },
+    {
+      "id": "a2-salud-003",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Preciso de ir ao médico.",
+      "source": "Necesito ir al médico."
+    },
+    {
+      "id": "a2-salud-004",
+      "level": "A2",
+      "topic": "salud",
+      "target": "A farmácia abre às nove.",
+      "source": "La farmacia abre a las nueve."
+    },
+    {
+      "id": "a2-rutina-001",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Levanto-me sempre às sete.",
+      "source": "Siempre me levanto a las siete."
+    },
+    {
+      "id": "a2-rutina-002",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Depois do trabalho, vou ao ginásio.",
+      "source": "Después del trabajo, voy al gimnasio."
+    },
+    {
+      "id": "a2-rutina-003",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Tomo banho antes do pequeno-almoço.",
+      "source": "Me ducho antes del desayuno."
+    },
+    {
+      "id": "a2-rutina-004",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Ao fim de semana, durmo até tarde.",
+      "source": "El fin de semana, duermo hasta tarde."
+    },
+    {
+      "id": "a2-ocio-001",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Gosto de ler à noite.",
+      "source": "Me gusta leer por la noche."
+    },
+    {
+      "id": "a2-ocio-002",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Vamos ao cinema no sábado?",
+      "source": "¿Vamos al cine el sábado?"
+    },
+    {
+      "id": "a2-ocio-003",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Ela toca piano muito bem.",
+      "source": "Ella toca el piano muy bien."
+    },
+    {
+      "id": "a2-ocio-004",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Jogamos futebol no parque.",
+      "source": "Jugamos fútbol en el parque."
+    },
+    {
+      "id": "a2-transporte-001",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "Apanho o autocarro todos os dias.",
+      "source": "Cojo el autobús todos los días."
+    },
+    {
+      "id": "a2-transporte-002",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "O comboio parte da plataforma dois.",
+      "source": "El tren sale del andén dos."
+    },
+    {
+      "id": "a2-transporte-003",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "Prefiro andar de bicicleta.",
+      "source": "Prefiero ir en bicicleta."
+    },
+    {
+      "id": "a2-tecnologia-001",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "O meu telemóvel ficou sem bateria.",
+      "source": "Mi móvil se quedó sin batería."
+    },
+    {
+      "id": "a2-tecnologia-002",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "Esqueci-me da palavra-passe.",
+      "source": "Me olvidé de la contraseña."
+    },
+    {
+      "id": "a2-tecnologia-003",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "A internet está muito lenta.",
+      "source": "Internet está muy lenta."
+    },
+    {
+      "id": "b1-trabajo-001",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Estou a pensar em mudar de emprego.",
+      "source": "Estoy pensando en cambiar de trabajo."
+    },
+    {
+      "id": "b1-trabajo-002",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "O meu contrato termina no final do ano.",
+      "source": "Mi contrato termina a final de año."
+    },
+    {
+      "id": "b1-trabajo-003",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Temos de cumprir o prazo desta semana.",
+      "source": "Tenemos que cumplir el plazo esta semana."
+    },
+    {
+      "id": "b1-trabajo-004",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Ela foi promovida depois de dois anos.",
+      "source": "Ella fue ascendida después de dos años."
+    },
+    {
+      "id": "b1-viajes-001",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Perdi a ligação por causa do atraso.",
+      "source": "Perdí la conexión por culpa del retraso."
+    },
+    {
+      "id": "b1-viajes-002",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Alugámos um carro para visitar o interior.",
+      "source": "Alquilamos un coche para visitar el interior."
+    },
+    {
+      "id": "b1-viajes-003",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "A viagem correu melhor do que esperávamos.",
+      "source": "El viaje salió mejor de lo que esperábamos."
+    },
+    {
+      "id": "b1-viajes-004",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Esquecemo-nos de levar o carregador.",
+      "source": "Nos olvidamos de llevar el cargador."
+    },
+    {
+      "id": "b1-relaciones-001",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Conhecemo-nos há mais de dez anos.",
+      "source": "Nos conocemos desde hace más de diez años."
+    },
+    {
+      "id": "b1-relaciones-002",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Ele ainda não se desculpou pelo que disse.",
+      "source": "Él todavía no se ha disculpado por lo que dijo."
+    },
+    {
+      "id": "b1-relaciones-003",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Mantemos contacto apesar da distância.",
+      "source": "Mantenemos contacto a pesar de la distancia."
+    },
+    {
+      "id": "b1-relaciones-004",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Confio bastante na opinião dela.",
+      "source": "Confío bastante en su opinión."
+    },
+    {
+      "id": "b1-medioambiente-001",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "Deveríamos reciclar mais em casa.",
+      "source": "Deberíamos reciclar más en casa."
+    },
+    {
+      "id": "b1-medioambiente-002",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "A seca afetou as colheitas este ano.",
+      "source": "La sequía afectó a las cosechas este año."
+    },
+    {
+      "id": "b1-medioambiente-003",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "Cada vez há menos água disponível na região.",
+      "source": "Cada vez hay menos agua disponible en la región."
+    },
+    {
+      "id": "b1-medioambiente-004",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "É importante poupar energia sempre que possível.",
+      "source": "Es importante ahorrar energía siempre que sea posible."
+    },
+    {
+      "id": "b1-cultura-001",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Este filme ganhou vários premios internacionais.",
+      "source": "Esta película ganó varios premios internacionales."
+    },
+    {
+      "id": "b1-cultura-002",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "A exposição mostra a história da cidade.",
+      "source": "La exposición muestra la historia de la ciudad."
+    },
+    {
+      "id": "b1-cultura-003",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Prefiro ler o livro antes de ver o filme.",
+      "source": "Prefiero leer el libro antes de ver la película."
+    },
+    {
+      "id": "b1-cultura-004",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "O festival atrai turistas de todo o país.",
+      "source": "El festival atrae turistas de todo el país."
+    },
+    {
+      "id": "b1-deportes-001",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "O jogador saiu lesionado no segundo tempo.",
+      "source": "El jugador salió lesionado en el segundo tiempo."
+    },
+    {
+      "id": "b1-deportes-002",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "A equipa treina todos os dias da semana.",
+      "source": "El equipo entrena todos los días de la semana."
+    },
+    {
+      "id": "b1-deportes-003",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Ganhámos a final por um ponto.",
+      "source": "Ganamos la final por un punto."
+    },
+    {
+      "id": "b1-deportes-004",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Ela começou a correr para melhorar a saúde.",
+      "source": "Ella empezó a correr para mejorar su salud."
+    },
+    {
+      "id": "b1-educacion-001",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "O exame final é mais difícil do que pensávamos.",
+      "source": "El examen final es más difícil de lo que pensábamos."
+    },
+    {
+      "id": "b1-educacion-002",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "Os alunos têm de entregar o trabalho até sexta.",
+      "source": "Los alumnos tienen que entregar el trabajo hasta el viernes."
+    },
+    {
+      "id": "b1-educacion-003",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "Decidi inscrever-me num curso de inglês.",
+      "source": "Decidí inscribirme en un curso de inglés."
+    },
+    {
+      "id": "b1-tecnologia-001",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Esta aplicação consome muita bateria.",
+      "source": "Esta aplicación consume mucha batería."
+    },
+    {
+      "id": "b1-tecnologia-002",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Fizeram uma atualização que corrigiu o problema.",
+      "source": "Hicieron una actualización que corrigió el problema."
+    },
+    {
+      "id": "b1-tecnologia-003",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Guardei os ficheiros na nuvem por segurança.",
+      "source": "Guardé los archivos en la nube por seguridad."
+    },
+    {
+      "id": "b2-politica-001",
+      "level": "B2",
+      "topic": "politica",
+      "target": "O debate centrou-se nas reformas fiscais propostas.",
+      "source": "El debate se centró en las reformas fiscales propuestas."
+    },
+    {
+      "id": "b2-politica-002",
+      "level": "B2",
+      "topic": "politica",
+      "target": "A participação eleitoral caiu em relação ao ano anterior.",
+      "source": "La participación electoral cayó respecto al año anterior."
+    },
+    {
+      "id": "b2-politica-003",
+      "level": "B2",
+      "topic": "politica",
+      "target": "Muitos cidadãos sentem-se pouco representados pelas instituições.",
+      "source": "Muchos ciudadanos se sienten poco representados por las instituciones."
+    },
+    {
+      "id": "b2-politica-004",
+      "level": "B2",
+      "topic": "politica",
+      "target": "A proposta de lei gerou uma forte oposição no parlamento.",
+      "source": "La propuesta de ley generó una fuerte oposición en el parlamento."
+    },
+    {
+      "id": "b2-economia-001",
+      "level": "B2",
+      "topic": "economia",
+      "target": "A inflação afetou sobretudo as famílias com menos rendimentos.",
+      "source": "La inflación afectó sobre todo a las familias con menos ingresos."
+    },
+    {
+      "id": "b2-economia-002",
+      "level": "B2",
+      "topic": "economia",
+      "target": "O desemprego juvenil continua a ser um problema estrutural.",
+      "source": "El desempleo juvenil sigue siendo un problema estructural."
+    },
+    {
+      "id": "b2-economia-003",
+      "level": "B2",
+      "topic": "economia",
+      "target": "As exportações cresceram apesar da instabilidade do mercado.",
+      "source": "Las exportaciones crecieron a pesar de la inestabilidad del mercado."
+    },
+    {
+      "id": "b2-economia-004",
+      "level": "B2",
+      "topic": "economia",
+      "target": "A empresa anunciou cortes significativos no orçamento anual.",
+      "source": "La empresa anunció recortes significativos en el presupuesto anual."
+    },
+    {
+      "id": "b2-salud-001",
+      "level": "B2",
+      "topic": "salud",
+      "target": "O sistema de saúde está sob pressão devido à falta de pessoal.",
+      "source": "El sistema de salud está bajo presión por la falta de personal."
+    },
+    {
+      "id": "b2-salud-002",
+      "level": "B2",
+      "topic": "salud",
+      "target": "A investigação clínica avançou graças a novos financiamentos.",
+      "source": "La investigación clínica avanzó gracias a nuevas financiaciones."
+    },
+    {
+      "id": "b2-salud-003",
+      "level": "B2",
+      "topic": "salud",
+      "target": "Muitos doentes esperam meses por uma consulta especializada.",
+      "source": "Muchos pacientes esperan meses por una consulta especializada."
+    },
+    {
+      "id": "b2-salud-004",
+      "level": "B2",
+      "topic": "salud",
+      "target": "A prevenção é tão importante quanto o próprio tratamento.",
+      "source": "La prevención es tan importante como el propio tratamiento."
+    },
+    {
+      "id": "b2-educacion-001",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "O currículo foi revisto para incluir competências digitais.",
+      "source": "El currículo fue revisado para incluir competencias digitales."
+    },
+    {
+      "id": "b2-educacion-002",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "As desigualdades no acesso à educação continuam a preocupar especialistas.",
+      "source": "Las desigualdades en el acceso a la educación siguen preocupando a los especialistas."
+    },
+    {
+      "id": "b2-educacion-003",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "A universidade investiu em bolsas para alunos com menos recursos.",
+      "source": "La universidad invirtió en becas para alumnos con menos recursos."
+    },
+    {
+      "id": "b2-educacion-004",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "O abandono escolar diminuiu nos últimos cinco anos.",
+      "source": "El abandono escolar disminuyó en los últimos cinco años."
+    },
+    {
+      "id": "b2-cultura-001",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "A obra provocou um debate intenso sobre identidade e memória.",
+      "source": "La obra provocó un debate intenso sobre identidad y memoria."
+    },
+    {
+      "id": "b2-cultura-002",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "O património histórico da cidade está mal conservado.",
+      "source": "El patrimonio histórico de la ciudad está mal conservado."
+    },
+    {
+      "id": "b2-cultura-003",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "A crítica dividiu-se sobre o verdadeiro valor do romance.",
+      "source": "La crítica se dividió sobre el verdadero valor de la novela."
+    },
+    {
+      "id": "b2-cultura-004",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "O realizador optou por uma narrativa não linear.",
+      "source": "El director optó por una narrativa no lineal."
+    },
+    {
+      "id": "b2-trabajo-001",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "A empresa adotou o trabalho remoto de forma permanente.",
+      "source": "La empresa adoptó el trabajo remoto de forma permanente."
+    },
+    {
+      "id": "b2-trabajo-002",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "A rotatividade de pessoal aumentou depois da reestruturação.",
+      "source": "La rotación de personal aumentó tras la reestructuración."
+    },
+    {
+      "id": "b2-trabajo-003",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "Negociámos melhores condições através do sindicato.",
+      "source": "Negociamos mejores condiciones a través del sindicato."
+    },
+    {
+      "id": "b2-trabajo-004",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "O excesso de reuniões reduz a produtividade da equipa.",
+      "source": "El exceso de reuniones reduce la productividad del equipo."
+    },
+    {
+      "id": "b2-medioambiente-001",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "As alterações climáticas intensificaram os fenómenos extremos.",
+      "source": "El cambio climático intensificó los fenómenos extremos."
+    },
+    {
+      "id": "b2-medioambiente-002",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "A transição energética exige investimentos a longo prazo.",
+      "source": "La transición energética exige inversiones a largo plazo."
+    },
+    {
+      "id": "b2-medioambiente-003",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "A perda de biodiversidade ameaça ecossistemas inteiros.",
+      "source": "La pérdida de biodiversidad amenaza ecosistemas enteros."
+    },
+    {
+      "id": "b2-tecnologia-001",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "A inteligência artificial está a transformar vários setores.",
+      "source": "La inteligencia artificial está transformando varios sectores."
+    },
+    {
+      "id": "b2-tecnologia-002",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "A proteção de dados tornou-se uma preocupação central.",
+      "source": "La protección de datos se convirtió en una preocupación central."
+    },
+    {
+      "id": "b2-tecnologia-003",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "A automação substituiu tarefas antes feitas manualmente.",
+      "source": "La automatización sustituyó tareas antes hechas manualmente."
+    },
+    {
+      "id": "c1-filosofia-001",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "A tese segundo a qual o progresso é sempre linear merece ser questionada.",
+      "source": "La tesis según la cual el progreso siempre es lineal merece ser cuestionada."
+    },
+    {
+      "id": "c1-filosofia-002",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Por mais que se argumente o contrário, a liberdade individual não é absoluta.",
+      "source": "Por mucho que se argumente lo contrario, la libertad individual no es absoluta."
+    },
+    {
+      "id": "c1-filosofia-003",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Convém distinguir entre convicção pessoal e verdade demonstrável.",
+      "source": "Conviene distinguir entre convicción personal y verdad demostrable."
+    },
+    {
+      "id": "c1-filosofia-004",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "A ambiguidade do conceito dificulta qualquer consenso duradouro.",
+      "source": "La ambigüedad del concepto dificulta cualquier consenso duradero."
+    },
+    {
+      "id": "c1-economia-001",
+      "level": "C1",
+      "topic": "economia",
+      "target": "A assimetria de informação distorce o funcionamento dos mercados.",
+      "source": "La asimetría de información distorsiona el funcionamiento de los mercados."
+    },
+    {
+      "id": "c1-economia-002",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Ainda que a produtividade tenha aumentado, os salários estagnaram.",
+      "source": "Aunque la productividad ha aumentado, los salarios se estancaron."
+    },
+    {
+      "id": "c1-economia-003",
+      "level": "C1",
+      "topic": "economia",
+      "target": "A desregulamentação teve consequências que ninguém previra por completo.",
+      "source": "La desregulación tuvo consecuencias que nadie había previsto por completo."
+    },
+    {
+      "id": "c1-economia-004",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Convém não confundir crescimento económico com distribuição de riqueza.",
+      "source": "Conviene no confundir crecimiento económico con distribución de riqueza."
+    },
+    {
+      "id": "c1-politica-001",
+      "level": "C1",
+      "topic": "politica",
+      "target": "A legitimidade de uma decisão não depende apenas da sua legalidade formal.",
+      "source": "La legitimidad de una decisión no depende solo de su legalidad formal."
+    },
+    {
+      "id": "c1-politica-002",
+      "level": "C1",
+      "topic": "politica",
+      "target": "O compromisso alcançado dificilmente satisfará todas as partes envolvidas.",
+      "source": "El compromiso alcanzado difícilmente satisfará a todas las partes implicadas."
+    },
+    {
+      "id": "c1-politica-003",
+      "level": "C1",
+      "topic": "politica",
+      "target": "A polarização discursiva tem minado a qualidade do debate público.",
+      "source": "La polarización discursiva ha minado la calidad del debate público."
+    },
+    {
+      "id": "c1-politica-004",
+      "level": "C1",
+      "topic": "politica",
+      "target": "Qualquer reforma institucional implica custos políticos a curto prazo.",
+      "source": "Cualquier reforma institucional implica costes políticos a corto plazo."
+    },
+    {
+      "id": "c1-ciencia-001",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "A reprodutibilidade dos resultados é essencial para validar uma hipótese.",
+      "source": "La reproducibilidad de los resultados es esencial para validar una hipótesis."
+    },
+    {
+      "id": "c1-ciencia-002",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "O avanço da genómica levanta dilemas éticos ainda sem resposta.",
+      "source": "El avance de la genómica plantea dilemas éticos todavía sin respuesta."
+    },
+    {
+      "id": "c1-ciencia-003",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "A comunidade científica discorda sobre a interpretação dos dados.",
+      "source": "La comunidad científica discrepa sobre la interpretación de los datos."
+    },
+    {
+      "id": "c1-ciencia-004",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "Nem toda a correlação estatística implica uma relação causal.",
+      "source": "No toda correlación estadística implica una relación causal."
+    },
+    {
+      "id": "c1-literatura-001",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "O narrador assume uma perspetiva deliberadamente pouco fiável.",
+      "source": "El narrador asume una perspectiva deliberadamente poco fiable."
+    },
+    {
+      "id": "c1-literatura-002",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "A obra dialoga com a tradição ao mesmo tempo que a subverte.",
+      "source": "La obra dialoga con la tradición al mismo tiempo que la subvierte."
+    },
+    {
+      "id": "c1-literatura-003",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "A linguagem fragmentada reflete a desorientação da personagem principal.",
+      "source": "El lenguaje fragmentado refleja la desorientación del personaje principal."
+    },
+    {
+      "id": "c1-literatura-004",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "A receção crítica mudou radicalmente desde a primeira publicação.",
+      "source": "La recepción crítica cambió radicalmente desde la primera publicación."
+    },
+    {
+      "id": "c1-sociedad-001",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "A coesão social enfraquece quando a desigualdade se acentua.",
+      "source": "La cohesión social se debilita cuando la desigualdad se acentúa."
+    },
+    {
+      "id": "c1-sociedad-002",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "O envelhecimento da população exige repensar o sistema de pensões.",
+      "source": "El envejecimiento de la población exige repensar el sistema de pensiones."
+    },
+    {
+      "id": "c1-sociedad-003",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "A mobilidade social depende de fatores que vão além do mérito individual.",
+      "source": "La movilidad social depende de factores que van más allá del mérito individual."
+    },
+    {
+      "id": "c1-sociedad-004",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "A confiança nas instituições deteriorou-se nas últimas décadas.",
+      "source": "La confianza en las instituciones se ha deteriorado en las últimas décadas."
+    },
+    {
+      "id": "c1-medios-001",
+      "level": "C1",
+      "topic": "medios",
+      "target": "A desinformação prolifera mais rapidamente do que a correção dos factos.",
+      "source": "La desinformación prolifera más rápido que la corrección de los hechos."
+    },
+    {
+      "id": "c1-medios-002",
+      "level": "C1",
+      "topic": "medios",
+      "target": "A linha entre jornalismo e opinião tem-se tornado cada vez mais ténue.",
+      "source": "La línea entre periodismo y opinión se ha vuelto cada vez más tenue."
+    },
+    {
+      "id": "c1-medios-003",
+      "level": "C1",
+      "topic": "medios",
+      "target": "Os algoritmos de recomendação reforçam as convicções pré-existentes do utilizador.",
+      "source": "Los algoritmos de recomendación refuerzan las convicciones preexistentes del usuario."
+    },
+    {
+      "id": "c1-derecho-001",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "A jurisprudência recente alterou a interpretação deste artigo.",
+      "source": "La jurisprudencia reciente alteró la interpretación de este artículo."
+    },
+    {
+      "id": "c1-derecho-002",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "O princípio da proporcionalidade limita a margem de atuação do Estado.",
+      "source": "El principio de proporcionalidad limita el margen de actuación del Estado."
+    },
+    {
+      "id": "c1-derecho-003",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "A ambiguidade da norma deu origem a interpretações contraditórias nos tribunais.",
+      "source": "La ambigüedad de la norma dio lugar a interpretaciones contradictorias en los tribunales."
     }
   ]
 }
