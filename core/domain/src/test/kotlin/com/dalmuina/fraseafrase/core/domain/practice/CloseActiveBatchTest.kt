@@ -2,9 +2,11 @@ package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
@@ -25,8 +27,8 @@ class CloseActiveBatchTest {
     // Certificada: racha 3 respondida en la tanda. Sin certificar: nivel 0, nunca respondida.
     private fun certified(id: String) = aPhraseProgress(
         id = id,
-        level = 1,
-        streak = 3,
+        level = Level(1),
+        streak = Streak(3),
         answeredInBatch = true,
         nextReview = closingDate.plusDays(1),
     )

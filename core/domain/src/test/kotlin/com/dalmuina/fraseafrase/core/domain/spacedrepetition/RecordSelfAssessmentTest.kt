@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 
+import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -11,7 +12,7 @@ class RecordSelfAssessmentTest {
     @Test
     fun `given a streak of 1 when the user assesses a hit then the streak becomes 2`() {
         // Given
-        val progress = progressWith(streak = Streak(1), answeredInBatch = true)
+        val progress = aPhraseProgress(streak = Streak(1), answeredInBatch = true)
 
         // When
         val updated = recordSelfAssessment(progress, SelfAssessment.HIT)
@@ -24,7 +25,7 @@ class RecordSelfAssessmentTest {
     @Test
     fun `given a streak of 2 when the user assesses a miss then the streak becomes 0`() {
         // Given
-        val progress = progressWith(streak = Streak(2), answeredInBatch = true)
+        val progress = aPhraseProgress(streak = Streak(2), answeredInBatch = true)
 
         // When
         val updated = recordSelfAssessment(progress, SelfAssessment.MISS)
@@ -37,7 +38,7 @@ class RecordSelfAssessmentTest {
     @Test
     fun `given a phrase never answered when the user assesses a miss then the phrase counts as answered`() {
         // Given
-        val progress = progressWith(streak = Streak(0), answeredInBatch = false)
+        val progress = aPhraseProgress(streak = Streak(0), answeredInBatch = false)
 
         // When
         val updated = recordSelfAssessment(progress, SelfAssessment.MISS)
@@ -50,7 +51,7 @@ class RecordSelfAssessmentTest {
     @Test
     fun `given a phrase never answered when the user assesses a hit then the phrase counts as answered`() {
         // Given
-        val progress = progressWith(streak = Streak(0), answeredInBatch = false)
+        val progress = aPhraseProgress(streak = Streak(0), answeredInBatch = false)
 
         // When
         val updated = recordSelfAssessment(progress, SelfAssessment.HIT)
@@ -58,12 +59,4 @@ class RecordSelfAssessmentTest {
         // Then
         updated.answeredInBatch shouldBe true
     }
-
-    private fun progressWith(streak: Streak, answeredInBatch: Boolean) = PhraseProgress(
-        id = PhraseId("p-1"),
-        level = Level(0),
-        streak = streak,
-        answeredInBatch = answeredInBatch,
-        nextReview = null,
-    )
 }

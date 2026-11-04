@@ -52,11 +52,11 @@ class PracticeSessionViewModel @Inject constructor(
      * durante la lectura, el aviso no se abre.
      */
     private fun requestClose() {
-        val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
+        val state = currentPracticing() ?: return
         if (state.busy) return
         viewModelScope.launch {
             val session = obtainPracticeSession()
-            val current = _uiState.value as? PracticeSessionUiState.Practicing ?: return@launch
+            val current = currentPracticing() ?: return@launch
             if (current.busy) return@launch
             _uiState.value = when (session) {
                 is PracticeSessionResult.Ready -> current.copy(closeWarning = session.uncertifiedCount)
@@ -66,17 +66,14 @@ class PracticeSessionViewModel @Inject constructor(
         }
     }
 
-    private fun cancelClose() {
-        val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
-        _uiState.value = state.copy(closeWarning = null)
-    }
+    private fun cancelClose() = updatePracticing { copy(closeWarning = null) }
 
     /**
      * Cierra la tanda con el número que mostró el aviso (D4). Se ignora sin aviso abierto, así que un doble toque no
      * cierra dos veces. El diálogo se cierra y `busy` evita otra acción mientras se cierra.
      */
     private fun confirmClose() {
-        val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
+        val state = currentPracticing() ?: return
         val expected = state.closeWarning ?: return
         _uiState.value = state.copy(busy = true, closeWarning = null)
         viewModelScope.launch {
@@ -88,10 +85,8 @@ class PracticeSessionViewModel @Inject constructor(
     }
 
     /** Revelar se ignora con una respuesta en curso (`busy`) o con el aviso de cierre abierto (design D3). */
-    private fun reveal() {
-        val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
-        if (state.busy || state.closeWarning != null) return
-        _uiState.value = state.copy(revealed = true)
+    private fun reveal() = updatePracticing {
+        if (busy || closeWarning != null) this else copy(revealed = true)
     }
 
     /**
@@ -99,7 +94,7 @@ class PracticeSessionViewModel @Inject constructor(
      * (`busy`) y con el aviso de cierre abierto (spec: practice-session; design D3).
      */
     private fun answer(assessment: SelfAssessment) {
-        val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
+        val state = currentPracticing() ?: return
         val current = state.current
         if (current != null && state.isAnswerable()) {
             // `busy` se activa antes de lanzar la corrutina: un segundo toque antes de terminar se descarta (D2).
@@ -113,30 +108,40 @@ class PracticeSessionViewModel @Inject constructor(
 
     /** Escuchar se ignora sin revelar, con una respuesta en curso (`busy`) o con el aviso de cierre abierto. */
     private fun playAudio() {
-        val state = _uiState.value as? PracticeSessionUiState.Practicing ?: return
+        val state = currentPracticing() ?: return
         val current = state.current
         if (current != null && state.isAnswerable()) {
             playPhraseAudio(current.target, current.targetLocale)
         }
     }
 
-    private fun PracticeSessionUiState.Practicing.isAnswerable(): Boolean =
-        revealed && !busy && closeWarning == null
+    private fun currentPracticing(): PracticeSessionUiState.Practicing? =
+        _uiState.value as? PracticeSessionUiState.Practicing
+
+    private inline fun updatePracticing(
+        transform: PracticeSessionUiState.Practicing.() -> PracticeSessionUiState.Practicing,
+    ) {
+        val state = currentPracticing() ?: return
+        _uiState.value = state.transform()
+    }
 
     /** Vuelve a leer la sesión y reemplaza el estado. La siguiente frase y su orden los decide la persistencia (D2). */
     private suspend fun reload() {
         _uiState.value = obtainPracticeSession().toScreenState()
     }
+}
 
-    /** Estado de pantalla que produce una lectura de la sesión. Lo usan el arranque, las recargas y el cierre. */
-    private fun PracticeSessionResult.toScreenState(): PracticeSessionUiState = when (this) {
-        is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
-            current = items.firstOrNull(),
-            revealed = false,
-            busy = false,
-            closeWarning = null,
-        )
-        PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
-        is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
-    }
+private fun PracticeSessionUiState.Practicing.isAnswerable(): Boolean =
+    revealed && !busy && closeWarning == null
+
+/** Estado de pantalla que produce una lectura de la sesión. Lo usan el arranque, las recargas y el cierre. */
+private fun PracticeSessionResult.toScreenState(): PracticeSessionUiState = when (this) {
+    is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
+        current = items.firstOrNull(),
+        revealed = false,
+        busy = false,
+        closeWarning = null,
+    )
+    PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
+    is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
 }

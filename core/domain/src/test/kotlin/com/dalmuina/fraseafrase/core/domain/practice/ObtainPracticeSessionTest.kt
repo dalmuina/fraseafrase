@@ -8,6 +8,7 @@ import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
@@ -111,7 +112,7 @@ class ObtainPracticeSessionTest {
                 progress = listOf(
                     aPhraseProgress(id = "A"),
                     aPhraseProgress(id = "B"),
-                    aPhraseProgress(id = "C", streak = 2, answeredInBatch = true),
+                    aPhraseProgress(id = "C", streak = Streak(2), answeredInBatch = true),
                 ),
             ),
         )
@@ -152,7 +153,7 @@ class ObtainPracticeSessionTest {
             activeBatch(
                 order = batchPhrases,
                 progress = batchPhrases.map { aPhraseProgress(id = it) } +
-                    aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 11)),
+                    aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11)),
             ),
         )
         val catalog = loaded(*(batchPhrases + "P").map { aCatalogPhrase(id = it) }.toTypedArray())
@@ -175,8 +176,8 @@ class ObtainPracticeSessionTest {
                 progress = listOf("A", "B").map {
                     aPhraseProgress(
                         id = it,
-                        level = 1,
-                        streak = 3,
+                        level = Level(1),
+                        streak = Streak(3),
                         answeredInBatch = true,
                         nextReview = today.plusDays(1),
                     )
@@ -199,7 +200,7 @@ class ObtainPracticeSessionTest {
         // Given: catálogo cuya única frase P tiene nivel 1 con repaso el 11-03, y hoy es 10-03
         val practice = FakePracticeRepository(
             PracticeSnapshot(
-                progress = listOf(aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 11))),
+                progress = listOf(aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11))),
                 activeBatch = null,
                 carry = CarryQueue(emptyList()),
             ),
@@ -218,8 +219,8 @@ class ObtainPracticeSessionTest {
     /** Frase certificada en la tanda: racha 3 respondida, con nivel y repaso futuros. */
     private fun certified(id: String) = aPhraseProgress(
         id = id,
-        level = 1,
-        streak = 3,
+        level = Level(1),
+        streak = Streak(3),
         answeredInBatch = true,
         nextReview = tomorrow,
     )
@@ -299,7 +300,7 @@ class ObtainPracticeSessionTest {
         val practice = FakePracticeRepository(
             activeBatch(
                 order = listOf("A"),
-                progress = listOf(aPhraseProgress(id = "A", streak = 2, answeredInBatch = true)),
+                progress = listOf(aPhraseProgress(id = "A", streak = Streak(2), answeredInBatch = true)),
             ),
         )
         val catalog = loaded(aCatalogPhrase(id = "A"))

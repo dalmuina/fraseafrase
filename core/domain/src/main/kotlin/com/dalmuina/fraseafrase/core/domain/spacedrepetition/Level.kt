@@ -9,7 +9,7 @@ package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 value class Level(val value: Int) {
 
     init {
-        require(value in 0..MAX_LEVEL) { "El nivel debe estar entre 0 y $MAX_LEVEL, recibido $value" }
+        require(value in 0..MAX_LEVEL) { "Level must be between 0 and $MAX_LEVEL, received $value" }
     }
 
     companion object {

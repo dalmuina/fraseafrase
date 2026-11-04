@@ -6,8 +6,10 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
@@ -31,7 +33,8 @@ class PracticeSessionCloseTest {
     val mainDispatcher = MainDispatcherExtension(StandardTestDispatcher())
 
     /** Frase certificada: racha 3 respondida en la tanda. */
-    private fun certified(id: String): PhraseProgress = aPhraseProgress(id = id, streak = 3, answeredInBatch = true)
+    private fun certified(id: String): PhraseProgress =
+        aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
 
     // Scenario: Aviso con frases no certificadas (spec: practice-session)
     @Test
@@ -88,7 +91,9 @@ class PracticeSessionCloseTest {
             val practice = FakePracticeRepository(
                 activeBatchSnapshot(
                     order = listOf("A"),
-                    progress = listOf(aPhraseProgress(id = "A", level = 1, nextReview = LocalDate.of(2026, 3, 11))),
+                    progress = listOf(
+                        aPhraseProgress(id = "A", level = Level(1), nextReview = LocalDate.of(2026, 3, 11)),
+                    ),
                 ),
             )
             val viewModel = sessionViewModel(practice, catalogOf("A"))

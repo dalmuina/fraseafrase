@@ -13,14 +13,14 @@ import java.time.LocalDate
  */
 fun aPhraseProgress(
     id: String = "phrase-1",
-    level: Int = 0,
-    streak: Int = 0,
+    level: Level = Level(0),
+    streak: Streak = Streak(0),
     answeredInBatch: Boolean = false,
     nextReview: LocalDate? = null,
 ): PhraseProgress = PhraseProgress(
     id = PhraseId(id),
-    level = Level(level),
-    streak = Streak(streak),
+    level = level,
+    streak = streak,
     answeredInBatch = answeredInBatch,
     nextReview = nextReview,
 )

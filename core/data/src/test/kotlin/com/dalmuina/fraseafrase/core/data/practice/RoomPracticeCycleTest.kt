@@ -13,8 +13,10 @@ import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.FixedClock
@@ -69,8 +71,8 @@ class RoomPracticeCycleTest {
     // Certificada hoy, con repaso mañana: no vuelve a entrar en la tanda siguiente
     private fun certified(id: String) = aPhraseProgress(
         id = id,
-        level = 1,
-        streak = 3,
+        level = Level(1),
+        streak = Streak(3),
         answeredInBatch = true,
         nextReview = today.plusDays(1),
     )

@@ -7,8 +7,10 @@ import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
@@ -112,7 +114,7 @@ class ObtainActiveBatchTest {
         val batchPhrases = listOf("A", "B", "C", "D", "E")
         val active = PracticeSnapshot(
             progress = batchPhrases.map { aPhraseProgress(id = it) } +
-                aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 11)),
+                aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11)),
             activeBatch = ActiveBatch(order = batchPhrases.map { PhraseId(it) }, capacity = BatchSize(10)),
             carry = CarryQueue(emptyList()),
         )
@@ -139,8 +141,8 @@ class ObtainActiveBatchTest {
             val certifiedPhrases = listOf("A", "B").map { id ->
                 aPhraseProgress(
                     id = id,
-                    level = 1,
-                    streak = 3,
+                    level = Level(1),
+                    streak = Streak(3),
                     answeredInBatch = true,
                     nextReview = day.plusDays(1),
                 )
@@ -149,7 +151,7 @@ class ObtainActiveBatchTest {
             val practice = FakePracticeRepository(
                 PracticeSnapshot(
                     progress = certifiedPhrases + uncertifiedPhrases +
-                        aPhraseProgress(id = "P", level = 1, nextReview = day),
+                        aPhraseProgress(id = "P", level = Level(1), nextReview = day),
                     activeBatch = ActiveBatch(order = batchPhrases.map { PhraseId(it) }, capacity = BatchSize(10)),
                     carry = CarryQueue(emptyList()),
                 ),
