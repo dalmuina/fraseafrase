@@ -18,6 +18,7 @@ local.properties
 *.jks
 *.keystore
 keystore.properties
+app/release/
 
 # Sistema
 .DS_Store

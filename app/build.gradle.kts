@@ -21,7 +21,7 @@ val keystoreProperties =
     }
 
 fun releaseSigningCredential(propertyKey: String, environmentVariable: String): String? =
-    keystoreProperties.getProperty(propertyKey) ?: System.getenv(environmentVariable)
+    (keystoreProperties.getProperty(propertyKey) ?: System.getenv(environmentVariable))?.takeIf { it.isNotBlank() }
 
 val releaseStoreFile = releaseSigningCredential("storeFile", "RELEASE_KEYSTORE_PATH")
 val releaseStorePassword = releaseSigningCredential("storePassword", "RELEASE_KEYSTORE_PASSWORD")
