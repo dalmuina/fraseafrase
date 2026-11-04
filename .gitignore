@@ -17,6 +17,8 @@ local.properties
 # Firma
 *.jks
 *.keystore
+keystore.properties
+app/release/
 
 # Sistema
 .DS_Store
