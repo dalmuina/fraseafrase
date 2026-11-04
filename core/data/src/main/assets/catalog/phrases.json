@@ -842,6 +842,216 @@
       "topic": "tecnologia",
       "target": "A automação substituiu tarefas antes feitas manualmente.",
       "source": "La automatización sustituyó tareas antes hechas manualmente."
+    },
+    {
+      "id": "c1-filosofia-001",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "A tese segundo a qual o progresso é sempre linear merece ser questionada.",
+      "source": "La tesis según la cual el progreso siempre es lineal merece ser cuestionada."
+    },
+    {
+      "id": "c1-filosofia-002",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Por mais que se argumente o contrário, a liberdade individual não é absoluta.",
+      "source": "Por mucho que se argumente lo contrario, la libertad individual no es absoluta."
+    },
+    {
+      "id": "c1-filosofia-003",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Convém distinguir entre convicção pessoal e verdade demonstrável.",
+      "source": "Conviene distinguir entre convicción personal y verdad demostrable."
+    },
+    {
+      "id": "c1-filosofia-004",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "A ambiguidade do conceito dificulta qualquer consenso duradouro.",
+      "source": "La ambigüedad del concepto dificulta cualquier consenso duradero."
+    },
+    {
+      "id": "c1-economia-001",
+      "level": "C1",
+      "topic": "economia",
+      "target": "A assimetria de informação distorce o funcionamento dos mercados.",
+      "source": "La asimetría de información distorsiona el funcionamiento de los mercados."
+    },
+    {
+      "id": "c1-economia-002",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Ainda que a produtividade tenha aumentado, os salários estagnaram.",
+      "source": "Aunque la productividad ha aumentado, los salarios se estancaron."
+    },
+    {
+      "id": "c1-economia-003",
+      "level": "C1",
+      "topic": "economia",
+      "target": "A desregulamentação teve consequências que ninguém previra por completo.",
+      "source": "La desregulación tuvo consecuencias que nadie había previsto por completo."
+    },
+    {
+      "id": "c1-economia-004",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Convém não confundir crescimento económico com distribuição de riqueza.",
+      "source": "Conviene no confundir crecimiento económico con distribución de riqueza."
+    },
+    {
+      "id": "c1-politica-001",
+      "level": "C1",
+      "topic": "politica",
+      "target": "A legitimidade de uma decisão não depende apenas da sua legalidade formal.",
+      "source": "La legitimidad de una decisión no depende solo de su legalidad formal."
+    },
+    {
+      "id": "c1-politica-002",
+      "level": "C1",
+      "topic": "politica",
+      "target": "O compromisso alcançado dificilmente satisfará todas as partes envolvidas.",
+      "source": "El compromiso alcanzado difícilmente satisfará a todas las partes implicadas."
+    },
+    {
+      "id": "c1-politica-003",
+      "level": "C1",
+      "topic": "politica",
+      "target": "A polarização discursiva tem minado a qualidade do debate público.",
+      "source": "La polarización discursiva ha minado la calidad del debate público."
+    },
+    {
+      "id": "c1-politica-004",
+      "level": "C1",
+      "topic": "politica",
+      "target": "Qualquer reforma institucional implica custos políticos a curto prazo.",
+      "source": "Cualquier reforma institucional implica costes políticos a corto plazo."
+    },
+    {
+      "id": "c1-ciencia-001",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "A reprodutibilidade dos resultados é essencial para validar uma hipótese.",
+      "source": "La reproducibilidad de los resultados es esencial para validar una hipótesis."
+    },
+    {
+      "id": "c1-ciencia-002",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "O avanço da genómica levanta dilemas éticos ainda sem resposta.",
+      "source": "El avance de la genómica plantea dilemas éticos todavía sin respuesta."
+    },
+    {
+      "id": "c1-ciencia-003",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "A comunidade científica discorda sobre a interpretação dos dados.",
+      "source": "La comunidad científica discrepa sobre la interpretación de los datos."
+    },
+    {
+      "id": "c1-ciencia-004",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "Nem toda a correlação estatística implica uma relação causal.",
+      "source": "No toda correlación estadística implica una relación causal."
+    },
+    {
+      "id": "c1-literatura-001",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "O narrador assume uma perspetiva deliberadamente pouco fiável.",
+      "source": "El narrador asume una perspectiva deliberadamente poco fiable."
+    },
+    {
+      "id": "c1-literatura-002",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "A obra dialoga com a tradição ao mesmo tempo que a subverte.",
+      "source": "La obra dialoga con la tradición al mismo tiempo que la subvierte."
+    },
+    {
+      "id": "c1-literatura-003",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "A linguagem fragmentada reflete a desorientação da personagem principal.",
+      "source": "El lenguaje fragmentado refleja la desorientación del personaje principal."
+    },
+    {
+      "id": "c1-literatura-004",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "A receção crítica mudou radicalmente desde a primeira publicação.",
+      "source": "La recepción crítica cambió radicalmente desde la primera publicación."
+    },
+    {
+      "id": "c1-sociedad-001",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "A coesão social enfraquece quando a desigualdade se acentua.",
+      "source": "La cohesión social se debilita cuando la desigualdad se acentúa."
+    },
+    {
+      "id": "c1-sociedad-002",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "O envelhecimento da população exige repensar o sistema de pensões.",
+      "source": "El envejecimiento de la población exige repensar el sistema de pensiones."
+    },
+    {
+      "id": "c1-sociedad-003",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "A mobilidade social depende de fatores que vão além do mérito individual.",
+      "source": "La movilidad social depende de factores que van más allá del mérito individual."
+    },
+    {
+      "id": "c1-sociedad-004",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "A confiança nas instituições deteriorou-se nas últimas décadas.",
+      "source": "La confianza en las instituciones se ha deteriorado en las últimas décadas."
+    },
+    {
+      "id": "c1-medios-001",
+      "level": "C1",
+      "topic": "medios",
+      "target": "A desinformação prolifera mais rapidamente do que a correção dos factos.",
+      "source": "La desinformación prolifera más rápido que la corrección de los hechos."
+    },
+    {
+      "id": "c1-medios-002",
+      "level": "C1",
+      "topic": "medios",
+      "target": "A linha entre jornalismo e opinião tem-se tornado cada vez mais ténue.",
+      "source": "La línea entre periodismo y opinión se ha vuelto cada vez más tenue."
+    },
+    {
+      "id": "c1-medios-003",
+      "level": "C1",
+      "topic": "medios",
+      "target": "Os algoritmos de recomendação reforçam as convicções pré-existentes do utilizador.",
+      "source": "Los algoritmos de recomendación refuerzan las convicciones preexistentes del usuario."
+    },
+    {
+      "id": "c1-derecho-001",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "A jurisprudência recente alterou a interpretação deste artigo.",
+      "source": "La jurisprudencia reciente alteró la interpretación de este artículo."
+    },
+    {
+      "id": "c1-derecho-002",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "O princípio da proporcionalidade limita a margem de atuação do Estado.",
+      "source": "El principio de proporcionalidad limita el margen de actuación del Estado."
+    },
+    {
+      "id": "c1-derecho-003",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "A ambiguidade da norma deu origem a interpretações contraditórias nos tribunais.",
+      "source": "La ambigüedad de la norma dio lugar a interpretaciones contradictorias en los tribunales."
     }
   ]
 }
