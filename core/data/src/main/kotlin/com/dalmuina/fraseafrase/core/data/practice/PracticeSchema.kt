@@ -77,13 +77,6 @@ internal object PracticeSchema {
         }
 }
 
-/** Base en memoria para tests JVM locales, con el mismo driver SQLite que el dispositivo (ADR-0013). */
-internal fun inMemoryPracticeDatabase(): PracticeDatabase =
-    Room.inMemoryDatabaseBuilder<PracticeDatabase> { PracticeDatabase_Impl() }
-        .setDriver(BundledSQLiteDriver())
-        .addCallback(PracticeSchema.callback)
-        .build()
-
 /** Base de producción en el almacenamiento de la app. La crea `:app` mediante Hilt. */
 fun createPracticeDatabase(context: Context): PracticeDatabase =
     Room.databaseBuilder(context, PracticeDatabase::class.java, "practice.db")

@@ -45,13 +45,13 @@
 
 ## 4. Datos: mover `inMemoryPracticeDatabase()` a `src/test` (D4)
 
-- [ ] 4.1 Mover la función `inMemoryPracticeDatabase()` de
+- [x] 4.1 Mover la función `inMemoryPracticeDatabase()` de
   `core/data/src/main/.../practice/PracticeSchema.kt` a un fichero nuevo
   `core/data/src/test/.../practice/PracticeTestDatabase.kt`, misma visibilidad `internal`. Ajustar
   los imports de los cinco tests que la usan (`PracticeSchemaTest`, `PracticeTriggersTest`,
   `RoomPracticeCycleTest`, `RoomPracticeDataSourceReadTest`, `RoomPracticeDataSourceWriteTest`) si
   el nuevo fichero cambia de paquete. Verificar con `./gradlew :core:data:test` en verde.
-- [ ] 4.2 Confirmar que `core/data/src/main` ya no referencia la función (ninguna clase de
+- [x] 4.2 Confirmar que `core/data/src/main` ya no referencia la función (ninguna clase de
   producción la usaba) y que `./gradlew :app:assembleDebug` sigue compilando sin cambios en el
   grafo de Hilt de producción.
 
