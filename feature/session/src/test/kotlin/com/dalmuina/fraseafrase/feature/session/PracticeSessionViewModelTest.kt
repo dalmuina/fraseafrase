@@ -6,7 +6,9 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePhrasePlayer
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
@@ -62,7 +64,7 @@ class PracticeSessionViewModelTest {
             // Given: el catálogo tiene solo P, con nivel 1 y repaso el 11-03-2026; hoy es 10-03-2026
             val practice = FakePracticeRepository(
                 PracticeSnapshot(
-                    progress = listOf(aPhraseProgress(id = "P", level = 1, nextReview = TODAY.plusDays(1))),
+                    progress = listOf(aPhraseProgress(id = "P", level = Level(1), nextReview = TODAY.plusDays(1))),
                     activeBatch = null,
                     carry = CarryQueue(emptyList()),
                 ),
@@ -244,7 +246,7 @@ class PracticeSessionViewModelTest {
             activeBatchSnapshot(
                 order = listOf("A", "B"),
                 progress = listOf(
-                    aPhraseProgress(id = "A", streak = 1, answeredInBatch = true),
+                    aPhraseProgress(id = "A", streak = Streak(1), answeredInBatch = true),
                     aPhraseProgress(id = "B")
                 ),
             ),
@@ -266,7 +268,7 @@ class PracticeSessionViewModelTest {
         val practice = FakePracticeRepository(
             activeBatchSnapshot(
                 order = listOf("A"),
-                progress = listOf(aPhraseProgress(id = "A", streak = 2, answeredInBatch = true)),
+                progress = listOf(aPhraseProgress(id = "A", streak = Streak(2), answeredInBatch = true)),
             ),
         )
         val viewModel = sessionViewModel(practice, catalogOf("A"))
@@ -291,7 +293,7 @@ class PracticeSessionViewModelTest {
             activeBatchSnapshot(
                 order = listOf("A", "B"),
                 progress = listOf(
-                    aPhraseProgress(id = "A", streak = 3, answeredInBatch = true),
+                    aPhraseProgress(id = "A", streak = Streak(3), answeredInBatch = true),
                     aPhraseProgress(id = "B")
                 ),
             ),
@@ -314,7 +316,7 @@ class PracticeSessionViewModelTest {
             activeBatchSnapshot(
                 order = listOf("A", "B"),
                 progress = listOf(
-                    aPhraseProgress(id = "A", streak = 2, answeredInBatch = true),
+                    aPhraseProgress(id = "A", streak = Streak(2), answeredInBatch = true),
                     aPhraseProgress(id = "B")
                 ),
             ),

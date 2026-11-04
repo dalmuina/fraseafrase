@@ -13,22 +13,22 @@
 
 ## 2. Fixture de test: `aPhraseProgress` con value classes (D2, D3)
 
-- [ ] 2.1 Cambiar la firma de `aPhraseProgress` (`core/testing/.../PhraseProgressBuilders.kt`) de
+- [x] 2.1 Cambiar la firma de `aPhraseProgress` (`core/testing/.../PhraseProgressBuilders.kt`) de
   `level: Int = 0, streak: Int = 0` a `level: Level = Level(0), streak: Streak = Streak(0)`,
   eliminando el envoltorio `Level(level)`/`Streak(streak)` interno que ya no hace falta. Verificar
   compilando `:core:testing` (`./gradlew :core:testing:compileTestKotlin` o el `test` del módulo,
   que no tiene tests propios pero sí debe compilar).
-- [ ] 2.2 Actualizar todas las llamadas existentes a `aPhraseProgress(...)` (localizadas con
+- [x] 2.2 Actualizar todas las llamadas existentes a `aPhraseProgress(...)` (localizadas con
   `grep -rl "aPhraseProgress(" --include=*.kt .`, excluyendo el propio builder; unos 15 ficheros,
   con muchas más invocaciones que ficheros) para envolver los argumentos `level`/`streak` en
   `Level(...)`/`Streak(...)` donde se pasen enteros literales. Verificar con `./gradlew test` en
   verde en todos los módulos afectados (`:core:domain`, `:core:data`, `:feature:session`,
   `:feature:progress`).
-- [ ] 2.3 Eliminar el `progressWith` local de `RecordSelfAssessmentTest.kt` y sustituir sus dos usos
+- [x] 2.3 Eliminar el `progressWith` local de `RecordSelfAssessmentTest.kt` y sustituir sus dos usos
   por `aPhraseProgress(streak = Streak(n), answeredInBatch = ...)`. Verificar con
   `./gradlew :core:domain:test --tests "*RecordSelfAssessmentTest*"` en verde, mismos escenarios
   cubiertos que antes del cambio.
-- [ ] 2.4 Eliminar el `progressWith` local de `ResolveBatchClosureTest.kt` y sustituir sus usos por
+- [x] 2.4 Eliminar el `progressWith` local de `ResolveBatchClosureTest.kt` y sustituir sus usos por
   `aPhraseProgress(level = Level(n), streak = Streak(n), answeredInBatch = ..., nextReview = ...)`.
   Verificar con `./gradlew :core:domain:test --tests "*ResolveBatchClosureTest*"` en verde, mismos
   escenarios cubiertos que antes del cambio.

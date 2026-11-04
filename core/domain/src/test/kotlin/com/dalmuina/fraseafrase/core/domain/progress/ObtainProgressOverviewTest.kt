@@ -10,6 +10,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
@@ -37,7 +38,7 @@ class ObtainProgressOverviewTest {
     private fun loaded(vararg phrases: CatalogPhrase) = CatalogLoadResult.Loaded(phrases.toList())
 
     /** Frase certificada en la tanda: racha 3 respondida. */
-    private fun certified(id: String) = aPhraseProgress(id = id, streak = 3, answeredInBatch = true)
+    private fun certified(id: String) = aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
 
     // Scenario: Tanda con certificadas y no certificadas (spec: progress-overview)
     @Test
@@ -91,8 +92,8 @@ class ObtainProgressOverviewTest {
         val levelFiveId = "D"
         val withoutProgressIds = listOf("E", "F", "G", "H", "I", "J")
         val progress = levelTwoIds.map {
-            aPhraseProgress(id = it, level = 2, nextReview = LocalDate.of(2026, 3, 11))
-        } + aPhraseProgress(id = levelFiveId, level = 5, nextReview = LocalDate.of(2026, 3, 11))
+            aPhraseProgress(id = it, level = Level(2), nextReview = LocalDate.of(2026, 3, 11))
+        } + aPhraseProgress(id = levelFiveId, level = Level(5), nextReview = LocalDate.of(2026, 3, 11))
         val practice = FakePracticeRepository(
             PracticeSnapshot(progress = progress, activeBatch = null, carry = CarryQueue(emptyList())),
         )
@@ -146,7 +147,9 @@ class ObtainProgressOverviewTest {
         val practice = FakePracticeRepository(
             activeBatch(
                 order = listOf("A"),
-                progress = listOf(aPhraseProgress(id = "A", level = 0, streak = 2, answeredInBatch = true)),
+                progress = listOf(
+                    aPhraseProgress(id = "A", level = Level(0), streak = Streak(2), answeredInBatch = true),
+                ),
             ),
         )
         val catalog = loaded(*listOf("A", "B", "C", "D", "E").map { aCatalogPhrase(id = it) }.toTypedArray())

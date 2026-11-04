@@ -9,6 +9,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
@@ -31,7 +32,7 @@ class ProgressViewModelTest {
     val mainDispatcher = MainDispatcherExtension(StandardTestDispatcher())
 
     /** Frase certificada en la tanda: racha 3 respondida. */
-    private fun certified(id: String) = aPhraseProgress(id = id, streak = 3, answeredInBatch = true)
+    private fun certified(id: String) = aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
 
     private fun loaded(vararg ids: String) = CatalogLoadResult.Loaded(ids.map { aCatalogPhrase(id = it) })
 

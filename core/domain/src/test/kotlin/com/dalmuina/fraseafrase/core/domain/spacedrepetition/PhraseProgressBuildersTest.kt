@@ -25,7 +25,7 @@ class PhraseProgressBuildersTest {
     fun `given level 1 without next review when using the builder then throws IllegalArgumentException`() {
         // When / Then
         shouldThrow<IllegalArgumentException> {
-            aPhraseProgress(level = 1)
+            aPhraseProgress(level = Level(1))
         }
     }
 }

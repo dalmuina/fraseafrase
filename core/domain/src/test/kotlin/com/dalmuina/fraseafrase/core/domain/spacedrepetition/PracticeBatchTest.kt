@@ -117,11 +117,11 @@ class PracticeBatchTest {
         // Given
         val batch = PracticeBatch(
             entries = listOf(
-                aPhraseProgress(id = "A", streak = 3, answeredInBatch = true),
-                aPhraseProgress(id = "B", streak = 3, answeredInBatch = true),
-                aPhraseProgress(id = "C", streak = 1, answeredInBatch = true),
-                aPhraseProgress(id = "D", streak = 2, answeredInBatch = true),
-                aPhraseProgress(id = "E", streak = 0, answeredInBatch = true),
+                aPhraseProgress(id = "A", streak = Streak(3), answeredInBatch = true),
+                aPhraseProgress(id = "B", streak = Streak(3), answeredInBatch = true),
+                aPhraseProgress(id = "C", streak = Streak(1), answeredInBatch = true),
+                aPhraseProgress(id = "D", streak = Streak(2), answeredInBatch = true),
+                aPhraseProgress(id = "E", streak = Streak(0), answeredInBatch = true),
             ),
             capacity = BatchSize(10),
         )
@@ -139,8 +139,8 @@ class PracticeBatchTest {
         // Given
         val batch = PracticeBatch(
             entries = listOf(
-                aPhraseProgress(id = "A", streak = 3, answeredInBatch = true),
-                aPhraseProgress(id = "B", streak = 3, answeredInBatch = true),
+                aPhraseProgress(id = "A", streak = Streak(3), answeredInBatch = true),
+                aPhraseProgress(id = "B", streak = Streak(3), answeredInBatch = true),
             ),
             capacity = BatchSize(10),
         )
@@ -158,8 +158,8 @@ class PracticeBatchTest {
         // Given
         val batch = PracticeBatch(
             entries = listOf(
-                aPhraseProgress(id = "A", streak = 3, answeredInBatch = true),
-                aPhraseProgress(id = "B", streak = 0, answeredInBatch = false),
+                aPhraseProgress(id = "A", streak = Streak(3), answeredInBatch = true),
+                aPhraseProgress(id = "B", streak = Streak(0), answeredInBatch = false),
             ),
             capacity = BatchSize(10),
         )
@@ -177,9 +177,9 @@ class PracticeBatchTest {
         // Given
         val batch = PracticeBatch(
             entries = listOf(
-                aPhraseProgress(id = "A", streak = 1, answeredInBatch = true),
-                aPhraseProgress(id = "B", streak = 2, answeredInBatch = true),
-                aPhraseProgress(id = "C", streak = 0, answeredInBatch = false),
+                aPhraseProgress(id = "A", streak = Streak(1), answeredInBatch = true),
+                aPhraseProgress(id = "B", streak = Streak(2), answeredInBatch = true),
+                aPhraseProgress(id = "C", streak = Streak(0), answeredInBatch = false),
             ),
             capacity = BatchSize(10),
         )

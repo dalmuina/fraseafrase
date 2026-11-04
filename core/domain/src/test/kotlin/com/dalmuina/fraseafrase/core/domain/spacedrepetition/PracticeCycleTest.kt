@@ -90,7 +90,9 @@ class PracticeCycleTest {
     fun `given carry Z C A and nine pending phrases when composing on 10-03 then the batch starts with Z C A and P1`() {
         // Given
         val carried = listOf("Z", "C", "A").map { aPhraseProgress(id = it) }
-        val pending = (1..9).map { aPhraseProgress(id = "P$it", level = 1, nextReview = LocalDate.of(2026, 3, 9)) }
+        val pending = (1..9).map {
+            aPhraseProgress(id = "P$it", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        }
         val catalog: List<CatalogPhrase> = (listOf("Z", "C", "A") + pending.map { it.id.value })
             .map { aCatalogPhrase(id = it, level = CefrLevel.A1) }
 
@@ -108,7 +110,7 @@ class PracticeCycleTest {
         batch.entries.take(4).map { it.id.value } shouldContainExactly listOf("Z", "C", "A", "P1")
     }
 
-    private fun certified(id: String) = aPhraseProgress(id = id, streak = 3, answeredInBatch = true)
+    private fun certified(id: String) = aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
 
     private fun uncertified(id: String) = aPhraseProgress(id = id)
 

@@ -23,7 +23,7 @@ class ComposeNextBatchTest {
     fun `given a carried and a pending phrase when composing then the carried one comes first`() {
         // Given
         val carried = aPhraseProgress(id = "X")
-        val pending = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        val pending = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
         val catalog = listOf(aCatalogPhrase(id = "X"), aCatalogPhrase(id = "P"))
 
         // When
@@ -42,7 +42,7 @@ class ComposeNextBatchTest {
     fun `given a leftover carried phrase and a pending one when composing then the carried one enters first`() {
         // Given
         val leftover = aPhraseProgress(id = "Z")
-        val pending = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        val pending = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
         val catalog = listOf(aCatalogPhrase(id = "Z"), aCatalogPhrase(id = "P"))
 
         // When
@@ -64,7 +64,7 @@ class ComposeNextBatchTest {
         val carriedIds = (1..10).map { "X$it" } + "P"
         val progress = carriedIds.map { id ->
             if (id == "P") {
-                aPhraseProgress(id = id, level = 3, nextReview = LocalDate.of(2026, 3, 20))
+                aPhraseProgress(id = id, level = Level(3), nextReview = LocalDate.of(2026, 3, 20))
             } else {
                 aPhraseProgress(id = id)
             }
@@ -89,8 +89,8 @@ class ComposeNextBatchTest {
     @Test
     fun `given two pending phrases of different levels when composing then the lower level comes first`() {
         // Given
-        val higher = aPhraseProgress(id = "P1", level = 3, nextReview = LocalDate.of(2026, 3, 1))
-        val lower = aPhraseProgress(id = "P2", level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        val higher = aPhraseProgress(id = "P1", level = Level(3), nextReview = LocalDate.of(2026, 3, 1))
+        val lower = aPhraseProgress(id = "P2", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
         val catalog = listOf(aCatalogPhrase(id = "P1"), aCatalogPhrase(id = "P2"))
 
         // When
@@ -104,8 +104,8 @@ class ComposeNextBatchTest {
     @Test
     fun `given two level 2 pending phrases with different dates when composing then the older one comes first`() {
         // Given
-        val later = aPhraseProgress(id = "P1", level = 2, nextReview = LocalDate.of(2026, 3, 8))
-        val earlier = aPhraseProgress(id = "P2", level = 2, nextReview = LocalDate.of(2026, 3, 5))
+        val later = aPhraseProgress(id = "P1", level = Level(2), nextReview = LocalDate.of(2026, 3, 8))
+        val earlier = aPhraseProgress(id = "P2", level = Level(2), nextReview = LocalDate.of(2026, 3, 5))
         val catalog = listOf(aCatalogPhrase(id = "P1"), aCatalogPhrase(id = "P2"))
 
         // When
@@ -119,8 +119,8 @@ class ComposeNextBatchTest {
     @Test
     fun `given two level 2 pending phrases with the same date when composing then catalog order decides`() {
         // Given
-        val first = aPhraseProgress(id = "P1", level = 2, nextReview = LocalDate.of(2026, 3, 5))
-        val second = aPhraseProgress(id = "P2", level = 2, nextReview = LocalDate.of(2026, 3, 5))
+        val first = aPhraseProgress(id = "P1", level = Level(2), nextReview = LocalDate.of(2026, 3, 5))
+        val second = aPhraseProgress(id = "P2", level = Level(2), nextReview = LocalDate.of(2026, 3, 5))
         val catalog = listOf(aCatalogPhrase(id = "P2"), aCatalogPhrase(id = "P1"))
 
         // When
@@ -136,7 +136,7 @@ class ComposeNextBatchTest {
         // Given
         val carried = listOf("A", "B", "C", "D").map { aPhraseProgress(id = it) }
         val pending = listOf("E", "F").map {
-            aPhraseProgress(id = it, level = 1, nextReview = LocalDate.of(2026, 3, 9))
+            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
         }
         val catalog = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J").map { aCatalogPhrase(id = it) }
 
@@ -187,7 +187,7 @@ class ComposeNextBatchTest {
     @Test
     fun `given a phrase both carried and pending when composing then it appears once at position 0`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
         val catalog = listOf(aCatalogPhrase(id = "P"))
 
         // When
@@ -206,7 +206,7 @@ class ComposeNextBatchTest {
     @Test
     fun `given a scheduled phrase of the chosen level when composing then there is no batch`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = 2, nextReview = LocalDate.of(2026, 3, 13))
+        val phrase = aPhraseProgress(id = "P", level = Level(2), nextReview = LocalDate.of(2026, 3, 13))
         val catalog = listOf(aCatalogPhrase(id = "P", level = CefrLevel.B1))
 
         // When
@@ -221,7 +221,7 @@ class ComposeNextBatchTest {
     fun `given a carried B2 and a pending C1 phrase with chosen level A1 when composing then both enter`() {
         // Given
         val carried = aPhraseProgress(id = "X")
-        val pending = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        val pending = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
         val catalog = listOf(
             aCatalogPhrase(id = "X", level = CefrLevel.B2),
             aCatalogPhrase(id = "P", level = CefrLevel.C1),
@@ -306,7 +306,7 @@ class ComposeNextBatchTest {
     fun `given an exhausted B1 catalog with scheduled phrases and no carry then there is no batch`() {
         // Given
         val progress = listOf("B1-1", "B1-2", "B1-3").map {
-            aPhraseProgress(id = it, level = 2, nextReview = LocalDate.of(2026, 3, 13))
+            aPhraseProgress(id = it, level = Level(2), nextReview = LocalDate.of(2026, 3, 13))
         }
         val catalog = listOf("B1-1", "B1-2", "B1-3").map { aCatalogPhrase(id = it, level = CefrLevel.B1) }
 
@@ -338,7 +338,7 @@ class ComposeNextBatchTest {
     @Test
     fun `given a certified phrase that comes back as pending when composing then it enters with streak 0`() {
         // Given
-        val certified = aPhraseProgress(id = "C", level = 0, streak = 3, answeredInBatch = true)
+        val certified = aPhraseProgress(id = "C", level = Level(0), streak = Streak(3), answeredInBatch = true)
         val closed = ResolveBatchClosure(FixedClock(today))(listOf(certified)).single().progress
         val catalog = listOf(aCatalogPhrase(id = "C"))
 
@@ -362,7 +362,7 @@ class ComposeNextBatchTest {
     @Test
     fun `given a phrase scheduled for tomorrow when composing today then there is no batch`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 11))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11))
         val catalog = listOf(aCatalogPhrase(id = "P"))
 
         // When
@@ -376,7 +376,7 @@ class ComposeNextBatchTest {
     @Test
     fun `given a phrase scheduled for today when composing on that day then it enters the batch`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 11))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11))
         val catalog = listOf(aCatalogPhrase(id = "P"))
 
         // When
@@ -436,7 +436,7 @@ class ComposeNextBatchTest {
     @Test
     fun `given progress of a phrase missing from the catalog when composing then throws IllegalArgumentException`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
 
         // When / Then
         shouldThrow<IllegalArgumentException> {
@@ -461,7 +461,7 @@ class ComposeNextBatchTest {
     @Test
     fun `given a catalog listing the same phrase twice when composing then throws IllegalArgumentException`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
         val catalog = listOf(aCatalogPhrase(id = "P"), aCatalogPhrase(id = "P"))
 
         // When / Then
@@ -473,7 +473,7 @@ class ComposeNextBatchTest {
     private fun twelvePendingIds(): List<String> = (1..12).map { "P%02d".format(it) }
 
     private fun twelvePendingPhrases(): List<PhraseProgress> = twelvePendingIds().map {
-        aPhraseProgress(id = it, level = 1, nextReview = LocalDate.of(2026, 3, 9))
+        aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
     }
 
     private fun ids(vararg values: String): List<PhraseId> = values.map { PhraseId(it) }
