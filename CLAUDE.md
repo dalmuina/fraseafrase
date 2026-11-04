@@ -49,7 +49,9 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
   Después para: el usuario la revisa con la CI y la mergea.
 - Los artefactos de OpenSpec se commitean en cuanto el cambio recibe el APROBADO de android-architect, antes de
   `/opsx:apply`, con un commit `docs(openspec): ...` propio. Así no se pierden si se cambia de rama o se limpia el árbol.
-- No crees ni borres ramas, no hagas merge.
+- No crees ramas por iniciativa propia: es el usuario quien las crea. Puedes crear la rama solo si el usuario lo
+  pide explícitamente en su mensaje (p. ej. "crea la rama"), y siempre con el formato `<versión>/<nombre-del-cambio>`
+  de este apartado. No borres ramas ni hagas merge en ningún caso, ni siquiera a petición explícita.
 
 ## Arquitectura (ADR-0010)
 
