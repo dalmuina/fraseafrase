@@ -212,6 +212,216 @@
       "topic": "animales",
       "target": "Tenho um gato preto.",
       "source": "Tengo un gato negro."
+    },
+    {
+      "id": "a2-viajes-001",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Quero reservar um quarto de hotel.",
+      "source": "Quiero reservar una habitación de hotel."
+    },
+    {
+      "id": "a2-viajes-002",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "O voo está atrasado uma hora.",
+      "source": "El vuelo está retrasado una hora."
+    },
+    {
+      "id": "a2-viajes-003",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Preciso de um mapa da cidade.",
+      "source": "Necesito un mapa de la ciudad."
+    },
+    {
+      "id": "a2-viajes-004",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Onde fica a estação de comboios?",
+      "source": "¿Dónde está la estación de trenes?"
+    },
+    {
+      "id": "a2-compras-001",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Quanto custa esta camisola?",
+      "source": "¿Cuánto cuesta este jersey?"
+    },
+    {
+      "id": "a2-compras-002",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Posso pagar com cartão?",
+      "source": "¿Puedo pagar con tarjeta?"
+    },
+    {
+      "id": "a2-compras-003",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Este sapato é muito caro.",
+      "source": "Este zapato es muy caro."
+    },
+    {
+      "id": "a2-compras-004",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Há um desconto nesta loja.",
+      "source": "Hay un descuento en esta tienda."
+    },
+    {
+      "id": "a2-trabajo-001",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Trabalho numa escola perto de casa.",
+      "source": "Trabajo en una escuela cerca de casa."
+    },
+    {
+      "id": "a2-trabajo-002",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "A reunião começa às dez.",
+      "source": "La reunión empieza a las diez."
+    },
+    {
+      "id": "a2-trabajo-003",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Preciso de enviar este email hoje.",
+      "source": "Necesito enviar este correo hoy."
+    },
+    {
+      "id": "a2-trabajo-004",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "O meu chefe está de férias.",
+      "source": "Mi jefe está de vacaciones."
+    },
+    {
+      "id": "a2-salud-001",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Não me sinto bem hoje.",
+      "source": "No me siento bien hoy."
+    },
+    {
+      "id": "a2-salud-002",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Tenho dor de cabeça.",
+      "source": "Tengo dolor de cabeza."
+    },
+    {
+      "id": "a2-salud-003",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Preciso de ir ao médico.",
+      "source": "Necesito ir al médico."
+    },
+    {
+      "id": "a2-salud-004",
+      "level": "A2",
+      "topic": "salud",
+      "target": "A farmácia abre às nove.",
+      "source": "La farmacia abre a las nueve."
+    },
+    {
+      "id": "a2-rutina-001",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Levanto-me sempre às sete.",
+      "source": "Siempre me levanto a las siete."
+    },
+    {
+      "id": "a2-rutina-002",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Depois do trabalho, vou ao ginásio.",
+      "source": "Después del trabajo, voy al gimnasio."
+    },
+    {
+      "id": "a2-rutina-003",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Tomo banho antes do pequeno-almoço.",
+      "source": "Me ducho antes del desayuno."
+    },
+    {
+      "id": "a2-rutina-004",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Ao fim de semana, durmo até tarde.",
+      "source": "El fin de semana, duermo hasta tarde."
+    },
+    {
+      "id": "a2-ocio-001",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Gosto de ler à noite.",
+      "source": "Me gusta leer por la noche."
+    },
+    {
+      "id": "a2-ocio-002",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Vamos ao cinema no sábado?",
+      "source": "¿Vamos al cine el sábado?"
+    },
+    {
+      "id": "a2-ocio-003",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Ela toca piano muito bem.",
+      "source": "Ella toca el piano muy bien."
+    },
+    {
+      "id": "a2-ocio-004",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Jogamos futebol no parque.",
+      "source": "Jugamos fútbol en el parque."
+    },
+    {
+      "id": "a2-transporte-001",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "Apanho o autocarro todos os dias.",
+      "source": "Cojo el autobús todos los días."
+    },
+    {
+      "id": "a2-transporte-002",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "O comboio parte da plataforma dois.",
+      "source": "El tren sale del andén dos."
+    },
+    {
+      "id": "a2-transporte-003",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "Prefiro andar de bicicleta.",
+      "source": "Prefiero ir en bicicleta."
+    },
+    {
+      "id": "a2-tecnologia-001",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "O meu telemóvel ficou sem bateria.",
+      "source": "Mi móvil se quedó sin batería."
+    },
+    {
+      "id": "a2-tecnologia-002",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "Esqueci-me da palavra-passe.",
+      "source": "Me olvidé de la contraseña."
+    },
+    {
+      "id": "a2-tecnologia-003",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "A internet está muito lenta.",
+      "source": "Internet está muy lenta."
     }
   ]
 }
