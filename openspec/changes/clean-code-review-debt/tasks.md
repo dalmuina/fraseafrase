@@ -35,7 +35,7 @@
 
 ## 3. Dominio: parametrizar `ReviewScheduleTest` (D6)
 
-- [ ] 3.1 Sustituir los seis tests de nivel 0 a 5 (misma fecha de partida, 10-03-2026) por un único
+- [x] 3.1 Sustituir los seis tests de nivel 0 a 5 (misma fecha de partida, 10-03-2026) por un único
   `@ParameterizedTest` con `@CsvSource` (nivel, fecha esperada o vacío para nivel 0), manteniendo
   el nombre de escenario de cada caso en un comentario sobre la fuente de datos. Dejar los tres
   casos límite (cambio de año en nivel 1, cambio de año en nivel 5, año bisiesto) como `@Test`
