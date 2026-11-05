@@ -122,7 +122,8 @@
       (BUILD SUCCESSFUL en verde: tests unitarios, detekt, ktlint y koverVerify. `check` no incluye
       `connectedDebugAndroidTest` en este proyecto; los tests instrumentados nuevos de los grupos 4
       y 5 quedan pendientes de ejecutar en emulador, no disponible en este entorno — ver 4.5 y 5.1.)
-- [ ] 7.2 Tras la corrección del grupo 6, repetir `./gradlew check koverVerify` en verde.
+- [x] 7.2 Tras la corrección del grupo 6, repetir `./gradlew check koverVerify` en verde.
+      (BUILD SUCCESSFUL en 2m 4s.)
 
 ## Workflow follow-up
 
