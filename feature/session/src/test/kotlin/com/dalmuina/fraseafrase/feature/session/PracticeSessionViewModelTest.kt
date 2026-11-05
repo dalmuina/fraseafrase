@@ -331,6 +331,86 @@ class PracticeSessionViewModelTest {
         viewModel.practicing().current.isKnown shouldBe false
     }
 
+    // Scenario: Primera frase de una tanda de cinco (spec: add-practice-batch-indicator, practice-session)
+    @Test
+    fun `given an active batch of five phrases when opening the screen then the indicator shows 1 of 5`() = runTest {
+        // Given: tanda activa de cinco frases A, B, C, D y E
+        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C", "D", "E")))
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C", "D", "E"))
+
+        // When
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().index shouldBe 1
+        viewModel.practicing().total shouldBe 5
+    }
+
+    // Scenario: El indicador avanza tras autoevaluar (spec: add-practice-batch-indicator, practice-session)
+    @Test
+    fun `given a batch of three phrases showing 1 of 3 when answering then the indicator shows 2 of 3`() = runTest {
+        // Given: tanda de tres frases A, B y C con A revelada, mostrando "1 de 3"
+        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"))
+        advanceUntilIdle()
+        viewModel.practicing().index shouldBe 1
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // When
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().index shouldBe 2
+        viewModel.practicing().total shouldBe 3
+    }
+
+    // Scenario: El indicador vuelve a 1 al dar la vuelta a la tanda (spec: add-practice-batch-indicator)
+    @Test
+    fun `given a two phrase batch showing 2 of 2 when answering the second phrase then the indicator shows 1 of 2`() =
+        runTest {
+            // Given: tanda de dos frases A y B, mostrando B en la posición "2 de 2"
+            val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B")))
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+            viewModel.practicing().index shouldBe 2
+            viewModel.onAction(PracticeSessionAction.Reveal)
+
+            // When
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
+            advanceUntilIdle()
+
+            // Then
+            viewModel.practicing().index shouldBe 1
+            viewModel.practicing().total shouldBe 2
+        }
+
+    // Scenario: El indicador refleja el tamaño de una tanda siguiente distinto (spec: add-practice-batch-indicator)
+    @Test
+    fun `given a closed batch of five when the next batch has eight phrases then the indicator shows 1 of 8`() =
+        runTest {
+            // Given: cierre confirmado de una tanda de cinco frases cuya tanda siguiente tiene ocho frases
+            val practice = FakePracticeRepository(
+                activeBatchSnapshot(order = listOf("A", "B", "C", "D", "E")),
+            )
+            val catalog = catalogOf("A", "B", "C", "D", "E", "F", "G", "H")
+            val viewModel = sessionViewModel(practice, catalog)
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.RequestClose)
+            advanceUntilIdle()
+
+            // When
+            viewModel.onAction(PracticeSessionAction.ConfirmClose)
+            advanceUntilIdle()
+
+            // Then
+            viewModel.practicing().index shouldBe 1
+            viewModel.practicing().total shouldBe 8
+        }
+
     // Scenario: Escuchar reproduce la frase en su locale (spec: phrase-audio)
     @Test
     fun `given a revealed phrase when PlayAudio is dispatched then PlayPhraseAudio receives its target and locale`() =

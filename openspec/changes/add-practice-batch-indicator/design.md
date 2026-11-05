@@ -70,6 +70,13 @@ cientos de iconos adicionales innecesarios) al catálogo de versiones, con esta 
 justificación. En cualquier caso se evita `material-icons-extended` solo por un icono de
 altavoz/boca hablando más literal.
 
+**Resultado de la comprobación real**: `Icons.Default.PlayArrow` NO resuelve solo con `material3`
+(`Unresolved reference 'icons'` al compilar `:feature:session`); se añadió
+`androidx.compose.material:material-icons-core` (sin versión propia, gestionado por el
+`compose-bom` ya declarado) a `gradle/libs.versions.toml` y como `implementation` junto a
+`material3` en `AndroidCompose.kt` (build-logic), para que todas las features que ya dependen de
+Compose la tengan disponible sin declarar nada por su cuenta.
+
 El `TextButton` se sustituye por un `Row` con `Icon(Icons.Default.PlayArrow, contentDescription =
 null)` + `Text(...)` dentro del mismo `TextButton`, manteniendo su `onClick`/`enabled` actuales.
 El icono es decorativo (la etiqueta de texto ya describe la acción), así que

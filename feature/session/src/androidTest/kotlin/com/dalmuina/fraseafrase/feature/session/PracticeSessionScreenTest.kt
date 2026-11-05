@@ -6,9 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
@@ -119,6 +121,42 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Escuchar").assertIsNotEnabled()
     }
 
+    // Scenario: Primera frase de una tanda de cinco (spec: practice-session)
+    @Test
+    fun givenPracticingState_whenScreenShown_thenPositionIndicatorIsDisplayed() {
+        // Given: una tanda activa de cinco frases, mostrando la primera
+        setScreen(practicing(current = item()).copy(index = 1, total = 5))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: la pantalla muestra "1 de 5"
+        composeTestRule.onNodeWithText("1 de 5").assertIsDisplayed()
+    }
+
+    // Scenario: Nivel CEFR visible sin revelar / al revelar (spec: practice-session)
+    @Test
+    fun givenPracticingState_whenScreenShown_thenCefrLevelIsDisplayed() {
+        // Given: una frase de nivel CEFR B1 sin revelar
+        setScreen(practicing(current = item(cefrLevel = CefrLevel.B1), revealed = false))
+
+        // When: la pantalla se muestra sin revelar (estado dado)
+
+        // Then: la pantalla muestra "B1" junto a la frase
+        composeTestRule.onNodeWithText("B1").assertIsDisplayed()
+    }
+
+    // Scenario: El control de escuchar muestra un icono de audio (spec: phrase-audio)
+    @Test
+    fun givenPhraseRevealed_whenScreenShown_thenListenControlShowsAudioIcon() {
+        // Given: la pantalla muestra una frase revelada
+        setScreen(practicing(current = item(), revealed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el control de escuchar muestra un icono de audio junto a su texto
+        composeTestRule.onNodeWithTag("listen_icon", useUnmergedTree = true).assertIsDisplayed()
+    }
+
     // Scenario: Aviso con frases no certificadas (spec: practice-session)
     @Test
     fun givenThreeUncertifiedPhrasesWhenCloseWarningIsOpenThenDialogShowsTheCount() {
@@ -211,12 +249,15 @@ class PracticeSessionScreenTest {
         revealed = revealed,
         busy = busy,
         closeWarning = closeWarning,
+        index = 1,
+        total = 1,
     )
 
     /** Frase de presentación. `isKnown` lo decide el dominio (`ObtainPracticeSession`); aquí se pasa tal cual. */
     private fun item(
         source: String = "Buenos días",
         target: String = "Bom dia",
+        cefrLevel: CefrLevel = CefrLevel.A1,
         streak: Int = 0,
         isKnown: Boolean = false,
     ): PracticeItem = PracticeItem(
@@ -224,6 +265,7 @@ class PracticeSessionScreenTest {
         source = source,
         target = target,
         targetLocale = LanguageTag("pt-PT"),
+        cefrLevel = cefrLevel,
         streak = Streak(streak),
         isKnown = isKnown,
     )
