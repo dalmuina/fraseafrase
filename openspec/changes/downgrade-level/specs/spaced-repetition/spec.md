@@ -70,3 +70,23 @@ MUST NOT volver a modificarlos.
 - **GIVEN** una frase de nivel 0 con racha 0 que fue respondida en la tanda activa
 - **WHEN** se cierra la tanda el 10-03-2026
 - **THEN** la frase queda en nivel 0, sin próximo repaso, y se arrastra a la siguiente tanda
+
+### Requirement: Frase respondida en la tanda
+
+Una frase MUST considerarse respondida en una tanda cuando haya recibido al menos una autoevaluación
+(acierto o fallo) en esa tanda. Una frase sin autoevaluaciones en la tanda MUST considerarse nunca
+respondida.
+
+#### Scenario: Frase con un fallo cuenta como respondida
+
+- **GIVEN** una frase de nivel 2 con próximo repaso el 13-03-2026 que en la tanda activa solo ha recibido
+  un fallo el 10-03-2026
+- **WHEN** se cierra la tanda el 10-03-2026
+- **THEN** la frase queda marcada como respondida en esa tanda y, al cerrar la tanda, se arrastra en el
+  nivel que le fijó ese fallo (nivel 1, con próximo repaso el 11-03-2026), no en nivel 0
+
+#### Scenario: Frase sin autoevaluaciones cuenta como nunca respondida
+
+- **GIVEN** una frase de la tanda sin autoevaluaciones en esa tanda
+- **WHEN** se cierra la tanda el 10-03-2026
+- **THEN** la frase se arrastra a la siguiente tanda y conserva su nivel y su fecha de repaso

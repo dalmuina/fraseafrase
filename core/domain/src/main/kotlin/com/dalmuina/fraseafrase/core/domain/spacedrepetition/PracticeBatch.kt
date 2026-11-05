@@ -1,5 +1,7 @@
 package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 
+import java.time.LocalDate
+
 /**
  * Tanda activa (ADR-0012): lista circular de frases. Responder una frase la mueve al final de la lista.
  * [capacity] es el tamaño N con el que se creó la tanda y no cambia aunque después cambie el ajuste.
@@ -22,12 +24,12 @@ data class PracticeBatch(
     }
 
     /**
-     * Registra la autoevaluación de la frase [id] y la mueve al final de la tanda.
+     * Registra la autoevaluación de la frase [id] en la fecha [today] y la mueve al final de la tanda.
      * Responder una frase que no está en la tanda es un error de programación.
      */
-    fun answer(id: PhraseId, assessment: SelfAssessment): PracticeBatch {
+    fun answer(id: PhraseId, assessment: SelfAssessment, today: LocalDate): PracticeBatch {
         require(entries.any { it.id == id }) { "Phrase ${id.value} is not in the batch" }
-        val answered = entries.first { it.id == id }.record(assessment)
+        val answered = entries.first { it.id == id }.record(assessment, today)
         return copy(entries = entries.filterNot { it.id == id } + answered)
     }
 

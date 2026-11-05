@@ -42,10 +42,13 @@ regla en el dominio; es bloqueante para las insignias de progreso (P4), que se d
 
 ### Modified Capabilities
 
-- `spaced-repetition`: cambia el requisito "Racha de aciertos dentro de la tanda" (un fallo en nivel ≥ 1
-  baja también el nivel y recalcula el próximo repaso, no solo resetea la racha) y el requisito
+- `spaced-repetition`: añade el requisito "Bajada instantánea de nivel ante un fallo" y modifica dos
+  requisitos existentes para que dejen de asumir que un fallo solo resetea la racha hasta el cierre:
   "Resolución de frase respondida no certificada al cerrar la tanda" (ya no fuerza nivel 0 al cerrar; el
-  nivel y el repaso ya se fijaron durante la práctica).
+  nivel y el repaso ya se fijaron durante la práctica) y "Frase respondida en la tanda" (su escenario
+  "Frase con un fallo cuenta como respondida" decía que la frase sale arrastrada en nivel 0; con ADR-0015
+  sale en el nivel que le fijó ese fallo). Detectado durante la implementación (grupo 4 de tasks.md), no
+  previsto en la propuesta inicial.
 
 ## Impact
 
@@ -53,7 +56,12 @@ regla en el dominio; es bloqueante para las insignias de progreso (P4), que se d
   `ResolveBatchClosure.carried()`, y el caso de uso `AnswerPhrase` (añade dependencia de `Clock`).
 - Tests de dominio afectados: `PhraseProgressTest`, `PracticeBatchTest`, `RecordSelfAssessmentTest`,
   `ResolveBatchClosureTest`, `AnswerPhraseTest`.
-- Sin cambios en `:core:data`, `:core:platform`, `:feature:session`, `:feature:settings` ni `:app`: la UI
-  ya muestra nivel y racha según el estado de `PhraseProgress`, que sigue siendo la misma entidad.
+- Sin cambios en `:core:data`, `:core:platform`, `:feature:settings` ni `:app`: la UI ya muestra nivel y
+  racha según el estado de `PhraseProgress`, que sigue siendo la misma entidad.
+- `:feature:session`: sin cambios de comportamiento ni de UI, pero el nuevo constructor de `AnswerPhrase`
+  (con `Clock`) exige un ajuste mecánico de cableado en dos ficheros de test que lo construían a mano sin
+  `Clock` (`PracticeSessionFixtures.kt`, `PracticeSessionRouteTest.kt`); ambos ya tienen un `Clock` en
+  scope. Detectado durante la implementación, no previsto al proponer el cambio; ver design.md - Risks /
+  Trade-offs.
 - Sin migración de datos: el esquema de `PhraseProgress` (nivel, racha, próximo repaso) no cambia; solo
   cambia cuándo se recalculan sus valores.

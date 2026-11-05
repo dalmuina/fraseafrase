@@ -37,8 +37,10 @@ sustituye a ADR-0012 en esta regla.
   quedó fijado durante la práctica.
 
 **Non-Goals:**
-- No cambia la UI de `:feature:session` ni `:feature:settings`: ya muestran nivel y racha leyendo
-  `PhraseProgress`, que no cambia de forma (mismos campos).
+- No cambia el comportamiento ni la UI de `:feature:session` ni `:feature:settings`: ya muestran nivel y
+  racha leyendo `PhraseProgress`, que no cambia de forma (mismos campos). Sí requiere un ajuste mecánico
+  de cableado en `:feature:session` (ver Risks / Trade-offs): el nuevo constructor de `AnswerPhrase`
+  exige `Clock`, y dos sitios de test lo construían sin él.
 - No cambia la persistencia (`:core:data`, Room): el esquema de `PhraseProgress` no cambia.
 - No introduce las insignias de progreso (P4): este cambio solo deja el nivel correcto para que P4 las
   derive de él.
@@ -84,9 +86,25 @@ distinguía ambos casos deja de ser necesaria.
 
 ## Risks / Trade-offs
 
+- [El nuevo constructor de `AnswerPhrase` (añade `Clock`) rompe la compilación de `:feature:session` en
+  dos sitios que lo construían manualmente sin `Clock`:
+  `feature/session/src/test/kotlin/.../PracticeSessionFixtures.kt:97` y
+  `feature/session/src/androidTest/kotlin/.../PracticeSessionRouteTest.kt:172`. Detectado durante la
+  implementación de la tarea 3.2, no anticipado al proponer el cambio (contradecía el Non-Goal original
+  de "sin cambios en `:feature:session`")] → Mitigación: tarea 3.3, confirmada por el usuario. Ambos
+  sitios ya tienen un `Clock` en scope (el mismo que usan para `ResolveBatchClosure(clock)`); se les pasa
+  ese mismo `clock` a `AnswerPhrase(practice, clock)`. Cambio mecánico de cableado de test, sin lógica
+  nueva ni cambio de comportamiento observable.
+
 - [Cambiar la firma de `PhraseProgress.record()`, `PracticeBatch.answer()` y `RecordSelfAssessment` rompe
   la compilación de sus tests actuales] → Es el coste esperado de un cambio de dominio con TDD: cada test
   roto se corrige para pasar la fecha, y los tests nuevos de D3/D4 se añaden en rojo antes de implementar.
+- [El requisito "Frase respondida en la tanda" (no declarado como modificado en la propuesta inicial)
+  tenía un escenario ("Frase con un fallo cuenta como respondida") cuyo THEN decía que la frase sale
+  arrastrada en nivel 0, que D4 deja de ser cierto. Detectado al ejecutar `:core:domain:test` completo
+  tras el grupo 4 de tasks.md] → Añadido a Modified Capabilities de `proposal.md` y actualizado en
+  `specs/spaced-repetition/spec.md` (confirmado por el usuario), en vez de dejar la spec desalineada con
+  el código.
 - [Una frase puede subir y bajar de nivel varias veces en la misma tanda, lo que ya advierte ADR-0015
   como consecuencia negativa] → Sin mitigación en este cambio: es el comportamiento decidido, no un bug.
 - [`RecordSelfAssessment` sigue sin usarse en producción tras este cambio, ahora con `Clock` inyectado sin

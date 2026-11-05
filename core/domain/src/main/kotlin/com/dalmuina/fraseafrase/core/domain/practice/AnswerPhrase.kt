@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import com.dalmuina.fraseafrase.core.domain.time.Clock
 import javax.inject.Inject
 
 /**
@@ -11,12 +12,13 @@ import javax.inject.Inject
  */
 class AnswerPhrase @Inject constructor(
     private val practiceRepository: PracticeRepository,
+    private val clock: Clock,
 ) {
 
     suspend operator fun invoke(id: PhraseId, assessment: SelfAssessment) {
         practiceRepository.transact { snapshot ->
             val batch = requireNotNull(snapshot.batch()) { "There is no active batch to answer" }
-            PracticeChange(snapshot.storing(batch.answer(id, assessment)), Unit)
+            PracticeChange(snapshot.storing(batch.answer(id, assessment, clock.today())), Unit)
         }
     }
 }
