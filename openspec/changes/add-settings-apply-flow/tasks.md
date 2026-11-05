@@ -93,26 +93,26 @@
 
 ## 6. Corrección: la confirmación no se veía al guardar con cambios (carrera con la navegación)
 
-- [ ] 6.1 Test (rojo, `androidTest`, `SettingsRouteTest`): con nivel CEFR cambiado, guardar llama a
+- [x] 6.1 Test (rojo, `androidTest`, `SettingsRouteTest`): con nivel CEFR cambiado, guardar llama a
       `onShowSaveConfirmation` con el texto de confirmación ANTES o a la vez que a
       `onNavigateToPractice` (sin depender de que termine ningún `showSnackbar`) — spec
       `settings-screen`, escenario "Confirmación tras guardar", combinado con "Guardar con el nivel
       CEFR cambiado navega a práctica" — design D6 (revisada).
-- [ ] 6.2 Quitar `snackbarHostState` de `SettingsScreen` (y su `Scaffold` deja de tener `snackbarHost`,
+- [x] 6.2 Quitar `snackbarHostState` de `SettingsScreen` (y su `Scaffold` deja de tener `snackbarHost`,
       conserva el `Scaffold` solo por el `topBar`); añadir `onShowSaveConfirmation: (String) -> Unit =
       {}` a `SettingsRoute`; su `LaunchedEffect` resuelve el texto con `stringResource`, llama a
       `onShowSaveConfirmation(texto)` sin esperar nada y envía `ConsumeSaveConfirmation` en la misma
       corrutina — verificar que 6.1 pasa a verde.
-- [ ] 6.3 Actualizar o quitar el test obsoleto de `SettingsScreenTest`
+- [x] 6.3 Actualizar o quitar el test obsoleto de `SettingsScreenTest`
       (`givenASnackbarMessage_whenShownThroughTheScreen_thenTheConfirmationTextIsDisplayed`), que
       montaba un `SnackbarHostState` local sobre `SettingsScreen` y ya no aplica tras 6.2.
-- [ ] 6.4 Añadir `snackbarHostState` y `rememberCoroutineScope()` a `FraseAFraseApp`; su `Scaffold` gana
+- [x] 6.4 Añadir `snackbarHostState` y `rememberCoroutineScope()` a `FraseAFraseApp`; su `Scaffold` gana
       `snackbarHost`; pasar `onShowSaveConfirmation = { message -> scope.launch {
       snackbarHostState.showSnackbar(message) } }` a `SettingsRoute` — verificar manualmente en el
       emulador: cambiar el nivel CEFR en Ajustes y guardar muestra el snackbar completo aunque la
       pantalla ya haya cambiado a Practicar (verificación manual pendiente del usuario, sin emulador
       en este entorno).
-- [ ] 6.5 Ejecutar `./gradlew :feature:settings:test :feature:settings:assembleDebugAndroidTest
+- [x] 6.5 Ejecutar `./gradlew :feature:settings:test :feature:settings:assembleDebugAndroidTest
       :app:compileDebugKotlin detekt` en verde.
 
 ## 7. Verificación final

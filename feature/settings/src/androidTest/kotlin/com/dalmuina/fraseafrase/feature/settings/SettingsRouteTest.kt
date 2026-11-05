@@ -16,6 +16,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.time.Clock
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +53,32 @@ class SettingsRouteTest {
         // Then: se llama a onNavigateToPractice
         composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) { navigated }
         assertTrue(navigated)
+    }
+
+    // Scenario: Confirmación tras guardar, combinado con "Guardar con el nivel CEFR cambiado navega a práctica"
+    // (spec: settings-screen) — design D6 (revisada): la confirmación no depende de que ningún showSnackbar
+    // termine, así que no se pierde aunque la navegación saque a SettingsRoute de composición en el mismo frame.
+    @Test
+    fun givenCefrLevelChanged_whenSaving_thenOnShowSaveConfirmationIsCalledWithTheConfirmationText() {
+        // Given: ajustes con nivel CEFR A1 persistido, y la pantalla montada con un callback de confirmación
+        val repository = TestSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+        val viewModel = settingsViewModel(repository)
+        var confirmationMessage: String? = null
+        composeTestRule.setContent {
+            SettingsRoute(
+                viewModel = viewModel,
+                onShowSaveConfirmation = { message -> confirmationMessage = message },
+            )
+        }
+        composeTestRule.waitForIdle()
+
+        // When: el usuario elige el nivel B1 y confirma el guardado
+        viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
+        viewModel.onAction(SettingsAction.Save)
+
+        // Then: se llama a onShowSaveConfirmation con el texto de confirmación, sin esperar a ningún snackbar
+        composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) { confirmationMessage != null }
+        assertEquals("Ajustes guardados", confirmationMessage)
     }
 
     private fun settingsViewModel(repository: SettingsRepository): SettingsViewModel {
