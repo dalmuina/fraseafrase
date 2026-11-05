@@ -2,20 +2,20 @@
 
 ## 1. Dominio: cierre forzado sin aviso obsoleto
 
-- [ ] 1.1 Test: `CloseActiveBatch` sigue cerrando igual que antes (sin tanda activa, no certificadas,
+- [x] 1.1 Test: `CloseActiveBatch` sigue cerrando igual que antes (sin tanda activa, no certificadas,
       certificadas, cola de arrastradas) tras extraer la lógica compartida — verificar que
       `CloseActiveBatchTest` existente sigue en verde sin cambiar sus aserciones.
-- [ ] 1.2 Extraer la resolución y el guardado de una tanda al cerrarla (uso de
+- [x] 1.2 Extraer la resolución y el guardado de una tanda al cerrarla (uso de
       `ResolveBatchClosure`, `PracticeSnapshot.storing`, `activeBatch = null` y
       `CarryQueue.afterClosure`) a una función compartida del paquete `practice` en `:core:domain`, y
       hacer que `CloseActiveBatch` la use — verificar que `CloseActiveBatchTest` sigue en verde (design
       D3).
-- [ ] 1.3 Test (rojo): `ForceCloseActiveBatchTest` — sin tanda activa no cambia el estado; con tanda
+- [x] 1.3 Test (rojo): `ForceCloseActiveBatchTest` — sin tanda activa no cambia el estado; con tanda
       activa con frases certificadas y no certificadas, cierra igual que `CloseActiveBatch` (nivel,
       racha, cola de arrastradas) sin recibir ningún `expectedUncertified` — spec `settings-screen`,
       escenarios "Cambiar el nivel CEFR cierra la tanda activa sin aviso" y "Sin tanda activa no hay
       nada que cerrar".
-- [ ] 1.4 Implementar `ForceCloseActiveBatch` en `:core:domain` (paquete `practice`) usando la función
+- [x] 1.4 Implementar `ForceCloseActiveBatch` en `:core:domain` (paquete `practice`) usando la función
       compartida de 1.2 — verificar que 1.3 pasa a verde.
 
 ## 2. Presentación: Ajustes detecta cambios, confirma y pide cerrar/navegar

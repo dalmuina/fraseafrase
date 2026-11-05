@@ -25,16 +25,29 @@ class CloseActiveBatch @Inject constructor(
             if (batch.uncertifiedCount() != expectedUncertified) {
                 return@transact PracticeChange(snapshot, CloseBatchResult.Stale)
             }
-            val outcomes = resolveBatchClosure(batch.entries)
-            val resolved = snapshot.storing(PracticeBatch(outcomes.map { it.progress }, batch.capacity))
             PracticeChange(
-                next = resolved.copy(
-                    activeBatch = null,
-                    carry = CarryQueue.afterClosure(snapshot.carry, outcomes),
-                ),
+                next = closeBatch(snapshot, batch, resolveBatchClosure),
                 result = CloseBatchResult.Closed,
             )
         }
+}
+
+/**
+ * Resuelve [batch] con [resolveBatchClosure], guarda su progreso en [snapshot] y vacía la tanda activa, con la cola
+ * de arrastradas recalculada. Transición pura compartida por [CloseActiveBatch] y [ForceCloseActiveBatch] (design
+ * D3 de `add-settings-apply-flow`).
+ */
+internal fun closeBatch(
+    snapshot: PracticeSnapshot,
+    batch: PracticeBatch,
+    resolveBatchClosure: ResolveBatchClosure,
+): PracticeSnapshot {
+    val outcomes = resolveBatchClosure(batch.entries)
+    val resolved = snapshot.storing(PracticeBatch(outcomes.map { it.progress }, batch.capacity))
+    return resolved.copy(
+        activeBatch = null,
+        carry = CarryQueue.afterClosure(snapshot.carry, outcomes),
+    )
 }
 
 /** Resultado de cerrar la tanda. `Closed` no incluye tanda nueva: la compone [ObtainActiveBatch]. */
