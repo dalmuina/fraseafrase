@@ -93,8 +93,11 @@
 
 ## 6. Verificación final
 
-- [ ] 6.1 Ejecutar `./gradlew check koverVerify` en verde (tests unitarios, instrumentados, detekt,
+- [x] 6.1 Ejecutar `./gradlew check koverVerify` en verde (tests unitarios, instrumentados, detekt,
       ktlint y cobertura mínima).
+      (BUILD SUCCESSFUL en verde: tests unitarios, detekt, ktlint y koverVerify. `check` no incluye
+      `connectedDebugAndroidTest` en este proyecto; los tests instrumentados nuevos de los grupos 4
+      y 5 quedan pendientes de ejecutar en emulador, no disponible en este entorno — ver 4.5 y 5.1.)
 
 ## Workflow follow-up
 
