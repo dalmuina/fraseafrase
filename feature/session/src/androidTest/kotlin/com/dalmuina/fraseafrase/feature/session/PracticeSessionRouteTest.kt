@@ -71,8 +71,11 @@ class PracticeSessionRouteTest {
         composeTestRule.onNodeWithText("Mostrar traducción").performClick()
         composeTestRule.onNodeWithText("Bom dia").assertIsDisplayed()
 
-        // When: el Route se desmonta y se vuelve a montar sin que la tanda cambie en el repositorio
+        // When: el Route se desmonta y se vuelve a montar sin que la tanda cambie en el repositorio. `waitForIdle()`
+        // entre los dos cambios fuerza la recomposición que desmonta de verdad el Route antes de remontarlo: sin
+        // ella, Compose puede coalescer las dos escrituras y nunca llegar a desmontarlo.
         mounted = false
+        composeTestRule.waitForIdle()
         mounted = true
 
         // Then: la traducción revelada sigue mostrándose
@@ -96,8 +99,10 @@ class PracticeSessionRouteTest {
         composeTestRule.onNodeWithText("Mostrar traducción").performClick()
         composeTestRule.onNodeWithText("Bom dia").assertIsDisplayed()
 
-        // When: el Route se desmonta, la tanda activa cambia a D, E, F, y se vuelve a montar
+        // When: el Route se desmonta, la tanda activa cambia a D, E, F, y se vuelve a montar. `waitForIdle()` tras
+        // desmontar fuerza la recomposición que lo desmonta de verdad antes de cambiar la tanda y remontarlo.
         mounted = false
+        composeTestRule.waitForIdle()
         runBlocking {
             practice.transact { snapshot -> PracticeChange(snapshot.withActiveBatch(listOf("D", "E", "F")), Unit) }
         }
