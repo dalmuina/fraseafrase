@@ -223,7 +223,7 @@ class ResolveBatchClosureTest {
     // (spec: Resolución de frase respondida no certificada al cerrar la tanda; con ADR-0015 la frase ya
     // no vuelve a nivel 0 al cerrar, conserva el nivel que le fijó su último fallo durante la tanda)
     @Test
-    fun `given an answered uncertified phrase of level 4 when closing then it is carried at level 0`() {
+    fun `given an answered uncertified phrase of level 4 when closing then it is carried at the level the last miss set`() {
         // Given
         val initial =
             aPhraseProgress(
@@ -248,7 +248,7 @@ class ResolveBatchClosureTest {
     // (spec: Resolución de frase respondida no certificada al cerrar la tanda; con ADR-0015 la frase ya
     // no vuelve a nivel 0 al cerrar, conserva el nivel que le fijó su último fallo durante la tanda)
     @Test
-    fun `given an answered uncertified phrase of level 5 when closing then it is carried at level 0`() {
+    fun `given an answered uncertified phrase of level 5 when closing then it is carried at the level the last miss set`() {
         // Given
         val initial =
             aPhraseProgress(
