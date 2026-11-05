@@ -8,6 +8,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.CloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.CloseBatchResult
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSessionResult
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,10 @@ class PracticeSessionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PracticeSessionUiState>(PracticeSessionUiState.Loading)
     val uiState: StateFlow<PracticeSessionUiState> = _uiState.asStateFlow()
 
+    // Ids de la tanda cargada, en orden, para que `resume()` detecte si de verdad cambió (design D4). No es parte
+    // del `UiState` expuesto: es solo un apunte interno para esa comparación.
+    private var loadedBatchIds: List<PhraseId> = emptyList()
+
     init {
         viewModelScope.launch { reload() }
     }
@@ -43,6 +48,10 @@ class PracticeSessionViewModel @Inject constructor(
             PracticeSessionAction.RequestClose -> requestClose()
             PracticeSessionAction.CancelClose -> cancelClose()
             PracticeSessionAction.ConfirmClose -> confirmClose()
+            // Vuelve a leer la sesión al entrar en la pestaña (design D4). Solo sustituye el estado si la tanda
+            // leída (frase actual, orden y tamaño) difiere de la ya cargada; si es la misma, no toca `revealed`,
+            // `busy`, `closeWarning` ni `index`.
+            PracticeSessionAction.Resume -> viewModelScope.launch { reload(onlyIfChanged = true) }
         }
     }
 
@@ -127,9 +136,13 @@ class PracticeSessionViewModel @Inject constructor(
      * Vuelve a leer la sesión y reemplaza el estado. Sin [previous], el contador de posición arranca en 1 (carga
      * inicial o recarga tras cierre). Con [previous], avanza el contador a partir de su `index`/`total` (design D1):
      * sube en uno, o vuelve a 1 si se completó la vuelta a la tanda; `total` se recalcula con la lectura fresca.
+     * Con [onlyIfChanged], no reemplaza el estado si la tanda leída es igual a la ya cargada (design D4 de
+     * `add-settings-apply-flow`).
      */
-    private suspend fun reload(previous: PracticeSessionUiState.Practicing? = null) {
+    private suspend fun reload(previous: PracticeSessionUiState.Practicing? = null, onlyIfChanged: Boolean = false) {
         val session = obtainPracticeSession()
+        if (onlyIfChanged && session.hasSameBatchAs(loadedBatchIds)) return
+        if (session is PracticeSessionResult.Ready) loadedBatchIds = session.items.map { it.id }
         _uiState.value = when (session) {
             is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
                 current = session.items.first(),
@@ -144,6 +157,10 @@ class PracticeSessionViewModel @Inject constructor(
         }
     }
 }
+
+/** Compara [this] con [ids], la tanda ya cargada: distinta si cambió de resultado, frase, orden o tamaño (D4). */
+private fun PracticeSessionResult.hasSameBatchAs(ids: List<PhraseId>): Boolean =
+    this is PracticeSessionResult.Ready && items.map { it.id } == ids
 
 private fun PracticeSessionUiState.Practicing?.nextIndex(): Int = when {
     this == null -> 1

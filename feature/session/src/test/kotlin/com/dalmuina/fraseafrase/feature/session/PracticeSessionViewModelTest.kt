@@ -4,18 +4,22 @@ import app.cash.turbine.test
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.practice.ForceCloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePhrasePlayer
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
+import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -471,4 +475,51 @@ class PracticeSessionViewModelTest {
         // Then
         phrasePlayer.calls.shouldBeEmpty()
     }
+
+    // Scenario: Resume sin cambio de tanda conserva el estado revelado y la posición (design D4)
+    @Test
+    fun `given a revealed phrase not first when Resume is dispatched without a batch change then state is kept`() =
+        runTest {
+            // Given: tanda A, B y C; tras acertar A, B se muestra revelada en la posición 2 de 3
+            val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            val before = viewModel.practicing()
+            before.index shouldBe 2
+            before.revealed shouldBe true
+
+            // When: se vuelve a la pestaña de práctica sin que la tanda haya cambiado en el repositorio
+            viewModel.onAction(PracticeSessionAction.Resume)
+            advanceUntilIdle()
+
+            // Then: el estado no cambia
+            viewModel.practicing() shouldBe before
+        }
+
+    // Scenario: Resume refleja una tanda distinta cuando sí cambió en el repositorio (design D4)
+    @Test
+    fun `given a loaded batch when Resume is dispatched after it changed in the repository then it is shown`() =
+        runTest {
+            // Given: tanda activa A, B y C cargada; Ajustes fuerza el cierre sin aviso (design D3)
+            val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+            val catalog = catalogOf("A", "B", "C", "D", "E")
+            val viewModel = sessionViewModel(practice, catalog)
+            advanceUntilIdle()
+            val before = viewModel.practicing()
+            val forceCloseActiveBatch = ForceCloseActiveBatch(practice, ResolveBatchClosure(FixedClock(TODAY)))
+            forceCloseActiveBatch()
+
+            // When
+            viewModel.onAction(PracticeSessionAction.Resume)
+            advanceUntilIdle()
+
+            // Then: la tanda leída es distinta y el indicador se reinicia a 1 de la tanda nueva
+            viewModel.practicing().index shouldBe 1
+            practice.activeOrder() shouldNotBe emptyList<String>()
+            viewModel.practicing() shouldNotBe before
+        }
 }

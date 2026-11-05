@@ -22,4 +22,11 @@ sealed interface PracticeSessionAction {
 
     /** Confirma el cierre con el número que mostró el aviso. */
     data object ConfirmClose : PracticeSessionAction
+
+    /**
+     * Vuelve a leer la sesión al entrar en la pestaña (design D4 de `add-settings-apply-flow`). Solo sustituye el
+     * estado si la tanda leída es distinta de la ya cargada; si es la misma, no toca `revealed`, `busy`,
+     * `closeWarning` ni `index`.
+     */
+    data object Resume : PracticeSessionAction
 }

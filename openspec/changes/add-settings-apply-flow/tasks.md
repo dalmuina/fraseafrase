@@ -51,14 +51,14 @@
 
 ## 3. Presentación: Práctica vuelve a leer la tanda al entrar en la pestaña, sin perder el estado si no cambió
 
-- [ ] 3.1 Test (rojo): `PracticeSessionViewModelTest` — con un estado `Practicing` ya cargado y
+- [x] 3.1 Test (rojo): `PracticeSessionViewModelTest` — con un estado `Practicing` ya cargado y
       revelado (`revealed = true`, `index` distinto de 1), la acción `Resume` sin que la tanda haya
       cambiado en el repositorio conserva `revealed`, `index` y el resto del estado tal cual — design
       D4.
-- [ ] 3.2 Test (rojo): `PracticeSessionViewModelTest` — con un estado ya cargado, la acción `Resume`
+- [x] 3.2 Test (rojo): `PracticeSessionViewModelTest` — con un estado ya cargado, la acción `Resume`
       vuelve a leer la sesión (igual que `reload()` sin `previous`) y refleja una tanda distinta
       (frase, orden o tamaño distintos) cuando sí cambió en el repositorio — design D4.
-- [ ] 3.3 Añadir `PracticeSessionAction.Resume` a `PracticeSessionAction` y manejarlo en
+- [x] 3.3 Añadir `PracticeSessionAction.Resume` a `PracticeSessionAction` y manejarlo en
       `PracticeSessionViewModel.onAction`: lee la sesión y, solo si la tanda difiere de la ya cargada
       (frase actual, orden o tamaño), sustituye el estado con el resultado equivalente a `reload()`;
       si es la misma tanda, no modifica el estado actual — verificar que 3.1 y 3.2 pasan a verde.
