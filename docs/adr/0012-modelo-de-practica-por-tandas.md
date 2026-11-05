@@ -1,6 +1,6 @@
 # ADR-0012: Modelo de práctica por tandas y alcance del MVP
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por ADR-0015
 - **Fecha:** 2026-10-30
 - **Sustituye a:** ADR-0009
 
