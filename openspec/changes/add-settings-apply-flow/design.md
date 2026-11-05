@@ -113,14 +113,36 @@ decide qué `Route` compone; `SettingsRoute` no conoce `BottomDestination` ni ni
 (ADR-0010). El valor por defecto deja las previews y los tests de `SettingsScreen`/`SettingsRoute` sin
 necesidad de proveer el callback.
 
-### D6: La confirmación visual es un `Snackbar` de Material 3 dentro de un `Scaffold` propio de `SettingsScreen`
+### D6 (revisada): La confirmación visual es un `Snackbar` de Material 3 en el `Scaffold` de `FraseAFraseApp`, no en uno propio de `SettingsScreen`
 
-`SettingsScreen` envuelve su contenido en su propio `Scaffold` con `snackbarHost`, en vez de depender del
-`Scaffold` de `FraseAFraseApp` (que hoy solo expone `innerPadding`, sin `SnackbarHostState`). `SettingsRoute`
-recuerda un `SnackbarHostState`, lo muestra con `LaunchedEffect(uiState)` cuando
-`saveConfirmationPending` es `true` y envía `ConsumeSaveConfirmation` al terminar. No se introduce ningún
-componente `Ds*` nuevo: `Scaffold`, `SnackbarHost` y `Snackbar` son de Material 3, igual que el resto de la
-pantalla.
+**Versión original de esta decisión (descartada tras encontrar un bug en verificación):** `SettingsScreen`
+envolvía su contenido en su propio `Scaffold` con `snackbarHost`; `SettingsRoute` recordaba un
+`SnackbarHostState` local y lo mostraba con `LaunchedEffect(uiState)`. Esto producía una carrera con D5:
+cuando `saveConfirmationPending` y `navigateToPracticePending` se activan a la vez (cambiar el nivel CEFR
+o N y guardar), los dos `LaunchedEffect(uiState)` de `SettingsRoute` se relanzan juntos. El de navegación
+no espera nada y llama a `onNavigateToPractice()` de inmediato, lo que saca `SettingsRoute` de
+composición en el mismo frame; Compose cancela entonces la corrutina del snackbar, suspendida dentro de
+`showSnackbar()`. `SnackbarHostState.showSnackbar()` vacía `currentSnackbarData` en su `finally` al
+cancelarse, así que el snackbar desaparece aunque ya se hubiera encolado, y la cancelación salta la línea
+`ConsumeSaveConfirmation`: la bandera se queda en `true` en el `ViewModel` (que sobrevive al cambio de
+pestaña) y solo se consume — mostrando el snackbar con retraso — la próxima vez que se entra en Ajustes.
+Mover solo el `SnackbarHostState`/`SnackbarHost` a `:app` no bastaría: la corrutina que llama a
+`showSnackbar()` seguiría viviendo en la composición de `SettingsRoute` y se cancelaría igual.
+
+**Decisión final:** `SettingsRoute` ya no posee ningún `SnackbarHostState`. Gana un parámetro
+`onShowSaveConfirmation: (String) -> Unit = {}` (mismo patrón que `onNavigateToPractice` de D5: valor por
+defecto sin efecto, solo `:app` lo conecta). Su `LaunchedEffect` resuelve el texto con `stringResource`
+(la cadena sigue viviendo en `:feature:settings`), llama a `onShowSaveConfirmation(texto)` sin esperar
+nada, y envía `ConsumeSaveConfirmation` justo después, en la misma corrutona: como no depende de que el
+snackbar termine de mostrarse, no hay nada que la cancelación de `SettingsRoute` pueda interrumpir a
+medio camino. `FraseAFraseApp` añade `snackbarHost` a su propio `Scaffold` (el que envuelve la barra de
+navegación inferior y nunca se desmonta al cambiar de pestaña) con un `SnackbarHostState` y un
+`rememberCoroutineScope()` propios, e implementa el callback como
+`{ message -> scope.launch { snackbarHostState.showSnackbar(message) } }`: esa corrutina vive en la
+composición de `FraseAFraseApp`, que sobrevive al cambio de pestaña, así que el snackbar se ve completo
+aunque la navegación ya haya cambiado de pantalla. `SettingsScreen` conserva su propio `Scaffold` solo
+para el `topBar` y pierde el `snackbarHost`/`snackbarHostState` que ya no necesita. No se introduce ningún
+componente `Ds*` nuevo: `Scaffold`, `SnackbarHost` y `Snackbar` siguen siendo de Material 3.
 
 ## Risks / Trade-offs
 
@@ -134,3 +156,7 @@ pantalla.
   catálogo (solo de `PracticeRepository`), así que cierra o no la tanda sin que un catálogo roto lo
   bloquee; la pantalla de práctica, al navegar, mostrará su propio estado de error de catálogo como ya
   hace hoy (spec `practice-session`, "Error de catálogo"), sin relación con este cambio.
+- [Carrera entre confirmación y navegación cuando ambas banderas se activan a la vez] → Detectado durante
+  `/opsx:verify` manual (guardar con el nivel cambiado no mostraba el snackbar hasta volver a Ajustes) y
+  corregido en D6 (revisada): el snackbar ya no depende de una corrutina que la navegación pueda cancelar
+  a medio camino.
