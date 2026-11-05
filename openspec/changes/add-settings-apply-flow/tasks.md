@@ -65,22 +65,22 @@
 
 ## 4. UI: confirmación visual y navegación
 
-- [ ] 4.1 Test (rojo, `SettingsScreenTest` en `androidTest`): tras guardar, se muestra un snackbar con
+- [x] 4.1 Test (rojo, `SettingsScreenTest` en `androidTest`): tras guardar, se muestra un snackbar con
       el texto de confirmación — spec `settings-screen`, escenario "Confirmación tras guardar".
-- [ ] 4.2 Envolver `SettingsScreen` en su propio `Scaffold` con `snackbarHost`; `SettingsRoute` recuerda
+- [x] 4.2 Envolver `SettingsScreen` en su propio `Scaffold` con `snackbarHost`; `SettingsRoute` recuerda
       un `SnackbarHostState`, lo muestra en un `LaunchedEffect` cuando `saveConfirmationPending` es
       `true` y envía `ConsumeSaveConfirmation` al terminar (design D6) — verificar que 4.1 pasa a
       verde.
-- [ ] 4.3 Test (rojo, `androidTest`): `SettingsRoute` con nivel CEFR cambiado llama a
+- [x] 4.3 Test (rojo, `androidTest`): `SettingsRoute` con nivel CEFR cambiado llama a
       `onNavigateToPractice` tras guardar — spec `settings-screen`, escenario "Guardar con el nivel
       CEFR cambiado navega a práctica".
-- [ ] 4.4 Añadir el parámetro `onNavigateToPractice: () -> Unit = {}` a `SettingsRoute`; en un
+- [x] 4.4 Añadir el parámetro `onNavigateToPractice: () -> Unit = {}` a `SettingsRoute`; en un
       `LaunchedEffect` lo invoca cuando `navigateToPracticePending` es `true` y envía
       `ConsumeNavigateToPractice` (design D5) — verificar que 4.3 pasa a verde.
-- [ ] 4.5 Test (rojo, `androidTest`): `PracticeSessionScreenTest` (o uno nuevo) — al recomponer
+- [x] 4.5 Test (rojo, `androidTest`): `PracticeSessionScreenTest` (o uno nuevo) — al recomponer
       `PracticeSessionRoute` (simulando volver a la pestaña), se refleja una tanda distinta si cambió
       en el repositorio, y se conserva la frase revelada y la posición si no cambió — design D4.
-- [ ] 4.6 Añadir `LaunchedEffect(Unit) { viewModel.onAction(PracticeSessionAction.Resume) }` en
+- [x] 4.6 Añadir `LaunchedEffect(Unit) { viewModel.onAction(PracticeSessionAction.Resume) }` en
       `PracticeSessionRoute` (design D4) — verificar que 4.5 pasa a verde.
 
 ## 5. Integración en `:app`

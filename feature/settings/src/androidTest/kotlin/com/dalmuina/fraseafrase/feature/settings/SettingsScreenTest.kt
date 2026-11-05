@@ -1,5 +1,8 @@
 package com.dalmuina.fraseafrase.feature.settings
 
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -50,6 +53,27 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithText("Guardar").assertIsEnabled()
     }
 
+    // Scenario: Confirmación tras guardar (spec: settings-screen)
+    @Test
+    fun givenASnackbarMessage_whenShownThroughTheScreen_thenTheConfirmationTextIsDisplayed() {
+        // Given/When: la pantalla muestra el snackbar con el texto de confirmación de guardado, como hará
+        // SettingsRoute cuando saveConfirmationPending sea true (design D6)
+        composeTestRule.setContent {
+            AppTheme {
+                val snackbarHostState = remember { SnackbarHostState() }
+                LaunchedEffect(Unit) { snackbarHostState.showSnackbar(CONFIRMATION_TEXT) }
+                SettingsScreen(
+                    uiState = loaded(),
+                    onAction = {},
+                    snackbarHostState = snackbarHostState,
+                )
+            }
+        }
+
+        // Then: se muestra el texto de confirmación
+        composeTestRule.onNodeWithText(CONFIRMATION_TEXT).assertIsDisplayed()
+    }
+
     private fun setScreen(uiState: SettingsUiState) {
         composeTestRule.setContent {
             AppTheme {
@@ -67,4 +91,8 @@ class SettingsScreenTest {
         batchSizeText = batchSizeText,
         isBatchSizeValid = isBatchSizeValid,
     )
+
+    private companion object {
+        const val CONFIRMATION_TEXT = "Ajustes guardados"
+    }
 }

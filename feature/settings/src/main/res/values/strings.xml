@@ -5,4 +5,5 @@
     <string name="settings_batch_size_label">Tamaño de tanda (N)</string>
     <string name="settings_batch_size_error">Debe ser un número entero entre 10 y 30</string>
     <string name="settings_save">Guardar</string>
+    <string name="settings_save_confirmation">Ajustes guardados</string>
 </resources>

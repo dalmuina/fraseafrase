@@ -15,6 +15,8 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -30,7 +32,9 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 
 /**
  * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión
- * con el ViewModel está en [SettingsRoute].
+ * con el ViewModel está en [SettingsRoute]. Tiene su propio `Scaffold` con `snackbarHost` (design D6 de
+ * `add-settings-apply-flow`): [snackbarHostState] lo controla [SettingsRoute], que decide cuándo mostrar la
+ * confirmación de guardado.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,10 +42,12 @@ internal fun SettingsScreen(
     uiState: SettingsUiState,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         modifier = modifier,
         topBar = { TopAppBar(title = { Text(text = stringResource(R.string.settings_title)) }) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         when (uiState) {
             SettingsUiState.Loading -> Box(
