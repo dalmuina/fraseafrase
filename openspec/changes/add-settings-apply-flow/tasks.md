@@ -20,33 +20,33 @@
 
 ## 2. Presentación: Ajustes detecta cambios, confirma y pide cerrar/navegar
 
-- [ ] 2.1 Test (rojo): `SettingsViewModelTest` — guardar con el nivel CEFR o la N iguales a los
+- [x] 2.1 Test (rojo): `SettingsViewModelTest` — guardar con el nivel CEFR o la N iguales a los
       persistidos deja `saveConfirmationPending = true` y `navigateToPracticePending = false` tras
       guardar — spec `settings-screen`, escenario "Guardar sin cambiar ningún valor se queda en
       ajustes".
-- [ ] 2.2 Añadir `saveConfirmationPending: Boolean` y `navigateToPracticePending: Boolean` a
+- [x] 2.2 Añadir `saveConfirmationPending: Boolean` y `navigateToPracticePending: Boolean` a
       `SettingsUiState.Loaded` (ambos a `false` por defecto) y las acciones `ConsumeSaveConfirmation`
       y `ConsumeNavigateToPractice` a `SettingsAction`; hacer que `save()` guarde el `UserSettings`
       cargado en `reload()` como base, compare con el guardado y active las dos banderas según
       corresponda, y que las acciones de consumo las vuelvan a `false` — verificar que 2.1 pasa a
       verde.
-- [ ] 2.3 Test (rojo): `SettingsViewModelTest` — guardar con el nivel CEFR distinto del persistido deja
+- [x] 2.3 Test (rojo): `SettingsViewModelTest` — guardar con el nivel CEFR distinto del persistido deja
       `saveConfirmationPending = true` y `navigateToPracticePending = true`, y llama a
       `ForceCloseActiveBatch` — spec `settings-screen`, escenarios "Cambiar el nivel CEFR cierra la
       tanda activa sin aviso" y "Guardar con el nivel CEFR cambiado navega a práctica".
-- [ ] 2.4 Inyectar `ForceCloseActiveBatch` en `SettingsViewModel` y llamarlo desde `save()` cuando hubo
+- [x] 2.4 Inyectar `ForceCloseActiveBatch` en `SettingsViewModel` y llamarlo desde `save()` cuando hubo
       cambios, antes de activar las banderas — verificar que 2.3 pasa a verde.
-- [ ] 2.5 Test (rojo): `SettingsViewModelTest` — guardar con N distinta de la persistida (mismo nivel
+- [x] 2.5 Test (rojo): `SettingsViewModelTest` — guardar con N distinta de la persistida (mismo nivel
       CEFR) también activa `navigateToPracticePending` y llama a `ForceCloseActiveBatch` — spec
       `settings-screen`, escenario "Guardar con N cambiado navega a práctica".
-- [ ] 2.6 Ajustar la comparación de cambios de 2.2 para que compruebe también la N — verificar que 2.5
+- [x] 2.6 Ajustar la comparación de cambios de 2.2 para que compruebe también la N — verificar que 2.5
       pasa a verde.
-- [ ] 2.7 Test (rojo): `SettingsViewModelTest` — con el mismo `SettingsViewModel` (sin recrearlo), un
+- [x] 2.7 Test (rojo): `SettingsViewModelTest` — con el mismo `SettingsViewModel` (sin recrearlo), un
       primer guardado con N=15 (cambio) seguido de un segundo guardado con N=20 también se detecta
       como cambio (`navigateToPracticePending = true`, llama a `ForceCloseActiveBatch` otra vez); y un
       segundo guardado que repite el mismo valor ya guardado (N=15 dos veces seguidas) NO se detecta
       como cambio la segunda vez — design D2.
-- [ ] 2.8 Hacer que `save()` actualice la base en memoria de 2.2 al `UserSettings` recién guardado tras
+- [x] 2.8 Hacer que `save()` actualice la base en memoria de 2.2 al `UserSettings` recién guardado tras
       cada guardado con éxito, en vez de dejar fija la de `reload()` — verificar que 2.7 pasa a verde.
 
 ## 3. Presentación: Práctica vuelve a leer la tanda al entrar en la pestaña, sin perder el estado si no cambió

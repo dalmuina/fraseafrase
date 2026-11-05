@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.feature.settings
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
@@ -135,5 +136,108 @@ class SettingsViewModelTest {
             val state = newViewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
             state.batchSizeText shouldBe "20"
             repository.settings() shouldBe UserSettings(CefrLevel.A1, BatchSize(20))
+        }
+
+    // Scenario: Guardar sin cambiar ningún valor se queda en ajustes (spec: settings-screen)
+    @Test
+    fun `given unchanged cefr level and batch size when Save is dispatched then it only confirms saving`() =
+        runTest {
+            // Given: la pantalla de ajustes abierta con el nivel CEFR B1 y N igual a 20, ambos persistidos
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(20)))
+            val viewModel = settingsViewModel(repository)
+            advanceUntilIdle()
+
+            // When: el usuario confirma el guardado sin cambiar ningún valor
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: se confirma el guardado, sin pedir cerrar la tanda activa ni navegar
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.saveConfirmationPending shouldBe true
+            state.navigateToPracticePending shouldBe false
+        }
+
+    // Scenarios: Cambiar el nivel CEFR cierra la tanda activa sin aviso / Guardar con el nivel CEFR cambiado
+    // navega a práctica (spec: settings-screen)
+    @Test
+    fun `given a different cefr level when Save is dispatched then it force closes the batch and asks to navigate`() =
+        runTest {
+            // Given: una tanda activa guardada y el nivel CEFR A1 persistido
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val practice = FakePracticeRepository(activeBatchSnapshot())
+            val viewModel = settingsViewModel(repository, practice)
+            advanceUntilIdle()
+
+            // When: el usuario elige el nivel B1 y confirma el guardado
+            viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: la tanda activa se cierra y se pide confirmar y navegar a práctica
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.saveConfirmationPending shouldBe true
+            state.navigateToPracticePending shouldBe true
+            practice.read().activeBatch shouldBe null
+        }
+
+    // Scenario: Guardar con N cambiado navega a práctica (spec: settings-screen)
+    @Test
+    fun `given a different batch size when Save is dispatched then it force closes the batch and asks to navigate`() =
+        runTest {
+            // Given: una tanda activa guardada y N igual a 20 persistido
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val practice = FakePracticeRepository(activeBatchSnapshot())
+            val viewModel = settingsViewModel(repository, practice)
+            advanceUntilIdle()
+
+            // When: el usuario escribe 15 como tamaño de tanda y confirma el guardado
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: la tanda activa se cierra y se pide confirmar y navegar a práctica
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.saveConfirmationPending shouldBe true
+            state.navigateToPracticePending shouldBe true
+            practice.read().activeBatch shouldBe null
+        }
+
+    // Design D2: la base de comparación se actualiza en cada guardado, no se queda fija en la de `reload()`
+    @Test
+    fun `given two consecutive saves when the second changes the value again then it is also detected as changed`() =
+        runTest {
+            // Given: la pantalla de ajustes abierta con N igual a 20 persistido
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val practiceForFirstSave = FakePracticeRepository(activeBatchSnapshot())
+            val viewModel = settingsViewModel(repository, practiceForFirstSave)
+            advanceUntilIdle()
+
+            // When: un primer guardado cambia N a 15
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: se detecta como cambio
+            var state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.navigateToPracticePending shouldBe true
+
+            // When: con el mismo ViewModel, un segundo guardado repite el mismo valor (N = 15 otra vez)
+            viewModel.onAction(SettingsAction.ConsumeNavigateToPractice)
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: NO se detecta como cambio
+            state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.navigateToPracticePending shouldBe false
+
+            // When: un tercer guardado cambia N a 20
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("20"))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: se vuelve a detectar como cambio
+            state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.navigateToPracticePending shouldBe true
         }
 }
