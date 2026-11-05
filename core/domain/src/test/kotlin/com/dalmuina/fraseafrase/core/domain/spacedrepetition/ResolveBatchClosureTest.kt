@@ -44,7 +44,7 @@ class ResolveBatchClosureTest {
     fun `given a phrase with streak 3 that is missed before closing then it is classified as carried`() {
         // Given
         val progress = aPhraseProgress(level = Level(0), streak = Streak(3), answeredInBatch = true, nextReview = null)
-        val missed = RecordSelfAssessment()(progress, SelfAssessment.MISS)
+        val missed = RecordSelfAssessment(FixedClock(closingDate))(progress, SelfAssessment.MISS)
 
         // When
         val outcomes = resolveBatchClosure(listOf(missed))
@@ -220,47 +220,52 @@ class ResolveBatchClosureTest {
     }
 
     // Scenario: Respondida no certificada de nivel 4 vuelve a nivel 0
-    // (spec: Resolución de frase respondida no certificada al cerrar la tanda)
+    // (spec: Resolución de frase respondida no certificada al cerrar la tanda; con ADR-0015 la frase ya
+    // no vuelve a nivel 0 al cerrar, conserva el nivel que le fijó su último fallo durante la tanda)
     @Test
-    fun `given an answered uncertified phrase of level 4 when closing then it is carried at level 0`() {
+    fun `given an uncertified phrase of level 4 when closing then it is carried at the level the last miss set`() {
         // Given
-        val progress =
+        val initial =
             aPhraseProgress(
                 level = Level(4),
-                streak = Streak(1),
-                answeredInBatch = true,
+                streak = Streak(0),
+                answeredInBatch = false,
                 nextReview = LocalDate.of(2026, 3, 20),
             )
+        val afterMiss = initial.record(SelfAssessment.MISS, closingDate)
+        val progress = afterMiss.record(SelfAssessment.HIT, closingDate)
 
         // When
         val outcome = closeSingle(progress)
 
         // Then
         outcome.shouldBeInstanceOf<BatchClosureOutcome.Carried>()
-        outcome.progress.level shouldBe Level(0)
-        outcome.progress.nextReview shouldBe null
+        outcome.progress.level shouldBe Level(3)
+        outcome.progress.nextReview shouldBe LocalDate.of(2026, 3, 17)
     }
 
     // Scenario: Respondida no certificada de nivel 5 vuelve a nivel 0
-    // (spec: Resolución de frase respondida no certificada al cerrar la tanda)
+    // (spec: Resolución de frase respondida no certificada al cerrar la tanda; con ADR-0015 la frase ya
+    // no vuelve a nivel 0 al cerrar, conserva el nivel que le fijó su último fallo durante la tanda)
     @Test
-    fun `given an answered uncertified phrase of level 5 when closing then it is carried at level 0`() {
+    fun `given an uncertified phrase of level 5 when closing then it is carried at the level the last miss set`() {
         // Given
-        val progress =
+        val initial =
             aPhraseProgress(
                 level = Level(5),
                 streak = Streak(0),
-                answeredInBatch = true,
+                answeredInBatch = false,
                 nextReview = LocalDate.of(2026, 4, 9),
             )
+        val progress = initial.record(SelfAssessment.MISS, closingDate)
 
         // When
         val outcome = closeSingle(progress)
 
         // Then
         outcome.shouldBeInstanceOf<BatchClosureOutcome.Carried>()
-        outcome.progress.level shouldBe Level(0)
-        outcome.progress.nextReview shouldBe null
+        outcome.progress.level shouldBe Level(4)
+        outcome.progress.nextReview shouldBe LocalDate.of(2026, 3, 24)
     }
 
     // Scenario: Respondida no certificada de nivel 0 permanece en nivel 0
@@ -279,9 +284,11 @@ class ResolveBatchClosureTest {
         outcome.progress.nextReview shouldBe null
     }
 
-    // Scenario: Frase con un fallo cuenta como respondida (spec: Frase respondida en la tanda)
+    // Scenario: Frase con un fallo cuenta como respondida (spec: Frase respondida en la tanda).
+    // Con ADR-0015 el fallo ya baja el nivel y recalcula el repaso en el momento de autoevaluarse
+    // (nivel 2 -> nivel 1, repaso 11-03-2026), y el cierre conserva ese resultado en vez de forzar nivel 0.
     @Test
-    fun `given a phrase that only received a miss when closing then it is carried at level 0 without review`() {
+    fun `given a phrase that only received a miss when closing then it is carried at the level the miss set`() {
         // Given
         val progress =
             aPhraseProgress(
@@ -290,15 +297,15 @@ class ResolveBatchClosureTest {
                 answeredInBatch = false,
                 nextReview = LocalDate.of(2026, 3, 13),
             )
-        val missed = RecordSelfAssessment()(progress, SelfAssessment.MISS)
+        val missed = RecordSelfAssessment(FixedClock(closingDate))(progress, SelfAssessment.MISS)
 
         // When
         val outcome = closeSingle(missed)
 
         // Then
         outcome.shouldBeInstanceOf<BatchClosureOutcome.Carried>()
-        outcome.progress.level shouldBe Level(0)
-        outcome.progress.nextReview shouldBe null
+        outcome.progress.level shouldBe Level(1)
+        outcome.progress.nextReview shouldBe LocalDate.of(2026, 3, 11)
     }
 
     // Scenario: Frase sin autoevaluaciones cuenta como nunca respondida (spec: Frase respondida en la tanda)

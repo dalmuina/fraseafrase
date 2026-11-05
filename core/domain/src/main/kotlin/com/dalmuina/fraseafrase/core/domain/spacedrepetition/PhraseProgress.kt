@@ -43,14 +43,31 @@ data class PhraseProgress(
     /**
      * Registra la autoevaluación de esta frase dentro de la tanda: un acierto suma 1 a la racha y un
      * fallo la reinicia; en ambos casos la frase queda respondida en la tanda (ADR-0012).
-     * Es una función pura: no depende del reloj ni del orden de la tanda.
+     * Un fallo en una frase de nivel 1 o superior también baja su nivel en 1 y recalcula su próximo
+     * repaso a partir de [today], sin esperar al cierre de la tanda (ADR-0015).
+     * Es una función pura: la fecha llega como dato, nunca del reloj.
      */
-    fun record(assessment: SelfAssessment): PhraseProgress {
+    fun record(assessment: SelfAssessment, today: LocalDate): PhraseProgress {
         val updatedStreak = when (assessment) {
             SelfAssessment.HIT -> streak.afterHit()
             SelfAssessment.MISS -> streak.afterMiss()
         }
-        return copy(streak = updatedStreak, answeredInBatch = true)
+        val updatedLevel = if (assessment == SelfAssessment.MISS && level.value >= 1) {
+            Level(level.value - 1)
+        } else {
+            level
+        }
+        val updatedNextReview = if (updatedLevel == level) {
+            nextReview
+        } else {
+            ReviewSchedule.nextReviewAfter(updatedLevel, today)
+        }
+        return copy(
+            level = updatedLevel,
+            streak = updatedStreak,
+            answeredInBatch = true,
+            nextReview = updatedNextReview,
+        )
     }
 
     companion object {

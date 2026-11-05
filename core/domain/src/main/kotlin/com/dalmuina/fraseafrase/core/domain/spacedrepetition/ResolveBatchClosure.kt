@@ -32,12 +32,6 @@ class ResolveBatchClosure @Inject constructor(private val clock: Clock) {
         )
     }
 
-    private fun carried(progress: PhraseProgress): PhraseProgress {
-        val leveled = if (progress.answeredInBatch) {
-            progress.copy(level = Level(0), nextReview = null)
-        } else {
-            progress
-        }
-        return leveled.copy(streak = Streak(0), answeredInBatch = false)
-    }
+    private fun carried(progress: PhraseProgress): PhraseProgress =
+        progress.copy(streak = Streak(0), answeredInBatch = false)
 }

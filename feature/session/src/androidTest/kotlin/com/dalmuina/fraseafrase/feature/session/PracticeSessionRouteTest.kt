@@ -169,7 +169,7 @@ class PracticeSessionRouteTest {
         )
         return PracticeSessionViewModel(
             obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository),
-            answerPhrase = AnswerPhrase(practice),
+            answerPhrase = AnswerPhrase(practice, clock),
             closeActiveBatch = CloseActiveBatch(practice, ResolveBatchClosure(clock)),
             playPhraseAudio = PlayPhraseAudio(TestPhrasePlayer()),
         )

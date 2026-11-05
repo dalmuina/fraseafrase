@@ -5,8 +5,11 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PracticeBatchTest {
+
+    private val today = LocalDate.of(2026, 3, 10)
 
     // Scenario: Acierto mueve la frase al final (spec: Lista circular de la tanda)
     @Test
@@ -15,7 +18,7 @@ class PracticeBatchTest {
         val batch = batchOf("A", "B", "C")
 
         // When
-        val updated = batch.answer(PhraseId("A"), SelfAssessment.HIT)
+        val updated = batch.answer(PhraseId("A"), SelfAssessment.HIT, today)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("B"), PhraseId("C"), PhraseId("A"))
@@ -28,7 +31,7 @@ class PracticeBatchTest {
         val batch = batchOf("A", "B", "C")
 
         // When
-        val updated = batch.answer(PhraseId("B"), SelfAssessment.MISS)
+        val updated = batch.answer(PhraseId("B"), SelfAssessment.MISS, today)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("A"), PhraseId("C"), PhraseId("B"))
@@ -41,7 +44,7 @@ class PracticeBatchTest {
         val batch = batchOf("A", "B", "C")
 
         // When
-        val updated = batch.answer(PhraseId("C"), SelfAssessment.HIT)
+        val updated = batch.answer(PhraseId("C"), SelfAssessment.HIT, today)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("A"), PhraseId("B"), PhraseId("C"))
@@ -55,14 +58,34 @@ class PracticeBatchTest {
 
         // When
         val updated = batch
-            .answer(PhraseId("A"), SelfAssessment.HIT)
-            .answer(PhraseId("B"), SelfAssessment.MISS)
-            .answer(PhraseId("C"), SelfAssessment.HIT)
-            .answer(PhraseId("A"), SelfAssessment.MISS)
-            .answer(PhraseId("B"), SelfAssessment.HIT)
+            .answer(PhraseId("A"), SelfAssessment.HIT, today)
+            .answer(PhraseId("B"), SelfAssessment.MISS, today)
+            .answer(PhraseId("C"), SelfAssessment.HIT, today)
+            .answer(PhraseId("A"), SelfAssessment.MISS, today)
+            .answer(PhraseId("B"), SelfAssessment.HIT, today)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("C"), PhraseId("A"), PhraseId("B"))
+    }
+
+    // Scenario: Bajada instantánea de nivel ante un fallo (spec: Racha de aciertos dentro de la tanda)
+    @Test
+    fun `given a batch with a phrase of level 2 when the user misses it then its level drops to 1`() {
+        // Given
+        val batch = PracticeBatch(
+            entries = listOf(
+                aPhraseProgress(id = "A", level = Level(2), nextReview = LocalDate.of(2026, 3, 9)),
+            ),
+            capacity = BatchSize(10),
+        )
+
+        // When
+        val updated = batch.answer(PhraseId("A"), SelfAssessment.MISS, today)
+
+        // Then
+        val answered = updated.entries.single { it.id == PhraseId("A") }
+        answered.level shouldBe Level(1)
+        answered.nextReview shouldBe LocalDate.of(2026, 3, 11)
     }
 
     // Scenario: Responder una frase que no está en la tanda (spec: Invariantes de la tanda y de la cola)
@@ -73,7 +96,7 @@ class PracticeBatchTest {
 
         // When / Then
         shouldThrow<IllegalArgumentException> {
-            batch.answer(PhraseId("C"), SelfAssessment.HIT)
+            batch.answer(PhraseId("C"), SelfAssessment.HIT, today)
         }
     }
 
@@ -105,7 +128,7 @@ class PracticeBatchTest {
         val batch = batchOf(*(1..30).map { "P$it" }.toTypedArray(), capacity = BatchSize(30))
 
         // When
-        val updated = batch.answer(PhraseId("P1"), SelfAssessment.HIT)
+        val updated = batch.answer(PhraseId("P1"), SelfAssessment.HIT, today)
 
         // Then
         updated.capacity shouldBe BatchSize(30)
