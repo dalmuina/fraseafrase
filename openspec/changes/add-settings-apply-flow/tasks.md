@@ -85,10 +85,11 @@
 
 ## 5. Integración en `:app`
 
-- [ ] 5.1 Pasar `onNavigateToPractice = { selectedDestination = BottomDestination.Practice }` a
+- [x] 5.1 Pasar `onNavigateToPractice = { selectedDestination = BottomDestination.Practice }` a
       `SettingsRoute` desde `FraseAFraseApp` — verificar manualmente en el emulador: cambiar el nivel
       CEFR en Ajustes y guardar muestra el snackbar y cambia a la pestaña de práctica con una tanda
       nueva del nivel elegido (o con las arrastradas/pendientes primero, según ADR-0012).
+      (Verificación manual en emulador pendiente del usuario: no disponible en este entorno.)
 
 ## 6. Verificación final
 
