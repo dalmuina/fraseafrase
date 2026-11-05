@@ -30,7 +30,9 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 
 /**
  * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión
- * con el ViewModel está en [SettingsRoute].
+ * con el ViewModel está en [SettingsRoute]. Su `Scaffold` solo aporta el `topBar`: la confirmación de guardado se
+ * muestra en el `Scaffold` de `:app`, que sobrevive al cambio de pestaña (design D6 revisada de
+ * `add-settings-apply-flow`).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

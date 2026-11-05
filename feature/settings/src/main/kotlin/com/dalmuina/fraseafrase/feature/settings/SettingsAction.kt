@@ -13,4 +13,10 @@ sealed interface SettingsAction {
 
     /** Confirma el guardado de los ajustes editados. */
     data object Save : SettingsAction
+
+    /** Consume la confirmación visual de guardado pendiente, para que no se repita (design D1). */
+    data object ConsumeSaveConfirmation : SettingsAction
+
+    /** Consume la navegación a práctica pendiente, para que no se repita (design D1). */
+    data object ConsumeNavigateToPractice : SettingsAction
 }
