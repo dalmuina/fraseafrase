@@ -14,12 +14,16 @@ sealed interface PracticeSessionUiState {
      * Práctica de la tanda activa. [current] es la frase que se muestra. [revealed] indica si su traducción en
      * portugués está visible. [busy] está a true mientras se registra una respuesta o se cierra la tanda.
      * [closeWarning] es el número de no certificadas del aviso de cierre, o null si el diálogo no está abierto.
+     * [index] es la posición (1-based) de [current] dentro de la vuelta actual a la tanda; [total] es su tamaño
+     * (design D1 de `add-practice-batch-indicator`).
      */
     data class Practicing(
         val current: PracticeItem,
         val revealed: Boolean,
         val busy: Boolean,
         val closeWarning: Int?,
+        val index: Int,
+        val total: Int,
     ) : PracticeSessionUiState
 
     /** No hay frases para practicar (ADR-0012). */

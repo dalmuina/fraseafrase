@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.feature.session
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
@@ -14,6 +15,7 @@ private val knownItem = PracticeItem(
     source = "Buenos días",
     target = "Bom dia",
     targetLocale = LanguageTag("pt-PT"),
+    cefrLevel = CefrLevel.A1,
     streak = Streak(3),
     isKnown = true,
 )
@@ -24,6 +26,7 @@ private val newItem = PracticeItem(
     source = "Gracias",
     target = "Obrigado",
     targetLocale = LanguageTag("pt-PT"),
+    cefrLevel = CefrLevel.A1,
     streak = Streak(0),
     isKnown = false,
 )
@@ -46,6 +49,8 @@ private fun PracticeSessionScreenHiddenPreview() {
                 revealed = false,
                 busy = false,
                 closeWarning = null,
+                index = 1,
+                total = 2,
             ),
             onAction = {},
         )
@@ -62,6 +67,8 @@ private fun PracticeSessionScreenRevealedPreview() {
                 revealed = true,
                 busy = false,
                 closeWarning = null,
+                index = 2,
+                total = 2,
             ),
             onAction = {},
         )
@@ -78,6 +85,8 @@ private fun PracticeSessionScreenCloseWarningPreview() {
                 revealed = true,
                 busy = false,
                 closeWarning = 3,
+                index = 2,
+                total = 2,
             ),
             onAction = {},
         )

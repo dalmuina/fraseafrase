@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
@@ -82,6 +83,24 @@ class ObtainPracticeSessionTest {
             ready.items.map { it.id.value } shouldBe listOf("A", "B", "C")
             ready.items.first().source shouldBe "Buenos días"
             ready.items.first().target shouldBe "Bom dia"
+        }
+
+    // Scenario: Nivel CEFR visible sin revelar (spec: practice-session)
+    @Test
+    fun `given a catalog phrase with a cefr level when opening the session then the item carries it`() =
+        runTest {
+            // Given: tanda activa con una frase A de nivel B1 en el catálogo
+            val practice = FakePracticeRepository(
+                activeBatch(order = listOf("A"), progress = listOf(aPhraseProgress(id = "A"))),
+            )
+            val catalog = loaded(aCatalogPhrase(id = "A", level = CefrLevel.B1))
+
+            // When
+            val result = useCase(practice, catalog).invoke()
+
+            // Then
+            val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
+            ready.items.single().cefrLevel shouldBe CefrLevel.B1
         }
 
     // Scenario: Reproducción del audio en el locale de la frase (spec: phrase-audio)

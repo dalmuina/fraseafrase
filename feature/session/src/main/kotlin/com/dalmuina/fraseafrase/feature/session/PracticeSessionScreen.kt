@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -22,6 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -75,6 +79,10 @@ private fun PracticingContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
+        Text(
+            text = stringResource(R.string.practice_position, state.index, state.total),
+            style = MaterialTheme.typography.labelLarge,
+        )
         PhraseCard(item = state.current, revealed = state.revealed, enabled = !state.busy, onAction = onAction)
         if (state.revealed) {
             AssessmentButtons(enabled = !state.busy, onAction = onAction)
@@ -114,6 +122,7 @@ private fun PhraseCard(
             modifier = Modifier.padding(AppTheme.spacing.l),
             verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
         ) {
+            Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelLarge)
             Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
             if (revealed) {
                 Text(
@@ -125,7 +134,16 @@ private fun PhraseCard(
                     onClick = { onAction(PracticeSessionAction.PlayAudio) },
                     enabled = enabled,
                 ) {
-                    Text(text = stringResource(R.string.practice_listen))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.testTag("listen_icon"),
+                        )
+                        Text(text = stringResource(R.string.practice_listen))
+                    }
                 }
             }
             Text(

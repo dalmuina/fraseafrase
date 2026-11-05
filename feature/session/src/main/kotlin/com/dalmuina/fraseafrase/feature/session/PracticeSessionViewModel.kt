@@ -60,8 +60,8 @@ class PracticeSessionViewModel @Inject constructor(
             if (current.busy) return@launch
             _uiState.value = when (session) {
                 is PracticeSessionResult.Ready -> current.copy(closeWarning = session.uncertifiedCount)
-                is PracticeSessionResult.CatalogFailed -> session.toScreenState()
-                PracticeSessionResult.NothingToPractice -> session.toScreenState()
+                is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
+                PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
             }
         }
     }
@@ -100,7 +100,7 @@ class PracticeSessionViewModel @Inject constructor(
             _uiState.value = state.copy(busy = true)
             viewModelScope.launch {
                 answerPhrase(state.current.id, assessment)
-                reload()
+                reload(previous = state)
             }
         }
     }
@@ -123,23 +123,33 @@ class PracticeSessionViewModel @Inject constructor(
         _uiState.value = state.transform()
     }
 
-    /** Vuelve a leer la sesión y reemplaza el estado. La siguiente frase y su orden los decide la persistencia (D2). */
-    private suspend fun reload() {
-        _uiState.value = obtainPracticeSession().toScreenState()
+    /**
+     * Vuelve a leer la sesión y reemplaza el estado. Sin [previous], el contador de posición arranca en 1 (carga
+     * inicial o recarga tras cierre). Con [previous], avanza el contador a partir de su `index`/`total` (design D1):
+     * sube en uno, o vuelve a 1 si se completó la vuelta a la tanda; `total` se recalcula con la lectura fresca.
+     */
+    private suspend fun reload(previous: PracticeSessionUiState.Practicing? = null) {
+        val session = obtainPracticeSession()
+        _uiState.value = when (session) {
+            is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
+                current = session.items.first(),
+                revealed = false,
+                busy = false,
+                closeWarning = null,
+                index = previous.nextIndex().coerceAtMost(session.items.size),
+                total = session.items.size,
+            )
+            PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
+            is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
+        }
     }
+}
+
+private fun PracticeSessionUiState.Practicing?.nextIndex(): Int = when {
+    this == null -> 1
+    index == total -> 1
+    else -> index + 1
 }
 
 private fun PracticeSessionUiState.Practicing.isAnswerable(): Boolean =
     revealed && !busy && closeWarning == null
-
-/** Estado de pantalla que produce una lectura de la sesión. Lo usan el arranque, las recargas y el cierre. */
-private fun PracticeSessionResult.toScreenState(): PracticeSessionUiState = when (this) {
-    is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
-        current = items.first(),
-        revealed = false,
-        busy = false,
-        closeWarning = null,
-    )
-    PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
-    is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
-}
