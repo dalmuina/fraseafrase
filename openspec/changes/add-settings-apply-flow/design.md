@@ -133,7 +133,7 @@ Mover solo el `SnackbarHostState`/`SnackbarHost` a `:app` no bastaría: la corru
 `onShowSaveConfirmation: (String) -> Unit = {}` (mismo patrón que `onNavigateToPractice` de D5: valor por
 defecto sin efecto, solo `:app` lo conecta). Su `LaunchedEffect` resuelve el texto con `stringResource`
 (la cadena sigue viviendo en `:feature:settings`), llama a `onShowSaveConfirmation(texto)` sin esperar
-nada, y envía `ConsumeSaveConfirmation` justo después, en la misma corrutona: como no depende de que el
+nada, y envía `ConsumeSaveConfirmation` justo después, en la misma corrutina: como no depende de que el
 snackbar termine de mostrarse, no hay nada que la cancelación de `SettingsRoute` pueda interrumpir a
 medio camino. `FraseAFraseApp` añade `snackbarHost` a su propio `Scaffold` (el que envuelve la barra de
 navegación inferior y nunca se desmonta al cambiar de pestaña) con un `SnackbarHostState` y un
