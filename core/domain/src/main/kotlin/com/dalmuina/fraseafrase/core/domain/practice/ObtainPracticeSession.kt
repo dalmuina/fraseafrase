@@ -52,6 +52,7 @@ class ObtainPracticeSession @Inject constructor(
                 cefrLevel = phrase.level,
                 streak = entry.streak,
                 isKnown = entry.streak.value >= PracticeItem.KNOWN_STREAK,
+                level = entry.level,
             )
         }
     }

@@ -2,10 +2,10 @@
 
 ## 1. Dominio: nivel de consolidación en `PracticeItem`
 
-- [ ] 1.1 Test: en `ObtainPracticeSessionTest`, una tanda con una entrada de nivel 3 produce un
+- [x] 1.1 Test: en `ObtainPracticeSessionTest`, una tanda con una entrada de nivel 3 produce un
   `PracticeItem` con `level` igual a ese nivel (spec `practice-session`, escenario "Insignia visible
   sin revelar"); verificar que el test falla porque `PracticeItem` no tiene `level` todavía.
-- [ ] 1.2 Implementación: añadir `level: Level` a `PracticeItem`
+- [x] 1.2 Implementación: añadir `level: Level` a `PracticeItem`
   (`practice/PracticeSessionResult.kt`) y copiarlo de `entry.level` en
   `ObtainPracticeSession.items()`; verificar que 1.1 pasa.
 

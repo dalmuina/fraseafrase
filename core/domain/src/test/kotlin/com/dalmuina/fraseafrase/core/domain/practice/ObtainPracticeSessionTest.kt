@@ -103,6 +103,27 @@ class ObtainPracticeSessionTest {
             ready.items.single().cefrLevel shouldBe CefrLevel.B1
         }
 
+    // Scenario: Insignia visible sin revelar (spec: practice-session)
+    @Test
+    fun `given a phrase progress with level 3 when opening the session then the item carries that level`() =
+        runTest {
+            // Given: tanda activa con una frase A cuyo progreso tiene nivel 3
+            val practice = FakePracticeRepository(
+                activeBatch(
+                    order = listOf("A"),
+                    progress = listOf(aPhraseProgress(id = "A", level = Level(3), nextReview = tomorrow)),
+                ),
+            )
+            val catalog = loaded(aCatalogPhrase(id = "A"))
+
+            // When
+            val result = useCase(practice, catalog).invoke()
+
+            // Then
+            val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
+            ready.items.single().level shouldBe Level(3)
+        }
+
     // Scenario: Reproducción del audio en el locale de la frase (spec: phrase-audio)
     @Test
     fun `given a catalog phrase with a target locale when read then the practice item carries that locale`() =

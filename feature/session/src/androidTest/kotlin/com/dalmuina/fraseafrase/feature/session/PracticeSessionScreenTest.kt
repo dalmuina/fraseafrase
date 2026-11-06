@@ -13,6 +13,7 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import org.junit.Assert.assertTrue
@@ -268,5 +269,6 @@ class PracticeSessionScreenTest {
         cefrLevel = cefrLevel,
         streak = Streak(streak),
         isKnown = isKnown,
+        level = Level(0),
     )
 }

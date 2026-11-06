@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 
@@ -41,6 +42,7 @@ data class PracticeItem(
     val cefrLevel: CefrLevel,
     val streak: Streak,
     val isKnown: Boolean,
+    val level: Level,
 ) {
 
     companion object {
