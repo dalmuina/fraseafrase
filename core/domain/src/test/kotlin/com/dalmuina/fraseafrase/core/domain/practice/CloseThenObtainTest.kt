@@ -41,8 +41,8 @@ class CloseThenObtainTest {
         practiceRepository = practice,
     )
 
-    private suspend fun close(practice: FakePracticeRepository, expected: Int) =
-        CloseActiveBatch(practice, ResolveBatchClosure(clock)).invoke(expected)
+    private suspend fun close(practice: FakePracticeRepository) =
+        ForceCloseActiveBatch(practice, ResolveBatchClosure(clock)).invoke()
 
     // Certificada hoy, con repaso mañana: no vuelve a entrar en la tanda siguiente
     private fun certified(id: String) = aPhraseProgress(
@@ -65,7 +65,7 @@ class CloseThenObtainTest {
                 carry = CarryQueue(emptyList()),
             ),
         )
-        close(practice, expected = 0)
+        close(practice)
 
         // When
         val result = ObtainActiveBatch(
@@ -91,7 +91,7 @@ class CloseThenObtainTest {
                 carry = CarryQueue(emptyList()),
             ),
         )
-        close(practice, expected = 0)
+        close(practice)
 
         // When
         val first = obtain(practice).invoke()

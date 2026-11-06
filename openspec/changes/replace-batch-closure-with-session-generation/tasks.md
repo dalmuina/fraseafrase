@@ -20,67 +20,67 @@
 
 ## 2. Dominio: generar sesión
 
-- [ ] 2.1 Test: nuevo caso de uso `GenerateSession` resuelve la tanda activa (certifica, arrastra) y compone la
+- [x] 2.1 Test: nuevo caso de uso `GenerateSession` resuelve la tanda activa (certifica, arrastra) y compone la
   siguiente en la misma transacción, sin `expectedUncertified`, según "Generar sesión resuelve y compone en un
   paso" y "La cola sobrante va antes que las arrastradas de este cierre" de `specs/practice-batch/spec.md`.
   Verificación: el test falla por ausencia de la clase.
-- [ ] 2.2 Implementar `GenerateSession` en `core/domain/.../practice/`, extrayendo a una función interna
+- [x] 2.2 Implementar `GenerateSession` en `core/domain/.../practice/`, extrayendo a una función interna
   compartida la parte común con `ForceCloseActiveBatch` (mover entradas a la cola, con o sin resolución previa
   de cierre; design D4). Retirar `CloseActiveBatch`. Verificación: tests de 2.1 en verde.
-- [ ] 2.3 Test: "Tanda completa tras responder a todas sus frases" y "Tanda incompleta con una frase sin
+- [x] 2.3 Test: "Tanda completa tras responder a todas sus frases" y "Tanda incompleta con una frase sin
   responder" de `specs/practice-batch/spec.md`, sobre el resultado de `ObtainPracticeSession`. Verificación:
   falla por ausencia del estado derivado.
-- [ ] 2.4 Añadir a `PracticeSessionResult`/`ObtainPracticeSession` el estado derivado de tanda completa (design
+- [x] 2.4 Añadir a `PracticeSessionResult`/`ObtainPracticeSession` el estado derivado de tanda completa (design
   D7). Verificación: tests de 2.3 en verde.
 
 ## 3. Dominio: regeneración por cambio de nivel CEFR
 
-- [ ] 3.1 Test: nuevo caso de uso `RegenerateActiveBatchForLevel` no certifica ni cambia nivel/`nextReview`, y
+- [x] 3.1 Test: nuevo caso de uso `RegenerateActiveBatchForLevel` no certifica ni cambia nivel/`nextReview`, y
   mueve las entradas de la tanda activa a la cola de arrastradas delante de la cola sobrante, componiendo la
   siguiente con el nuevo CEFR y las mismas cuotas, según los escenarios de "Regeneración de la tanda activa por
   cambio de nivel CEFR" de `specs/practice-batch/spec.md`. Verificación: falla por ausencia de la clase.
-- [ ] 3.2 Implementar `RegenerateActiveBatchForLevel` en `core/domain/.../practice/`, reutilizando la función
+- [x] 3.2 Implementar `RegenerateActiveBatchForLevel` en `core/domain/.../practice/`, reutilizando la función
   interna compartida de 2.2 sin la resolución de cierre. Verificación: tests de 3.1 en verde.
 
 ## 4. Design system: nombre de insignia reutilizable
 
-- [ ] 4.1 Test: `DsLevelBadgeTest` (o test de la nueva función) para `levelBadgeLabel(level)` con los cinco
+- [x] 4.1 Test: `DsLevelBadgeTest` (o test de la nueva función) para `levelBadgeLabel(level)` con los cinco
   niveles y `null` en 0 y fuera de rango. Verificación: falla por no existir la función pública.
-- [ ] 4.2 Extraer la tabla nivel→nombre de `levelBadgeSpec` a `levelBadgeLabel(level: Int): String?` pública en
+- [x] 4.2 Extraer la tabla nivel→nombre de `levelBadgeSpec` a `levelBadgeLabel(level: Int): String?` pública en
   `DsLevelBadge.kt` (design D6), sin cambiar el comportamiento visual de `DsLevelBadge`. Verificación: tests de
   4.1 en verde; previews de `DsLevelBadge` sin cambios.
 
 ## 5. Presentación: práctica (feature:session)
 
-- [ ] 5.1 Test: `PracticeSessionViewModelTest` para el nuevo estado de tanda completa y la acción
+- [x] 5.1 Test: `PracticeSessionViewModelTest` para el nuevo estado de tanda completa y la acción
   `GenerateSession` (sustituye a `RequestClose`/`CancelClose`/`ConfirmClose`), según "Mensaje de tanda completada
   y generación de sesión" de `specs/practice-session/spec.md`. Verificación: falla por ausencia del estado y la
   acción.
-- [ ] 5.2 Actualizar `PracticeSessionUiState` (sustituir `closeWarning: Int?`, design D7) y
+- [x] 5.2 Actualizar `PracticeSessionUiState` (sustituir `closeWarning: Int?`, design D7) y
   `PracticeSessionAction` (sustituir `RequestClose`/`CancelClose`/`ConfirmClose` por `GenerateSession`).
   Actualizar `PracticeSessionViewModel` para usar `GenerateSession` y el nuevo estado derivado. Verificación:
   tests de 5.1 en verde.
-- [ ] 5.3 Test: contador "aciertos para el próximo nivel" en el `ViewModel` o en una función pura de
+- [x] 5.3 Test: contador "aciertos para el próximo nivel" en el `ViewModel` o en una función pura de
   presentación, para los escenarios de "Aciertos para el próximo nivel visibles" de
   `specs/practice-session/spec.md` (incluidos racha 3 y nivel máximo). Verificación: falla por ausencia del
   cálculo.
-- [ ] 5.4 Implementar el cálculo `max(0, 3 - racha)` aciertos para la insignia `min(nivel + 1, 5)`, usando
+- [x] 5.4 Implementar el cálculo `max(0, 3 - racha)` aciertos para la insignia `min(nivel + 1, 5)`, usando
   `levelBadgeLabel` de 4.2. Verificación: tests de 5.3 en verde.
-- [ ] 5.5 Actualizar `PracticeSessionScreen.kt` (`PhraseCard`): quitar los textos "Racha %d" y "Sabida"; mostrar
+- [x] 5.5 Actualizar `PracticeSessionScreen.kt` (`PhraseCard`): quitar los textos "Racha %d" y "Sabida"; mostrar
   el mensaje de tanda completada con el botón de generar sesión en vez del diálogo de aviso; mostrar el nuevo
   contador. Actualizar `strings.xml` (retirar `practice_streak` y `practice_known`; añadir las cadenas nuevas).
   Verificación: `./gradlew :feature:session:testDebugUnitTest` en verde.
-- [ ] 5.6 Actualizar `feature/session/src/test/.../PracticeSessionCloseTest.kt` para el nuevo `GenerateSession`
+- [x] 5.6 Actualizar `feature/session/src/test/.../PracticeSessionCloseTest.kt` para el nuevo `GenerateSession`
   (sustituye el cierre en dos pasos por el paso único; retirar lo que ya no aplique por la ausencia de
   `expectedUncertified`/`Stale`). Verificación: el test se ejecuta sobre `GenerateSession`, no sobre
   `CloseActiveBatch`, y pasa.
-- [ ] 5.7 Test de pantalla (`androidTest`): actualizar `PracticeSessionScreenTest.kt` retirando los casos sobre
+- [x] 5.7 Test de pantalla (`androidTest`): actualizar `PracticeSessionScreenTest.kt` retirando los casos sobre
   "Racha N"/"Sabida" y el diálogo de cierre, y añadiendo los nuevos escenarios de
   `specs/practice-session/spec.md` ("Tanda completa muestra el mensaje positivo", "Generar sesión muestra la
   tanda siguiente con sus arrastradas primero", "Contador visible tras un acierto", "Racha de tres sigue
   mostrando el contador en 0", "Nivel máximo sigue mostrando el contador"). Verificación: los tests fallan antes
   de 5.5 (elementos de UI inexistentes) y pasan después.
-- [ ] 5.8 Actualizar `PracticeSessionRouteTest.kt`, que hoy importa `CloseActiveBatch` (retirado en 2.2), para
+- [x] 5.8 Actualizar `PracticeSessionRouteTest.kt`, que hoy importa `CloseActiveBatch` (retirado en 2.2), para
   que compile y pase con el nuevo caso de uso. Verificación:
   `./gradlew :feature:session:connectedDebugAndroidTest` compila y pasa.
 

@@ -3,19 +3,11 @@
     <string name="practice_reveal">Mostrar traducción</string>
     <string name="practice_hit">Acierto</string>
     <string name="practice_miss">Fallo</string>
-    <string name="practice_known">Sabida</string>
-    <string name="practice_streak">Racha %1$d</string>
     <string name="practice_position">%1$d de %2$d</string>
-    <string name="practice_close">Cerrar tanda</string>
-    <string name="practice_close_title">Cerrar la tanda</string>
-    <string name="practice_close_confirm">Confirmar</string>
-    <string name="practice_close_cancel">Cancelar</string>
     <string name="practice_nothing_to_practice">No hay frases para practicar</string>
     <string name="practice_catalog_error">No se puede practicar: el catálogo no se pudo cargar</string>
     <string name="practice_listen">Escuchar</string>
-
-    <plurals name="practice_close_warning">
-        <item quantity="one">%1$d frase pasará a la siguiente tanda</item>
-        <item quantity="other">%1$d frases pasarán a la siguiente tanda</item>
-    </plurals>
+    <string name="practice_remaining_hits_for_next_level">Te faltan %1$d aciertos para la insignia %2$s</string>
+    <string name="practice_batch_completed">¡Has completado la tanda!</string>
+    <string name="practice_generate_session">Generar sesión</string>
 </resources>

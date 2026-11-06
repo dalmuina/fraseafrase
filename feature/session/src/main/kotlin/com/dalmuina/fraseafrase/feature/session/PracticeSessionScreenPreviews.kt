@@ -10,19 +10,19 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 
-/** Frase sabida (racha 3): se muestra la marca de sabida. */
-private val knownItem = PracticeItem(
+/** Frase cerca de certificarse (racha 1, nivel 0): le faltan 2 aciertos para la insignia "Bronce". */
+private val almostCertifiedItem = PracticeItem(
     id = PhraseId("A"),
     source = "Buenos días",
     target = "Bom dia",
     targetLocale = LanguageTag("pt-PT"),
     cefrLevel = CefrLevel.A1,
-    streak = Streak(3),
-    isKnown = true,
+    streak = Streak(1),
+    isKnown = false,
     level = Level(0),
 )
 
-/** Frase nueva, sin racha ni marca. */
+/** Frase nueva, sin racha. */
 private val newItem = PracticeItem(
     id = PhraseId("B"),
     source = "Gracias",
@@ -48,12 +48,14 @@ private fun PracticeSessionScreenHiddenPreview() {
     AppTheme {
         PracticeSessionScreen(
             uiState = PracticeSessionUiState.Practicing(
-                current = knownItem,
+                current = almostCertifiedItem,
                 revealed = false,
                 busy = false,
-                closeWarning = null,
+                completed = false,
                 index = 1,
                 total = 2,
+                remainingHitsForNextLevel = 2,
+                nextLevelBadgeLabel = "Bronce",
             ),
             onAction = {},
         )
@@ -69,9 +71,11 @@ private fun PracticeSessionScreenRevealedPreview() {
                 current = newItem,
                 revealed = true,
                 busy = false,
-                closeWarning = null,
+                completed = false,
                 index = 2,
                 total = 2,
+                remainingHitsForNextLevel = 3,
+                nextLevelBadgeLabel = "Bronce",
             ),
             onAction = {},
         )
@@ -80,16 +84,18 @@ private fun PracticeSessionScreenRevealedPreview() {
 
 @PreviewLightDark
 @Composable
-private fun PracticeSessionScreenCloseWarningPreview() {
+private fun PracticeSessionScreenCompletedPreview() {
     AppTheme {
         PracticeSessionScreen(
             uiState = PracticeSessionUiState.Practicing(
                 current = newItem,
-                revealed = true,
+                revealed = false,
                 busy = false,
-                closeWarning = 3,
+                completed = true,
                 index = 2,
                 total = 2,
+                remainingHitsForNextLevel = 3,
+                nextLevelBadgeLabel = "Bronce",
             ),
             onAction = {},
         )

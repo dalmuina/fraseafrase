@@ -2,11 +2,12 @@ package com.dalmuina.fraseafrase.feature.session
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dalmuina.fraseafrase.core.designsystem.component.levelBadgeLabel
 import com.dalmuina.fraseafrase.core.domain.audio.PlayPhraseAudio
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
-import com.dalmuina.fraseafrase.core.domain.practice.CloseActiveBatch
-import com.dalmuina.fraseafrase.core.domain.practice.CloseBatchResult
+import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
+import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSessionResult
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class PracticeSessionViewModel @Inject constructor(
     private val obtainPracticeSession: ObtainPracticeSession,
     private val answerPhrase: AnswerPhrase,
-    private val closeActiveBatch: CloseActiveBatch,
+    private val generateSession: GenerateSession,
     private val playPhraseAudio: PlayPhraseAudio,
 ) : ViewModel() {
 
@@ -45,62 +46,37 @@ class PracticeSessionViewModel @Inject constructor(
             PracticeSessionAction.Reveal -> reveal()
             is PracticeSessionAction.Answer -> answer(action.assessment)
             PracticeSessionAction.PlayAudio -> playAudio()
-            PracticeSessionAction.RequestClose -> requestClose()
-            PracticeSessionAction.CancelClose -> cancelClose()
-            PracticeSessionAction.ConfirmClose -> confirmClose()
+            PracticeSessionAction.GenerateSession -> requestGenerateSession()
             // Vuelve a leer la sesión al entrar en la pestaña (design D4). Solo sustituye el estado si la tanda
             // leída (frase actual, orden y tamaño) difiere de la ya cargada; si es la misma, no toca `revealed`,
-            // `busy`, `closeWarning` ni `index`.
+            // `busy`, `completed` ni `index`.
             PracticeSessionAction.Resume -> viewModelScope.launch { reload(onlyIfChanged = true) }
         }
     }
 
     /**
-     * Abre el aviso con el número de frases no certificadas que devuelve una lectura fresca de la sesión (design D3,
-     * D4). Se ignora mientras hay una respuesta en curso (`busy`). Cero también se acepta. Si la respuesta empieza
-     * durante la lectura, el aviso no se abre.
+     * Genera la sesión siguiente: resuelve la tanda activa (certifica, arrastra) y compone la siguiente en un solo
+     * paso (design D3 de `replace-batch-closure-with-session-generation`). Se ignora mientras hay una respuesta en
+     * curso (`busy`).
      */
-    private fun requestClose() {
+    private fun requestGenerateSession() {
         val state = currentPracticing() ?: return
         if (state.busy) return
+        _uiState.value = state.copy(busy = true)
         viewModelScope.launch {
-            val session = obtainPracticeSession()
-            val current = currentPracticing() ?: return@launch
-            if (current.busy) return@launch
-            _uiState.value = when (session) {
-                is PracticeSessionResult.Ready -> current.copy(closeWarning = session.uncertifiedCount)
-                is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
-                PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
-            }
+            generateSession()
+            reload()
         }
     }
 
-    private fun cancelClose() = updatePracticing { copy(closeWarning = null) }
-
-    /**
-     * Cierra la tanda con el número que mostró el aviso (D4). Se ignora sin aviso abierto, así que un doble toque no
-     * cierra dos veces. El diálogo se cierra y `busy` evita otra acción mientras se cierra.
-     */
-    private fun confirmClose() {
-        val state = currentPracticing() ?: return
-        val expected = state.closeWarning ?: return
-        _uiState.value = state.copy(busy = true, closeWarning = null)
-        viewModelScope.launch {
-            when (closeActiveBatch(expected)) {
-                // Stale y NoActiveBatch no son errores: se recarga la tanda guardada (spec: practice-session).
-                CloseBatchResult.Closed, CloseBatchResult.Stale, CloseBatchResult.NoActiveBatch -> reload()
-            }
-        }
-    }
-
-    /** Revelar se ignora con una respuesta en curso (`busy`) o con el aviso de cierre abierto (design D3). */
+    /** Revelar se ignora con una respuesta en curso (`busy`) o con la tanda completada (design D3). */
     private fun reveal() = updatePracticing {
-        if (busy || closeWarning != null) this else copy(revealed = true)
+        if (busy || completed) this else copy(revealed = true)
     }
 
     /**
      * Registra la autoevaluación de la frase revelada. Se ignora sin revelar, mientras hay una respuesta en curso
-     * (`busy`) y con el aviso de cierre abierto (spec: practice-session; design D3).
+     * (`busy`) y con la tanda completada (spec: practice-session; design D3).
      */
     private fun answer(assessment: SelfAssessment) {
         val state = currentPracticing() ?: return
@@ -114,7 +90,7 @@ class PracticeSessionViewModel @Inject constructor(
         }
     }
 
-    /** Escuchar se ignora sin revelar, con una respuesta en curso (`busy`) o con el aviso de cierre abierto. */
+    /** Escuchar se ignora sin revelar, con una respuesta en curso (`busy`) o con la tanda completada. */
     private fun playAudio() {
         val state = currentPracticing() ?: return
         if (state.isAnswerable()) {
@@ -134,24 +110,29 @@ class PracticeSessionViewModel @Inject constructor(
 
     /**
      * Vuelve a leer la sesión y reemplaza el estado. Sin [previous], el contador de posición arranca en 1 (carga
-     * inicial o recarga tras cierre). Con [previous], avanza el contador a partir de su `index`/`total` (design D1):
-     * sube en uno, o vuelve a 1 si se completó la vuelta a la tanda; `total` se recalcula con la lectura fresca.
-     * Con [onlyIfChanged], no reemplaza el estado si la tanda leída es igual a la ya cargada (design D4 de
-     * `add-settings-apply-flow`).
+     * inicial o recarga tras generar sesión). Con [previous], avanza el contador a partir de su `index`/`total`
+     * (design D1): sube en uno, o vuelve a 1 si se completó la vuelta a la tanda; `total` se recalcula con la
+     * lectura fresca. Con [onlyIfChanged], no reemplaza el estado si la tanda leída es igual a la ya cargada (design
+     * D4 de `add-settings-apply-flow`).
      */
     private suspend fun reload(previous: PracticeSessionUiState.Practicing? = null, onlyIfChanged: Boolean = false) {
         val session = obtainPracticeSession()
         if (onlyIfChanged && session.hasSameBatchAs(loadedBatchIds)) return
         if (session is PracticeSessionResult.Ready) loadedBatchIds = session.items.map { it.id }
         _uiState.value = when (session) {
-            is PracticeSessionResult.Ready -> PracticeSessionUiState.Practicing(
-                current = session.items.first(),
-                revealed = false,
-                busy = false,
-                closeWarning = null,
-                index = previous.nextIndex().coerceAtMost(session.items.size),
-                total = session.items.size,
-            )
+            is PracticeSessionResult.Ready -> {
+                val current = session.items.first()
+                PracticeSessionUiState.Practicing(
+                    current = current,
+                    revealed = false,
+                    busy = false,
+                    completed = session.isComplete,
+                    index = previous.nextIndex().coerceAtMost(session.items.size),
+                    total = session.items.size,
+                    remainingHitsForNextLevel = current.remainingHitsForNextLevel(),
+                    nextLevelBadgeLabel = current.nextLevelBadgeLabel(),
+                )
+            }
             PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
             is PracticeSessionResult.CatalogFailed -> PracticeSessionUiState.CatalogError
         }
@@ -169,4 +150,21 @@ private fun PracticeSessionUiState.Practicing?.nextIndex(): Int = when {
 }
 
 private fun PracticeSessionUiState.Practicing.isAnswerable(): Boolean =
-    revealed && !busy && closeWarning == null
+    revealed && !busy && !completed
+
+/** Aciertos consecutivos que le faltan a la frase para certificar la racha de la tanda (spec: practice-session). */
+private const val HITS_TO_CERTIFY = 3
+
+/** Nivel de consolidación máximo (spec: practice-session, ADR-0012/ADR-0015). */
+private const val MAX_CONSOLIDATION_LEVEL = 5
+
+/** Cuántos aciertos consecutivos le faltan a esta frase para la insignia del siguiente nivel. */
+private fun PracticeItem.remainingHitsForNextLevel(): Int = (HITS_TO_CERTIFY - streak.value).coerceAtLeast(0)
+
+/** Nombre de la insignia del siguiente nivel de consolidación de esta frase (ADR-0010: UI usa `Int`, no `Level`). */
+private fun PracticeItem.nextLevelBadgeLabel(): String {
+    val nextLevel = (level.value + 1).coerceAtMost(MAX_CONSOLIDATION_LEVEL)
+    return requireNotNull(levelBadgeLabel(nextLevel)) {
+        "Level $nextLevel should always have a badge label"
+    }
+}

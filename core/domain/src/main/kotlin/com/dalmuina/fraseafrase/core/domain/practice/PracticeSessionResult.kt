@@ -15,9 +15,15 @@ sealed interface PracticeSessionResult {
 
     /**
      * Tanda activa con su texto, en el orden de la tanda. [uncertifiedCount] es el número de frases no certificadas
-     * que pasarían a la siguiente tanda si se cerrara ahora (aviso previo).
+     * que pasarían a la siguiente tanda si se cerrara ahora (aviso previo). [isComplete] es si el usuario ya ha dado
+     * una vuelta completa a la lista circular, es decir, si todas sus frases están respondidas (spec `practice-batch`,
+     * "Tanda completa"). Calcularlo no modifica la tanda, sus rachas ni el progreso.
      */
-    data class Ready(val items: List<PracticeItem>, val uncertifiedCount: Int) : PracticeSessionResult
+    data class Ready(
+        val items: List<PracticeItem>,
+        val uncertifiedCount: Int,
+        val isComplete: Boolean,
+    ) : PracticeSessionResult
 
     /** No hay arrastradas, pendientes ni frases nuevas: no hay nada que practicar (ADR-0012). */
     data object NothingToPractice : PracticeSessionResult

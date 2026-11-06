@@ -225,7 +225,7 @@ class ObtainPracticeSessionTest {
             ),
         )
         val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"))
-        CloseActiveBatch(practice, ResolveBatchClosure(FixedClock(today))).invoke(expectedUncertified = 0)
+        ForceCloseActiveBatch(practice, ResolveBatchClosure(FixedClock(today))).invoke()
 
         // When
         val result = useCase(practice, catalog).invoke()
@@ -350,6 +350,48 @@ class ObtainPracticeSessionTest {
 
         // Then
         result.shouldBeInstanceOf<PracticeSessionResult.Ready>().items.single().isKnown shouldBe false
+    }
+
+    // Scenario: Tanda completa tras responder a todas sus frases (spec: practice-batch, Tanda completa)
+    @Test
+    fun `given three phrases when all of them have been answered then the batch is complete`() = runTest {
+        // Given: tanda de tres frases A, B y C, todas ya respondidas
+        val practice = FakePracticeRepository(
+            activeBatch(
+                order = listOf("A", "B", "C"),
+                progress = listOf("A", "B", "C").map { aPhraseProgress(id = it, answeredInBatch = true) },
+            ),
+        )
+        val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"), aCatalogPhrase(id = "C"))
+
+        // When
+        val result = useCase(practice, catalog).invoke()
+
+        // Then
+        result.shouldBeInstanceOf<PracticeSessionResult.Ready>().isComplete shouldBe true
+    }
+
+    // Scenario: Tanda incompleta con una frase sin responder (spec: practice-batch, Tanda completa)
+    @Test
+    fun `given three phrases when one of them has not been answered then the batch is not complete`() = runTest {
+        // Given: tanda de tres frases A, B y C, donde A y B ya fueron respondidas y C no
+        val practice = FakePracticeRepository(
+            activeBatch(
+                order = listOf("A", "B", "C"),
+                progress = listOf(
+                    aPhraseProgress(id = "A", answeredInBatch = true),
+                    aPhraseProgress(id = "B", answeredInBatch = true),
+                    aPhraseProgress(id = "C"),
+                ),
+            ),
+        )
+        val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"), aCatalogPhrase(id = "C"))
+
+        // When
+        val result = useCase(practice, catalog).invoke()
+
+        // Then
+        result.shouldBeInstanceOf<PracticeSessionResult.Ready>().isComplete shouldBe false
     }
 
     // Scenario: Asset de catálogo ilegible (spec: practice-session, Error de catálogo)

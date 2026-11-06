@@ -4,8 +4,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatchResult
-import com.dalmuina.fraseafrase.core.domain.practice.CloseActiveBatch
-import com.dalmuina.fraseafrase.core.domain.practice.CloseBatchResult
+import com.dalmuina.fraseafrase.core.domain.practice.ForceCloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
@@ -65,8 +64,8 @@ class RoomPracticeCycleTest {
         practiceRepository = source,
     ).invoke()
 
-    private suspend fun close(expected: Int): CloseBatchResult =
-        CloseActiveBatch(source, ResolveBatchClosure(clock)).invoke(expected)
+    private suspend fun close() =
+        ForceCloseActiveBatch(source, ResolveBatchClosure(clock)).invoke()
 
     // Certificada hoy, con repaso mañana: no vuelve a entrar en la tanda siguiente
     private fun certified(id: String) = aPhraseProgress(
@@ -88,14 +87,13 @@ class RoomPracticeCycleTest {
         )
         source.transact { PracticeChange(initial, Unit) }
 
-        // When: se cierra con el aviso de una no certificada y se obtiene la tanda dos veces
-        val closed = close(expected = 1)
+        // When: se cierra la tanda y se obtiene la tanda dos veces
+        close()
         val first = obtain()
         val stateAfterFirst = source.read()
         val second = obtain()
 
         // Then
-        closed shouldBe CloseBatchResult.Closed
         first.shouldBeInstanceOf<ActiveBatchResult.Created>()
         first.batch.entries.map { it.id.value } shouldContainExactly listOf("Z", "B", "C")
         second.shouldBeInstanceOf<ActiveBatchResult.Existing>()

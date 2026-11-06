@@ -271,53 +271,75 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithTag("listen_icon", useUnmergedTree = true).assertIsDisplayed()
     }
 
-    // Scenario: Aviso con frases no certificadas (spec: practice-session)
+    // Scenario: Contador visible tras un acierto (spec: practice-session)
     @Test
-    fun givenThreeUncertifiedPhrasesWhenCloseWarningIsOpenThenDialogShowsTheCount() {
-        // Given: el aviso de cierre indica tres frases no certificadas
-        setScreen(practicing(current = item(), revealed = true, closeWarning = 3))
+    fun givenPhraseWithStreak1WhenShowingItThenTheRemainingHitsCounterIsDisplayed() {
+        // Given: una frase de nivel 0 con racha 1, le faltan 2 aciertos para la insignia "Bronce"
+        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 2, nextLevelBadgeLabel = "Bronce"))
 
-        // When: el diálogo está abierto (estado dado)
+        // When: la pantalla la muestra (estado dado)
 
-        // Then: el diálogo muestra "3 frases pasarán a la siguiente tanda"
-        composeTestRule.onNodeWithText("3 frases pasarán a la siguiente tanda").assertIsDisplayed()
+        // Then: la pantalla muestra el contador
+        composeTestRule.onNodeWithText("Te faltan 2 aciertos para la insignia Bronce").assertIsDisplayed()
     }
 
-    // Scenario: Aviso sin frases no certificadas (spec: practice-session)
+    // Scenario: Racha de tres sigue mostrando el contador en 0 (spec: practice-session)
     @Test
-    fun givenNoUncertifiedPhrasesWhenCloseWarningIsOpenThenDialogShowsZero() {
-        // Given: el aviso de cierre indica cero frases no certificadas
-        setScreen(practicing(current = item(), revealed = true, closeWarning = 0))
+    fun givenPhraseWithStreak3WhenShowingItThenTheCounterShowsZero() {
+        // Given: una frase de nivel 1 con racha 3, le faltan 0 aciertos para la insignia "Plata"
+        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 0, nextLevelBadgeLabel = "Plata"))
 
-        // When: el diálogo está abierto (estado dado)
+        // When: la pantalla la muestra (estado dado)
 
-        // Then: el diálogo muestra "0 frases pasarán a la siguiente tanda"
-        composeTestRule.onNodeWithText("0 frases pasarán a la siguiente tanda").assertIsDisplayed()
+        // Then: la pantalla muestra el contador en 0
+        composeTestRule.onNodeWithText("Te faltan 0 aciertos para la insignia Plata").assertIsDisplayed()
     }
 
-    // Scenario: Aviso con una sola frase no certificada (spec: practice-session)
+    // Scenario: Nivel máximo sigue mostrando el contador (spec: practice-session)
     @Test
-    fun givenOneUncertifiedPhraseWhenCloseWarningIsOpenThenDialogUsesTheSingularForm() {
-        // Given: el aviso de cierre indica una frase no certificada
-        setScreen(practicing(current = item(), revealed = true, closeWarning = 1))
+    fun givenPhraseAtMaxLevelWhenShowingItThenTheCounterStillShows() {
+        // Given: una frase de nivel 5 con racha 3, le faltan 0 aciertos para la insignia "Diamante"
+        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 0, nextLevelBadgeLabel = "Diamante"))
 
-        // When: el diálogo está abierto (estado dado)
+        // When: la pantalla la muestra (estado dado)
 
-        // Then: el diálogo muestra la forma singular "1 frase pasará a la siguiente tanda"
-        composeTestRule.onNodeWithText("1 frase pasará a la siguiente tanda").assertIsDisplayed()
+        // Then: la pantalla sigue mostrando el contador
+        composeTestRule.onNodeWithText("Te faltan 0 aciertos para la insignia Diamante").assertIsDisplayed()
     }
 
-    // Scenario: Frase con racha 3 marcada como sabida (spec: practice-session)
+    // Scenario: Tanda completa muestra el mensaje positivo (spec: practice-session)
     @Test
-    fun givenKnownPhraseWhenShowingItThenItIsMarkedAsKnown() {
-        // Given: la frase A llega del dominio marcada como sabida (racha 3), sin revelar
-        setScreen(practicing(current = item(streak = 3, isKnown = true)))
+    fun givenCompletedBatchWhenShowingTheScreenThenThePositiveMessageIsDisplayedInsteadOfAPhrase() {
+        // Given: la tanda activa está completa
+        setScreen(practicing(current = item(), completed = true))
 
-        // When: la pantalla muestra A (estado dado)
+        // When: la pantalla se muestra (estado dado)
 
-        // Then: la pantalla marca A como sabida y muestra su racha
-        composeTestRule.onNodeWithText("Sabida").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Racha 3").assertIsDisplayed()
+        // Then: se muestra el mensaje positivo con la opción de generar sesión, no la frase
+        composeTestRule.onNodeWithText("¡Has completado la tanda!").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Generar sesión").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Buenos días").assertDoesNotExist()
+    }
+
+    // Scenario: Generar sesión muestra la tanda siguiente con sus arrastradas primero (spec: practice-session)
+    @Test
+    fun givenCompletedBatchWhenGeneratingSessionThenOnActionReceivesGenerateSession() {
+        // Given: la tanda activa está completa, con el mensaje positivo visible
+        var receivedAction: PracticeSessionAction? = null
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = practicing(current = item(), completed = true),
+                    onAction = { action -> receivedAction = action },
+                )
+            }
+        }
+
+        // When: el usuario pide generar sesión
+        composeTestRule.onNodeWithText("Generar sesión").performClick()
+
+        // Then: se despacha GenerateSession
+        assertTrue(receivedAction == PracticeSessionAction.GenerateSession)
     }
 
     // Scenario: Estado vacío sin frases disponibles (spec: practice-session)
@@ -333,16 +355,16 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Mostrar traducción").assertDoesNotExist()
     }
 
-    // Scenario: Cerrar mientras hay una respuesta en curso no abre el aviso (spec: practice-session)
+    // Scenario: Mientras hay una respuesta en curso pedir generar sesión no tiene efecto (spec: practice-session)
     @Test
-    fun givenAnswerInProgressWhenShowingTheScreenThenTheCloseButtonIsDisabled() {
-        // Given: una frase revelada cuya autoevaluación se está registrando (busy = true)
-        setScreen(practicing(current = item(), revealed = true, busy = true))
+    fun givenAnswerInProgressWhenShowingTheScreenThenTheGenerateSessionButtonIsDisabled() {
+        // Given: la tanda está completa y, además, una autoevaluación se está registrando (busy = true)
+        setScreen(practicing(current = item(), busy = true, completed = true))
 
         // When: la pantalla muestra el estado con la respuesta en curso (estado dado)
 
-        // Then: el botón de cerrar la tanda está deshabilitado, así que no se puede pedir el cierre
-        composeTestRule.onNodeWithText("Cerrar tanda").assertIsNotEnabled()
+        // Then: el botón de generar sesión está deshabilitado
+        composeTestRule.onNodeWithText("Generar sesión").assertIsNotEnabled()
     }
 
     private fun setScreen(uiState: PracticeSessionUiState) {
@@ -357,14 +379,16 @@ class PracticeSessionScreenTest {
         current: PracticeItem = item(),
         revealed: Boolean = false,
         busy: Boolean = false,
-        closeWarning: Int? = null,
+        completed: Boolean = false,
     ): PracticeSessionUiState.Practicing = PracticeSessionUiState.Practicing(
         current = current,
         revealed = revealed,
         busy = busy,
-        closeWarning = closeWarning,
+        completed = completed,
         index = 1,
         total = 1,
+        remainingHitsForNextLevel = 0,
+        nextLevelBadgeLabel = "Bronce",
     )
 
     /** Frase de presentación. `isKnown` lo decide el dominio (`ObtainPracticeSession`); aquí se pasa tal cual. */

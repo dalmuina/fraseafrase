@@ -55,39 +55,52 @@ private const val LEVEL_ORO = 3
 private const val LEVEL_PLATINO = 4
 private const val LEVEL_DIAMANTE = 5
 
-@Composable
-private fun levelBadgeSpec(level: Int): LevelBadgeSpec? = when (level) {
-    LEVEL_BRONCE -> LevelBadgeSpec(
-        icon = Icons.Filled.MilitaryTech,
-        iconTestTag = "ds-level-badge-icon-military-tech-bronce",
-        tint = MaterialTheme.colorScheme.tertiary,
-        label = "Bronce"
-    )
-    LEVEL_PLATA -> LevelBadgeSpec(
-        icon = Icons.Filled.MilitaryTech,
-        iconTestTag = "ds-level-badge-icon-military-tech-plata",
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        label = "Plata"
-    )
-    LEVEL_ORO -> LevelBadgeSpec(
-        icon = Icons.Filled.WorkspacePremium,
-        iconTestTag = "ds-level-badge-icon-workspace-premium-oro",
-        tint = MaterialTheme.colorScheme.primary,
-        label = "Oro"
-    )
-    LEVEL_PLATINO -> LevelBadgeSpec(
-        icon = Icons.Filled.WorkspacePremium,
-        iconTestTag = "ds-level-badge-icon-workspace-premium-platino",
-        tint = MaterialTheme.colorScheme.secondary,
-        label = "Platino"
-    )
-    LEVEL_DIAMANTE -> LevelBadgeSpec(
-        icon = Icons.Filled.Diamond,
-        iconTestTag = "ds-level-badge-icon-diamond-diamante",
-        tint = MaterialTheme.colorScheme.tertiaryContainer,
-        label = "Diamante"
-    )
+/** Nombre de insignia de un nivel de consolidación de 1 a 5, o `null` fuera de rango (design D6). */
+fun levelBadgeLabel(level: Int): String? = when (level) {
+    LEVEL_BRONCE -> "Bronce"
+    LEVEL_PLATA -> "Plata"
+    LEVEL_ORO -> "Oro"
+    LEVEL_PLATINO -> "Platino"
+    LEVEL_DIAMANTE -> "Diamante"
     else -> null
+}
+
+@Composable
+private fun levelBadgeSpec(level: Int): LevelBadgeSpec? {
+    val label = levelBadgeLabel(level) ?: return null
+    return when (level) {
+        LEVEL_BRONCE -> LevelBadgeSpec(
+            icon = Icons.Filled.MilitaryTech,
+            iconTestTag = "ds-level-badge-icon-military-tech-bronce",
+            tint = MaterialTheme.colorScheme.tertiary,
+            label = label
+        )
+        LEVEL_PLATA -> LevelBadgeSpec(
+            icon = Icons.Filled.MilitaryTech,
+            iconTestTag = "ds-level-badge-icon-military-tech-plata",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            label = label
+        )
+        LEVEL_ORO -> LevelBadgeSpec(
+            icon = Icons.Filled.WorkspacePremium,
+            iconTestTag = "ds-level-badge-icon-workspace-premium-oro",
+            tint = MaterialTheme.colorScheme.primary,
+            label = label
+        )
+        LEVEL_PLATINO -> LevelBadgeSpec(
+            icon = Icons.Filled.WorkspacePremium,
+            iconTestTag = "ds-level-badge-icon-workspace-premium-platino",
+            tint = MaterialTheme.colorScheme.secondary,
+            label = label
+        )
+        LEVEL_DIAMANTE -> LevelBadgeSpec(
+            icon = Icons.Filled.Diamond,
+            iconTestTag = "ds-level-badge-icon-diamond-diamante",
+            tint = MaterialTheme.colorScheme.tertiaryContainer,
+            label = label
+        )
+        else -> null
+    }
 }
 
 @PreviewLightDark

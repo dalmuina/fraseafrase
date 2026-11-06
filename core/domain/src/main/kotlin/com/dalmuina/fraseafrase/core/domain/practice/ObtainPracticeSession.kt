@@ -32,6 +32,7 @@ class ObtainPracticeSession @Inject constructor(
                     PracticeSessionResult.Ready(
                         items = practiceItems,
                         uncertifiedCount = batch.uncertifiedCount(),
+                        isComplete = batch.entries.all { it.answeredInBatch },
                     )
                 }
             }
