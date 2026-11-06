@@ -54,6 +54,6 @@
 
 ## 5. Verificación final
 
-- [ ] 5.1 Ejecutar `./gradlew check` y `./gradlew koverVerify`; verificar que ambos terminan en verde
+- [x] 5.1 Ejecutar `./gradlew check` y `./gradlew koverVerify`; verificar que ambos terminan en verde
   sin bajar los mínimos de cobertura de `:core:domain`, `:core:designsystem`, `:feature:session` y
   `:feature:progress`.
