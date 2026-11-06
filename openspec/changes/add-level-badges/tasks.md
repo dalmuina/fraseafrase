@@ -31,16 +31,16 @@
 
 ## 3. Practicar: insignia de la frase actual
 
-- [ ] 3.1 Test: en `PracticeSessionScreenTest` (Compose UI test, `androidTest`), una tanda cuya
+- [x] 3.1 Test: en `PracticeSessionScreenTest` (Compose UI test, `androidTest`), una tanda cuya
   primera frase tiene nivel de consolidación 2 muestra la insignia "Plata" junto al nivel CEFR (spec
   `practice-session`, escenario "Insignia visible sin revelar"); verificar que el test falla porque
   la pantalla no pinta ninguna insignia.
-- [ ] 3.2 Implementación: `PracticeSessionScreen` pinta `DsLevelBadge(current.level.value)` junto al
+- [x] 3.2 Implementación: `PracticeSessionScreen` pinta `DsLevelBadge(current.level.value)` junto al
   nivel CEFR existente; verificar que 3.1 pasa.
-- [ ] 3.3 Test: `PracticeSessionScreenTest` comprueba que al autoevaluar y pasar a la siguiente
+- [x] 3.3 Test: `PracticeSessionScreenTest` comprueba que al autoevaluar y pasar a la siguiente
   frase la insignia cambia con ella (spec `practice-session`, escenario "La insignia cambia con la
   frase mostrada"); verificar que pasa sin cambios adicionales de implementación.
-- [ ] 3.4 Test: `PracticeSessionScreenTest` comprueba que una frase de nivel 0 no muestra ninguna
+- [x] 3.4 Test: `PracticeSessionScreenTest` comprueba que una frase de nivel 0 no muestra ninguna
   insignia (spec `practice-session`, escenario "Sin insignia en nivel 0"); verificar que pasa.
 
 ## 4. Progreso: insignia por fila de nivel

@@ -146,6 +146,63 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("B1").assertIsDisplayed()
     }
 
+    // Scenario: Insignia visible sin revelar (spec: practice-session)
+    @Test
+    fun givenPhraseWithConsolidationLevel2_whenScreenShown_thenSilverBadgeIsDisplayed() {
+        // Given: una tanda activa cuya primera frase tiene nivel de consolidación 2
+        setScreen(practicing(current = item().copy(level = Level(2)), revealed = false))
+
+        // When: el usuario abre la pantalla de práctica (estado dado)
+
+        // Then: la pantalla muestra la insignia "Plata" junto al nivel CEFR
+        composeTestRule.onNodeWithText("Plata").assertIsDisplayed()
+    }
+
+    // Scenario: La insignia cambia con la frase mostrada (spec: practice-session)
+    @Test
+    fun givenPhraseAShown_whenAssessingAndMovingToPhraseB_thenBadgeChangesWithIt() {
+        // Given: una tanda con la frase A de nivel de consolidación 1 y la frase B de nivel de consolidación 5
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item().copy(level = Level(1)), revealed = true),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action is PracticeSessionAction.Answer) {
+                            uiState = practicing(current = item().copy(level = Level(5)), revealed = false)
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("Bronce").assertIsDisplayed()
+
+        // When: el usuario autoevalúa A y la pantalla pasa a mostrar B
+        composeTestRule.onNodeWithText("Acierto").performClick()
+
+        // Then: la pantalla muestra la insignia "Diamante"
+        composeTestRule.onNodeWithText("Diamante").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Bronce").assertDoesNotExist()
+    }
+
+    // Scenario: Sin insignia en nivel 0 (spec: practice-session)
+    @Test
+    fun givenPhraseWithConsolidationLevel0_whenScreenShown_thenNoBadgeIsDisplayed() {
+        // Given: una frase nueva con nivel de consolidación 0
+        setScreen(practicing(current = item().copy(level = Level(0))))
+
+        // When: la pantalla la muestra (estado dado)
+
+        // Then: la pantalla no muestra ninguna insignia para esa frase
+        composeTestRule.onNodeWithText("Bronce").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Plata").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Oro").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Platino").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Diamante").assertDoesNotExist()
+    }
+
     // Scenario: El control de escuchar muestra un icono de audio (spec: phrase-audio)
     @Test
     fun givenPhraseRevealed_whenScreenShown_thenListenControlShowsAudioIcon() {

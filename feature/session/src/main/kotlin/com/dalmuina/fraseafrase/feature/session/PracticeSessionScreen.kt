@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
@@ -122,7 +123,13 @@ private fun PhraseCard(
             modifier = Modifier.padding(AppTheme.spacing.l),
             verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
         ) {
-            Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelLarge)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelLarge)
+                DsLevelBadge(level = item.level.value)
+            }
             Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
             if (revealed) {
                 Text(
