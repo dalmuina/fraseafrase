@@ -153,20 +153,6 @@ class ComposeNextBatchTest {
             listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
     }
 
-    // Scenario: Sin nuevas mientras queden pendientes sin caber (spec: Composición de la tanda nueva por prioridad)
-    @Test
-    fun `given twelve pending phrases and a new phrase with size 10 when composing then no new phrase enters`() {
-        // Given
-        val progress = twelvePendingPhrases()
-        val catalog = twelvePendingIds().map { aCatalogPhrase(id = it) } + aCatalogPhrase(id = "N1")
-
-        // When
-        val result = compose(progress = progress, catalog = catalog, size = BatchSize(10))
-
-        // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe twelvePendingIds().take(10)
-    }
-
     // Scenario: Pendientes que no caben esperan sin perder nivel (spec: Composición de la tanda nueva por prioridad)
     @Test
     fun `given twelve pending phrases with size 10 when composing then the last two stay out of the batch`() {
@@ -468,6 +454,155 @@ class ComposeNextBatchTest {
         shouldThrow<IllegalArgumentException> {
             compose(progress = listOf(phrase), catalog = catalog)
         }
+    }
+
+    // Scenario: Cuotas por defecto con material suficiente (spec: Composición de la tanda nueva por cuotas)
+    @Test
+    fun `given enough carried pending mastered and new phrases when composing then quotas fill 8 8 and 4`() {
+        // Given
+        val carriedIds = (1..3).map { "C$it" }
+        val carried = carriedIds.map { aPhraseProgress(id = it) }
+        val pendingIds = (1..10).map { "P$it" }
+        val pending = pendingIds.map {
+            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        }
+        val masteredIds = (1..6).map { "M$it" }
+        val mastered = masteredIds.map {
+            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
+        }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (carriedIds + pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
+
+        // When
+        val result = compose(
+            carry = CarryQueue(ids(*carriedIds.toTypedArray())),
+            progress = carried + pending + mastered,
+            catalog = catalog,
+            size = BatchSize(20),
+        )
+
+        // Then
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it.startsWith("N") } shouldBe 8
+        entries.count { it in carriedIds || it in pendingIds } shouldBe 8
+        entries.count { it in masteredIds } shouldBe 4
+        entries.take(3) shouldBe carriedIds
+        entries.subList(3, 8) shouldBe pendingIds.take(5)
+    }
+
+    // Scenario: Reforzar corto cede su hueco a nuevas (spec: Composición de la tanda nueva por cuotas)
+    @Test
+    fun `given only five reinforce candidates with plenty of new and mastered when composing then new absorbs gap`() {
+        // Given
+        val pendingIds = (1..5).map { "P$it" }
+        val pending = pendingIds.map {
+            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        }
+        val masteredIds = (1..4).map { "M$it" }
+        val mastered = masteredIds.map {
+            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
+        }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
+
+        // When
+        val result = compose(
+            progress = pending + mastered,
+            catalog = catalog,
+            size = BatchSize(20),
+        )
+
+        // Then
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in pendingIds } shouldBe 5
+        entries.count { it.startsWith("N") } shouldBe 11
+        entries.count { it in masteredIds } shouldBe 4
+    }
+
+    // Scenario: Dominadas corto cede su hueco a reforzar (spec: Composición de la tanda nueva por cuotas)
+    @Test
+    fun `given one mastered candidate with plenty of reinforce and new when composing then reinforce absorbs gap`() {
+        // Given
+        val pendingIds = (1..20).map { "P$it" }
+        val pending = pendingIds.map {
+            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        }
+        val masteredIds = listOf("M1")
+        val mastered = masteredIds.map {
+            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
+        }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
+
+        // When
+        val result = compose(
+            progress = pending + mastered,
+            catalog = catalog,
+            size = BatchSize(20),
+        )
+
+        // Then
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in pendingIds } shouldBe 11
+        entries.count { it.startsWith("N") } shouldBe 8
+        entries.count { it in masteredIds } shouldBe 1
+    }
+
+    // Scenario: Cálculo de las cuotas con N igual a 20 (spec: Composición de la tanda nueva por cuotas)
+    @Test
+    fun `given size 20 when computing quotas then new is 8 reinforce is 8 and mastered is 4`() {
+        // Given
+        val pendingIds = (1..20).map { "P$it" }
+        val pending = pendingIds.map {
+            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        }
+        val masteredIds = (1..20).map { "M$it" }
+        val mastered = masteredIds.map {
+            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
+        }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
+
+        // When
+        val result = compose(
+            progress = pending + mastered,
+            catalog = catalog,
+            size = BatchSize(20),
+        )
+
+        // Then
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in pendingIds } shouldBe 8
+        entries.count { it.startsWith("N") } shouldBe 8
+        entries.count { it in masteredIds } shouldBe 4
+    }
+
+    // Scenario: Dominada sin repaso pendiente entra en dominadas (spec: Frases dominadas disponibles para repaso)
+    @Test
+    fun `given a mastered phrase without a pending review when composing then it enters as mastered`() {
+        // Given
+        val mastered = aPhraseProgress(id = "M", level = Level(5), nextReview = LocalDate.of(2026, 3, 20))
+        val catalog = listOf(aCatalogPhrase(id = "M"))
+
+        // When
+        val result = compose(progress = listOf(mastered), catalog = catalog)
+
+        // Then
+        result.composed().batch.entries.map { it.id.value } shouldBe listOf("M")
+    }
+
+    // Scenario: Dominada pendiente hoy cuenta como a reforzar (spec: Frases dominadas disponibles para repaso ligero)
+    @Test
+    fun `given a mastered phrase pending today when composing then it enters only once as reinforce`() {
+        // Given
+        val masteredPending = aPhraseProgress(id = "M", level = Level(4), nextReview = today)
+        val catalog = listOf(aCatalogPhrase(id = "M"))
+
+        // When
+        val result = compose(progress = listOf(masteredPending), catalog = catalog)
+
+        // Then
+        result.composed().batch.entries.map { it.id.value } shouldBe listOf("M")
     }
 
     private fun twelvePendingIds(): List<String> = (1..12).map { "P%02d".format(it) }

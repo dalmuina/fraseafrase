@@ -2,20 +2,20 @@
 
 ## 1. Dominio: composición de la tanda por cuotas
 
-- [ ] 1.1 Test: `ComposeNextBatchTest` para el cálculo de cuotas con N=20 (8/8/4) y para el reparto de hueco
+- [x] 1.1 Test: `ComposeNextBatchTest` para el cálculo de cuotas con N=20 (8/8/4) y para el reparto de hueco
   cuando un bloque no tiene suficientes candidatos (reforzar corto → nuevas; dominadas corto → reforzar), según
   los escenarios de `specs/practice-batch/spec.md` ("Cuotas por defecto...", "Reforzar corto...", "Dominadas
   corto..."). Verificación: los tests fallan por ausencia de la lógica de cuotas, no por otro motivo.
-- [ ] 1.2 Implementar las cuotas en `ComposeNextBatch` (bloques nuevas / a reforzar / dominadas, con el reparto
+- [x] 1.2 Implementar las cuotas en `ComposeNextBatch` (bloques nuevas / a reforzar / dominadas, con el reparto
   de hueco en el orden a reforzar → nuevas → dominadas), conservando el orden interno ya existente dentro de "a
   reforzar" (arrastradas antes que pendientes; pendientes por nivel, fecha y catálogo). Verificación: los tests
   de 1.1 y los ya existentes de composición por prioridad que sigan aplicando están en verde (en particular:
   "Frase con repaso futuro no entra antes de su fecha", "El filtro CEFR no afecta a arrastradas ni pendientes",
   "Pendientes que no caben esperan sin perder nivel", "Catálogo agotado sin pendientes no crea tanda").
-- [ ] 1.3 Test: cubrir "Dominada sin repaso pendiente entra en el bloque de dominadas" y "Dominada pendiente hoy
+- [x] 1.3 Test: cubrir "Dominada sin repaso pendiente entra en el bloque de dominadas" y "Dominada pendiente hoy
   cuenta como a reforzar" (frase en un único lugar). Verificación: falla antes de añadir el filtro de
   dominadas.
-- [ ] 1.4 Implementar el filtro de "dominadas" (nivel de consolidación 4 o 5, excluyendo las que ya sean
+- [x] 1.4 Implementar el filtro de "dominadas" (nivel de consolidación 4 o 5, excluyendo las que ya sean
   arrastradas o pendientes hoy). Verificación: tests de 1.3 en verde.
 
 ## 2. Dominio: generar sesión
