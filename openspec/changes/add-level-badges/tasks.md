@@ -45,11 +45,11 @@
 
 ## 4. Progreso: insignia por fila de nivel
 
-- [ ] 4.1 Test: en `ProgressScreenTest` (Compose UI test, `androidTest`), la fila de nivel 3 muestra
+- [x] 4.1 Test: en `ProgressScreenTest` (Compose UI test, `androidTest`), la fila de nivel 3 muestra
   la insignia "Oro" junto a su número de frases, y la fila de nivel 0 no muestra ninguna insignia
   (spec `progress-overview`, escenarios "Catálogo con frases en varios niveles" y "La fila de nivel 0
   no muestra insignia"); verificar que el test falla porque `ProgressScreen` no pinta insignias.
-- [ ] 4.2 Implementación: en `ContentState` de `ProgressScreen.kt`, añadir
+- [x] 4.2 Implementación: en `ContentState` de `ProgressScreen.kt`, añadir
   `DsLevelBadge(value)` junto al texto de cada fila de nivel (design D4); verificar que 4.1 pasa.
 
 ## 5. Verificación final

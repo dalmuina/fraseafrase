@@ -4,6 +4,8 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
@@ -63,6 +65,42 @@ class ProgressScreenTest {
         // Then: se muestra un error y no se muestra ningún nivel con número
         composeTestRule.onNodeWithText("El progreso no está disponible").assertIsDisplayed()
         composeTestRule.onAllNodesWithText("Nivel 0: 0 frases").assertCountEquals(0)
+    }
+
+    // Scenario: Catálogo con frases en varios niveles (spec: progress-overview)
+    @Test
+    fun givenACatalogWithPhrasesInLevelThree_whenShowingTheScreen_thenTheGoldBadgeIsDisplayed() {
+        // Given/When: el nivel 3 tiene 3 frases
+        setScreen(
+            ProgressUiState.Content(
+                certifiedInBatch = null,
+                byLevel = (0..Level.MAX_LEVEL).associate { value ->
+                    Level(value) to if (value == 3) 3 else 0
+                },
+            ),
+        )
+
+        // Then: se muestra la insignia "Oro" junto al número de frases del nivel 3
+        composeTestRule.onNodeWithText("Nivel 3: 3 frases").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Oro").assertIsDisplayed()
+    }
+
+    // Scenario: La fila de nivel 0 no muestra insignia (spec: progress-overview)
+    @Test
+    fun givenACatalogWithPhrasesInLevelZero_whenShowingTheScreen_thenNoBadgeIsDisplayedForThatRow() {
+        // Given/When: el catálogo tiene frases en nivel 0
+        setScreen(
+            ProgressUiState.Content(
+                certifiedInBatch = null,
+                byLevel = allLevels(levelZero = 6),
+            ),
+        )
+
+        // Then: la fila de nivel 0 muestra su número de frases sin ninguna insignia. Los niveles 1 a
+        // 5 siempre muestran su propia insignia (spec `level-badges`), así que la comprobación se
+        // limita a los hermanos del texto de nivel 0 dentro de su fila, no a toda la pantalla.
+        composeTestRule.onNodeWithText("Nivel 0: 6 frases").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("progress_level_row_0").onChildren().assertCountEquals(1)
     }
 
     private fun setScreen(uiState: ProgressUiState) {
