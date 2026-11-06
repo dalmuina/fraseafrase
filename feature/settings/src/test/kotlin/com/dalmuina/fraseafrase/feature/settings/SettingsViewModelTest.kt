@@ -1,12 +1,16 @@
 package com.dalmuina.fraseafrase.feature.settings
 
+import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
+import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -157,32 +161,55 @@ class SettingsViewModelTest {
             state.navigateToPracticePending shouldBe false
         }
 
-    // Scenarios: Cambiar el nivel CEFR cierra la tanda activa sin aviso / Guardar con el nivel CEFR cambiado
-    // navega a práctica (spec: settings-screen)
+    // Scenario: Cambiar solo el nivel CEFR no certifica ni cierra (spec: settings-screen)
     @Test
-    fun `given a different cefr level when Save is dispatched then it force closes the batch and asks to navigate`() =
+    fun `given a changed cefr level and the same batch size when Save is dispatched then it regenerates uncertified`() =
         runTest {
-            // Given: una tanda activa guardada y el nivel CEFR A1 persistido
-            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
-            val practice = FakePracticeRepository(activeBatchSnapshot())
-            val viewModel = settingsViewModel(repository, practice)
+            // Given: una tanda activa guardada, con una frase de racha 3 y nivel 1, y el nivel CEFR A1 persistido
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10)))
+            val practice = FakePracticeRepository(certifiableActiveBatchSnapshot(level = Level(1)))
+            val catalog = CatalogLoadResult.Loaded(
+                listOf(aCatalogPhrase(id = "phrase-1", level = CefrLevel.A1)) +
+                    (1..10).map { aCatalogPhrase(id = "new-b1-$it", level = CefrLevel.B1) },
+            )
+            val viewModel = settingsViewModel(repository, practice, catalog = catalog)
             advanceUntilIdle()
 
-            // When: el usuario elige el nivel B1 y confirma el guardado
+            // When: el usuario elige el nivel B1, mantiene la N persistida y confirma el guardado
             viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
             viewModel.onAction(SettingsAction.Save)
             advanceUntilIdle()
 
-            // Then: la tanda activa se cierra y se pide confirmar y navegar a práctica
+            // Then: la tanda activa se recompone (no se cierra) y la frase de racha 3 conserva su nivel
             val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
             state.saveConfirmationPending shouldBe true
             state.navigateToPracticePending shouldBe true
-            practice.read().activeBatch shouldBe null
+            practice.read().activeBatch shouldNotBe null
+            practice.read().progress.first { it.id.value == "phrase-1" }.level shouldBe Level(1)
         }
 
-    // Scenario: Guardar con N cambiado navega a práctica (spec: settings-screen)
+    // Scenario: Sin tanda activa no hay nada que recomponer (spec: settings-screen)
     @Test
-    fun `given a different batch size when Save is dispatched then it force closes the batch and asks to navigate`() =
+    fun `given no active batch when a different cefr level is saved then it completes without error or warning`() =
+        runTest {
+            // Given: no hay tanda activa guardada, con el nivel CEFR A1 persistido
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10)))
+            val viewModel = settingsViewModel(repository)
+            advanceUntilIdle()
+
+            // When: el usuario elige el nivel B1, mantiene la N persistida y confirma el guardado
+            viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: el guardado se completa sin error, pidiendo confirmación pero sin aviso de cierre
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.saveConfirmationPending shouldBe true
+        }
+
+    // Scenario: Cambiar N cierra la tanda activa sin aviso (spec: settings-screen)
+    @Test
+    fun `given a changed batch size and the same cefr level when Save is dispatched then it closes and navigates`() =
         runTest {
             // Given: una tanda activa guardada y N igual a 20 persistido
             val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
@@ -200,6 +227,49 @@ class SettingsViewModelTest {
             state.saveConfirmationPending shouldBe true
             state.navigateToPracticePending shouldBe true
             practice.read().activeBatch shouldBe null
+        }
+
+    // Scenario: Cambiar N y el nivel CEFR a la vez cierra la tanda activa (spec: settings-screen)
+    @Test
+    fun `given a changed batch size and a changed cefr level when Save is dispatched then it closes and certifies`() =
+        runTest {
+            // Given: una tanda activa guardada, con una frase de racha 3 y nivel 1, el nivel CEFR A1 y N igual a 20
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val practice = FakePracticeRepository(certifiableActiveBatchSnapshot(level = Level(1)))
+            val viewModel = settingsViewModel(repository, practice)
+            advanceUntilIdle()
+
+            // When: el usuario elige el nivel B1, escribe 15 como tamaño de tanda y confirma el guardado
+            viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: la tanda activa se cierra certificando la frase de racha 3, no recomponiéndola sin certificar
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.saveConfirmationPending shouldBe true
+            state.navigateToPracticePending shouldBe true
+            practice.read().activeBatch shouldBe null
+            practice.read().progress.first { it.id.value == "phrase-1" }.level shouldBe Level(2)
+        }
+
+    // Scenario: Sin tanda activa no hay nada que cerrar (spec: settings-screen)
+    @Test
+    fun `given no active batch when the batch size is changed and saved then it completes without error or warning`() =
+        runTest {
+            // Given: no hay tanda activa guardada
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val viewModel = settingsViewModel(repository)
+            advanceUntilIdle()
+
+            // When: el usuario cambia N y confirma el guardado
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: el guardado se completa sin error y sin ningún aviso de cierre
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.saveConfirmationPending shouldBe true
         }
 
     // Design D2: la base de comparación se actualiza en cada guardado, no se queda fija en la de `reload()`

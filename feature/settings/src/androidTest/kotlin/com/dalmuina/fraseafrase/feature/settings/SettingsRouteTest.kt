@@ -1,17 +1,21 @@
 package com.dalmuina.fraseafrase.feature.settings
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
+import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.ForceCloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SaveUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.time.Clock
 import kotlinx.coroutines.sync.Mutex
@@ -83,10 +87,17 @@ class SettingsRouteTest {
 
     private fun settingsViewModel(repository: SettingsRepository): SettingsViewModel {
         val clock = TestClock(LocalDate.of(2026, 3, 10))
+        val practice = TestPracticeRepository()
         return SettingsViewModel(
             obtainUserSettings = ObtainUserSettings(repository),
             saveUserSettings = SaveUserSettings(repository),
-            forceCloseActiveBatch = ForceCloseActiveBatch(TestPracticeRepository(), ResolveBatchClosure(clock)),
+            forceCloseActiveBatch = ForceCloseActiveBatch(practice, ResolveBatchClosure(clock)),
+            regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+                practiceRepository = practice,
+                composeNextBatch = ComposeNextBatch(clock),
+                catalogRepository = TestCatalogRepository(),
+                settingsRepository = repository,
+            ),
         )
     }
 
@@ -119,6 +130,11 @@ class SettingsRouteTest {
 
     private class TestClock(private val date: LocalDate) : Clock {
         override fun today(): LocalDate = date
+    }
+
+    /** Fake local de [CatalogRepository], sin frases: basta para que [RegenerateActiveBatchForLevel] no falle. */
+    private class TestCatalogRepository : CatalogRepository {
+        override suspend fun phrases(): CatalogLoadResult = CatalogLoadResult.Loaded(emptyList())
     }
 
     private companion object {

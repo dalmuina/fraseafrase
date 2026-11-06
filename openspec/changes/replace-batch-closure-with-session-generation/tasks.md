@@ -86,12 +86,12 @@
 
 ## 6. Presentación: ajustes (feature:settings)
 
-- [ ] 6.1 Test: `SettingsViewModelTest` para distinguir cambio solo de CEFR (llama a
+- [x] 6.1 Test: `SettingsViewModelTest` para distinguir cambio solo de CEFR (llama a
   `RegenerateActiveBatchForLevel`, sin cerrar) de cambio de N -con o sin cambio de CEFR a la vez- (llama a
   `ForceCloseActiveBatch`, con resolución completa), según los escenarios de `specs/settings-screen/spec.md`
   ("Cambiar solo el nivel CEFR no certifica ni cierra", "Cambiar N cierra la tanda activa sin aviso", "Cambiar N
   y el nivel CEFR a la vez cierra la tanda activa"). Verificación: falla por ausencia de la distinción.
-- [ ] 6.2 Inyectar `RegenerateActiveBatchForLevel` en `SettingsViewModel` y actualizar `save()` para elegir
+- [x] 6.2 Inyectar `RegenerateActiveBatchForLevel` en `SettingsViewModel` y actualizar `save()` para elegir
   entre los dos casos de uso: si N cambia (con o sin cambio de CEFR), `ForceCloseActiveBatch`; si solo cambia
   CEFR, `RegenerateActiveBatchForLevel` (design D5). Verificación: tests de 6.1 en verde.
 
