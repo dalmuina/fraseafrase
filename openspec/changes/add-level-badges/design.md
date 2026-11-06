@@ -64,6 +64,20 @@ añade `level = entry.level` al construir cada `PracticeItem`. Sin nuevo acceso 
 `Map<Level, Int>`; `ContentState` en `ProgressScreen.kt` solo añade `DsLevelBadge(level.value)` junto
 al texto existente de cada fila, sin tocar `ProgressViewModel` ni el dominio.
 
+### D5: La fila de Progreso no repite el número de nivel junto a su insignia
+
+Probando en el emulador, mostrar "Nivel 1: 8 frases" junto a la insignia "Bronce" es redundante: el
+usuario ya identifica el rango por la insignia, así que el número de nivel sobra como texto. Se
+quita el prefijo "Nivel X:" de `progress_level_format` y se sustituye por dos strings nuevos: uno
+genérico `progress_phrases_count_format` ("%1$d frases") para las filas 1 a 5, que se pintan junto a
+`DsLevelBadge` (su propia etiqueta, "Bronce".."Diamante", ya identifica la fila); y uno distinto
+`progress_no_rank_format` ("Sin rango: %1$d frases") para la fila de nivel 0, que no tiene insignia
+y necesita su propia etiqueta para no quedar sin identificar. "Sin rango" reutiliza el término ya
+fijado en la spec `level-badges` para el nivel 0. Alternativa descartada: quitar también la etiqueta
+de texto de la insignia (deja la fila solo con icono + número) - más minimalista, pero un icono sin
+etiqueta es más difícil de distinguir entre los cinco rangos sin memorizarlos; se puede revisar en
+el rediseño visual a medida que `proposal.md` ya deja fuera de alcance.
+
 ## Risks / Trade-offs
 
 - [`material-icons-extended` añade un paquete de iconos grande a `:core:designsystem`, usado por
