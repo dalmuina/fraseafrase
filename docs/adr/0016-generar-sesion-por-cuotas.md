@@ -1,6 +1,6 @@
 # ADR-0016: Generar sesión por cuotas en vez de cerrar tanda con aviso
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por ADR-0017
 - **Fecha:** 2026-11-06
 - **Sustituye a:** ADR-0015 (parcialmente)
 
