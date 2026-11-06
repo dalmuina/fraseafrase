@@ -13,7 +13,9 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -145,6 +147,118 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("B1").assertIsDisplayed()
     }
 
+    // Scenario: Insignia visible sin revelar (spec: practice-session)
+    @Test
+    fun givenPhraseWithConsolidationLevel2_whenScreenShown_thenSilverBadgeIsDisplayed() {
+        // Given: una tanda activa cuya primera frase tiene nivel de consolidación 2
+        setScreen(practicing(current = item().copy(level = Level(2)), revealed = false))
+
+        // When: el usuario abre la pantalla de práctica (estado dado)
+
+        // Then: la pantalla muestra la insignia "Plata" junto al nivel CEFR
+        composeTestRule.onNodeWithText("Plata").assertIsDisplayed()
+    }
+
+    // Scenario: Insignia visible al revelar (spec: practice-session)
+    @Test
+    fun givenPhraseWithConsolidationLevel4_whenRevealing_thenPlatinumBadgeIsStillDisplayed() {
+        // Given: una frase de nivel de consolidación 4 sin revelar; el estado se actualiza con Reveal
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item().copy(level = Level(4)), revealed = false),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.Reveal) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(revealed = true)
+                        }
+                    },
+                )
+            }
+        }
+
+        // When: el usuario revela la frase
+        composeTestRule.onNodeWithText("Mostrar traducción").performClick()
+
+        // Then: la pantalla sigue mostrando la insignia "Platino"
+        composeTestRule.onNodeWithText("Platino").assertIsDisplayed()
+    }
+
+    // Scenario: La insignia cambia con la frase mostrada (spec: practice-session)
+    @Test
+    fun givenPhraseAShown_whenAssessingAndMovingToPhraseB_thenBadgeChangesWithIt() {
+        // Given: una tanda con la frase A de nivel de consolidación 1 y la frase B de nivel de consolidación 5
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item().copy(level = Level(1)), revealed = true),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action is PracticeSessionAction.Answer) {
+                            uiState = practicing(current = item().copy(level = Level(5)), revealed = false)
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("Bronce").assertIsDisplayed()
+
+        // When: el usuario autoevalúa A y la pantalla pasa a mostrar B
+        composeTestRule.onNodeWithText("Acierto").performClick()
+
+        // Then: la pantalla muestra la insignia "Diamante"
+        composeTestRule.onNodeWithText("Diamante").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Bronce").assertDoesNotExist()
+    }
+
+    // Scenario: Un fallo que baja el nivel actualiza la insignia (spec: practice-session)
+    @Test
+    fun givenPhraseWithGoldBadge_whenMissedAndShownAgainWithLowerLevel_thenSilverBadgeIsDisplayed() {
+        // Given: una frase con nivel de consolidación 3 (insignia "Oro"), revelada
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item().copy(level = Level(3)), revealed = true),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        assertTrue(action == PracticeSessionAction.Answer(SelfAssessment.MISS))
+                        uiState = practicing(current = item().copy(level = Level(2)), revealed = false)
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("Oro").assertIsDisplayed()
+
+        // When: el usuario se autoevalúa con fallo y la frase vuelve a mostrarse con su nivel ya bajado
+        composeTestRule.onNodeWithText("Fallo").performClick()
+
+        // Then: la pantalla muestra la insignia "Plata"
+        composeTestRule.onNodeWithText("Plata").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Oro").assertDoesNotExist()
+    }
+
+    // Scenario: Sin insignia en nivel 0 (spec: practice-session)
+    @Test
+    fun givenPhraseWithConsolidationLevel0_whenScreenShown_thenNoBadgeIsDisplayed() {
+        // Given: una frase nueva con nivel de consolidación 0
+        setScreen(practicing(current = item().copy(level = Level(0))))
+
+        // When: la pantalla la muestra (estado dado)
+
+        // Then: la pantalla no muestra ninguna insignia para esa frase
+        composeTestRule.onNodeWithText("Bronce").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Plata").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Oro").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Platino").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Diamante").assertDoesNotExist()
+    }
+
     // Scenario: El control de escuchar muestra un icono de audio (spec: phrase-audio)
     @Test
     fun givenPhraseRevealed_whenScreenShown_thenListenControlShowsAudioIcon() {
@@ -268,5 +382,6 @@ class PracticeSessionScreenTest {
         cefrLevel = cefrLevel,
         streak = Streak(streak),
         isKnown = isKnown,
+        level = Level(0),
     )
 }

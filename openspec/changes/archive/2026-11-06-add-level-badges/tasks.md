@@ -1,0 +1,76 @@
+# Tasks
+
+## 1. Dominio: nivel de consolidación en `PracticeItem`
+
+- [x] 1.1 Test: en `ObtainPracticeSessionTest`, una tanda con una entrada de nivel 3 produce un
+  `PracticeItem` con `level` igual a ese nivel (spec `practice-session`, escenario "Insignia visible
+  sin revelar"); verificar que el test falla porque `PracticeItem` no tiene `level` todavía.
+- [x] 1.2 Implementación: añadir `level: Level` a `PracticeItem`
+  (`practice/PracticeSessionResult.kt`) y copiarlo de `entry.level` en
+  `ObtainPracticeSession.items()`; verificar que 1.1 pasa.
+
+## 2. Design system: `DsLevelBadge`
+
+- [x] 2.1 Añadir `androidx-compose-material-icons-extended` a `gradle/libs.versions.toml` (misma
+  versión que `androidx-compose-material-icons-core`, design D2) y como dependencia de
+  `:core:designsystem`; verificar con `./gradlew :core:designsystem:dependencies` que resuelve sin
+  conflicto de versión con el resto del BOM de Compose.
+- [x] 2.2 Test: `DsLevelBadgeTest` (Compose UI test en `:core:designsystem`) comprueba que el nivel 0
+  no muestra icono ni etiqueta y que los niveles 1 a 5 muestran las etiquetas "Bronce", "Plata",
+  "Oro", "Platino" y "Diamante" respectivamente (spec `level-badges`, escenarios "Nivel 0 no muestra
+  insignia", "Nivel 1 muestra Bronce", "Nivel 2 muestra Plata", "Nivel 3 muestra Oro", "Nivel 4
+  muestra Platino", "Nivel 5 muestra Diamante"); verificar que el test falla porque `DsLevelBadge` no
+  existe.
+- [x] 2.3 Implementación: `DsLevelBadge(level: Int, modifier: Modifier = Modifier)` con la tabla de
+  icono/color/etiqueta de design D2, sin tipos del dominio; verificar que 2.2 pasa.
+- [x] 2.4 Test: `DsLevelBadgeTest` comprueba que las insignias de nivel 2 y nivel 3 usan un icono o
+  color distinto entre sí (spec `level-badges`, escenario "Oro y Plata no comparten representación");
+  verificar que el test falla antes de ajustar la tabla de D2 si hace falta, y pasa después.
+- [x] 2.5 Añadir `@PreviewLightDark` de `DsLevelBadge` para los niveles 0 a 5; verificar visualmente
+  en el preview de Android Studio que las cinco insignias son distinguibles en ambos temas.
+
+## 3. Practicar: insignia de la frase actual
+
+- [x] 3.1 Test: en `PracticeSessionScreenTest` (Compose UI test, `androidTest`), una tanda cuya
+  primera frase tiene nivel de consolidación 2 muestra la insignia "Plata" junto al nivel CEFR (spec
+  `practice-session`, escenario "Insignia visible sin revelar"); verificar que el test falla porque
+  la pantalla no pinta ninguna insignia.
+- [x] 3.2 Implementación: `PracticeSessionScreen` pinta `DsLevelBadge(current.level.value)` junto al
+  nivel CEFR existente; verificar que 3.1 pasa.
+- [x] 3.3 Test: `PracticeSessionScreenTest` comprueba que al autoevaluar y pasar a la siguiente
+  frase la insignia cambia con ella (spec `practice-session`, escenario "La insignia cambia con la
+  frase mostrada"); verificar que pasa sin cambios adicionales de implementación.
+- [x] 3.4 Test: `PracticeSessionScreenTest` comprueba que una frase de nivel 0 no muestra ninguna
+  insignia (spec `practice-session`, escenario "Sin insignia en nivel 0"); verificar que pasa.
+- [x] 3.5 Test: `PracticeSessionScreenTest` comprueba que al revelar una frase de nivel de
+  consolidación 4 la insignia "Platino" sigue mostrándose (spec `practice-session`, escenario
+  "Insignia visible al revelar"); verificar que pasa sin cambios adicionales de implementación.
+  Encontrado por `code-reviewer`: escenario de spec sin test, añadido en la misma rama antes de
+  `/opsx:verify`.
+- [x] 3.6 Test: `PracticeSessionScreenTest` comprueba que una frase con insignia "Oro" (nivel 3), al
+  fallar y volver a mostrarse con su nivel ya bajado, muestra la insignia "Plata" (spec
+  `practice-session`, escenario "Un fallo que baja el nivel actualiza la insignia"); verificar que
+  pasa sin cambios adicionales de implementación. Encontrado por `code-reviewer`: escenario de spec
+  sin test, añadido en la misma rama antes de `/opsx:verify`.
+
+## 4. Progreso: insignia por fila de nivel
+
+- [x] 4.1 Test: en `ProgressScreenTest` (Compose UI test, `androidTest`), la fila de nivel 3 muestra
+  la insignia "Oro" junto a su número de frases, y la fila de nivel 0 no muestra ninguna insignia
+  (spec `progress-overview`, escenarios "Catálogo con frases en varios niveles" y "La fila de nivel 0
+  no muestra insignia"); verificar que el test falla porque `ProgressScreen` no pinta insignias.
+- [x] 4.2 Implementación: en `ContentState` de `ProgressScreen.kt`, añadir
+  `DsLevelBadge(value)` junto al texto de cada fila de nivel (design D4); verificar que 4.1 pasa.
+- [x] 4.3 Test: `ProgressScreenTest` comprueba que ninguna fila muestra el texto "Nivel" seguido de
+  un número (spec `progress-overview`, escenario "La fila de nivel 0 no muestra insignia ni número
+  de nivel"); verificar que el test falla porque `progress_level_format` todavía dice "Nivel %d:".
+- [x] 4.4 Implementación: sustituir `progress_level_format` por `progress_phrases_count_format`
+  ("%1$d frases", niveles 1 a 5, junto a `DsLevelBadge`) y `progress_no_rank_format` ("Sin rango:
+  %1$d frases", nivel 0, sin insignia) en `strings.xml` y `ProgressScreen.kt` (design D5); verificar
+  que 4.3 pasa y que 4.1 sigue pasando con sus aserciones de texto actualizadas al nuevo formato.
+
+## 5. Verificación final
+
+- [x] 5.1 Ejecutar `./gradlew check` y `./gradlew koverVerify`; verificar que ambos terminan en verde
+  sin bajar los mínimos de cobertura de `:core:domain`, `:core:designsystem`, `:feature:session` y
+  `:feature:progress`.

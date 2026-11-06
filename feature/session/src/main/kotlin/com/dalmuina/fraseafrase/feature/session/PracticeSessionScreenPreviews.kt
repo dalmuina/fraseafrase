@@ -6,6 +6,7 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 
@@ -18,6 +19,7 @@ private val knownItem = PracticeItem(
     cefrLevel = CefrLevel.A1,
     streak = Streak(3),
     isKnown = true,
+    level = Level(0),
 )
 
 /** Frase nueva, sin racha ni marca. */
@@ -29,6 +31,7 @@ private val newItem = PracticeItem(
     cefrLevel = CefrLevel.A1,
     streak = Streak(0),
     isKnown = false,
+    level = Level(0),
 )
 
 @PreviewLightDark

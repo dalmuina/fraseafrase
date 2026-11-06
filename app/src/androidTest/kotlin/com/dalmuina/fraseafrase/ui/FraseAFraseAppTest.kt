@@ -96,12 +96,13 @@ class FraseAFraseAppTest {
         }
     }
 
-    // La fila de "Nivel 0" existe siempre en el estado con contenido (ADR-0012), tanto con tanda activa
-    // como sin ella: a diferencia de "No hay tanda activa", no asume que la práctica no haya creado ya
-    // una tanda (`ObtainPracticeSession` compone una al leer la sesión, incluso sin interacción del usuario).
+    // La fila de nivel 0 ("Sin rango: N frases") existe siempre en el estado con contenido
+    // (ADR-0012/add-level-badges D5), tanto con tanda activa como sin ella: a diferencia de "No hay
+    // tanda activa", no asume que la práctica no haya creado ya una tanda (`ObtainPracticeSession`
+    // compone una al leer la sesión, incluso sin interacción del usuario).
     private fun waitForProgressScreen() {
         composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) {
-            composeTestRule.onAllNodesWithText("Nivel 0", substring = true).fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodesWithText("Sin rango", substring = true).fetchSemanticsNodes().isNotEmpty()
         }
     }
 
