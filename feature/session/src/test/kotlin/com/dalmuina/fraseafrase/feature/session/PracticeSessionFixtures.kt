@@ -6,7 +6,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
-import com.dalmuina.fraseafrase.core.domain.practice.CloseActiveBatch
+import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
@@ -86,16 +86,24 @@ internal fun sessionViewModelWith(
     clock: FixedClock = FixedClock(TODAY),
     phrasePlayer: FakePhrasePlayer = FakePhrasePlayer(),
 ): PracticeSessionViewModel {
+    val settingsRepository = FakeSettingsRepository(settings)
+    val composeNextBatch = ComposeNextBatch(clock)
     val obtainActiveBatch = ObtainActiveBatch(
-        composeNextBatch = ComposeNextBatch(clock),
+        composeNextBatch = composeNextBatch,
         catalogRepository = catalogRepository,
-        settingsRepository = FakeSettingsRepository(settings),
+        settingsRepository = settingsRepository,
         practiceRepository = practice,
     )
     return PracticeSessionViewModel(
         obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository),
         answerPhrase = AnswerPhrase(practice, clock),
-        closeActiveBatch = CloseActiveBatch(practice, ResolveBatchClosure(clock)),
+        generateSession = GenerateSession(
+            practiceRepository = practice,
+            resolveBatchClosure = ResolveBatchClosure(clock),
+            composeNextBatch = composeNextBatch,
+            catalogRepository = catalogRepository,
+            settingsRepository = settingsRepository,
+        ),
         playPhraseAudio = PlayPhraseAudio(phrasePlayer),
     )
 }

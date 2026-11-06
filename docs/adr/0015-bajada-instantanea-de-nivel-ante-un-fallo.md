@@ -1,6 +1,6 @@
 # ADR-0015: Bajada instantánea de nivel de consolidación ante un fallo
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por ADR-0016
 - **Fecha:** 2026-11-05
 - **Sustituye a:** ADR-0012
 

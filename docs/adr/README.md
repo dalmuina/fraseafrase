@@ -20,7 +20,8 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0012](0012-modelo-de-practica-por-tandas.md) | Modelo de práctica por tandas y alcance del MVP | Sustituido por 0015 |
 | [0013](0013-persistencia-catalogo-json-y-estado-en-room.md) | Persistencia con catálogo JSON en assets y estado del usuario en Room 3 | Aceptado |
 | [0014](0014-estrategia-de-testing-junit-6-y-junit-4-instrumentado.md) | Estrategia de testing con JUnit 6 y JUnit 4 en instrumentados | Aceptado |
-| [0015](0015-bajada-instantanea-de-nivel-ante-un-fallo.md) | Bajada instantánea de nivel de consolidación ante un fallo | Aceptado |
+| [0015](0015-bajada-instantanea-de-nivel-ante-un-fallo.md) | Bajada instantánea de nivel de consolidación ante un fallo | Sustituido por 0016 |
+| [0016](0016-generar-sesion-por-cuotas.md) | Generar sesión por cuotas en vez de cerrar tanda con aviso | Aceptado |
 
 ## Plantilla
 

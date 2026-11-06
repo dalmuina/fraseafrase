@@ -12,18 +12,23 @@ sealed interface PracticeSessionUiState {
 
     /**
      * Práctica de la tanda activa. [current] es la frase que se muestra. [revealed] indica si su traducción en
-     * portugués está visible. [busy] está a true mientras se registra una respuesta o se cierra la tanda.
-     * [closeWarning] es el número de no certificadas del aviso de cierre, o null si el diálogo no está abierto.
-     * [index] es la posición (1-based) de [current] dentro de la vuelta actual a la tanda; [total] es su tamaño
-     * (design D1 de `add-practice-batch-indicator`).
+     * portugués está visible. [busy] está a true mientras se registra una respuesta o se genera la sesión
+     * siguiente. [completed] es si la tanda activa ya ha dado una vuelta completa (todas sus frases respondidas);
+     * mientras es `true`, la pantalla muestra el mensaje de tanda completada en vez de [current] (design D7 de
+     * `replace-batch-closure-with-session-generation`). [index] es la posición (1-based) de [current] dentro de la
+     * vuelta actual a la tanda; [total] es su tamaño (design D1 de `add-practice-batch-indicator`).
+     * [remainingHitsForNextLevel] es cuántos aciertos consecutivos le faltan a [current] para la insignia
+     * [nextLevelBadgeLabel] (spec: practice-session, "Aciertos para el próximo nivel visibles").
      */
     data class Practicing(
         val current: PracticeItem,
         val revealed: Boolean,
         val busy: Boolean,
-        val closeWarning: Int?,
+        val completed: Boolean,
         val index: Int,
         val total: Int,
+        val remainingHitsForNextLevel: Int,
+        val nextLevelBadgeLabel: String,
     ) : PracticeSessionUiState
 
     /** No hay frases para practicar (ADR-0012). */

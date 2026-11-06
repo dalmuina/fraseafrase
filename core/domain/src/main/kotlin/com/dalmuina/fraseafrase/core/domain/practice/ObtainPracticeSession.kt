@@ -31,7 +31,7 @@ class ObtainPracticeSession @Inject constructor(
                 } else {
                     PracticeSessionResult.Ready(
                         items = practiceItems,
-                        uncertifiedCount = batch.uncertifiedCount(),
+                        isComplete = batch.entries.all { it.answeredInBatch },
                     )
                 }
             }
@@ -51,7 +51,6 @@ class ObtainPracticeSession @Inject constructor(
                 targetLocale = phrase.targetLocale,
                 cefrLevel = phrase.level,
                 streak = entry.streak,
-                isKnown = entry.streak.value >= PracticeItem.KNOWN_STREAK,
                 level = entry.level,
             )
         }

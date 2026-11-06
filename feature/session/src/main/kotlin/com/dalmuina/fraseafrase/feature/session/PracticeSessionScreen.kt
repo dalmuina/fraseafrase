@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
@@ -70,7 +68,7 @@ internal fun PracticeSessionScreen(
     }
 }
 
-/** Frase actual, botones de revelar o autoevaluar, botón de cerrar y aviso de cierre si está abierto. */
+/** Frase actual con sus botones de revelar o autoevaluar, o el mensaje de tanda completada en su lugar. */
 @Composable
 private fun PracticingContent(
     state: PracticeSessionUiState.Practicing,
@@ -80,39 +78,59 @@ private fun PracticingContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        Text(
-            text = stringResource(R.string.practice_position, state.index, state.total),
-            style = MaterialTheme.typography.labelLarge,
-        )
-        PhraseCard(item = state.current, revealed = state.revealed, enabled = !state.busy, onAction = onAction)
-        if (state.revealed) {
-            AssessmentButtons(enabled = !state.busy, onAction = onAction)
+        if (state.completed) {
+            CompletedMessage(enabled = !state.busy, onAction = onAction)
         } else {
-            Button(onClick = { onAction(PracticeSessionAction.Reveal) }) {
-                Text(text = stringResource(R.string.practice_reveal))
+            Text(
+                text = stringResource(R.string.practice_position, state.index, state.total),
+                style = MaterialTheme.typography.labelLarge,
+            )
+            PhraseCard(
+                item = state.current,
+                revealed = state.revealed,
+                enabled = !state.busy,
+                remainingHitsForNextLevel = state.remainingHitsForNextLevel,
+                nextLevelBadgeLabel = state.nextLevelBadgeLabel,
+                onAction = onAction,
+            )
+            if (state.revealed) {
+                AssessmentButtons(enabled = !state.busy, onAction = onAction)
+            } else {
+                Button(onClick = { onAction(PracticeSessionAction.Reveal) }) {
+                    Text(text = stringResource(R.string.practice_reveal))
+                }
             }
         }
-        TextButton(
-            onClick = { onAction(PracticeSessionAction.RequestClose) },
-            enabled = !state.busy,
-        ) {
-            Text(text = stringResource(R.string.practice_close))
-        }
     }
-    state.closeWarning?.let { count ->
-        CloseWarningDialog(count = count, onAction = onAction)
+}
+
+/** Mensaje positivo al completar una vuelta a la tanda, con el botón para generar la siguiente sesión (D7). */
+@Composable
+private fun CompletedMessage(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
+    Text(
+        text = stringResource(R.string.practice_batch_completed),
+        style = MaterialTheme.typography.titleMedium,
+        textAlign = TextAlign.Center,
+    )
+    Button(
+        onClick = { onAction(PracticeSessionAction.GenerateSession) },
+        enabled = enabled,
+    ) {
+        Text(text = stringResource(R.string.practice_generate_session))
     }
 }
 
 /**
- * Tarjeta con la frase en español, la traducción y el control de escuchar solo si está revelada, la racha y la marca
- * de sabida.
+ * Tarjeta con la frase en español, la traducción y el control de escuchar solo si está revelada, y el contador de
+ * aciertos que faltan para la insignia del siguiente nivel (spec: practice-session).
  */
 @Composable
 private fun PhraseCard(
     item: PracticeItem,
     revealed: Boolean,
     enabled: Boolean,
+    remainingHitsForNextLevel: Int,
+    nextLevelBadgeLabel: String,
     onAction: (PracticeSessionAction) -> Unit,
 ) {
     Card(
@@ -154,16 +172,13 @@ private fun PhraseCard(
                 }
             }
             Text(
-                text = stringResource(R.string.practice_streak, item.streak.value),
+                text = stringResource(
+                    R.string.practice_remaining_hits_for_next_level,
+                    remainingHitsForNextLevel,
+                    nextLevelBadgeLabel,
+                ),
                 style = MaterialTheme.typography.labelLarge,
             )
-            if (item.isKnown) {
-                Text(
-                    text = stringResource(R.string.practice_known),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
         }
     }
 }
@@ -185,26 +200,6 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
             Text(text = stringResource(R.string.practice_hit))
         }
     }
-}
-
-/** Diálogo modal de cierre con el número de frases no certificadas que pasarán a la siguiente tanda (D4, D5). */
-@Composable
-private fun CloseWarningDialog(count: Int, onAction: (PracticeSessionAction) -> Unit) {
-    AlertDialog(
-        onDismissRequest = { onAction(PracticeSessionAction.CancelClose) },
-        title = { Text(text = stringResource(R.string.practice_close_title)) },
-        text = { Text(text = pluralStringResource(R.plurals.practice_close_warning, count, count)) },
-        confirmButton = {
-            TextButton(onClick = { onAction(PracticeSessionAction.ConfirmClose) }) {
-                Text(text = stringResource(R.string.practice_close_confirm))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onAction(PracticeSessionAction.CancelClose) }) {
-                Text(text = stringResource(R.string.practice_close_cancel))
-            }
-        },
-    )
 }
 
 @Composable

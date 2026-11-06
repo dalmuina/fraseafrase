@@ -14,19 +14,16 @@ sealed interface PracticeSessionAction {
     /** Reproduce el audio en portugués de la frase revelada (spec: phrase-audio). */
     data object PlayAudio : PracticeSessionAction
 
-    /** Pide cerrar la tanda: abre el aviso con el número de frases no certificadas (ADR-0012). */
-    data object RequestClose : PracticeSessionAction
-
-    /** Cancela el aviso de cierre: la tanda no cambia. */
-    data object CancelClose : PracticeSessionAction
-
-    /** Confirma el cierre con el número que mostró el aviso. */
-    data object ConfirmClose : PracticeSessionAction
+    /**
+     * Pide generar la sesión siguiente, tras completar una vuelta a la tanda activa (ADR-0012, spec:
+     * practice-session). Se ignora mientras hay una respuesta en curso.
+     */
+    data object GenerateSession : PracticeSessionAction
 
     /**
      * Vuelve a leer la sesión al entrar en la pestaña (design D4 de `add-settings-apply-flow`). Solo sustituye el
      * estado si la tanda leída es distinta de la ya cargada; si es la misma, no toca `revealed`, `busy`,
-     * `closeWarning` ni `index`.
+     * `completed` ni `index`.
      */
     data object Resume : PracticeSessionAction
 }

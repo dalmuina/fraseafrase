@@ -8,6 +8,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.ForceCloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
@@ -242,99 +243,6 @@ class PracticeSessionViewModelTest {
         practice.activeOrder() shouldBe listOf("A", "B")
     }
 
-    // Scenario: Racha visible tras un acierto (spec: practice-session)
-    @Test
-    fun `given a phrase with streak 1 when revealing then the visible streak is 1`() = runTest {
-        // Given: tanda A con racha 1 y B
-        val practice = FakePracticeRepository(
-            activeBatchSnapshot(
-                order = listOf("A", "B"),
-                progress = listOf(
-                    aPhraseProgress(id = "A", streak = Streak(1), answeredInBatch = true),
-                    aPhraseProgress(id = "B")
-                ),
-            ),
-        )
-        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
-        advanceUntilIdle()
-
-        // When
-        viewModel.onAction(PracticeSessionAction.Reveal)
-
-        // Then
-        viewModel.practicing().current.streak.value shouldBe 1
-    }
-
-    // Scenario: Fallo reinicia la racha visible (spec: practice-session)
-    @Test
-    fun `given a single phrase with streak 2 when missing it then its next reveal shows streak 0`() = runTest {
-        // Given: tanda con una sola frase A de racha 2
-        val practice = FakePracticeRepository(
-            activeBatchSnapshot(
-                order = listOf("A"),
-                progress = listOf(aPhraseProgress(id = "A", streak = Streak(2), answeredInBatch = true)),
-            ),
-        )
-        val viewModel = sessionViewModel(practice, catalogOf("A"))
-        advanceUntilIdle()
-        viewModel.onAction(PracticeSessionAction.Reveal)
-        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
-        advanceUntilIdle()
-
-        // When: A vuelve a mostrarse y se revela
-        viewModel.onAction(PracticeSessionAction.Reveal)
-
-        // Then
-        viewModel.practicing().current.id.value shouldBe "A"
-        viewModel.practicing().current.streak.value shouldBe 0
-    }
-
-    // Scenario: Frase con racha 3 marcada como sabida (spec: practice-session)
-    @Test
-    fun `given a phrase with streak 3 when it is shown then it is marked as known and stays in the batch`() = runTest {
-        // Given: tanda con A (racha 3) y B
-        val practice = FakePracticeRepository(
-            activeBatchSnapshot(
-                order = listOf("A", "B"),
-                progress = listOf(
-                    aPhraseProgress(id = "A", streak = Streak(3), answeredInBatch = true),
-                    aPhraseProgress(id = "B")
-                ),
-            ),
-        )
-
-        // When
-        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
-        advanceUntilIdle()
-
-        // Then
-        viewModel.practicing().current.isKnown shouldBe true
-        practice.activeOrder() shouldBe listOf("A", "B")
-    }
-
-    // Scenario: Frase con racha 2 no se marca (spec: practice-session)
-    @Test
-    fun `given a phrase with streak 2 when it is revealed then it is not marked as known`() = runTest {
-        // Given: tanda con A (racha 2) y B
-        val practice = FakePracticeRepository(
-            activeBatchSnapshot(
-                order = listOf("A", "B"),
-                progress = listOf(
-                    aPhraseProgress(id = "A", streak = Streak(2), answeredInBatch = true),
-                    aPhraseProgress(id = "B")
-                ),
-            ),
-        )
-        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
-        advanceUntilIdle()
-
-        // When
-        viewModel.onAction(PracticeSessionAction.Reveal)
-
-        // Then
-        viewModel.practicing().current.isKnown shouldBe false
-    }
-
     // Scenario: Primera frase de una tanda de cinco (spec: add-practice-batch-indicator, practice-session)
     @Test
     fun `given an active batch of five phrases when opening the screen then the indicator shows 1 of 5`() = runTest {
@@ -394,26 +302,220 @@ class PracticeSessionViewModelTest {
 
     // Scenario: El indicador refleja el tamaño de una tanda siguiente distinto (spec: add-practice-batch-indicator)
     @Test
-    fun `given a closed batch of five when the next batch has eight phrases then the indicator shows 1 of 8`() =
+    fun `given a batch of five when the generated next batch has eight phrases then the indicator shows 1 of 8`() =
         runTest {
-            // Given: cierre confirmado de una tanda de cinco frases cuya tanda siguiente tiene ocho frases
+            // Given: una tanda de cinco frases sin certificar (quedan arrastradas) cuya tanda generada tiene ocho
             val practice = FakePracticeRepository(
                 activeBatchSnapshot(order = listOf("A", "B", "C", "D", "E")),
             )
             val catalog = catalogOf("A", "B", "C", "D", "E", "F", "G", "H")
             val viewModel = sessionViewModel(practice, catalog)
             advanceUntilIdle()
-            viewModel.onAction(PracticeSessionAction.RequestClose)
-            advanceUntilIdle()
 
             // When
-            viewModel.onAction(PracticeSessionAction.ConfirmClose)
+            viewModel.onAction(PracticeSessionAction.GenerateSession)
             advanceUntilIdle()
 
             // Then
             viewModel.practicing().index shouldBe 1
             viewModel.practicing().total shouldBe 8
         }
+
+    // Scenario: Tanda completa muestra el mensaje positivo (spec: practice-session)
+    @Test
+    fun `given one phrase answered when answering the last unanswered phrase then the batch state is completed`() =
+        runTest {
+            // Given: tanda de dos frases, A ya respondida en la tanda, B sin responder; B revelada
+            val practice = FakePracticeRepository(
+                activeBatchSnapshot(
+                    order = listOf("A", "B"),
+                    progress = listOf(
+                        aPhraseProgress(id = "A", answeredInBatch = true),
+                        aPhraseProgress(id = "B"),
+                    ),
+                ),
+            )
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+
+            // When: el usuario autoevalúa la última frase sin responder
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+
+            // Then: la tanda está completa, en vez de mostrar otra frase
+            viewModel.practicing().completed shouldBe true
+        }
+
+    // Scenario: Una respuesta en curso ignora la petición de generar sesión (spec: practice-session)
+    @Test
+    fun `given a response being registered when GenerateSession is dispatched then the batch does not change`() =
+        runTest {
+            // Given: tanda A, B y C con A revelada y su autoevaluación encolada, todavía sin confirmar
+            val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+
+            // When: se pide generar sesión antes de que la respuesta termine de registrarse
+            viewModel.onAction(PracticeSessionAction.GenerateSession)
+            advanceUntilIdle()
+
+            // Then: la petición se ignora y la tanda sigue siendo la original
+            practice.activeOrder() shouldBe listOf("B", "C", "A")
+        }
+
+    // Scenario: Contador visible tras un acierto (spec: practice-session)
+    @Test
+    fun `given a level 0 phrase with streak 1 when revealing then it shows 2 remaining hits for Bronce`() = runTest {
+        // Given: tanda con una frase de nivel 0 y racha 1
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A"),
+                progress = listOf(aPhraseProgress(id = "A", streak = Streak(1), answeredInBatch = true)),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A"))
+        advanceUntilIdle()
+
+        // When
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // Then
+        viewModel.practicing().remainingHitsForNextLevel shouldBe 2
+        viewModel.practicing().nextLevelBadgeLabel shouldBe "Bronce"
+    }
+
+    // Scenario: Fallo reinicia el contador (spec: practice-session)
+    @Test
+    fun `given a level 2 phrase with streak 2 when answering with a miss then it shows 3 remaining hits for Plata`() =
+        runTest {
+            // Given: tanda con la frase A de nivel 2 y racha 2, y B sin responder (para no completar la tanda)
+            val practice = FakePracticeRepository(
+                activeBatchSnapshot(
+                    order = listOf("A", "B"),
+                    progress = listOf(
+                        aPhraseProgress(
+                            id = "A",
+                            level = Level(2),
+                            streak = Streak(2),
+                            answeredInBatch = true,
+                            nextReview = TODAY.plusDays(1),
+                        ),
+                        aPhraseProgress(id = "B"),
+                    ),
+                ),
+            )
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+
+            // When: el usuario se autoevalúa con fallo; el fallo baja el nivel de A a 1 (ADR-0015)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+
+            // Then: al mostrarse A de nuevo y revelarla
+            viewModel.practicing().current.id.value shouldBe "A"
+            viewModel.practicing().remainingHitsForNextLevel shouldBe 3
+            viewModel.practicing().nextLevelBadgeLabel shouldBe "Plata"
+        }
+
+    // Scenario: Racha de tres sigue mostrando el contador en 0 (spec: practice-session)
+    @Test
+    fun `given a level 1 phrase with streak 3 when shown then it shows 0 remaining hits for Plata`() = runTest {
+        // Given: tanda con una frase de nivel 1 y racha 3
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A"),
+                progress = listOf(
+                    aPhraseProgress(
+                        id = "A",
+                        level = Level(1),
+                        streak = Streak(3),
+                        answeredInBatch = true,
+                        nextReview = TODAY.plusDays(1),
+                    ),
+                ),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A"))
+
+        // When
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().remainingHitsForNextLevel shouldBe 0
+        viewModel.practicing().nextLevelBadgeLabel shouldBe "Plata"
+    }
+
+    // Scenario: Nivel máximo sigue mostrando el contador (spec: practice-session)
+    @Test
+    fun `given a level 5 phrase with streak 3 when shown then it shows 0 remaining hits for Diamante`() = runTest {
+        // Given: tanda con una frase de nivel 5 y racha 3
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A"),
+                progress = listOf(
+                    aPhraseProgress(
+                        id = "A",
+                        level = Level(5),
+                        streak = Streak(3),
+                        answeredInBatch = true,
+                        nextReview = TODAY.plusDays(1),
+                    ),
+                ),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A"))
+
+        // When
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().remainingHitsForNextLevel shouldBe 0
+        viewModel.practicing().nextLevelBadgeLabel shouldBe "Diamante"
+    }
+
+    // Scenario: El contador cambia con la frase mostrada (spec: practice-session)
+    @Test
+    fun `given phrase A shown when answering and moving to phrase B then the counter matches B`() = runTest {
+        // Given: tanda con A (nivel 0, racha 0) y B (nivel 2, racha 1), mostrando A
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A", "B"),
+                progress = listOf(
+                    aPhraseProgress(id = "A", level = Level(0), streak = Streak(0)),
+                    aPhraseProgress(
+                        id = "B",
+                        level = Level(2),
+                        streak = Streak(1),
+                        answeredInBatch = true,
+                        nextReview = TODAY.plusDays(1),
+                    ),
+                ),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // When: el usuario autoevalúa A y la pantalla pasa a mostrar B
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().current.id.value shouldBe "B"
+        viewModel.practicing().remainingHitsForNextLevel shouldBe 2
+        viewModel.practicing().nextLevelBadgeLabel shouldBe "Oro"
+    }
 
     // Scenario: Escuchar reproduce la frase en su locale (spec: phrase-audio)
     @Test
@@ -457,17 +559,17 @@ class PracticeSessionViewModelTest {
             phrasePlayer.calls.shouldBeEmpty()
         }
 
-    // Scenario: Aviso de cierre abierto deshabilita el control de escuchar (spec: phrase-audio)
+    // Scenario: Tanda completada deshabilita el control de escuchar (spec: phrase-audio, design D3)
     @Test
-    fun `given the close warning open when PlayAudio is dispatched then PlayPhraseAudio is not invoked`() = runTest {
-        // Given: tanda A, B con A revelada y el aviso de cierre abierto
-        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B")))
+    fun `given a completed batch when PlayAudio is dispatched then PlayPhraseAudio is not invoked`() = runTest {
+        // Given: tanda A, B con ambas certificadas, así que la tanda está completa
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(order = listOf("A", "B"), progress = listOf(certified("A"), certified("B"))),
+        )
         val phrasePlayer = FakePhrasePlayer()
         val viewModel = sessionViewModel(practice, catalogOf("A", "B"), phrasePlayer = phrasePlayer)
         advanceUntilIdle()
-        viewModel.onAction(PracticeSessionAction.Reveal)
-        viewModel.onAction(PracticeSessionAction.RequestClose)
-        advanceUntilIdle()
+        viewModel.practicing().completed shouldBe true
 
         // When
         viewModel.onAction(PracticeSessionAction.PlayAudio)
@@ -522,4 +624,8 @@ class PracticeSessionViewModelTest {
             practice.activeOrder() shouldNotBe emptyList<String>()
             viewModel.practicing() shouldNotBe before
         }
+
+    /** Frase certificada: racha 3 respondida en la tanda. */
+    private fun certified(id: String): PhraseProgress =
+        aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
 }

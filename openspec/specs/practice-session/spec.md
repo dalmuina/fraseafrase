@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define la pantalla de práctica de la tanda activa: cómo el usuario ve la frase, revela la traducción, se autoevalúa, cierra la tanda con su aviso y recibe la tanda siguiente, según ADR-0012. Las reglas de composición, cierre y racha están en `practice-batch` y `spaced-repetition`; esta especificación describe lo que el usuario ve y puede hacer.
+Define la pantalla de práctica de la tanda activa: cómo el usuario ve la frase, revela la traducción, se autoevalúa, genera la sesión siguiente y recibe la tanda siguiente, según ADR-0012 y ADR-0016. Las reglas de composición, cierre y racha están en `practice-batch` y `spaced-repetition`; esta especificación describe lo que el usuario ve y puede hacer.
 
 ## Requirements
 
@@ -56,95 +56,77 @@ El usuario MUST poder autoevaluar la frase revelada como acierto o fallo. Al aut
 - **WHEN** el usuario responde A con acierto y después B con fallo
 - **THEN** la pantalla vuelve a mostrar A sin revelar y la tanda sigue conteniendo A y B
 
-### Requirement: Racha y frase sabida visibles
+### Requirement: Mensaje de tanda completada y generación de sesión
 
-La pantalla MUST mostrar la racha de la frase revelada dentro de la tanda activa. Una frase con racha mayor o igual que 3 MUST marcarse como sabida. Una frase sabida MUST seguir apareciendo en la lista de la tanda.
+Cuando la tanda activa está completa (`practice-batch`), la pantalla MUST mostrar un mensaje positivo con la
+opción de generar la siguiente sesión, en vez de seguir mostrando frases para responder. Al generar sesión, la
+pantalla MUST mostrar la tanda siguiente, empezando por su primera frase; las arrastradas MUST aparecer
+primero, en su orden de cola. Mientras haya una respuesta en curso, pedir generar sesión MUST NOT tener efecto.
 
-#### Scenario: Racha visible tras un acierto
+#### Scenario: Tanda completa muestra el mensaje positivo
 
-- **GIVEN** una frase con racha 1 en la tanda activa
-- **WHEN** el usuario la revela
-- **THEN** la pantalla muestra la racha 1 de esa frase
+- **GIVEN** una tanda de dos frases, ambas ya respondidas al menos una vez
+- **WHEN** el usuario autoevalúa la última frase sin responder
+- **THEN** la pantalla muestra un mensaje positivo con la opción de generar sesión, en vez de otra frase
 
-#### Scenario: Fallo reinicia la racha visible
+#### Scenario: Generar sesión muestra la tanda siguiente con sus arrastradas primero
 
-- **GIVEN** una tanda con una sola frase A de racha 2
-- **WHEN** el usuario revela A y se autoevalúa con fallo
-- **THEN** al mostrarse A de nuevo y revelarla, la pantalla muestra racha 0
+- **GIVEN** el mensaje de tanda completada, con dos frases que quedarían arrastradas, C y A en ese orden, sin
+  pendientes, un catálogo con 8 frases nuevas del nivel elegido y N igual a 10
+- **WHEN** el usuario genera sesión
+- **THEN** la pantalla muestra la tanda siguiente con C en la primera posición, A en la segunda y las 8 frases
+  nuevas a continuación
 
-#### Scenario: Frase con racha 3 marcada como sabida
+#### Scenario: Generar sesión con todas certificadas deja la tanda siguiente sin arrastradas
 
-- **GIVEN** una tanda con las frases A y B, donde A tiene racha 3
-- **WHEN** la pantalla muestra A, revelada o sin revelar
-- **THEN** la pantalla marca A como sabida y A sigue en la tanda
+- **GIVEN** el mensaje de tanda completada de una tanda de dos frases, ambas certificadas, y un catálogo con
+  frases nuevas del nivel elegido
+- **WHEN** el usuario genera sesión
+- **THEN** la pantalla muestra una tanda nueva sin arrastradas, compuesta con frases nuevas del nivel elegido
 
-#### Scenario: Frase con racha 2 no se marca
-
-- **GIVEN** una frase con racha 2 en la tanda activa
-- **WHEN** el usuario la revela
-- **THEN** la pantalla no la marca como sabida
-
-### Requirement: Aviso de cierre antes de confirmar
-
-Cuando el usuario pide cerrar la tanda, la pantalla MUST mostrar un diálogo modal con el número de frases no certificadas que pasarían a la siguiente tanda, incluido el caso de cero. El usuario MUST poder confirmar el cierre o cancelarlo. Mientras el diálogo esté abierto, MUST NOT ser posible autoevaluar frases. Mientras haya una respuesta en curso, pedir el cierre MUST NOT abrir el diálogo. Cancelar MUST dejar la tanda, las rachas y el progreso sin cambios.
-
-#### Scenario: Aviso con frases no certificadas
-
-- **GIVEN** una tanda de cinco frases, dos con racha 3 y tres sin certificar
-- **WHEN** el usuario pide cerrar la tanda
-- **THEN** la pantalla muestra el diálogo "3 frases pasarán a la siguiente tanda" y ofrece confirmar o cancelar
-
-#### Scenario: Aviso con una sola frase no certificada
-
-- **GIVEN** una tanda de dos frases, una con racha 3 y otra sin certificar
-- **WHEN** el usuario pide cerrar la tanda
-- **THEN** la pantalla muestra el diálogo "1 frase pasará a la siguiente tanda"
-
-#### Scenario: Aviso sin frases no certificadas
-
-- **GIVEN** una tanda de dos frases, ambas con racha 3
-- **WHEN** el usuario pide cerrar la tanda
-- **THEN** la pantalla muestra el diálogo "0 frases pasarán a la siguiente tanda" y ofrece confirmar o cancelar
-
-#### Scenario: Con el aviso abierto no se puede autoevaluar
-
-- **GIVEN** el diálogo de cierre abierto con una frase revelada
-- **WHEN** el usuario intenta autoevaluarla
-- **THEN** la autoevaluación no se registra y la tanda no cambia
-
-#### Scenario: Cerrar mientras hay una respuesta en curso no abre el aviso
+#### Scenario: Una respuesta en curso ignora la petición de generar sesión
 
 - **GIVEN** una frase revelada cuya autoevaluación se está registrando, todavía sin confirmar en la tanda
-- **WHEN** el usuario pide cerrar la tanda
-- **THEN** el diálogo de cierre no se muestra y la tanda no cambia
+- **WHEN** el usuario pide generar sesión
+- **THEN** la petición se ignora y la tanda no cambia
 
-#### Scenario: Cancelar el cierre no cambia nada
+### Requirement: Aciertos para el próximo nivel visibles
 
-- **GIVEN** el aviso de cierre de una tanda con tres frases no certificadas
-- **WHEN** el usuario cancela
-- **THEN** la pantalla vuelve a la práctica, la tanda conserva su orden y sus rachas y no se cierra
+La pantalla MUST mostrar, para la frase revelada o sin revelar, cuántos aciertos consecutivos le faltan para
+alcanzar la insignia del siguiente nivel de consolidación: `max(0, 3 - racha)` aciertos para la insignia de
+`min(nivel + 1, 5)`. El contador MUST mostrarse de forma literal, sin texto alternativo cuando ya llegó a 3
+aciertos en la tanda activa ni cuando el nivel de consolidación ya es el máximo (5).
 
-#### Scenario: Confirmar el cierre usa el número del aviso
+#### Scenario: Contador visible tras un acierto
 
-- **GIVEN** el aviso de cierre que indicó tres frases no certificadas
-- **WHEN** el usuario confirma
-- **THEN** la tanda se cierra con esa expectativa de tres frases
+- **GIVEN** una frase de nivel 0 con racha 1 en la tanda activa
+- **WHEN** el usuario la revela
+- **THEN** la pantalla muestra que le faltan 2 aciertos para la insignia "Bronce"
 
-### Requirement: Tanda siguiente tras confirmar el cierre
+#### Scenario: Fallo reinicia el contador
 
-Tras un cierre confirmado, la pantalla MUST mostrar la tanda siguiente. Si la tanda siguiente se puede componer, MUST mostrar sus frases en el orden de composición y empezar por la primera. Las frases arrastradas MUST aparecer primero, en su orden de cola.
+- **GIVEN** una tanda con la frase A de nivel 2 y racha 2
+- **WHEN** el usuario revela A y se autoevalúa con fallo
+- **THEN** al mostrarse A de nuevo y revelarla, la pantalla muestra que le faltan 3 aciertos para la insignia
+  "Plata", porque el fallo bajó su nivel de consolidación a 1 (ADR-0015) antes de calcular el contador
 
-#### Scenario: Cierre con arrastradas muestra la tanda siguiente
+#### Scenario: Racha de tres sigue mostrando el contador en 0
 
-- **GIVEN** una tanda cerrada en la que quedaron arrastradas C y A, en ese orden, sin frases pendientes, un catálogo con 8 frases nuevas del nivel elegido y N igual a 10
-- **WHEN** el usuario confirma el cierre
-- **THEN** la pantalla muestra la tanda siguiente con C en la primera posición, A en la segunda y las 8 frases nuevas en orden de catálogo a continuación
+- **GIVEN** una frase de nivel 1 con racha 3 en la tanda activa
+- **WHEN** la pantalla la muestra
+- **THEN** la pantalla muestra que le faltan 0 aciertos para la insignia "Plata"
 
-#### Scenario: Cierre con todas certificadas deja la tanda siguiente sin arrastradas
+#### Scenario: Nivel máximo sigue mostrando el contador
 
-- **GIVEN** una tanda de dos frases, ambas certificadas, y un catálogo con frases nuevas del nivel elegido
-- **WHEN** el usuario confirma el cierre
-- **THEN** la pantalla muestra una tanda nueva sin arrastradas, compuesta con frases nuevas del nivel elegido
+- **GIVEN** una frase de nivel 5 con racha 3 en la tanda activa
+- **WHEN** la pantalla la muestra
+- **THEN** la pantalla muestra que le faltan 0 aciertos para la insignia "Diamante"
+
+#### Scenario: El contador cambia con la frase mostrada
+
+- **GIVEN** una tanda con la frase A de nivel 0 y racha 0, y la frase B de nivel 2 y racha 1, mostrando A
+- **WHEN** el usuario autoevalúa A y la pantalla pasa a mostrar B
+- **THEN** la pantalla muestra que a B le faltan 2 aciertos para la insignia "Oro"
 
 ### Requirement: Primer uso y cambio de día
 
@@ -164,29 +146,34 @@ Al abrir la pantalla sin tanda activa guardada, la pantalla MUST componer la pri
 
 ### Requirement: Estado vacío sin frases disponibles
 
-Si no hay arrastradas, pendientes ni frases nuevas, la pantalla MUST indicar que no hay frases para practicar y MUST NOT mostrar una tanda. En ese estado no MUST haber ninguna frase visible.
+Si no hay arrastradas, pendientes ni frases nuevas, la pantalla MUST indicar que no hay frases para practicar y
+MUST NOT mostrar una tanda. En ese estado no MUST haber ninguna frase visible.
 
 #### Scenario: Catálogo agotado tras cerrar
 
-- **GIVEN** una tanda cerrada y un catálogo sin frases nuevas, sin arrastradas y sin pendientes
-- **WHEN** el usuario confirma el cierre
+- **GIVEN** una tanda generada y un catálogo sin frases nuevas, sin arrastradas y sin pendientes
+- **WHEN** el usuario genera sesión
 - **THEN** la pantalla indica que no hay frases para practicar y no muestra ninguna frase
 
 #### Scenario: Sin frases disponibles al pedir el cierre
 
-- **GIVEN** la pantalla muestra una tanda, esa tanda ya no está activa y no hay frases disponibles para componer otra
-- **WHEN** el usuario pide cerrar la tanda
-- **THEN** la pantalla indica que no hay frases para practicar, no muestra el diálogo de cierre y no muestra ninguna frase
+- **GIVEN** la pantalla muestra una tanda, esa tanda ya no está activa y no hay frases disponibles para
+  componer otra
+- **WHEN** el usuario pide generar sesión
+- **THEN** la pantalla indica que no hay frases para practicar, no muestra el mensaje de tanda completada y no
+  muestra ninguna frase
 
 #### Scenario: Frases con repaso futuro sin tanda
 
-- **GIVEN** un catálogo cuya única frase P tiene nivel 1 con repaso el 11-03-2026, y la fecha actual es 10-03-2026
+- **GIVEN** un catálogo cuya única frase P tiene nivel 1 con repaso el 11-03-2026, y la fecha actual es
+  10-03-2026
 - **WHEN** el usuario abre la pantalla de práctica sin tanda activa
 - **THEN** la pantalla indica que no hay frases para practicar y no muestra ninguna frase
 
 ### Requirement: Error de catálogo
 
-Si el catálogo no se puede cargar por cualquiera de sus motivos de error, la pantalla MUST mostrar un estado de error que indique que no se puede practicar. MUST NOT mostrar frases ni crear tanda.
+Si el catálogo no se puede cargar por cualquiera de sus motivos de error, la pantalla MUST mostrar un estado de
+error que indique que no se puede practicar. MUST NOT mostrar frases ni crear tanda.
 
 #### Scenario: Asset de catálogo ilegible
 
@@ -197,8 +184,9 @@ Si el catálogo no se puede cargar por cualquiera de sus motivos de error, la pa
 #### Scenario: Catálogo ilegible al pedir el cierre
 
 - **GIVEN** la pantalla de práctica con una tanda activa y un catálogo que deja de poder leerse
-- **WHEN** el usuario pide cerrar la tanda
-- **THEN** la pantalla muestra un error que indica que no se puede practicar, no muestra el diálogo de cierre y no muestra frases
+- **WHEN** el usuario pide generar sesión
+- **THEN** la pantalla muestra un error que indica que no se puede practicar, no muestra el mensaje de tanda
+  completada y no muestra frases
 
 #### Scenario: Documento de catálogo malformado
 
@@ -215,22 +203,6 @@ Si una frase de la tanda activa no existe en el catálogo cargado, la lectura de
 - **GIVEN** una tanda activa que contiene la frase P, y un catálogo que no contiene P
 - **WHEN** se lee la sesión de práctica
 - **THEN** la lectura falla con un error de datos que indica el id de P y no devuelve ninguna frase
-
-### Requirement: Cierre rechazado por cambio de tanda
-
-Si al confirmar el cierre la tanda cambió desde el aviso o ya no hay tanda activa, la pantalla MUST recargar la tanda activa tal como está guardada y MUST NOT mostrar un error al usuario.
-
-#### Scenario: Aviso desfasado recarga la tanda
-
-- **GIVEN** un aviso de cierre con tres frases no certificadas, y una tanda que ya tiene dos
-- **WHEN** el usuario confirma el cierre
-- **THEN** la pantalla muestra la tanda activa guardada, sin error, y no la cierra
-
-#### Scenario: Cierre sin tanda activa recarga la pantalla
-
-- **GIVEN** que no hay tanda activa cuando el usuario confirma el cierre
-- **WHEN** el usuario confirma
-- **THEN** la pantalla obtiene la tanda activa guardada sin mostrar error
 
 ### Requirement: Reanudar la tanda activa
 

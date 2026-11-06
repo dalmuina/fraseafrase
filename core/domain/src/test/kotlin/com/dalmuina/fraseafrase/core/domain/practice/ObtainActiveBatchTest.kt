@@ -156,7 +156,7 @@ class ObtainActiveBatchTest {
                     carry = CarryQueue(emptyList()),
                 ),
             )
-            CloseActiveBatch(practice, ResolveBatchClosure(FixedClock(day))).invoke(expectedUncertified = 3)
+            ForceCloseActiveBatch(practice, ResolveBatchClosure(FixedClock(day))).invoke()
 
             // When
             val catalog = CatalogLoadResult.Loaded(

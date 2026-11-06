@@ -18,7 +18,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.catalog.Topic
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
-import com.dalmuina.fraseafrase.core.domain.practice.CloseActiveBatch
+import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
@@ -161,16 +161,24 @@ class PracticeSessionRouteTest {
     ): PracticeSessionViewModel {
         val clock = TestClock(TODAY)
         val catalogRepository = TestCatalogRepository(catalog)
+        val settingsRepository = TestSettingsRepository()
+        val composeNextBatch = ComposeNextBatch(clock)
         val obtainActiveBatch = ObtainActiveBatch(
-            composeNextBatch = ComposeNextBatch(clock),
+            composeNextBatch = composeNextBatch,
             catalogRepository = catalogRepository,
-            settingsRepository = TestSettingsRepository(),
+            settingsRepository = settingsRepository,
             practiceRepository = practice,
         )
         return PracticeSessionViewModel(
             obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository),
             answerPhrase = AnswerPhrase(practice, clock),
-            closeActiveBatch = CloseActiveBatch(practice, ResolveBatchClosure(clock)),
+            generateSession = GenerateSession(
+                practiceRepository = practice,
+                resolveBatchClosure = ResolveBatchClosure(clock),
+                composeNextBatch = composeNextBatch,
+                catalogRepository = catalogRepository,
+                settingsRepository = settingsRepository,
+            ),
             playPhraseAudio = PlayPhraseAudio(TestPhrasePlayer()),
         )
     }
