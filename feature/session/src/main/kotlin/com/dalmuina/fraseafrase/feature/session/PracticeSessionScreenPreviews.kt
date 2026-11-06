@@ -18,7 +18,6 @@ private val almostCertifiedItem = PracticeItem(
     targetLocale = LanguageTag("pt-PT"),
     cefrLevel = CefrLevel.A1,
     streak = Streak(1),
-    isKnown = false,
     level = Level(0),
 )
 
@@ -30,7 +29,6 @@ private val newItem = PracticeItem(
     targetLocale = LanguageTag("pt-PT"),
     cefrLevel = CefrLevel.A1,
     streak = Streak(0),
-    isKnown = false,
     level = Level(0),
 )
 

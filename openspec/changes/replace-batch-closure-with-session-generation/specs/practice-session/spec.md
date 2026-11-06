@@ -129,10 +129,10 @@ aciertos en la tanda activa ni cuando el nivel de consolidación ya es el máxim
 
 #### Scenario: Fallo reinicia el contador
 
-- **GIVEN** una tanda con una sola frase A de nivel 1 y racha 2
+- **GIVEN** una tanda con la frase A de nivel 2 y racha 2
 - **WHEN** el usuario revela A y se autoevalúa con fallo
 - **THEN** al mostrarse A de nuevo y revelarla, la pantalla muestra que le faltan 3 aciertos para la insignia
-  "Plata"
+  "Plata", porque el fallo bajó su nivel de consolidación a 1 (ADR-0015) antes de calcular el contador
 
 #### Scenario: Racha de tres sigue mostrando el contador en 0
 

@@ -283,6 +283,39 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Te faltan 2 aciertos para la insignia Bronce").assertIsDisplayed()
     }
 
+    // Scenario: Fallo reinicia el contador (spec: practice-session)
+    @Test
+    fun givenPhraseWithLevel2WhenMissedAndShownAgainThenTheCounterShowsThreeForSilver() {
+        // Given: la frase A de nivel de consolidación 2 y racha 2, revelada
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item(), revealed = true).copy(
+                remainingHitsForNextLevel = 1,
+                nextLevelBadgeLabel = "Oro",
+            ),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        assertTrue(action == PracticeSessionAction.Answer(SelfAssessment.MISS))
+                        // El fallo bajó el nivel de consolidación de 2 a 1 (ADR-0015) antes de calcular el contador
+                        uiState = practicing(current = item(), revealed = true).copy(
+                            remainingHitsForNextLevel = 3,
+                            nextLevelBadgeLabel = "Plata",
+                        )
+                    },
+                )
+            }
+        }
+
+        // When: el usuario se autoevalúa con fallo y A vuelve a mostrarse, revelada
+        composeTestRule.onNodeWithText("Fallo").performClick()
+
+        // Then: la pantalla muestra que le faltan 3 aciertos para la insignia "Plata"
+        composeTestRule.onNodeWithText("Te faltan 3 aciertos para la insignia Plata").assertIsDisplayed()
+    }
+
     // Scenario: Racha de tres sigue mostrando el contador en 0 (spec: practice-session)
     @Test
     fun givenPhraseWithStreak3WhenShowingItThenTheCounterShowsZero() {
@@ -391,13 +424,12 @@ class PracticeSessionScreenTest {
         nextLevelBadgeLabel = "Bronce",
     )
 
-    /** Frase de presentación. `isKnown` lo decide el dominio (`ObtainPracticeSession`); aquí se pasa tal cual. */
+    /** Frase de presentación. */
     private fun item(
         source: String = "Buenos días",
         target: String = "Bom dia",
         cefrLevel: CefrLevel = CefrLevel.A1,
         streak: Int = 0,
-        isKnown: Boolean = false,
     ): PracticeItem = PracticeItem(
         id = PhraseId("A"),
         source = source,
@@ -405,7 +437,6 @@ class PracticeSessionScreenTest {
         targetLocale = LanguageTag("pt-PT"),
         cefrLevel = cefrLevel,
         streak = Streak(streak),
-        isKnown = isKnown,
         level = Level(0),
     )
 }

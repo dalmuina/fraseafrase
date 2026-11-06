@@ -1,6 +1,11 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
+import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchComposition
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PracticeBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import javax.inject.Inject
@@ -31,7 +36,7 @@ class ForceCloseActiveBatch @Inject constructor(
  * y vacía la tanda activa. Con [resolveBatchClosure] resuelve cada frase antes de encolarla (certifica, sube de
  * nivel, arrastra las no certificadas); sin él (`null`), las entradas pasan a la cola tal cual, sin certificar ni
  * cambiar nivel ni próximo repaso (design D3/D4 de `replace-batch-closure-with-session-generation`). Transición pura
- * compartida por [ForceCloseActiveBatch], [GenerateSession] y, en un cambio posterior, `RegenerateActiveBatchForLevel`.
+ * compartida por [ForceCloseActiveBatch], [GenerateSession] y [RegenerateActiveBatchForLevel].
  */
 internal fun advanceActiveBatch(
     snapshot: PracticeSnapshot,
@@ -51,3 +56,22 @@ internal fun advanceActiveBatch(
         carry = CarryQueue.afterClosure(snapshot.carry, outcomes),
     )
 }
+
+/**
+ * Compone la tanda siguiente por cuotas a partir de [snapshot] y la guarda, o deja [snapshot] sin cambios si no
+ * hay frases disponibles. Transición pura compartida por [GenerateSession] y [RegenerateActiveBatchForLevel].
+ */
+internal fun composeNextBatchInto(
+    composeNextBatch: ComposeNextBatch,
+    snapshot: PracticeSnapshot,
+    catalog: List<CatalogPhrase>,
+    cefrLevel: CefrLevel,
+    size: BatchSize,
+): PracticeChange<ActiveBatchResult> =
+    when (val composed = composeNextBatch(snapshot.carry, snapshot.progress, catalog, cefrLevel, size)) {
+        is BatchComposition.NothingAvailable -> PracticeChange(snapshot, ActiveBatchResult.NothingAvailable)
+        is BatchComposition.Composed -> PracticeChange(
+            next = snapshot.storing(composed.batch).copy(carry = composed.leftover),
+            result = ActiveBatchResult.Created(composed.batch),
+        )
+    }

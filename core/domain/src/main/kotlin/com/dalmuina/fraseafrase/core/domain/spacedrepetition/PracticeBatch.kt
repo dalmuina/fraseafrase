@@ -32,11 +32,4 @@ data class PracticeBatch(
         val answered = entries.first { it.id == id }.record(assessment, today)
         return copy(entries = entries.filterNot { it.id == id } + answered)
     }
-
-    /**
-     * Número de frases no certificadas, que pasarían a la siguiente tanda al cerrar (aviso previo).
-     * Es una función pura: no modifica la tanda, sus rachas ni el progreso. Una frase nunca respondida
-     * también cuenta, porque no está certificada.
-     */
-    fun uncertifiedCount(): Int = entries.count { !it.isCertified }
 }

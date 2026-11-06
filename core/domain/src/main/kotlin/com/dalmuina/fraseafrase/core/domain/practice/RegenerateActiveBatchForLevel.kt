@@ -1,12 +1,9 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
-import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchComposition
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import javax.inject.Inject
 
@@ -33,21 +30,7 @@ class RegenerateActiveBatchForLevel @Inject constructor(
         return practiceRepository.transact { snapshot ->
             val advanced = snapshot.batch()?.let { advanceActiveBatch(snapshot, it, resolveBatchClosure = null) }
                 ?: snapshot
-            compose(advanced, catalog, cefrLevel, size)
+            composeNextBatchInto(composeNextBatch, advanced, catalog, cefrLevel, size)
         }
     }
-
-    private fun compose(
-        snapshot: PracticeSnapshot,
-        catalog: List<CatalogPhrase>,
-        cefrLevel: CefrLevel,
-        size: BatchSize,
-    ): PracticeChange<ActiveBatchResult> =
-        when (val composed = composeNextBatch(snapshot.carry, snapshot.progress, catalog, cefrLevel, size)) {
-            is BatchComposition.NothingAvailable -> PracticeChange(snapshot, ActiveBatchResult.NothingAvailable)
-            is BatchComposition.Composed -> PracticeChange(
-                next = snapshot.storing(composed.batch).copy(carry = composed.leftover),
-                result = ActiveBatchResult.Created(composed.batch),
-            )
-        }
 }

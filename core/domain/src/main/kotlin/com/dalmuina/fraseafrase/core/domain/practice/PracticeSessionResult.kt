@@ -14,14 +14,13 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 sealed interface PracticeSessionResult {
 
     /**
-     * Tanda activa con su texto, en el orden de la tanda. [uncertifiedCount] es el número de frases no certificadas
-     * que pasarían a la siguiente tanda si se cerrara ahora (aviso previo). [isComplete] es si el usuario ya ha dado
-     * una vuelta completa a la lista circular, es decir, si todas sus frases están respondidas (spec `practice-batch`,
-     * "Tanda completa"). Calcularlo no modifica la tanda, sus rachas ni el progreso.
+     * Tanda activa con su texto, en el orden de la tanda. [isComplete] es si el usuario ya ha dado una vuelta
+     * completa a la lista circular, es decir, si todas sus frases están respondidas (spec `practice-session`,
+     * "Mensaje de tanda completada y generación de sesión"). Calcularlo no modifica la tanda, sus rachas ni el
+     * progreso.
      */
     data class Ready(
         val items: List<PracticeItem>,
-        val uncertifiedCount: Int,
         val isComplete: Boolean,
     ) : PracticeSessionResult
 
@@ -36,9 +35,8 @@ sealed interface PracticeSessionResult {
 }
 
 /**
- * Frase de la tanda lista para mostrar: textos en el idioma de origen y de destino, racha dentro de la tanda y si
- * está marcada como sabida. [isKnown] es `streak >= 3` dentro de la tanda; no se llama `isCertified` para no
- * confundirlo con la certificación al cerrar (ADR-0012), que es la de `PhraseProgress`.
+ * Frase de la tanda lista para mostrar: textos en el idioma de origen y de destino, racha dentro de la tanda y
+ * nivel de consolidación.
  */
 data class PracticeItem(
     val id: PhraseId,
@@ -47,12 +45,5 @@ data class PracticeItem(
     val targetLocale: LanguageTag,
     val cefrLevel: CefrLevel,
     val streak: Streak,
-    val isKnown: Boolean,
     val level: Level,
-) {
-
-    companion object {
-        /** Racha a partir de la cual una frase de la tanda se marca como sabida (spec `practice-session`). */
-        const val KNOWN_STREAK = 3
-    }
-}
+)

@@ -48,30 +48,6 @@ class PracticeCycleTest {
         carry.ids shouldBe ids("Z", "C", "A")
     }
 
-    // Scenario: El aviso coincide con las arrastradas del cierre (spec: Ciclo de cierre y composición)
-    @Test
-    fun `given five phrases with two certified when closing then the warning is three and the carry has three`() {
-        // Given
-        val batch = PracticeBatch(
-            entries = listOf(
-                certified("P1"),
-                uncertified("P2"),
-                certified("P3"),
-                uncertified("P4"),
-                uncertified("P5"),
-            ),
-            capacity = BatchSize.DEFAULT,
-        )
-
-        // When
-        val warning = batch.uncertifiedCount()
-        val carry = CarryQueue.afterClosure(CarryQueue(emptyList()), resolveBatchClosure(batch.entries))
-
-        // Then
-        warning shouldBe 3
-        carry.ids shouldBe ids("P2", "P4", "P5")
-    }
-
     // Scenario: Cierre con un id ya en la cola (spec: Ciclo de cierre y composición)
     @Test
     fun `given leftover Z and a closing that carries Z again then throws IllegalArgumentException`() {
