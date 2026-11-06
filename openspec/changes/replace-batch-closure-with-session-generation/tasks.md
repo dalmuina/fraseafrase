@@ -106,7 +106,7 @@
 - [x] 8.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
 - [x] 8.2 Ejecutar `./gradlew koverVerify` y comprobar los mínimos de cobertura (dominio 90 %, presentación
   80 %, global 70 %).
-- [ ] 8.3 Prueba manual en el emulador: completar una vuelta a una tanda pequeña y generar sesión; cambiar el
+- [x] 8.3 Prueba manual en el emulador: completar una vuelta a una tanda pequeña y generar sesión; cambiar el
   nivel CEFR en Ajustes con una tanda a medias y comprobar que el nivel de consolidación y el próximo repaso de
   sus frases no cambian; cambiar N (con o sin CEFR a la vez) y comprobar que sí certifica/cierra como hoy.
 
