@@ -51,16 +51,16 @@
   no muestra insignia"); verificar que el test falla porque `ProgressScreen` no pinta insignias.
 - [x] 4.2 Implementación: en `ContentState` de `ProgressScreen.kt`, añadir
   `DsLevelBadge(value)` junto al texto de cada fila de nivel (design D4); verificar que 4.1 pasa.
-- [ ] 4.3 Test: `ProgressScreenTest` comprueba que ninguna fila muestra el texto "Nivel" seguido de
+- [x] 4.3 Test: `ProgressScreenTest` comprueba que ninguna fila muestra el texto "Nivel" seguido de
   un número (spec `progress-overview`, escenario "La fila de nivel 0 no muestra insignia ni número
   de nivel"); verificar que el test falla porque `progress_level_format` todavía dice "Nivel %d:".
-- [ ] 4.4 Implementación: sustituir `progress_level_format` por `progress_phrases_count_format`
+- [x] 4.4 Implementación: sustituir `progress_level_format` por `progress_phrases_count_format`
   ("%1$d frases", niveles 1 a 5, junto a `DsLevelBadge`) y `progress_no_rank_format` ("Sin rango:
   %1$d frases", nivel 0, sin insignia) en `strings.xml` y `ProgressScreen.kt` (design D5); verificar
   que 4.3 pasa y que 4.1 sigue pasando con sus aserciones de texto actualizadas al nuevo formato.
 
 ## 5. Verificación final
 
-- [ ] 5.1 Ejecutar `./gradlew check` y `./gradlew koverVerify`; verificar que ambos terminan en verde
+- [x] 5.1 Ejecutar `./gradlew check` y `./gradlew koverVerify`; verificar que ambos terminan en verde
   sin bajar los mínimos de cobertura de `:core:domain`, `:core:designsystem`, `:feature:session` y
   `:feature:progress`.

@@ -89,8 +89,14 @@ private fun ContentState(state: ProgressUiState.Content, modifier: Modifier = Mo
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = stringResource(R.string.progress_level_format, value, count))
                     DsLevelBadge(value)
+                    Text(
+                        text = if (value == 0) {
+                            stringResource(R.string.progress_no_rank_format, count)
+                        } else {
+                            stringResource(R.string.progress_phrases_count_format, count)
+                        },
+                    )
                 }
             }
         }

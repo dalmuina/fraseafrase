@@ -3,6 +3,7 @@
     <string name="progress_title">Progreso</string>
     <string name="progress_certified_format">%1$d de %2$d frases certificadas</string>
     <string name="progress_no_active_batch">No hay tanda activa</string>
-    <string name="progress_level_format">Nivel %1$d: %2$d frases</string>
+    <string name="progress_phrases_count_format">%1$d frases</string>
+    <string name="progress_no_rank_format">Sin rango: %1$d frases</string>
     <string name="progress_catalog_error">El progreso no está disponible</string>
 </resources>
