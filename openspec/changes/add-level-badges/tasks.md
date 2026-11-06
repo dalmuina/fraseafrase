@@ -11,22 +11,22 @@
 
 ## 2. Design system: `DsLevelBadge`
 
-- [ ] 2.1 Añadir `androidx-compose-material-icons-extended` a `gradle/libs.versions.toml` (misma
+- [x] 2.1 Añadir `androidx-compose-material-icons-extended` a `gradle/libs.versions.toml` (misma
   versión que `androidx-compose-material-icons-core`, design D2) y como dependencia de
   `:core:designsystem`; verificar con `./gradlew :core:designsystem:dependencies` que resuelve sin
   conflicto de versión con el resto del BOM de Compose.
-- [ ] 2.2 Test: `DsLevelBadgeTest` (Compose UI test en `:core:designsystem`) comprueba que el nivel 0
+- [x] 2.2 Test: `DsLevelBadgeTest` (Compose UI test en `:core:designsystem`) comprueba que el nivel 0
   no muestra icono ni etiqueta y que los niveles 1 a 5 muestran las etiquetas "Bronce", "Plata",
   "Oro", "Platino" y "Diamante" respectivamente (spec `level-badges`, escenarios "Nivel 0 no muestra
   insignia", "Nivel 1 muestra Bronce", "Nivel 2 muestra Plata", "Nivel 3 muestra Oro", "Nivel 4
   muestra Platino", "Nivel 5 muestra Diamante"); verificar que el test falla porque `DsLevelBadge` no
   existe.
-- [ ] 2.3 Implementación: `DsLevelBadge(level: Int, modifier: Modifier = Modifier)` con la tabla de
+- [x] 2.3 Implementación: `DsLevelBadge(level: Int, modifier: Modifier = Modifier)` con la tabla de
   icono/color/etiqueta de design D2, sin tipos del dominio; verificar que 2.2 pasa.
-- [ ] 2.4 Test: `DsLevelBadgeTest` comprueba que las insignias de nivel 2 y nivel 3 usan un icono o
+- [x] 2.4 Test: `DsLevelBadgeTest` comprueba que las insignias de nivel 2 y nivel 3 usan un icono o
   color distinto entre sí (spec `level-badges`, escenario "Oro y Plata no comparten representación");
   verificar que el test falla antes de ajustar la tabla de D2 si hace falta, y pasa después.
-- [ ] 2.5 Añadir `@PreviewLightDark` de `DsLevelBadge` para los niveles 0 a 5; verificar visualmente
+- [x] 2.5 Añadir `@PreviewLightDark` de `DsLevelBadge` para los niveles 0 a 5; verificar visualmente
   en el preview de Android Studio que las cinco insignias son distinguibles en ambos temas.
 
 ## 3. Practicar: insignia de la frase actual
