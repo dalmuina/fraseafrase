@@ -92,7 +92,7 @@ class FraseAFraseAppTest {
 
     private fun waitForPracticeScreen() {
         composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) {
-            composeTestRule.onAllNodesWithText("Cerrar tanda").fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodesWithText("Mostrar traducción").fetchSemanticsNodes().isNotEmpty()
         }
     }
 
