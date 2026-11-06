@@ -42,6 +42,16 @@
   frase mostrada"); verificar que pasa sin cambios adicionales de implementación.
 - [x] 3.4 Test: `PracticeSessionScreenTest` comprueba que una frase de nivel 0 no muestra ninguna
   insignia (spec `practice-session`, escenario "Sin insignia en nivel 0"); verificar que pasa.
+- [x] 3.5 Test: `PracticeSessionScreenTest` comprueba que al revelar una frase de nivel de
+  consolidación 4 la insignia "Platino" sigue mostrándose (spec `practice-session`, escenario
+  "Insignia visible al revelar"); verificar que pasa sin cambios adicionales de implementación.
+  Encontrado por `code-reviewer`: escenario de spec sin test, añadido en la misma rama antes de
+  `/opsx:verify`.
+- [x] 3.6 Test: `PracticeSessionScreenTest` comprueba que una frase con insignia "Oro" (nivel 3), al
+  fallar y volver a mostrarse con su nivel ya bajado, muestra la insignia "Plata" (spec
+  `practice-session`, escenario "Un fallo que baja el nivel actualiza la insignia"); verificar que
+  pasa sin cambios adicionales de implementación. Encontrado por `code-reviewer`: escenario de spec
+  sin test, añadido en la misma rama antes de `/opsx:verify`.
 
 ## 4. Progreso: insignia por fila de nivel
 

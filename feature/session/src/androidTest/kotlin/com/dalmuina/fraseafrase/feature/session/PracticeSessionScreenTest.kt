@@ -15,6 +15,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -158,6 +159,33 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Plata").assertIsDisplayed()
     }
 
+    // Scenario: Insignia visible al revelar (spec: practice-session)
+    @Test
+    fun givenPhraseWithConsolidationLevel4_whenRevealing_thenPlatinumBadgeIsStillDisplayed() {
+        // Given: una frase de nivel de consolidación 4 sin revelar; el estado se actualiza con Reveal
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item().copy(level = Level(4)), revealed = false),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.Reveal) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(revealed = true)
+                        }
+                    },
+                )
+            }
+        }
+
+        // When: el usuario revela la frase
+        composeTestRule.onNodeWithText("Mostrar traducción").performClick()
+
+        // Then: la pantalla sigue mostrando la insignia "Platino"
+        composeTestRule.onNodeWithText("Platino").assertIsDisplayed()
+    }
+
     // Scenario: La insignia cambia con la frase mostrada (spec: practice-session)
     @Test
     fun givenPhraseAShown_whenAssessingAndMovingToPhraseB_thenBadgeChangesWithIt() {
@@ -185,6 +213,34 @@ class PracticeSessionScreenTest {
         // Then: la pantalla muestra la insignia "Diamante"
         composeTestRule.onNodeWithText("Diamante").assertIsDisplayed()
         composeTestRule.onNodeWithText("Bronce").assertDoesNotExist()
+    }
+
+    // Scenario: Un fallo que baja el nivel actualiza la insignia (spec: practice-session)
+    @Test
+    fun givenPhraseWithGoldBadge_whenMissedAndShownAgainWithLowerLevel_thenSilverBadgeIsDisplayed() {
+        // Given: una frase con nivel de consolidación 3 (insignia "Oro"), revelada
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item().copy(level = Level(3)), revealed = true),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        assertTrue(action == PracticeSessionAction.Answer(SelfAssessment.MISS))
+                        uiState = practicing(current = item().copy(level = Level(2)), revealed = false)
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("Oro").assertIsDisplayed()
+
+        // When: el usuario se autoevalúa con fallo y la frase vuelve a mostrarse con su nivel ya bajado
+        composeTestRule.onNodeWithText("Fallo").performClick()
+
+        // Then: la pantalla muestra la insignia "Plata"
+        composeTestRule.onNodeWithText("Plata").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Oro").assertDoesNotExist()
     }
 
     // Scenario: Sin insignia en nivel 0 (spec: practice-session)
