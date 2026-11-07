@@ -12,20 +12,20 @@
 
 ## 2. Paleta y tipografía (`:core:designsystem`)
 
-- [ ] 2.1 Escribir el test de Compose (que debe fallar contra los valores por defecto de Material 3)
+- [x] 2.1 Escribir el test de Compose (que debe fallar contra los valores por defecto de Material 3)
       que verifica que, dentro de `AppTheme(darkTheme = false)` y `AppTheme(darkTheme = true)`,
       `MaterialTheme.colorScheme.primary`/`tertiary`/`background`/`surface` son los valores fijados
       por la tabla de roles de design D1.
-- [ ] 2.2 Actualizar `theme/Color.kt` con `LightColors`/`DarkColors` explícitos según D1; verificar
+- [x] 2.2 Actualizar `theme/Color.kt` con `LightColors`/`DarkColors` explícitos según D1; verificar
       que el test de 2.1 pasa.
-- [ ] 2.3 Escribir el test de Compose (que debe fallar) que verifica que
+- [x] 2.3 Escribir el test de Compose (que debe fallar) que verifica que
       `MaterialTheme.typography.titleLarge.fontFamily` es la familia Baloo 2 esperada.
-- [ ] 2.4 Actualizar `theme/Type.kt` para declarar `FontFamily` de Baloo 2 y Plus Jakarta Sans a
+- [x] 2.4 Actualizar `theme/Type.kt` para declarar `FontFamily` de Baloo 2 y Plus Jakarta Sans a
       partir de los recursos de la tarea 1.2 y aplicarlas a la `Typography` de Material 3 (D4);
       verificar que el test de 2.3 pasa.
-- [ ] 2.5 Escribir el test de Compose (que debe fallar) que verifica que
+- [x] 2.5 Escribir el test de Compose (que debe fallar) que verifica que
       `MaterialTheme.shapes.large` tiene el radio esperado por D2.
-- [ ] 2.6 Crear `theme/Shape.kt` con un `Shapes` de esquinas grandes (D2) y pasarlo a
+- [x] 2.6 Crear `theme/Shape.kt` con un `Shapes` de esquinas grandes (D2) y pasarlo a
       `MaterialTheme` en `AppTheme.kt`; verificar que el test de 2.5 pasa.
 
 ## 3. `DsLevelBadge` con los 6 rangos
