@@ -2,11 +2,11 @@
 
 ## 1. Recursos de design system (sin lógica, base para el resto)
 
-- [ ] 1.1 Copiar los 6 vectores entregados (`ic_rango_sin_rango`, `ic_rango_bronce`,
+- [x] 1.1 Copiar los 6 vectores entregados (`ic_rango_sin_rango`, `ic_rango_bronce`,
       `ic_rango_plata`, `ic_rango_oro`, `ic_rango_platino`, `ic_rango_diamante`) de
       `android_drawable/` a `core/designsystem/src/main/res/drawable/` y verificar que el módulo
       compila con los nuevos recursos (`./gradlew :core:designsystem:assembleDebug`).
-- [ ] 1.2 Descargar los ficheros estáticos OFL de Baloo 2 (600/700) y Plus Jakarta Sans
+- [x] 1.2 Descargar los ficheros estáticos OFL de Baloo 2 (600/700) y Plus Jakarta Sans
       (400/500/600) desde Google Fonts y añadirlos a `core/designsystem/src/main/res/font/`
       (design D4); verificar que el módulo compila con los recursos de fuente añadidos.
 
