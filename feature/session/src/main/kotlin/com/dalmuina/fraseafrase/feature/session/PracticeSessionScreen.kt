@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -133,52 +135,79 @@ private fun PhraseCard(
     nextLevelBadgeLabel: String,
     onAction: (PracticeSessionAction) -> Unit,
 ) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.m),
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        ) {
+            Column(
+                modifier = Modifier.padding(AppTheme.spacing.l),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelLarge)
+                    DsLevelBadge(level = item.level.value)
+                }
+                Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = stringResource(
+                        R.string.practice_remaining_hits_for_next_level,
+                        remainingHitsForNextLevel,
+                        nextLevelBadgeLabel,
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+        }
+        if (revealed) {
+            TranslationCard(target = item.target, enabled = enabled, onAction = onAction)
+        }
+    }
+}
+
+/** Tarjeta de la traducción revelada, con el control de escuchar (spec: practice-session, phrase-audio). */
+@Composable
+private fun TranslationCard(
+    target: String,
+    enabled: Boolean,
+    onAction: (PracticeSessionAction) -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
     ) {
         Column(
             modifier = Modifier.padding(AppTheme.spacing.l),
             verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
-                verticalAlignment = Alignment.CenterVertically,
+            Text(
+                text = target,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            TextButton(
+                onClick = { onAction(PracticeSessionAction.PlayAudio) },
+                enabled = enabled,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
             ) {
-                Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelLarge)
-                DsLevelBadge(level = item.level.value)
-            }
-            Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
-            if (revealed) {
-                Text(
-                    text = item.target,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                TextButton(
-                    onClick = { onAction(PracticeSessionAction.PlayAudio) },
-                    enabled = enabled,
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            modifier = Modifier.testTag("listen_icon"),
-                        )
-                        Text(text = stringResource(R.string.practice_listen))
-                    }
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.testTag("listen_icon"),
+                    )
+                    Text(text = stringResource(R.string.practice_listen))
                 }
             }
-            Text(
-                text = stringResource(
-                    R.string.practice_remaining_hits_for_next_level,
-                    remainingHitsForNextLevel,
-                    nextLevelBadgeLabel,
-                ),
-                style = MaterialTheme.typography.labelLarge,
-            )
         }
     }
 }
@@ -190,12 +219,21 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
         OutlinedButton(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.MISS)) },
             enabled = enabled,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            border = BorderStroke(
+                width = ButtonDefaults.outlinedButtonBorder(enabled).width,
+                color = MaterialTheme.colorScheme.error,
+            ),
         ) {
             Text(text = stringResource(R.string.practice_miss))
         }
         Button(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.HIT)) },
             enabled = enabled,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onTertiary,
+            ),
         ) {
             Text(text = stringResource(R.string.practice_hit))
         }

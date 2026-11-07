@@ -74,14 +74,14 @@
 
 ## 6. Pantalla de Práctica: insignia en nivel 0 y restilizado
 
-- [ ] 6.1 Escribir el test (que debe fallar) de `PracticeSessionScreenTest` (androidTest) para el
+- [x] 6.1 Escribir el test (que debe fallar) de `PracticeSessionScreenTest` (androidTest) para el
       escenario "Sin insignia en nivel 0" de la spec `practice-session` (ahora espera la insignia
       "Sin rango" en vez de ausencia de insignia).
-- [ ] 6.2 Verificar que `PracticeSessionScreen.kt` ya pinta `DsLevelBadge` sin condición especial
+- [x] 6.2 Verificar que `PracticeSessionScreen.kt` ya pinta `DsLevelBadge` sin condición especial
       para nivel 0 (la condición vivía en `DsLevelBadge`, ya corregida en 3.2); si hubiera lógica
       adicional en la pantalla que oculte la insignia en nivel 0, eliminarla. Verificar que el test
       de 6.1 pasa.
-- [ ] 6.3 Aplicar los nuevos tokens de color/forma/tipografía (`MaterialTheme.colorScheme`,
+- [x] 6.3 Aplicar los nuevos tokens de color/forma/tipografía (`MaterialTheme.colorScheme`,
       `MaterialTheme.shapes`, tipografía) a las tarjetas, al botón "Mostrar traducción" y a los
       botones "Fallo"/"Acierto" de `PracticeSessionScreen.kt`, sin introducir valores literales
       (regla de diseño del proyecto); verificar visualmente con `@PreviewLightDark` que coincide con

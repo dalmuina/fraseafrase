@@ -245,13 +245,14 @@ class PracticeSessionScreenTest {
 
     // Scenario: Sin insignia en nivel 0 (spec: practice-session)
     @Test
-    fun givenPhraseWithConsolidationLevel0_whenScreenShown_thenNoBadgeIsDisplayed() {
+    fun givenPhraseWithConsolidationLevel0_whenScreenShown_thenNoRankBadgeIsDisplayed() {
         // Given: una frase nueva con nivel de consolidación 0
         setScreen(practicing(current = item().copy(level = Level(0))))
 
         // When: la pantalla la muestra (estado dado)
 
-        // Then: la pantalla no muestra ninguna insignia para esa frase
+        // Then: la pantalla muestra la insignia "Sin rango" para esa frase, no ninguna de rango
+        composeTestRule.onNodeWithText("Sin rango").assertIsDisplayed()
         composeTestRule.onNodeWithText("Bronce").assertDoesNotExist()
         composeTestRule.onNodeWithText("Plata").assertDoesNotExist()
         composeTestRule.onNodeWithText("Oro").assertDoesNotExist()
