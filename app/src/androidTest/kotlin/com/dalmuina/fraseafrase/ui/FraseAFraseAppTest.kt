@@ -34,6 +34,14 @@ class FraseAFraseAppTest {
         composeTestRule.onNodeWithText("Ajustes").assertExists()
     }
 
+    // Scenario: Los tres destinos están disponibles (spec: app-navigation, new-style delta: icono)
+    @Test
+    fun givenAppLaunched_whenLookingAtTheBottomBar_thenAllThreeDestinationsShowAnIcon() {
+        composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE_ICON).assertExists()
+        composeTestRule.onNodeWithTag(NAV_TAG_PROGRESS_ICON).assertExists()
+        composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS_ICON).assertExists()
+    }
+
     // Scenario: Arranque muestra la práctica seleccionada (spec: app-navigation)
     @Test
     fun givenAppLaunched_whenStartupFinishes_thenPracticeIsShownAndSelected() {
@@ -110,6 +118,9 @@ class FraseAFraseAppTest {
         const val NAV_TAG_PRACTICE = "nav-practice"
         const val NAV_TAG_PROGRESS = "nav-progress"
         const val NAV_TAG_SETTINGS = "nav-settings"
+        const val NAV_TAG_PRACTICE_ICON = "nav-practice-icon"
+        const val NAV_TAG_PROGRESS_ICON = "nav-progress-icon"
+        const val NAV_TAG_SETTINGS_ICON = "nav-settings-icon"
         const val WAIT_TIMEOUT_MILLIS = 5_000L
     }
 }

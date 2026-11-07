@@ -46,10 +46,10 @@
 
 ## 4. Barra de navegación inferior (`:app`)
 
-- [ ] 4.1 Escribir el test (que debe fallar) en el test instrumentado de `FraseAFraseApp` que
+- [x] 4.1 Escribir el test (que debe fallar) en el test instrumentado de `FraseAFraseApp` que
       verifica que los tres `NavigationBarItem` muestran un icono (spec `app-navigation`, escenario
       "Los tres destinos están disponibles").
-- [ ] 4.2 Añadir `implementation(libs.androidx.compose.material.icons.extended)` a
+- [x] 4.2 Añadir `implementation(libs.androidx.compose.material.icons.extended)` a
       `app/build.gradle.kts` (D5, hoy solo llega transitiva dentro de `:core:designsystem`) y
       `Icons.Default.AutoStories`, `Icons.Default.BarChart` y `Icons.Default.Tune` a los
       `icon = {}` vacíos de `FraseAFraseApp.kt`; verificar que el test de 4.1 pasa.
