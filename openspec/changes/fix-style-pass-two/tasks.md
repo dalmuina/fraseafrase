@@ -91,9 +91,9 @@
 
 ## 6. Verificación final
 
-- [ ] 6.1 Ejecutar `./gradlew check` (tests unitarios, instrumentados donde aplique, ktlint y
+- [x] 6.1 Ejecutar `./gradlew check` (tests unitarios, instrumentados donde aplique, ktlint y
   detekt) en verde.
-- [ ] 6.2 Ejecutar `./gradlew koverVerify` y confirmar que se mantienen los mínimos de cobertura
+- [x] 6.2 Ejecutar `./gradlew koverVerify` y confirmar que se mantienen los mínimos de cobertura
   (dominio 90 %, presentación 80 %, global 70 %).
 
 ## Workflow follow-up
