@@ -281,7 +281,7 @@ o sin revelar. El nivel mostrado MUST ser el nivel CEFR de esa frase en el catá
 
 La pantalla de práctica MUST mostrar la insignia de nivel de consolidación (`level-badges`) de la
 frase actual, revelada o sin revelar, junto a su nivel CEFR. La insignia mostrada MUST corresponder
-al nivel de consolidación actual de esa frase.
+al nivel de consolidación actual de esa frase, incluida la insignia "sin rango" en nivel 0.
 
 #### Scenario: Insignia visible sin revelar
 
@@ -295,11 +295,11 @@ al nivel de consolidación actual de esa frase.
 - **WHEN** el usuario la revela
 - **THEN** la pantalla sigue mostrando la insignia "Platino"
 
-#### Scenario: Sin insignia en nivel 0
+#### Scenario: Insignia sin rango en nivel 0
 
 - **GIVEN** una frase nueva con nivel de consolidación 0
 - **WHEN** la pantalla la muestra
-- **THEN** la pantalla no muestra ninguna insignia para esa frase
+- **THEN** la pantalla muestra la insignia "sin rango" para esa frase
 
 #### Scenario: La insignia cambia con la frase mostrada
 

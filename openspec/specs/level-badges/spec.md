@@ -10,16 +10,16 @@ como concepto reutilizable que las pantallas de Practicar y Progreso muestran de
 ### Requirement: Insignia por nivel de consolidación
 
 El sistema MUST asociar a cada nivel de consolidación de 0 a 5 (ADR-0012) una insignia: nivel 0
-MUST NOT tener insignia ("sin rango"); nivel 1 MUST mostrar la insignia "Bronce"; nivel 2 MUST
+MUST mostrar la insignia "sin rango"; nivel 1 MUST mostrar la insignia "Bronce"; nivel 2 MUST
 mostrar "Plata"; nivel 3 MUST mostrar "Oro"; nivel 4 MUST mostrar "Platino"; nivel 5 MUST mostrar
-"Diamante". Cada insignia con nivel 1 a 5 MUST mostrar un icono y una etiqueta de texto con su
-nombre.
+"Diamante". Cada insignia, incluida la de nivel 0, MUST mostrar un icono y una etiqueta de texto con
+su nombre.
 
-#### Scenario: Nivel 0 no muestra insignia
+#### Scenario: Nivel 0 muestra la insignia sin rango
 
 - **GIVEN** una frase con nivel de consolidación 0
 - **WHEN** se pinta su insignia
-- **THEN** no se muestra ningún icono ni etiqueta de insignia
+- **THEN** se muestra un icono y la etiqueta "sin rango"
 
 #### Scenario: Nivel 1 muestra Bronce
 
@@ -53,11 +53,17 @@ nombre.
 
 ### Requirement: Insignias visualmente distintas
 
-Las cinco insignias de nivel 1 a 5 MUST ser distinguibles entre sí por icono o color, además de la
+Las seis insignias de nivel 0 a 5 MUST ser distinguibles entre sí por icono o color, además de la
 etiqueta de texto.
 
 #### Scenario: Oro y Plata no comparten representación
 
 - **GIVEN** las insignias de nivel 2 (Plata) y nivel 3 (Oro)
+- **WHEN** se pintan ambas
+- **THEN** usan un icono o un color distinto entre sí
+
+#### Scenario: Sin rango y Bronce no comparten representación
+
+- **GIVEN** las insignias de nivel 0 (sin rango) y nivel 1 (Bronce)
 - **WHEN** se pintan ambas
 - **THEN** usan un icono o un color distinto entre sí
