@@ -38,27 +38,27 @@
 
 ## 3. Practicar: cabecera fija con título, píldora y barra de progreso (design D1)
 
-- [ ] 3.1 Test instrumentado `givenPracticingState_whenShowingTheScreen_thenTitleAndProgressPillAreDisplayed`
+- [x] 3.1 Test instrumentado `givenPracticingState_whenShowingTheScreen_thenTitleAndProgressPillAreDisplayed`
   en `PracticeSessionScreenTest.kt` que comprueba que se muestran el texto "Practicar" y el texto de
   posición ("X de Y") a la vez que la frase actual; comprobar que falla porque "Practicar" no se
   muestra hoy (`TopAppBar(title = {})`).
-- [ ] 3.2 Implementar el `topBar` de `PracticeSessionScreen` con el título "Practicar"
+- [x] 3.2 Implementar el `topBar` de `PracticeSessionScreen` con el título "Practicar"
   (`MaterialTheme.typography.headlineLarge`) y la píldora de posición (`Surface`/`Box` con
   `MaterialTheme.shapes.extraLarge` y colores `primaryContainer`/`onPrimaryContainer`), visibles
   solo en el estado `Practicing` (design D1), y verificar que el test de 3.1 pasa en verde.
-- [ ] 3.3 Test instrumentado `givenPracticingState_whenShowingTheScreen_thenProgressIndicatorIsDisplayed`
+- [x] 3.3 Test instrumentado `givenPracticingState_whenShowingTheScreen_thenProgressIndicatorIsDisplayed`
   que localiza un `LinearProgressIndicator` en la cabecera y comprueba que falla porque hoy no
   existe ninguno.
-- [ ] 3.4 Añadir el `LinearProgressIndicator(progress = { index / total.toFloat() }, color =
+- [x] 3.4 Añadir el `LinearProgressIndicator(progress = { index / total.toFloat() }, color =
   MaterialTheme.colorScheme.primary)` a la cabecera y verificar que el test de 3.3 pasa en verde.
-- [ ] 3.5 Test instrumentado `givenNothingToPracticeState_whenShowingTheScreen_thenTitleAndPillAreNotDisplayed`
+- [x] 3.5 Test instrumentado `givenNothingToPracticeState_whenShowingTheScreen_thenTitleAndPillAreNotDisplayed`
   que comprueba que en el estado sin frases no aparece la píldora de posición (solo el mensaje
   centrado), y verificar que pasa en verde con la implementación de 3.2 (la cabecera solo se pinta
   en `Practicing`).
-- [ ] 3.6 Test instrumentado en `PracticeSessionScreenTest.kt` que comprueba que el `Text` del nivel
+- [x] 3.6 Test instrumentado en `PracticeSessionScreenTest.kt` que comprueba que el `Text` del nivel
   CEFR en `PhraseCard` usa `MaterialTheme.typography.labelMedium` (design D4), y falla con el
   `labelLarge` actual.
-- [ ] 3.7 Cambiar `PhraseCard` (`PracticeSessionScreen.kt`) de `labelLarge` a `labelMedium` para el
+- [x] 3.7 Cambiar `PhraseCard` (`PracticeSessionScreen.kt`) de `labelLarge` a `labelMedium` para el
   nivel CEFR y verificar que el test de 3.6 pasa en verde.
 
 ## 4. Practicar: contenido a ancho completo (design D2)

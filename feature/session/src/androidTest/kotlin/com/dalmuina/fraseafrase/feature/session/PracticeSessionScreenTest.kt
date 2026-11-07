@@ -1,14 +1,18 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
@@ -17,6 +21,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -399,6 +404,76 @@ class PracticeSessionScreenTest {
 
         // Then: el botón de generar sesión está deshabilitado
         composeTestRule.onNodeWithText("Generar sesión").assertIsNotEnabled()
+    }
+
+    // Scenario: Posición en la tanda visible (spec: practice-session), cabecera fija (design D1,
+    // fix-style-pass-two)
+    @Test
+    fun givenPracticingState_whenShowingTheScreen_thenTitleAndProgressPillAreDisplayed() {
+        // Given: una tanda activa de cinco frases, mostrando la segunda
+        setScreen(practicing(current = item(source = "Buenos días")).copy(index = 2, total = 5))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: la cabecera muestra el título "Practicar" y la píldora "2 de 5" a la vez que la frase actual
+        composeTestRule.onNodeWithText("Practicar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("2 de 5").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Buenos días").assertIsDisplayed()
+    }
+
+    // Scenario: Posición en la tanda visible (spec: practice-session), barra de progreso (design D1,
+    // fix-style-pass-two)
+    @Test
+    fun givenPracticingState_whenShowingTheScreen_thenProgressIndicatorIsDisplayed() {
+        // Given: una tanda activa de cinco frases, mostrando la segunda
+        setScreen(practicing(current = item()).copy(index = 2, total = 5))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: la cabecera muestra una barra de progreso lineal
+        composeTestRule.onNodeWithTag("practice_progress_indicator").assertIsDisplayed()
+    }
+
+    // Scenario: Estado vacío sin frases disponibles (spec: practice-session), sin cabecera (design D1,
+    // fix-style-pass-two)
+    @Test
+    fun givenNothingToPracticeState_whenShowingTheScreen_thenTitleAndPillAreNotDisplayed() {
+        // Given: no hay frases disponibles
+
+        // When: la pantalla se muestra en el estado NothingToPractice
+        setScreen(PracticeSessionUiState.NothingToPractice)
+
+        // Then: no aparecen el título ni la píldora de posición ni la barra de progreso
+        composeTestRule.onNodeWithText("Practicar").assertDoesNotExist()
+        composeTestRule.onNodeWithTag("practice_progress_indicator").assertDoesNotExist()
+    }
+
+    // Scenario: Nivel CEFR de la frase visible (spec: practice-session), etiqueta pequeña consistente
+    // (design D4, fix-style-pass-two)
+    @Test
+    fun givenPracticingState_whenShowingTheScreen_thenCefrLevelLabelUsesLabelMediumTypography() {
+        // Given: se captura el tamaño de fuente esperado para labelMedium del tema actual, y una frase de nivel B1
+        var expectedFontSize: TextUnit = TextUnit.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedFontSize = MaterialTheme.typography.labelMedium.fontSize
+                // When: la pantalla muestra la frase sin revelar
+                PracticeSessionScreen(
+                    uiState = practicing(current = item(cefrLevel = CefrLevel.B1)),
+                    onAction = {},
+                )
+            }
+        }
+
+        // Then: el tamaño de fuente del nivel CEFR coincide con labelMedium
+        val layoutResults = mutableListOf<TextLayoutResult>()
+        composeTestRule.onNodeWithText("B1")
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(layoutResults)
+
+        assertEquals(expectedFontSize, layoutResults.first().layoutInput.style.fontSize)
     }
 
     private fun setScreen(uiState: PracticeSessionUiState) {

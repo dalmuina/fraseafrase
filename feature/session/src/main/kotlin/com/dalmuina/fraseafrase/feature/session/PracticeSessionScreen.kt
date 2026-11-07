@@ -17,12 +17,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,11 @@ internal fun PracticeSessionScreen(
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { TopAppBar(title = {}) },
+        topBar = {
+            if (uiState is PracticeSessionUiState.Practicing && !uiState.completed) {
+                PracticeHeader(index = uiState.index, total = uiState.total)
+            }
+        },
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -70,6 +75,49 @@ internal fun PracticeSessionScreen(
     }
 }
 
+/**
+ * Cabecera fija de Practicar: título, píldora de posición en la tanda y barra de progreso (spec:
+ * practice-session, "Posición en la tanda visible"; design D1 de `fix-style-pass-two`).
+ */
+@Composable
+private fun PracticeHeader(index: Int, total: Int) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(AppTheme.spacing.m),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.practice_title),
+                style = MaterialTheme.typography.headlineLarge,
+            )
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.primaryContainer,
+            ) {
+                Text(
+                    text = stringResource(R.string.practice_position, index, total),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(horizontal = AppTheme.spacing.m, vertical = AppTheme.spacing.s),
+                )
+            }
+        }
+        LinearProgressIndicator(
+            progress = { index / total.toFloat() },
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("practice_progress_indicator"),
+        )
+    }
+}
+
 /** Frase actual con sus botones de revelar o autoevaluar, o el mensaje de tanda completada en su lugar. */
 @Composable
 private fun PracticingContent(
@@ -83,10 +131,6 @@ private fun PracticingContent(
         if (state.completed) {
             CompletedMessage(enabled = !state.busy, onAction = onAction)
         } else {
-            Text(
-                text = stringResource(R.string.practice_position, state.index, state.total),
-                style = MaterialTheme.typography.labelLarge,
-            )
             PhraseCard(
                 item = state.current,
                 revealed = state.revealed,
@@ -151,7 +195,7 @@ private fun PhraseCard(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelLarge)
+                    Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelMedium)
                     DsLevelBadge(level = item.level.value)
                 }
                 Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
