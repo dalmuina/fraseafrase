@@ -27,20 +27,16 @@ import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
-import com.dalmuina.fraseafrase.core.domain.time.Clock
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 
 /**
  * Tests instrumentados de [PracticeSessionRoute] (ADR-0007, design D4 de `add-settings-apply-flow`). Construye un
@@ -116,7 +112,7 @@ class PracticeSessionRouteTest {
     private fun activeBatchSnapshot(order: List<String>): PracticeSnapshot = PracticeSnapshot(
         progress = order.map { phraseProgress(it) },
         activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
-        carry = CarryQueue(emptyList()),
+        sessionCount = 0,
     )
 
     private fun PracticeSnapshot.withActiveBatch(order: List<String>): PracticeSnapshot = copy(
@@ -130,7 +126,7 @@ class PracticeSessionRouteTest {
         level = Level(0),
         streak = Streak(0),
         answeredInBatch = false,
-        nextReview = null,
+        dueAtSession = 0,
     )
 
     private fun catalogOf(vararg ids: String): CatalogLoadResult.Loaded {
@@ -159,10 +155,9 @@ class PracticeSessionRouteTest {
         practice: PracticeRepository,
         catalog: CatalogLoadResult,
     ): PracticeSessionViewModel {
-        val clock = TestClock(TODAY)
         val catalogRepository = TestCatalogRepository(catalog)
         val settingsRepository = TestSettingsRepository()
-        val composeNextBatch = ComposeNextBatch(clock)
+        val composeNextBatch = ComposeNextBatch()
         val obtainActiveBatch = ObtainActiveBatch(
             composeNextBatch = composeNextBatch,
             catalogRepository = catalogRepository,
@@ -171,10 +166,9 @@ class PracticeSessionRouteTest {
         )
         return PracticeSessionViewModel(
             obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository),
-            answerPhrase = AnswerPhrase(practice, clock),
+            answerPhrase = AnswerPhrase(practice),
             generateSession = GenerateSession(
                 practiceRepository = practice,
-                resolveBatchClosure = ResolveBatchClosure(clock),
                 composeNextBatch = composeNextBatch,
                 catalogRepository = catalogRepository,
                 settingsRepository = settingsRepository,
@@ -210,15 +204,7 @@ class PracticeSessionRouteTest {
         }
     }
 
-    private class TestClock(private val date: LocalDate) : Clock {
-        override fun today(): LocalDate = date
-    }
-
     private class TestPhrasePlayer : PhrasePlayer {
         override fun play(text: String, locale: LanguageTag) = Unit
-    }
-
-    private companion object {
-        val TODAY: LocalDate = LocalDate.of(2026, 3, 10)
     }
 }

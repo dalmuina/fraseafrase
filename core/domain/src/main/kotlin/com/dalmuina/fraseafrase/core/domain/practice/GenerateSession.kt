@@ -4,19 +4,17 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import javax.inject.Inject
 
 /**
- * Genera la sesión siguiente en un único paso (ADR-0012, design D3 de
- * `replace-batch-closure-with-session-generation`): resuelve la tanda activa con la misma regla que cerrarla
- * (certifica, sube de nivel, arrastra) y compone inmediatamente la tanda siguiente por cuotas, todo en la misma
- * transacción de [PracticeRepository]. No recibe ningún aviso previo: al no haber expectativa que comprobar, no
- * hay resultado de tipo "obsoleto". Sin tanda activa, compone directamente.
+ * Genera la sesión siguiente en un único paso (ADR-0012, ADR-0017, design D4 de `repeat-by-session-counter`):
+ * incrementa el contador de sesiones generadas y compone inmediatamente la tanda siguiente por cuotas, a
+ * partir del progreso ya resuelto (cada frase se resuelve al instante de su propia autoevaluación). No recibe
+ * ningún aviso previo: al no haber expectativa que comprobar, no hay resultado de tipo "obsoleto". Sin tanda
+ * activa, compone directamente.
  */
 class GenerateSession @Inject constructor(
     private val practiceRepository: PracticeRepository,
-    private val resolveBatchClosure: ResolveBatchClosure,
     private val composeNextBatch: ComposeNextBatch,
     private val catalogRepository: CatalogRepository,
     private val settingsRepository: SettingsRepository,
@@ -29,9 +27,9 @@ class GenerateSession @Inject constructor(
         }
         val settings = settingsRepository.settings()
         return practiceRepository.transact { snapshot ->
-            val advanced = snapshot.batch()?.let { advanceActiveBatch(snapshot, it, resolveBatchClosure) }
-                ?: snapshot
-            composeNextBatchInto(composeNextBatch, advanced, catalog, settings.cefrLevel, settings.batchSize)
+            val nextSessionCount = snapshot.sessionCount + 1
+            val cleared = snapshot.copy(activeBatch = null, sessionCount = nextSessionCount)
+            composeNextBatchInto(composeNextBatch, cleared, catalog, settings, nextSessionCount)
         }
     }
 }

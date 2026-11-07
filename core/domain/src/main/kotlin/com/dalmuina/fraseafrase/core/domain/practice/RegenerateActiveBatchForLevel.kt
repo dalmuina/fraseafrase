@@ -3,34 +3,33 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
-import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
+import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import javax.inject.Inject
 
 /**
- * Recompone la tanda activa al cambiar el nivel CEFR elegido (ADR-0012, design D4 de
- * `replace-batch-closure-with-session-generation`): mueve las entradas de la tanda activa a la cola de
- * arrastradas tal cual, sin certificar ni cambiar nivel de consolidación ni próximo repaso de ninguna frase
- * (sin resolución de cierre), y compone de inmediato la tanda siguiente por cuotas con el nuevo nivel CEFR. Sin
- * tanda activa, compone directamente con el nuevo nivel.
+ * Recompone la tanda activa al cambiar los ajustes de práctica (nivel CEFR y/o tamaño N) (ADR-0012, ADR-0017,
+ * design D4/D5 de `repeat-by-session-counter`): vacía la tanda activa sin resolución (sin certificar ni
+ * cambiar racha, nivel de consolidación ni `dueAtSession` de ninguna frase) y compone de inmediato la tanda
+ * siguiente por cuotas con [cefrLevel] y [batchSize] recién guardados, sin incrementar el contador de sesiones
+ * generadas. Sin tanda activa, compone directamente con los nuevos valores.
  */
 class RegenerateActiveBatchForLevel @Inject constructor(
     private val practiceRepository: PracticeRepository,
     private val composeNextBatch: ComposeNextBatch,
     private val catalogRepository: CatalogRepository,
-    private val settingsRepository: SettingsRepository,
 ) {
 
-    suspend operator fun invoke(cefrLevel: CefrLevel): ActiveBatchResult {
+    suspend operator fun invoke(cefrLevel: CefrLevel, batchSize: BatchSize): ActiveBatchResult {
         val catalog = when (val loaded = catalogRepository.phrases()) {
             is CatalogLoadResult.Loaded -> loaded.phrases
             is CatalogLoadResult.Failed -> return ActiveBatchResult.CatalogUnavailable(loaded.error)
         }
-        val size = settingsRepository.settings().batchSize
+        val settings = UserSettings(cefrLevel, batchSize)
         return practiceRepository.transact { snapshot ->
-            val advanced = snapshot.batch()?.let { advanceActiveBatch(snapshot, it, resolveBatchClosure = null) }
-                ?: snapshot
-            composeNextBatchInto(composeNextBatch, advanced, catalog, cefrLevel, size)
+            val cleared = snapshot.copy(activeBatch = null)
+            composeNextBatchInto(composeNextBatch, cleared, catalog, settings, snapshot.sessionCount)
         }
     }
 }

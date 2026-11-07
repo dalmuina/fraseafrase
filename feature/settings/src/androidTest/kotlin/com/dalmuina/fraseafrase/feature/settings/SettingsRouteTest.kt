@@ -4,7 +4,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
-import com.dalmuina.fraseafrase.core.domain.practice.ForceCloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
@@ -14,17 +13,13 @@ import com.dalmuina.fraseafrase.core.domain.settings.SaveUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
-import com.dalmuina.fraseafrase.core.domain.time.Clock
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 
 /**
  * Tests instrumentados de [SettingsRoute] (ADR-0007, design D5 de `add-settings-apply-flow`). Construye un
@@ -86,17 +81,14 @@ class SettingsRouteTest {
     }
 
     private fun settingsViewModel(repository: SettingsRepository): SettingsViewModel {
-        val clock = TestClock(LocalDate.of(2026, 3, 10))
         val practice = TestPracticeRepository()
         return SettingsViewModel(
             obtainUserSettings = ObtainUserSettings(repository),
             saveUserSettings = SaveUserSettings(repository),
-            forceCloseActiveBatch = ForceCloseActiveBatch(practice, ResolveBatchClosure(clock)),
             regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
                 practiceRepository = practice,
-                composeNextBatch = ComposeNextBatch(clock),
+                composeNextBatch = ComposeNextBatch(),
                 catalogRepository = TestCatalogRepository(),
-                settingsRepository = repository,
             ),
         )
     }
@@ -110,13 +102,13 @@ class SettingsRouteTest {
         }
     }
 
-    /** Fake local de [PracticeRepository], sin tanda activa: basta para que [ForceCloseActiveBatch] no haga nada. */
+    /** Fake local de [PracticeRepository], sin tanda activa: basta para que recomponer no haga nada. */
     private class TestPracticeRepository : PracticeRepository {
         private val mutex = Mutex()
         private var state = PracticeSnapshot(
             progress = emptyList(),
             activeBatch = null,
-            carry = CarryQueue(emptyList()),
+            sessionCount = 0,
         )
 
         override suspend fun read(): PracticeSnapshot = mutex.withLock { state }
@@ -126,10 +118,6 @@ class SettingsRouteTest {
             state = outcome.next
             outcome.result
         }
-    }
-
-    private class TestClock(private val date: LocalDate) : Clock {
-        override fun today(): LocalDate = date
     }
 
     /** Fake local de [CatalogRepository], sin frases: basta para que [RegenerateActiveBatchForLevel] no falle. */

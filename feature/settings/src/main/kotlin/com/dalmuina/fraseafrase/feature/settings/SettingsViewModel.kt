@@ -3,7 +3,6 @@ package com.dalmuina.fraseafrase.feature.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
-import com.dalmuina.fraseafrase.core.domain.practice.ForceCloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SaveUserSettings
@@ -23,7 +22,6 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val obtainUserSettings: ObtainUserSettings,
     private val saveUserSettings: SaveUserSettings,
-    private val forceCloseActiveBatch: ForceCloseActiveBatch,
     private val regenerateActiveBatchForLevel: RegenerateActiveBatchForLevel,
 ) : ViewModel() {
 
@@ -54,9 +52,10 @@ class SettingsViewModel @Inject constructor(
     /**
      * Guarda los ajustes mostrados. Solo tiene efecto con [SettingsUiState.Loaded.isBatchSizeValid] a true: es la
      * única condición de la spec para guardar, y la UI deshabilita la acción en caso contrario, pero el ViewModel
-     * no asume que la UI siempre lo impide. Si N cambió respecto a lo persistido (con o sin cambio de nivel CEFR a
-     * la vez), cierra la tanda activa sin aviso (design D3/D5); si solo cambió el nivel CEFR, la recompone sin
-     * cerrarla (design D4/D5). En ambos casos pide navegar a práctica; en cualquier caso pide confirmar el guardado.
+     * no asume que la UI siempre lo impide. Si el nivel CEFR o N cambiaron respecto a lo persistido (cualquiera
+     * de los dos, o ambos), recompone la tanda activa sin aviso y sin tocar el progreso de ninguna frase (design
+     * D4/D5): ya no hay una distinción de comportamiento entre cambiar uno u otro. En ese caso pide navegar a
+     * práctica; en cualquier caso pide confirmar el guardado.
      */
     private fun save() {
         val state = _uiState.value as? SettingsUiState.Loaded ?: return
@@ -65,14 +64,9 @@ class SettingsViewModel @Inject constructor(
         val newSettings = UserSettings(state.cefrLevel, BatchSize(batchSize))
         viewModelScope.launch {
             saveUserSettings(newSettings)
-            val previous = persistedSettings
-            val batchSizeChanged = previous != null && newSettings.batchSize != previous.batchSize
-            val cefrLevelChanged = previous != null && newSettings.cefrLevel != previous.cefrLevel
-            val hasChanged = batchSizeChanged || cefrLevelChanged
-            if (batchSizeChanged) {
-                forceCloseActiveBatch()
-            } else if (cefrLevelChanged) {
-                regenerateActiveBatchForLevel(newSettings.cefrLevel)
+            val hasChanged = persistedSettings != null && persistedSettings != newSettings
+            if (hasChanged) {
+                regenerateActiveBatchForLevel(newSettings.cefrLevel, newSettings.batchSize)
             }
             persistedSettings = newSettings
             val current = _uiState.value as? SettingsUiState.Loaded ?: return@launch

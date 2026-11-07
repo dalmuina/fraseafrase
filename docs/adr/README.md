@@ -21,7 +21,8 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0013](0013-persistencia-catalogo-json-y-estado-en-room.md) | Persistencia con catálogo JSON en assets y estado del usuario en Room 3 | Aceptado |
 | [0014](0014-estrategia-de-testing-junit-6-y-junit-4-instrumentado.md) | Estrategia de testing con JUnit 6 y JUnit 4 en instrumentados | Aceptado |
 | [0015](0015-bajada-instantanea-de-nivel-ante-un-fallo.md) | Bajada instantánea de nivel de consolidación ante un fallo | Sustituido por 0016 |
-| [0016](0016-generar-sesion-por-cuotas.md) | Generar sesión por cuotas en vez de cerrar tanda con aviso | Aceptado |
+| [0016](0016-generar-sesion-por-cuotas.md) | Generar sesión por cuotas en vez de cerrar tanda con aviso | Sustituido por 0017 |
+| [0017](0017-repeticion-por-contador-de-sesiones.md) | Repetición por contador de sesiones, sin cola de arrastradas | Aceptado |
 
 ## Plantilla
 

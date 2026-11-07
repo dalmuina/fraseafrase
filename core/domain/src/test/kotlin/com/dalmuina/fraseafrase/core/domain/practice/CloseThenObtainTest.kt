@@ -4,16 +4,13 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
-import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.collections.shouldContainExactly
@@ -21,37 +18,30 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
-// Ciclo completo entre cierre y composición (spec practice-persistence, "Composición única tras el cierre";
-// design D4). Persistencia en fake; la persistencia real en Room va en :core:data (tarea 8.6).
+// Ciclo completo entre cierre y composición (spec practice-persistence, "Composición única tras vaciar la
+// tanda activa"; ADR-0017). Persistencia en fake; la persistencia real en Room va en :core:data.
 class CloseThenObtainTest {
-
-    private val today = LocalDate.of(2026, 3, 10)
-    private val clock = FixedClock(today)
 
     private val catalog = CatalogLoadResult.Loaded(
         listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.A1) },
     )
 
-    private fun obtain(practice: FakePracticeRepository) = ObtainActiveBatch(
-        composeNextBatch = ComposeNextBatch(clock),
-        catalogRepository = FakeCatalogRepository(catalog),
-        settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
-        practiceRepository = practice,
-    )
+    private fun obtain(practice: FakePracticeRepository, catalogResult: CatalogLoadResult = catalog) =
+        ObtainActiveBatch(
+            composeNextBatch = ComposeNextBatch(),
+            catalogRepository = FakeCatalogRepository(catalogResult),
+            settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
+            practiceRepository = practice,
+        )
 
-    private suspend fun close(practice: FakePracticeRepository) =
-        ForceCloseActiveBatch(practice, ResolveBatchClosure(clock)).invoke()
+    private suspend fun close(practice: FakePracticeRepository) {
+        practice.transact { snapshot -> PracticeChange(snapshot.copy(activeBatch = null), Unit) }
+    }
 
-    // Certificada hoy, con repaso mañana: no vuelve a entrar en la tanda siguiente
-    private fun certified(id: String) = aPhraseProgress(
-        id = id,
-        level = Level(1),
-        streak = Streak(3),
-        answeredInBatch = true,
-        nextReview = today.plusDays(1),
-    )
+    // Certificada con repaso muy en el futuro: no vuelve a entrar en la tanda siguiente
+    private fun certified(id: String) =
+        aPhraseProgress(id = id, level = Level(1), streak = Streak(3), dueAtSession = 100)
 
     // Scenario: Cierre sin composición posible deja la tanda sin activar (spec: practice-persistence)
     @Test
@@ -62,18 +52,13 @@ class CloseThenObtainTest {
             PracticeSnapshot(
                 progress = listOf(certified("A"), certified("B")),
                 activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
-                carry = CarryQueue(emptyList()),
+                sessionCount = 0,
             ),
         )
         close(practice)
 
         // When
-        val result = ObtainActiveBatch(
-            composeNextBatch = ComposeNextBatch(clock),
-            catalogRepository = FakeCatalogRepository(onlyAB),
-            settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
-            practiceRepository = practice,
-        ).invoke()
+        val result = obtain(practice, onlyAB).invoke()
 
         // Then
         result shouldBe ActiveBatchResult.NothingAvailable
@@ -88,7 +73,7 @@ class CloseThenObtainTest {
             PracticeSnapshot(
                 progress = listOf(certified("A"), certified("B")),
                 activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
-                carry = CarryQueue(emptyList()),
+                sessionCount = 0,
             ),
         )
         close(practice)

@@ -3,7 +3,6 @@ package com.dalmuina.fraseafrase.core.testing
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -28,7 +27,7 @@ class FakePracticeRepository(initial: PracticeSnapshot = emptySnapshot()) : Prac
         fun emptySnapshot() = PracticeSnapshot(
             progress = emptyList(),
             activeBatch = null,
-            carry = CarryQueue(emptyList())
+            sessionCount = 0,
         )
     }
 }

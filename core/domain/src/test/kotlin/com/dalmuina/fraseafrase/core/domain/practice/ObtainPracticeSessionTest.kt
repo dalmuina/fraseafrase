@@ -7,17 +7,14 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
-import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.assertions.throwables.shouldThrow
@@ -26,20 +23,16 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class ObtainPracticeSessionTest {
-
-    private val today = LocalDate.of(2026, 3, 10)
 
     private fun useCase(
         practice: FakePracticeRepository,
         catalog: CatalogLoadResult,
         settings: UserSettings = UserSettings.DEFAULT,
-        clock: FixedClock = FixedClock(today),
     ) = ObtainPracticeSession(
         obtainActiveBatch = ObtainActiveBatch(
-            composeNextBatch = ComposeNextBatch(clock),
+            composeNextBatch = ComposeNextBatch(),
             catalogRepository = FakeCatalogRepository(catalog),
             settingsRepository = FakeSettingsRepository(settings),
             practiceRepository = practice,
@@ -50,13 +43,18 @@ class ObtainPracticeSessionTest {
     private fun activeBatch(
         order: List<String>,
         progress: List<PhraseProgress>,
+        sessionCount: Int = 0,
     ) = PracticeSnapshot(
         progress = progress,
         activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
-        carry = CarryQueue(emptyList()),
+        sessionCount = sessionCount,
     )
 
     private fun loaded(vararg phrases: CatalogPhrase) = CatalogLoadResult.Loaded(phrases.toList())
+
+    private suspend fun clearActiveBatch(practice: FakePracticeRepository) {
+        practice.transact { snapshot -> PracticeChange(snapshot.copy(activeBatch = null), Unit) }
+    }
 
     // Scenario: Al abrir la práctica se muestra la primera frase en español (spec: practice-session)
     @Test
@@ -111,7 +109,7 @@ class ObtainPracticeSessionTest {
             val practice = FakePracticeRepository(
                 activeBatch(
                     order = listOf("A"),
-                    progress = listOf(aPhraseProgress(id = "A", level = Level(3), nextReview = tomorrow)),
+                    progress = listOf(aPhraseProgress(id = "A", level = Level(3), dueAtSession = 5)),
                 ),
             )
             val catalog = loaded(aCatalogPhrase(id = "A"))
@@ -184,48 +182,43 @@ class ObtainPracticeSessionTest {
             ready.items.first().streak shouldBe Streak(0)
         }
 
-    // Scenario: Cambio de día con tanda activa no altera la tanda (spec: practice-session)
+    // Scenario: Tanda activa se muestra sin cambios, al margen de otras frases pendientes (spec: practice-session)
     @Test
-    fun `given an active batch and a new day when opening the session then the same phrases are shown`() = runTest {
-        // Given: tanda activa de cinco frases compuesta el 10-03 y P con repaso el 11-03 fuera de ella
-        val batchPhrases = listOf("A", "B", "C", "D", "E")
-        val practice = FakePracticeRepository(
-            activeBatch(
-                order = batchPhrases,
-                progress = batchPhrases.map { aPhraseProgress(id = it) } +
-                    aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11)),
-            ),
-        )
-        val catalog = loaded(*(batchPhrases + "P").map { aCatalogPhrase(id = it) }.toTypedArray())
+    fun `given an active batch when opening the session then the same phrases are shown regardless of other phrases`() =
+        runTest {
+            // Given: tanda activa de cinco frases, y P con dueAtSession futuro fuera de ella
+            val batchPhrases = listOf("A", "B", "C", "D", "E")
+            val practice = FakePracticeRepository(
+                activeBatch(
+                    order = batchPhrases,
+                    progress = batchPhrases.map { aPhraseProgress(id = it) } +
+                        aPhraseProgress(id = "P", level = Level(1), dueAtSession = 5),
+                ),
+            )
+            val catalog = loaded(*(batchPhrases + "P").map { aCatalogPhrase(id = it) }.toTypedArray())
 
-        // When
-        val result = useCase(practice, catalog, clock = FixedClock(LocalDate.of(2026, 3, 11))).invoke()
+            // When
+            val result = useCase(practice, catalog).invoke()
 
-        // Then
-        val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
-        ready.items.map { it.id.value } shouldBe batchPhrases
-    }
+            // Then
+            val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
+            ready.items.map { it.id.value } shouldBe batchPhrases
+        }
 
     // Scenario: Catálogo agotado tras cerrar (spec: practice-session)
     @Test
     fun `given a closed batch and an exhausted catalog when opening the session then nothing to practice`() = runTest {
-        // Given: tanda de dos frases certificadas, con repaso futuro, y catálogo formado solo por ellas
+        // Given: tanda de dos frases certificadas, con repaso muy futuro, y catálogo formado solo por ellas
         val practice = FakePracticeRepository(
             activeBatch(
                 order = listOf("A", "B"),
                 progress = listOf("A", "B").map {
-                    aPhraseProgress(
-                        id = it,
-                        level = Level(1),
-                        streak = Streak(3),
-                        answeredInBatch = true,
-                        nextReview = today.plusDays(1),
-                    )
+                    aPhraseProgress(id = it, level = Level(1), streak = Streak(3), dueAtSession = 100)
                 },
             ),
         )
         val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"))
-        ForceCloseActiveBatch(practice, ResolveBatchClosure(FixedClock(today))).invoke()
+        clearActiveBatch(practice)
 
         // When
         val result = useCase(practice, catalog).invoke()
@@ -237,12 +230,12 @@ class ObtainPracticeSessionTest {
     // Scenario: Frases con repaso futuro sin tanda (spec: practice-session)
     @Test
     fun `given only future reviews and no active batch when opening the session then nothing to practice`() = runTest {
-        // Given: catálogo cuya única frase P tiene nivel 1 con repaso el 11-03, y hoy es 10-03
+        // Given: catálogo cuya única frase P tiene nivel 1 con dueAtSession futuro y sin tanda activa
         val practice = FakePracticeRepository(
             PracticeSnapshot(
-                progress = listOf(aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11))),
+                progress = listOf(aPhraseProgress(id = "P", level = Level(1), dueAtSession = 5)),
                 activeBatch = null,
-                carry = CarryQueue(emptyList()),
+                sessionCount = 0,
             ),
         )
         val catalog = loaded(aCatalogPhrase(id = "P"))
@@ -253,8 +246,6 @@ class ObtainPracticeSessionTest {
         // Then
         result shouldBe PracticeSessionResult.NothingToPractice
     }
-
-    private val tomorrow = today.plusDays(1)
 
     // Scenario: Tanda completa tras responder a todas sus frases (spec: practice-batch, Tanda completa)
     @Test

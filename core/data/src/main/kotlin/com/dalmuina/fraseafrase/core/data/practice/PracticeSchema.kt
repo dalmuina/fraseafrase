@@ -17,9 +17,6 @@ import androidx.sqlite.execSQL
 internal object PracticeSchema {
 
     private const val LEVEL_RANGE_MESSAGE = "level must be 0..5"
-    private const val ONE_POSITION_MESSAGE = "a phrase cannot be in the batch and in the carry queue"
-    private const val LEVEL_ZERO_MESSAGE = "a level 0 phrase must be in the batch or in the carry queue"
-    private const val REVIEW_MESSAGE = "next_review must be null exactly when level is 0"
     private const val SINGLETON_MESSAGE = "active_batch has a single row with id 1"
     private const val CAPACITY_MESSAGE = "capacity must be 10..30"
 
@@ -29,24 +26,6 @@ internal object PracticeSchema {
             table = "phrase_progress",
             condition = "NEW.level < 0 OR NEW.level > 5",
             message = LEVEL_RANGE_MESSAGE,
-        ),
-        guard(
-            name = "phrase_progress_one_position",
-            table = "phrase_progress",
-            condition = "NEW.batch_position IS NOT NULL AND NEW.carry_position IS NOT NULL",
-            message = ONE_POSITION_MESSAGE,
-        ),
-        guard(
-            name = "phrase_progress_level_zero_placed",
-            table = "phrase_progress",
-            condition = "NEW.level = 0 AND NEW.batch_position IS NULL AND NEW.carry_position IS NULL",
-            message = LEVEL_ZERO_MESSAGE,
-        ),
-        guard(
-            name = "phrase_progress_review",
-            table = "phrase_progress",
-            condition = "(NEW.level = 0) <> (NEW.next_review IS NULL)",
-            message = REVIEW_MESSAGE,
         ),
         guard(
             name = "active_batch_singleton",
@@ -82,4 +61,7 @@ fun createPracticeDatabase(context: Context): PracticeDatabase =
     Room.databaseBuilder(context, PracticeDatabase::class.java, "practice.db")
         .setDriver(BundledSQLiteDriver())
         .addCallback(PracticeSchema.callback)
+        // Design D7 de `repeat-by-session-counter`: proyecto pre-1.0.0, sin usuarios en producción. La versión 1 se
+        // recrea en vez de migrarse: el progreso existente se pierde, igual que una instalación nueva.
+        .fallbackToDestructiveMigration()
         .build()

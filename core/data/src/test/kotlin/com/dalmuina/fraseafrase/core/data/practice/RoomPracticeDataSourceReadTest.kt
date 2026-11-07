@@ -1,7 +1,6 @@
 package com.dalmuina.fraseafrase.core.data.practice
 
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -30,9 +29,9 @@ class RoomPracticeDataSourceReadTest {
         database.close()
     }
 
-    // Scenario: Persistencia del progreso por frase (spec: practice-persistence)
+    // Scenario: Progreso sobrevive al reinicio (spec: practice-persistence)
     @Test
-    fun `given a saved phrase progress when reading then the phrase keeps its level and review date`() = runTest {
+    fun `given a saved phrase progress when reading then the phrase keeps its level and due session`() = runTest {
         // Given
         database.phraseProgressDao().insert(
             PhraseProgressEntity(
@@ -40,9 +39,8 @@ class RoomPracticeDataSourceReadTest {
                 level = 2,
                 streak = 0,
                 answeredInBatch = false,
-                nextReview = "2026-03-13",
+                dueAtSession = 13,
                 batchPosition = null,
-                carryPosition = null,
             ),
         )
 
@@ -53,7 +51,17 @@ class RoomPracticeDataSourceReadTest {
         val phrase = snapshot.progress.single()
         phrase.id.value shouldBe "A"
         phrase.level.value shouldBe 2
-        phrase.nextReview.toString() shouldBe "2026-03-13"
+        phrase.dueAtSession shouldBe 13
+    }
+
+    // Scenario: Sin contador guardado el valor por defecto es 0 (spec: practice-persistence)
+    @Test
+    fun `given no session counter row when reading then the session count is 0`() = runTest {
+        // When
+        val snapshot = source.read()
+
+        // Then
+        snapshot.sessionCount shouldBe 0
     }
 
     // Scenario: Orden de la tanda activa (spec: practice-persistence)
@@ -79,14 +87,13 @@ class RoomPracticeDataSourceReadTest {
     @Test
     fun `given no active batch row when reading then the snapshot reports no active batch`() = runTest {
         // Given
-        database.phraseProgressDao().insert(entry(id = "A", level = 1, nextReview = "2026-03-11"))
+        database.phraseProgressDao().insert(entry(id = "A", level = 1, dueAtSession = 1))
 
         // When
         val snapshot = source.read()
 
         // Then
         snapshot.activeBatch.shouldBeNull()
-        snapshot.carry.ids.shouldBeEmpty()
     }
 
     // Scenario: Lectura coherente del estado (spec: practice-persistence). Las lecturas se hacen tras cada escritura
@@ -95,12 +102,12 @@ class RoomPracticeDataSourceReadTest {
     fun `given a completed state change when reading then every read sees either the old or the new state`() = runTest {
         // Given
         val dao = database.phraseProgressDao()
-        dao.insert(entry(id = "A", carryPosition = 0))
-        dao.insert(entry(id = "B", carryPosition = 1))
+        dao.insert(entry(id = "A"))
+        dao.insert(entry(id = "B"))
         val before = source.read()
 
         // When
-        dao.update(entry(id = "A", level = 1, carryPosition = null))
+        dao.update(entry(id = "A", level = 1, dueAtSession = 1))
         val after = source.read()
         val observed = (1..20).map { source.read() }
 
@@ -112,15 +119,13 @@ class RoomPracticeDataSourceReadTest {
         id: String,
         level: Int = 0,
         batchPosition: Int? = null,
-        carryPosition: Int? = null,
-        nextReview: String? = if (level == 0) null else "2026-03-11",
+        dueAtSession: Int = 0,
     ) = PhraseProgressEntity(
         phraseId = id,
         level = level,
         streak = 0,
         answeredInBatch = false,
-        nextReview = nextReview,
+        dueAtSession = dueAtSession,
         batchPosition = batchPosition,
-        carryPosition = carryPosition,
     )
 }

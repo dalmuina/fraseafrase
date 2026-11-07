@@ -1,21 +1,19 @@
 package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 
-import java.time.LocalDate
-
 /**
- * Cálculo del próximo repaso según el nivel (ADR-0012). Los intervalos se cuentan en días naturales
- * y dependen solo de la fecha recibida, nunca del reloj del sistema.
+ * Cálculo del enfriamiento tras certificar una frase (ADR-0012, ADR-0017). Los intervalos se cuentan
+ * en sesiones generadas y dependen solo del nivel alcanzado: es una función pura, sin fecha ni reloj.
  */
 object ReviewSchedule {
 
-    // Días de intervalo por nivel. El nivel 0 no tiene intervalo: no aparece en el mapa.
-    private val INTERVALS_DAYS: Map<Int, Long> = mapOf(1 to 1L, 2 to 3L, 3 to 7L, 4 to 14L, 5 to 30L)
+    // Sesiones de enfriamiento por nivel alcanzado. El nivel 0 nunca se alcanza al certificar.
+    private val COOLDOWN_SESSIONS: Map<Int, Int> = mapOf(1 to 1, 2 to 2, 3 to 4, 4 to 8, 5 to 16)
 
     /**
-     * Devuelve la fecha [from] más el intervalo del [level], o `null` si el nivel es 0.
+     * Devuelve el número de sesiones de enfriamiento para el [level] alcanzado al certificar.
+     * Solo está definido para los niveles 1 a 5: certificar siempre sube a uno de ellos.
      */
-    fun nextReviewAfter(level: Level, from: LocalDate): LocalDate? {
-        val days = INTERVALS_DAYS[level.value] ?: return null
-        return from.plusDays(days)
+    fun cooldownSessionsFor(level: Level): Int = requireNotNull(COOLDOWN_SESSIONS[level.value]) {
+        "No cooldown is defined for level ${level.value}"
     }
 }

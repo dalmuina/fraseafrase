@@ -5,11 +5,10 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class PracticeBatchTest {
 
-    private val today = LocalDate.of(2026, 3, 10)
+    private val currentSession = 5
 
     // Scenario: Acierto mueve la frase al final (spec: Lista circular de la tanda)
     @Test
@@ -18,7 +17,7 @@ class PracticeBatchTest {
         val batch = batchOf("A", "B", "C")
 
         // When
-        val updated = batch.answer(PhraseId("A"), SelfAssessment.HIT, today)
+        val updated = batch.answer(PhraseId("A"), SelfAssessment.HIT, currentSession)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("B"), PhraseId("C"), PhraseId("A"))
@@ -31,7 +30,7 @@ class PracticeBatchTest {
         val batch = batchOf("A", "B", "C")
 
         // When
-        val updated = batch.answer(PhraseId("B"), SelfAssessment.MISS, today)
+        val updated = batch.answer(PhraseId("B"), SelfAssessment.MISS, currentSession)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("A"), PhraseId("C"), PhraseId("B"))
@@ -44,7 +43,7 @@ class PracticeBatchTest {
         val batch = batchOf("A", "B", "C")
 
         // When
-        val updated = batch.answer(PhraseId("C"), SelfAssessment.HIT, today)
+        val updated = batch.answer(PhraseId("C"), SelfAssessment.HIT, currentSession)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("A"), PhraseId("B"), PhraseId("C"))
@@ -58,11 +57,11 @@ class PracticeBatchTest {
 
         // When
         val updated = batch
-            .answer(PhraseId("A"), SelfAssessment.HIT, today)
-            .answer(PhraseId("B"), SelfAssessment.MISS, today)
-            .answer(PhraseId("C"), SelfAssessment.HIT, today)
-            .answer(PhraseId("A"), SelfAssessment.MISS, today)
-            .answer(PhraseId("B"), SelfAssessment.HIT, today)
+            .answer(PhraseId("A"), SelfAssessment.HIT, currentSession)
+            .answer(PhraseId("B"), SelfAssessment.MISS, currentSession)
+            .answer(PhraseId("C"), SelfAssessment.HIT, currentSession)
+            .answer(PhraseId("A"), SelfAssessment.MISS, currentSession)
+            .answer(PhraseId("B"), SelfAssessment.HIT, currentSession)
 
         // Then
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("C"), PhraseId("A"), PhraseId("B"))
@@ -74,18 +73,18 @@ class PracticeBatchTest {
         // Given
         val batch = PracticeBatch(
             entries = listOf(
-                aPhraseProgress(id = "A", level = Level(2), nextReview = LocalDate.of(2026, 3, 9)),
+                aPhraseProgress(id = "A", level = Level(2), dueAtSession = 20),
             ),
             capacity = BatchSize(10),
         )
 
         // When
-        val updated = batch.answer(PhraseId("A"), SelfAssessment.MISS, today)
+        val updated = batch.answer(PhraseId("A"), SelfAssessment.MISS, currentSession)
 
         // Then
         val answered = updated.entries.single { it.id == PhraseId("A") }
         answered.level shouldBe Level(1)
-        answered.nextReview shouldBe LocalDate.of(2026, 3, 11)
+        answered.dueAtSession shouldBe currentSession + 1
     }
 
     // Scenario: Responder una frase que no está en la tanda (spec: Invariantes de la tanda y de la cola)
@@ -96,7 +95,7 @@ class PracticeBatchTest {
 
         // When / Then
         shouldThrow<IllegalArgumentException> {
-            batch.answer(PhraseId("C"), SelfAssessment.HIT, today)
+            batch.answer(PhraseId("C"), SelfAssessment.HIT, currentSession)
         }
     }
 
@@ -128,7 +127,7 @@ class PracticeBatchTest {
         val batch = batchOf(*(1..30).map { "P$it" }.toTypedArray(), capacity = BatchSize(30))
 
         // When
-        val updated = batch.answer(PhraseId("P1"), SelfAssessment.HIT, today)
+        val updated = batch.answer(PhraseId("P1"), SelfAssessment.HIT, currentSession)
 
         // Then
         updated.capacity shouldBe BatchSize(30)

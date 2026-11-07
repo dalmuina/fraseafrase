@@ -87,49 +87,45 @@ guardaron.
 - **WHEN** el usuario confirma el guardado
 - **THEN** la pantalla muestra una confirmación visible de que los ajustes se guardaron
 
-### Requirement: Regeneración sin cierre al cambiar el nivel CEFR
+### Requirement: Regeneración sin tocar el progreso al cambiar los ajustes
 
-Si el nivel CEFR guardado difiere del que estaba persistido antes de guardar, y N no cambia, el sistema MUST
-recomponer la tanda activa de inmediato con el nuevo nivel, sin certificarla ni cerrarla (`practice-batch`): no
-MUST subir ni bajar ningún nivel de consolidación ni cambiar ningún próximo repaso por este guardado.
+Si el nivel CEFR o el tamaño de tanda N guardados difieren de los que estaban persistidos antes de guardar, el
+sistema MUST recomponer la tanda activa de inmediato, sin mostrar ningún aviso previo, sin incrementar el
+contador de sesiones generadas y sin tocar la racha, el nivel de consolidación ni el `dueAtSession` de ninguna
+frase: es una recomposición de qué frases están activas, no una resolución de cierre.
 
-#### Scenario: Cambiar solo el nivel CEFR no certifica ni cierra
+#### Scenario: Cambiar el nivel CEFR no toca el progreso
 
-- **GIVEN** una tanda activa guardada, con una frase de racha 3, y el nivel CEFR A1 persistido
-- **WHEN** el usuario elige el nivel B1, mantiene la N persistida y confirma el guardado
-- **THEN** la tanda activa se recompone con frases nuevas de nivel B1 y la frase de racha 3 conserva su nivel
-  de consolidación sin cambios
+- **GIVEN** una tanda activa guardada, con una frase de racha 2, y el nivel CEFR A1 persistido
+- **WHEN** el usuario elige el nivel B1 y confirma el guardado
+- **THEN** la tanda activa se recompone con frases nuevas de nivel B1 y la frase de racha 2 conserva su racha,
+  su nivel de consolidación y su `dueAtSession` sin cambios
+
+#### Scenario: Cambiar N no toca el progreso
+
+- **GIVEN** una tanda activa guardada y N igual a 20 persistido, con una frase de racha 2
+- **WHEN** el usuario escribe 15 como tamaño de tanda y confirma el guardado
+- **THEN** la tanda activa se recompone con tamaño 15 y la frase de racha 2 conserva su racha, su nivel de
+  consolidación y su `dueAtSession` sin cambios
+
+#### Scenario: Cambiar N y el nivel CEFR a la vez tampoco toca el progreso
+
+- **GIVEN** una tanda activa guardada, el nivel CEFR A1 y N igual a 20, ambos persistidos
+- **WHEN** el usuario elige el nivel B1, escribe 15 como tamaño de tanda y confirma el guardado
+- **THEN** la tanda activa se recompone con nivel B1 y N igual a 15, sin certificar ni tocar el progreso de
+  ninguna frase
+
+#### Scenario: Ningún cambio de ajustes incrementa el contador de sesiones
+
+- **GIVEN** el contador de sesiones generadas en 9
+- **WHEN** el usuario cambia el nivel CEFR, N, o ambos, y confirma el guardado
+- **THEN** el contador de sesiones generadas sigue en 9
 
 #### Scenario: Sin tanda activa no hay nada que recomponer
 
 - **GIVEN** no hay tanda activa guardada
-- **WHEN** el usuario cambia el nivel CEFR, mantiene la N persistida y confirma el guardado
+- **WHEN** el usuario cambia el nivel CEFR o N y confirma el guardado
 - **THEN** el guardado se completa sin error y sin mostrar ningún aviso
-
-### Requirement: Cierre de la tanda activa al cambiar N
-
-Si el tamaño de tanda N guardado difiere del que estaba persistido antes de guardar, el sistema MUST cerrar la
-tanda activa, si hay alguna, sin mostrar el aviso previo de no certificadas: es un cierre deliberado desde
-ajustes, no un cierre iniciado desde la práctica.
-
-#### Scenario: Cambiar N cierra la tanda activa sin aviso
-
-- **GIVEN** una tanda activa guardada y N igual a 20 persistido
-- **WHEN** el usuario escribe 15 como tamaño de tanda, mantiene el nivel CEFR persistido y confirma el guardado
-- **THEN** la tanda activa se cierra sin mostrar el aviso de frases no certificadas
-
-#### Scenario: Cambiar N y el nivel CEFR a la vez cierra la tanda activa
-
-- **GIVEN** una tanda activa guardada, el nivel CEFR A1 y N igual a 20, ambos persistidos
-- **WHEN** el usuario elige el nivel B1, escribe 15 como tamaño de tanda y confirma el guardado
-- **THEN** la tanda activa se cierra (certifica y resetea racha) y la siguiente se recompone con nivel B1 y N
-  igual a 15
-
-#### Scenario: Sin tanda activa no hay nada que cerrar
-
-- **GIVEN** no hay tanda activa guardada
-- **WHEN** el usuario cambia N y confirma el guardado
-- **THEN** el guardado se completa sin error y sin mostrar ningún aviso de cierre
 
 ### Requirement: Navegación a práctica al cambiar ajustes
 
@@ -148,13 +144,13 @@ MUST navegar a la pantalla de práctica tras completar el guardado.
 - **WHEN** el usuario escribe 15 como tamaño de tanda y confirma el guardado
 - **THEN** la aplicación muestra la pantalla de práctica
 
-### Requirement: Guardar sin cambios no cierra ni navega
+### Requirement: Guardar sin cambios no recompone ni navega
 
 Si el nivel CEFR y la N guardados son iguales a los que estaban persistidos antes de guardar, el
-sistema MUST NOT cerrar la tanda activa ni navegar a la pantalla de práctica.
+sistema MUST NOT recomponer la tanda activa ni navegar a la pantalla de práctica.
 
 #### Scenario: Guardar sin cambiar ningún valor se queda en ajustes
 
 - **GIVEN** la pantalla de ajustes abierta con el nivel CEFR B1 y N igual a 20, ambos persistidos
 - **WHEN** el usuario confirma el guardado sin cambiar ningún valor
-- **THEN** la pantalla sigue mostrando los ajustes y la tanda activa no se cierra
+- **THEN** la pantalla sigue mostrando los ajustes y la tanda activa no se recompone
