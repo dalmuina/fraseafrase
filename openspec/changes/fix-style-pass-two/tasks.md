@@ -10,30 +10,30 @@
 
 ## 2. Ajustes: límites del stepper de N (settings-screen)
 
-- [ ] 2.1 Test instrumentado `givenBatchSizeAtMinimum_whenShowingTheScreen_thenDecreaseButtonIsDisabled`
+- [x] 2.1 Test instrumentado `givenBatchSizeAtMinimum_whenShowingTheScreen_thenDecreaseButtonIsDisabled`
   en `SettingsScreenTest.kt` (localiza el botón "−" por su contentDescription o texto accesible) y
   comprobar que falla porque hoy el botón siempre está habilitado (spec: settings-screen, escenario
   "El control de disminuir se deshabilita en el mínimo").
-- [ ] 2.2 Implementar en `BatchSizeCard` (`SettingsScreen.kt`) el cálculo de `enabled` del botón "−"
+- [x] 2.2 Implementar en `BatchSizeCard` (`SettingsScreen.kt`) el cálculo de `enabled` del botón "−"
   a partir del entero actual de `batchSizeText` (`<= BatchSize.MIN` o no numérico deshabilita) y
   verificar que el test de 2.1 pasa en verde.
-- [ ] 2.3 Test instrumentado `givenBatchSizeAtMaximum_whenShowingTheScreen_thenIncreaseButtonIsDisabled`
+- [x] 2.3 Test instrumentado `givenBatchSizeAtMaximum_whenShowingTheScreen_thenIncreaseButtonIsDisabled`
   y comprobar que falla por el mismo motivo (spec: settings-screen, escenario "El control de
   aumentar se deshabilita en el máximo").
-- [ ] 2.4 Implementar el `enabled` simétrico del botón "+" (`>= BatchSize.MAX` o no numérico
+- [x] 2.4 Implementar el `enabled` simétrico del botón "+" (`>= BatchSize.MAX` o no numérico
   deshabilita) y verificar que el test de 2.3 pasa en verde.
-- [ ] 2.5 Test instrumentado `givenBatchSizeAboveMinimum_whenTypingAValue_thenDecreaseButtonIsEnabled`
+- [x] 2.5 Test instrumentado `givenBatchSizeAboveMinimum_whenTypingAValue_thenDecreaseButtonIsEnabled`
   que escribe "15" tras partir de "10" y comprueba que el botón "−" vuelve a estar habilitado;
   comprobar que falla antes del paso 2.2 (spec: settings-screen, escenario "El control de disminuir
   se reactiva por encima del mínimo") y que pasa en verde tras 2.2.
-- [ ] 2.6 Igualar el tamaño de `OutlinedIconButton`/`FilledIconButton` en `BatchSizeCard` a la altura
+- [x] 2.6 Igualar el tamaño de `OutlinedIconButton`/`FilledIconButton` en `BatchSizeCard` a la altura
   del `OutlinedTextField` adyacente (design D5) y verificar visualmente en
   `SettingsScreenPreviews.kt` (`@PreviewLightDark`) que quedan centrados y de la misma altura que el
   campo de texto.
-- [ ] 2.7 Test instrumentado en `SettingsScreenTest.kt` que comprueba que la etiqueta de cada chip
+- [x] 2.7 Test instrumentado en `SettingsScreenTest.kt` que comprueba que la etiqueta de cada chip
   de nivel CEFR en `CefrLevelCard` usa `MaterialTheme.typography.labelMedium` en vez del estilo por
   defecto del `FilterChip` (design D4), y falla con la implementación actual.
-- [ ] 2.8 Fijar `style = MaterialTheme.typography.labelMedium` en el `Text` de `CefrLevelCard`
+- [x] 2.8 Fijar `style = MaterialTheme.typography.labelMedium` en el `Text` de `CefrLevelCard`
   (`SettingsScreen.kt`) y verificar que el test de 2.7 pasa en verde.
 
 ## 3. Practicar: cabecera fija con título, píldora y barra de progreso (design D1)
