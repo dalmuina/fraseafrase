@@ -89,7 +89,7 @@
 
 ## 7. Pantalla de Ajustes: restilizado
 
-- [ ] 7.1 Aplicar los nuevos tokens de color/forma/tipografía a las tarjetas de nivel CEFR, al
+- [x] 7.1 Aplicar los nuevos tokens de color/forma/tipografía a las tarjetas de nivel CEFR, al
       stepper de tamaño de tanda y al botón "Guardar" de `SettingsScreen.kt`, sin cambiar su
       lógica ni introducir valores literales; verificar visualmente con `@PreviewLightDark` que
       coincide con el mock "Ajustes".
