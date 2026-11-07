@@ -1,14 +1,19 @@
 package com.dalmuina.fraseafrase.core.designsystem.component
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Rule
 import org.junit.Test
@@ -151,5 +156,30 @@ class DsLevelBadgeTest {
             .config[SemanticsProperties.TestTag]
 
         assertNotEquals(sinRangoIconTag, bronceIconTag)
+    }
+
+    // Scenario: La etiqueta de la insignia usa la tipografía de etiqueta pequeña (design D4,
+    // fix-style-pass-two)
+    @Test
+    fun givenLevel1WhenPaintingThenLabelUsesLabelMediumTypography() {
+        // Given: se captura el tamaño de fuente esperado para labelMedium del tema actual
+        var expectedFontSize: TextUnit = TextUnit.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedFontSize = MaterialTheme.typography.labelMedium.fontSize
+                // When: se pinta la insignia de nivel 1
+                DsLevelBadge(level = 1)
+            }
+        }
+
+        // Then: el tamaño de fuente del texto de la etiqueta coincide con labelMedium
+        val layoutResults = mutableListOf<TextLayoutResult>()
+        composeTestRule.onNodeWithText("Bronce")
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(layoutResults)
+
+        assertEquals(expectedFontSize, layoutResults.first().layoutInput.style.fontSize)
     }
 }

@@ -2,10 +2,10 @@
 
 ## 1. Insignias: tipografía consistente en el design system (design D4)
 
-- [ ] 1.1 Test de UI en `core/designsystem` (`DsLevelBadgeTest.kt`) que comprueba que el `Text` de
+- [x] 1.1 Test de UI en `core/designsystem` (`DsLevelBadgeTest.kt`) que comprueba que el `Text` de
   la etiqueta de `DsLevelBadge` usa `MaterialTheme.typography.labelMedium` (p. ej. capturando el
   nodo y su `fontSize` reportado) y falla porque hoy no fija ningún `style`.
-- [ ] 1.2 Fijar `style = MaterialTheme.typography.labelMedium` en el `Text` de `DsLevelBadge`
+- [x] 1.2 Fijar `style = MaterialTheme.typography.labelMedium` en el `Text` de `DsLevelBadge`
   (design D4) y verificar que el test de 1.1 pasa en verde.
 
 ## 2. Ajustes: límites del stepper de N (settings-screen)
