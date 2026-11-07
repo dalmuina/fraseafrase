@@ -6,7 +6,6 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
@@ -20,7 +19,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class ObtainProgressOverviewTest {
 
@@ -32,7 +30,7 @@ class ObtainProgressOverviewTest {
     private fun activeBatch(order: List<String>, progress: List<PhraseProgress>) = PracticeSnapshot(
         progress = progress,
         activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
-        carry = CarryQueue(emptyList()),
+        sessionCount = 0,
     )
 
     private fun loaded(vararg phrases: CatalogPhrase) = CatalogLoadResult.Loaded(phrases.toList())
@@ -92,10 +90,10 @@ class ObtainProgressOverviewTest {
         val levelFiveId = "D"
         val withoutProgressIds = listOf("E", "F", "G", "H", "I", "J")
         val progress = levelTwoIds.map {
-            aPhraseProgress(id = it, level = Level(2), nextReview = LocalDate.of(2026, 3, 11))
-        } + aPhraseProgress(id = levelFiveId, level = Level(5), nextReview = LocalDate.of(2026, 3, 11))
+            aPhraseProgress(id = it, level = Level(2), dueAtSession = 5)
+        } + aPhraseProgress(id = levelFiveId, level = Level(5), dueAtSession = 5)
         val practice = FakePracticeRepository(
-            PracticeSnapshot(progress = progress, activeBatch = null, carry = CarryQueue(emptyList())),
+            PracticeSnapshot(progress = progress, activeBatch = null, sessionCount = 0),
         )
         val catalog = loaded(
             *(levelTwoIds + levelFiveId + withoutProgressIds).map { aCatalogPhrase(id = it) }.toTypedArray(),

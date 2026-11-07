@@ -4,7 +4,6 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
-import java.time.LocalDate
 
 /**
  * Crea un [PhraseProgress] de prueba. Los valores por defecto cumplen las invariantes.
@@ -16,11 +15,11 @@ fun aPhraseProgress(
     level: Level = Level(0),
     streak: Streak = Streak(0),
     answeredInBatch: Boolean = false,
-    nextReview: LocalDate? = null,
+    dueAtSession: Int = 0,
 ): PhraseProgress = PhraseProgress(
     id = PhraseId(id),
     level = level,
     streak = streak,
     answeredInBatch = answeredInBatch,
-    nextReview = nextReview,
+    dueAtSession = dueAtSession,
 )

@@ -79,6 +79,10 @@ redacta y revisa junto con esta propuesta.
   activa de inmediato sin tocar el progreso de ninguna frase, en vez de que solo N "cierre con resolución
   completa". Es una consecuencia directa de que la resolución ya no ocurre al cerrar una tanda, sino al
   instante de cada autoevaluación (`spaced-repetition`).
+- `practice-session`: el requisito "Mensaje de tanda completada y generación de sesión" decía que las
+  arrastradas aparecen "en su orden de cola"; sin cola de arrastradas (`practice-batch`), el orden real de
+  las frases a reforzar es el de catálogo. Se detectó al implementar los grupos de tareas de este cambio:
+  sin este ajuste, un escenario ya archivado quedaría describiendo un comportamiento imposible.
 
 ## Impact
 

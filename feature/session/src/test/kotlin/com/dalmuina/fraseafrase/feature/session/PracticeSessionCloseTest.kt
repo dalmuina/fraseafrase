@@ -12,7 +12,6 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
-import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -20,7 +19,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
-import java.time.LocalDate
 
 /**
  * Generar sesión en un solo paso (design D3 de `replace-batch-closure-with-session-generation`). Los tests del
@@ -37,11 +35,15 @@ class PracticeSessionCloseTest {
     private fun certified(id: String): PhraseProgress =
         aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
 
-    // Scenario: Generar sesión muestra la tanda siguiente con sus arrastradas primero (spec: practice-session)
+    /** Frase ya certificada y en enfriamiento: no vence hasta mucho más adelante (spec: practice-batch, ADR-0017). */
+    private fun certifiedWithFarCooldown(id: String): PhraseProgress =
+        aPhraseProgress(id = id, level = Level(1), streak = Streak(0), answeredInBatch = true, dueAtSession = 100)
+
+    // Scenario: Generar sesión compone la tanda a reforzar en orden de catálogo (spec: practice-batch)
     @Test
-    fun `given C and A carried when generating session then the next batch starts with C, A and new phrases`() =
+    fun `given C and A pending when generating session then the next batch reinforces them in catalog order`() =
         runTest {
-            // Given: tanda C y A sin certificar; catálogo con 8 frases nuevas de A1; N igual a 10
+            // Given: tanda C y A sin certificar; catálogo con A, C y 8 frases nuevas de A1; N igual a 10
             val newIds = (1..8).map { "N$it" }
             val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("C", "A")))
             val viewModel = sessionViewModel(
@@ -55,18 +57,22 @@ class PracticeSessionCloseTest {
             viewModel.onAction(PracticeSessionAction.GenerateSession)
             advanceUntilIdle()
 
-            // Then
-            viewModel.practicing().current.id.value shouldBe "C"
-            practice.activeOrder() shouldBe listOf("C", "A") + newIds
+            // Then: a reforzar entra en el orden del catálogo (A antes que C), seguido de las nuevas
+            viewModel.practicing().current.id.value shouldBe "A"
+            practice.activeOrder() shouldBe listOf("A", "C") + newIds
         }
 
-    // Scenario: Generar sesión con todas certificadas deja la tanda siguiente sin arrastradas (spec: practice-session)
+    // Scenario: Generar sesión con todas certificadas y en enfriamiento deja la tanda siguiente sin reforzarlas
+    // (spec: practice-batch, "Composición de la tanda nueva por cuotas sobre el progreso")
     @Test
-    fun `given all phrases certified when generating session then the next batch has no carried phrases`() =
+    fun `given all phrases cooling down when generating session then the next batch has only new phrases`() =
         runTest {
-            // Given: tanda de A y B certificadas; el catálogo tiene N1 y N2 nuevas de A1
+            // Given: tanda de A y B certificadas, con enfriamiento lejos de vencer; el catálogo tiene N1 y N2 nuevas
             val practice = FakePracticeRepository(
-                activeBatchSnapshot(order = listOf("A", "B"), progress = listOf(certified("A"), certified("B"))),
+                activeBatchSnapshot(
+                    order = listOf("A", "B"),
+                    progress = listOf(certifiedWithFarCooldown("A"), certifiedWithFarCooldown("B")),
+                ),
             )
             val viewModel = sessionViewModel(practice, catalogOf("A", "B", "N1", "N2"))
             advanceUntilIdle()
@@ -78,7 +84,6 @@ class PracticeSessionCloseTest {
             // Then
             viewModel.practicing().current.id.value shouldBe "N1"
             practice.activeOrder() shouldBe listOf("N1", "N2")
-            practice.read().carry.ids.shouldBeEmpty()
         }
 
     // Scenario: Catálogo ilegible al pedir el cierre (spec: practice-session, "Error de catálogo")
@@ -105,13 +110,13 @@ class PracticeSessionCloseTest {
     @Test
     fun `given no active batch and no phrases left when generating session then the state is NothingToPractice`() =
         runTest {
-            // Given: la tanda A ya no está activa; A está en el catálogo con repaso futuro, así que no hay frases
-            // disponibles para componer otra tanda
+            // Given: la tanda A ya no está activa; A está en el catálogo con repaso futuro (sesión 2, cuando la
+            // siguiente sesión generada es la 1), así que no hay frases disponibles para componer otra tanda
             val practice = FakePracticeRepository(
                 activeBatchSnapshot(
                     order = listOf("A"),
                     progress = listOf(
-                        aPhraseProgress(id = "A", level = Level(1), nextReview = LocalDate.of(2026, 3, 11)),
+                        aPhraseProgress(id = "A", level = Level(1), dueAtSession = 2),
                     ),
                 ),
             )

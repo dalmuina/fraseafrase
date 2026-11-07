@@ -5,7 +5,6 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
@@ -40,7 +39,7 @@ class ProgressViewModelTest {
         PracticeSnapshot(
             progress = progress,
             activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
-            carry = CarryQueue(emptyList()),
+            sessionCount = 0,
         )
 
     // Scenario: Tanda con certificadas y no certificadas (spec: progress-overview)

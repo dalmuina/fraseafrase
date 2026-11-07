@@ -19,13 +19,14 @@ class PhraseProgressBuildersTest {
         progress.level shouldBe Level(0)
     }
 
-    // Scenario: Nivel 1 sin próximo repaso se rechaza (spec: Invariantes de PhraseProgress, en spaced-repetition).
-    // Cobertura ya existente en PhraseProgressTest; aquí se comprueba que el builder no la corrige.
+    // Scenario: `dueAtSession` negativo se rechaza (spec: Invariantes de PhraseProgress con sesión de
+    // vencimiento, en spaced-repetition). Cobertura ya existente en PhraseProgressTest; aquí se comprueba
+    // que el builder no la corrige.
     @Test
-    fun `given level 1 without next review when using the builder then throws IllegalArgumentException`() {
+    fun `given a negative due at session when using the builder then throws IllegalArgumentException`() {
         // When / Then
         shouldThrow<IllegalArgumentException> {
-            aPhraseProgress(level = Level(1))
+            aPhraseProgress(dueAtSession = -1)
         }
     }
 }

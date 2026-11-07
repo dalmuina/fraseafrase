@@ -5,8 +5,6 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -31,16 +29,15 @@ class FakesTest {
     fun `given an empty fake repository when transacting then the change is stored`() = runTest {
         // Given
         val fake = FakePracticeRepository()
-        val carried = PhraseId("a")
 
         // When
         val result = fake.transact { snapshot ->
-            PracticeChange(snapshot.copy(carry = CarryQueue(listOf(carried))), "done")
+            PracticeChange(snapshot.copy(sessionCount = 5), "done")
         }
 
         // Then
         result shouldBe "done"
-        fake.read().carry.ids shouldBe listOf(carried)
+        fake.read().sessionCount shouldBe 5
     }
 
     @Test

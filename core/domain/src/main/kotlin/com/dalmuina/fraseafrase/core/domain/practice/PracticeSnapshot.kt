@@ -1,20 +1,19 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PracticeBatch
 
 /**
- * Instantánea del estado del usuario. [progress] tiene una entrada por cada frase con progreso o con posición en la
- * tanda activa o en la cola. [activeBatch] indica si hay tanda activa y en qué orden;
- * [carry] es la cola de arrastradas.
+ * Instantánea del estado del usuario (ADR-0012, ADR-0017). [progress] tiene una entrada por cada frase con
+ * progreso o con posición en la tanda activa. [activeBatch] indica si hay tanda activa y en qué orden;
+ * [sessionCount] es el contador de sesiones generadas.
  */
 data class PracticeSnapshot(
     val progress: List<PhraseProgress>,
     val activeBatch: ActiveBatch?,
-    val carry: CarryQueue,
+    val sessionCount: Int,
 ) {
 
     /** La tanda activa con sus entradas en el orden guardado, o null si no hay tanda activa. */

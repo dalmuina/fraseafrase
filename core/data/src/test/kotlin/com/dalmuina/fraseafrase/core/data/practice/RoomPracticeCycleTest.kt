@@ -4,24 +4,20 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatchResult
-import com.dalmuina.fraseafrase.core.domain.practice.ForceCloseActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
-import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,15 +26,12 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
-// Ciclo completo de dos tandas con persistencia real en Room (tarea 8.6; spec practice-persistence, "Composición única
-// tras el cierre", y practice-batch, "La cola sobrante entra primera tras el cierre").
+// Escenarios "Vaciar la tanda activa no compone la tanda siguiente por sí solo" y "Obtener dos veces tras vaciar
+// compone una sola vez" de practice-persistence, con persistencia real en Room (ADR-0017).
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomPracticeCycleTest {
 
-    private val today = LocalDate.of(2026, 3, 10)
-    private val clock = FixedClock(today)
     private lateinit var database: PracticeDatabase
     private lateinit var source: RoomPracticeDataSource
 
@@ -58,46 +51,54 @@ class RoomPracticeCycleTest {
     }
 
     private suspend fun obtain() = ObtainActiveBatch(
-        composeNextBatch = ComposeNextBatch(clock),
+        composeNextBatch = ComposeNextBatch(),
         catalogRepository = FakeCatalogRepository(catalog),
-        settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
+        settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10))),
         practiceRepository = source,
     ).invoke()
 
-    private suspend fun close() =
-        ForceCloseActiveBatch(source, ResolveBatchClosure(clock)).invoke()
-
-    // Certificada hoy, con repaso mañana: no vuelve a entrar en la tanda siguiente
-    private fun certified(id: String) = aPhraseProgress(
-        id = id,
-        level = Level(1),
-        streak = Streak(3),
-        answeredInBatch = true,
-        nextReview = today.plusDays(1),
-    )
-
-    // Scenario: La cola sobrante entra primera tras el cierre; obtener dos veces compone una sola vez
+    // Scenario: Vaciar la tanda activa no compone la tanda siguiente por sí solo
     @Test
-    fun `given two batches when closing and obtaining twice then carry enters first and composes once`() = runTest {
-        // Given: tanda activa con A certificada, B sin certificar y Z en la cola sobrante, todo en Room
+    fun `given an active batch when emptying it without composing then no active batch or new phrases appear`() =
+        runTest {
+            // Given: tanda activa con A y B, y una sesión ya generada
+            val initial = PracticeSnapshot(
+                progress = listOf(aPhraseProgress(id = "A", level = Level(1)), aPhraseProgress(id = "B")),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                sessionCount = 5,
+            )
+            source.transact { PracticeChange(initial, Unit) }
+
+            // When: se vacía la tanda activa sin componer
+            source.transact { snapshot -> PracticeChange(snapshot.copy(activeBatch = null), Unit) }
+
+            // Then
+            val emptied = source.read()
+            emptied.activeBatch.shouldBeNull()
+            emptied.progress.map { it.id.value } shouldContainExactly listOf("A", "B")
+        }
+
+    // Scenario: Obtener dos veces tras vaciar compone una sola vez
+    @Test
+    fun `given an emptied active batch when obtaining it twice then it composes once`() = runTest {
+        // Given: tanda vaciada, con progreso ya vencido para A y B, y composición posible a partir del catálogo
         val initial = PracticeSnapshot(
-            progress = listOf(certified("A"), aPhraseProgress(id = "B"), aPhraseProgress(id = "Z")),
-            activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
-            carry = CarryQueue(listOf(PhraseId("Z"))),
+            progress = listOf(aPhraseProgress(id = "A", level = Level(1)), aPhraseProgress(id = "B")),
+            activeBatch = null,
+            sessionCount = 5,
         )
         source.transact { PracticeChange(initial, Unit) }
 
-        // When: se cierra la tanda y se obtiene la tanda dos veces
-        close()
+        // When: se obtiene la tanda activa dos veces seguidas
         val first = obtain()
         val stateAfterFirst = source.read()
         val second = obtain()
 
         // Then
         first.shouldBeInstanceOf<ActiveBatchResult.Created>()
-        first.batch.entries.map { it.id.value } shouldContainExactly listOf("Z", "B", "C")
+        first.batch.entries.map { it.id.value } shouldContainExactly listOf("A", "B", "C", "Z")
         second.shouldBeInstanceOf<ActiveBatchResult.Existing>()
-        second.batch.entries.map { it.id.value } shouldContainExactly listOf("Z", "B", "C")
+        second.batch.entries.map { it.id.value } shouldContainExactly listOf("A", "B", "C", "Z")
         source.read() shouldBe stateAfterFirst
     }
 }

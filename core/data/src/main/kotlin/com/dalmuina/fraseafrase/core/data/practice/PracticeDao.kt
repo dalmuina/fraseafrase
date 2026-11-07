@@ -33,3 +33,16 @@ interface ActiveBatchDao {
     @Query("DELETE FROM active_batch")
     suspend fun clear()
 }
+
+@Dao
+interface SessionCounterDao {
+
+    @Insert
+    suspend fun insert(entity: SessionCounterEntity)
+
+    @Update
+    suspend fun update(entity: SessionCounterEntity)
+
+    @Query("SELECT * FROM session_counter")
+    suspend fun all(): List<SessionCounterEntity>
+}

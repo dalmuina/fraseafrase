@@ -3,226 +3,283 @@ package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchComposition.Composed
-import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.collections.shouldNotContain
-import io.kotest.matchers.comparables.shouldBeLessThanOrEqualTo
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class ComposeNextBatchTest {
 
-    private val today = LocalDate.of(2026, 3, 10)
-
-    // Scenario: Arrastradas van antes que pendientes (spec: Composición de la tanda nueva por prioridad)
+    // Scenario: Cuotas por defecto con material suficiente (spec: Composición de la tanda nueva por cuotas
+    // sobre el progreso). Nota: el GIVEN de la spec dice "10 frases a reforzar disponibles", pero la cuota de
+    // a reforzar para N=20 es 11 (floor(20*0.55)); con solo 10 no hay "material suficiente" y el resultado no
+    // puede dar 11 a reforzar. Se interpreta como "al menos 11", igual que las otras dos cuotas del escenario.
     @Test
-    fun `given a carried and a pending phrase when composing then the carried one comes first`() {
+    fun `given enough reinforce mastered and new phrases when composing then quotas fill 4 11 and 5`() {
         // Given
-        val carried = aPhraseProgress(id = "X")
-        val pending = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        val catalog = listOf(aCatalogPhrase(id = "X"), aCatalogPhrase(id = "P"))
+        val reinforceIds = (1..11).map { "R$it" }
+        val reinforce = reinforceIds.map { aPhraseProgress(id = it, dueAtSession = 0) }
+        val masteredIds = (1..6).map { "M$it" }
+        val mastered = masteredIds.map { aPhraseProgress(id = it, level = Level(4), dueAtSession = 30) }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (reinforceIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
 
         // When
         val result = compose(
-            carry = CarryQueue(ids("X")),
-            progress = listOf(carried, pending),
+            progress = reinforce + mastered,
             catalog = catalog,
+            size = BatchSize(20),
+            currentSession = 20,
         )
 
         // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("X", "P")
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in reinforceIds } shouldBe 11
+        entries.count { it.startsWith("N") } shouldBe 4
+        entries.count { it in masteredIds } shouldBe 5
     }
 
-    // Scenario: Arrastrada entra primera en la siguiente tanda (spec: Cola de arrastradas ordenada)
+    // Scenario: Reforzar corto cede su hueco a nuevas (spec: Composición de la tanda nueva por cuotas sobre
+    // el progreso)
     @Test
-    fun `given a leftover carried phrase and a pending one when composing then the carried one enters first`() {
+    fun `given only five reinforce candidates with plenty of new and mastered when composing then new absorbs gap`() {
         // Given
-        val leftover = aPhraseProgress(id = "Z")
-        val pending = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        val catalog = listOf(aCatalogPhrase(id = "Z"), aCatalogPhrase(id = "P"))
+        val reinforceIds = (1..5).map { "R$it" }
+        val reinforce = reinforceIds.map { aPhraseProgress(id = it, dueAtSession = 0) }
+        val masteredIds = (1..20).map { "M$it" }
+        val mastered = masteredIds.map { aPhraseProgress(id = it, level = Level(4), dueAtSession = 30) }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (reinforceIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
 
         // When
         val result = compose(
-            carry = CarryQueue(ids("Z")),
-            progress = listOf(leftover, pending),
+            progress = reinforce + mastered,
             catalog = catalog,
-            size = BatchSize(10),
+            size = BatchSize(20),
+            currentSession = 20,
         )
 
         // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("Z", "P")
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in reinforceIds } shouldBe 5
+        entries.count { it.startsWith("N") } shouldBe 10
+        entries.count { it in masteredIds } shouldBe 5
     }
 
-    // Scenario: Arrastrada que no cabe conserva su progreso (spec: Cola de arrastradas ordenada)
+    // Scenario: Dominadas corto cede su hueco a reforzar (spec: Composición de la tanda nueva por cuotas
+    // sobre el progreso)
     @Test
-    fun `given eleven carried phrases with size 10 when composing then the eleventh stays first in the leftover`() {
+    fun `given one mastered candidate with plenty of reinforce and new when composing then reinforce absorbs gap`() {
         // Given
-        val carriedIds = (1..10).map { "X$it" } + "P"
-        val progress = carriedIds.map { id ->
-            if (id == "P") {
-                aPhraseProgress(id = id, level = Level(3), nextReview = LocalDate.of(2026, 3, 20))
-            } else {
-                aPhraseProgress(id = id)
-            }
-        }
-        val catalog = carriedIds.map { aCatalogPhrase(id = it) }
+        val reinforceIds = (1..20).map { "R$it" }
+        val reinforce = reinforceIds.map { aPhraseProgress(id = it, dueAtSession = 0) }
+        val masteredIds = listOf("M1")
+        val mastered = masteredIds.map { aPhraseProgress(id = it, level = Level(4), dueAtSession = 30) }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (reinforceIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
 
         // When
         val result = compose(
-            carry = CarryQueue(ids(*carriedIds.toTypedArray())),
-            progress = progress,
+            progress = reinforce + mastered,
             catalog = catalog,
-            size = BatchSize(10),
+            size = BatchSize(20),
+            currentSession = 20,
         )
 
         // Then
-        val composed = result.composed()
-        composed.batch.entries.map { it.id.value } shouldBe (1..10).map { "X$it" }
-        composed.leftover shouldBe CarryQueue(ids("P"))
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in reinforceIds } shouldBe 15
+        entries.count { it.startsWith("N") } shouldBe 4
+        entries.count { it in masteredIds } shouldBe 1
     }
 
-    // Scenario: Pendientes por nivel ascendente (spec: Composición de la tanda nueva por prioridad)
+    // Scenario: Cálculo de las cuotas con N igual a 20 (spec: Composición de la tanda nueva por cuotas sobre
+    // el progreso)
     @Test
-    fun `given two pending phrases of different levels when composing then the lower level comes first`() {
+    fun `given size 20 when computing quotas then new is 4 reinforce is 11 and mastered is 5`() {
         // Given
-        val higher = aPhraseProgress(id = "P1", level = Level(3), nextReview = LocalDate.of(2026, 3, 1))
-        val lower = aPhraseProgress(id = "P2", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        val catalog = listOf(aCatalogPhrase(id = "P1"), aCatalogPhrase(id = "P2"))
-
-        // When
-        val result = compose(progress = listOf(higher, lower), catalog = catalog)
-
-        // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("P2", "P1")
-    }
-
-    // Scenario: A igual nivel, la fecha de repaso más antigua primero (spec: Composición por prioridad)
-    @Test
-    fun `given two level 2 pending phrases with different dates when composing then the older one comes first`() {
-        // Given
-        val later = aPhraseProgress(id = "P1", level = Level(2), nextReview = LocalDate.of(2026, 3, 8))
-        val earlier = aPhraseProgress(id = "P2", level = Level(2), nextReview = LocalDate.of(2026, 3, 5))
-        val catalog = listOf(aCatalogPhrase(id = "P1"), aCatalogPhrase(id = "P2"))
-
-        // When
-        val result = compose(progress = listOf(later, earlier), catalog = catalog)
-
-        // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("P2", "P1")
-    }
-
-    // Scenario: A igual nivel y fecha, orden de catálogo (spec: Composición de la tanda nueva por prioridad)
-    @Test
-    fun `given two level 2 pending phrases with the same date when composing then catalog order decides`() {
-        // Given
-        val first = aPhraseProgress(id = "P1", level = Level(2), nextReview = LocalDate.of(2026, 3, 5))
-        val second = aPhraseProgress(id = "P2", level = Level(2), nextReview = LocalDate.of(2026, 3, 5))
-        val catalog = listOf(aCatalogPhrase(id = "P2"), aCatalogPhrase(id = "P1"))
-
-        // When
-        val result = compose(progress = listOf(first, second), catalog = catalog)
-
-        // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("P2", "P1")
-    }
-
-    // Scenario: Nuevas solo si queda hueco (spec: Composición de la tanda nueva por prioridad)
-    @Test
-    fun `given six progress phrases and four new phrases with size 10 when composing then new ones fill the gap`() {
-        // Given
-        val carried = listOf("A", "B", "C", "D").map { aPhraseProgress(id = it) }
-        val pending = listOf("E", "F").map {
-            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        }
-        val catalog = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J").map { aCatalogPhrase(id = it) }
+        val reinforceIds = (1..20).map { "R$it" }
+        val reinforce = reinforceIds.map { aPhraseProgress(id = it, dueAtSession = 0) }
+        val masteredIds = (1..20).map { "M$it" }
+        val mastered = masteredIds.map { aPhraseProgress(id = it, level = Level(4), dueAtSession = 30) }
+        val newIds = (1..20).map { "N$it" }
+        val catalog = (reinforceIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
 
         // When
         val result = compose(
-            carry = CarryQueue(ids("A", "B", "C", "D")),
-            progress = carried + pending,
+            progress = reinforce + mastered,
             catalog = catalog,
-            size = BatchSize(10),
+            size = BatchSize(20),
+            currentSession = 20,
         )
 
         // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe
-            listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in reinforceIds } shouldBe 11
+        entries.count { it.startsWith("N") } shouldBe 4
+        entries.count { it in masteredIds } shouldBe 5
     }
 
-    // Scenario: Pendientes que no caben esperan sin perder nivel (spec: Composición de la tanda nueva por prioridad)
+    // Scenario: Cálculo de las cuotas con un N no divisible exactamente (spec: Composición de la tanda nueva
+    // por cuotas sobre el progreso)
     @Test
-    fun `given twelve pending phrases with size 10 when composing then the last two stay out of the batch`() {
+    fun `given size 17 when computing quotas then new is 3 reinforce is 9 and mastered is 5`() {
         // Given
-        val progress = twelvePendingPhrases()
-        val catalog = twelvePendingIds().map { aCatalogPhrase(id = it) }
+        val reinforceIds = (1..17).map { "R$it" }
+        val reinforce = reinforceIds.map { aPhraseProgress(id = it, dueAtSession = 0) }
+        val masteredIds = (1..17).map { "M$it" }
+        val mastered = masteredIds.map { aPhraseProgress(id = it, level = Level(4), dueAtSession = 30) }
+        val newIds = (1..17).map { "N$it" }
+        val catalog = (reinforceIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
 
         // When
-        val result = compose(progress = progress, catalog = catalog, size = BatchSize(10))
+        val result = compose(
+            progress = reinforce + mastered,
+            catalog = catalog,
+            size = BatchSize(17),
+            currentSession = 20,
+        )
 
         // Then
-        val ids = result.composed().batch.entries.map { it.id.value }
-        ids shouldNotContain "P11"
-        ids shouldNotContain "P12"
+        val entries = result.composed().batch.entries.map { it.id.value }
+        entries.count { it in reinforceIds } shouldBe 9
+        entries.count { it.startsWith("N") } shouldBe 3
+        entries.count { it in masteredIds } shouldBe 5
     }
 
-    // Scenario: Arrastrada y pendiente aparece una sola vez (spec: Frase en un único lugar)
+    // Scenario: Una frase pendiente vuelve a estar disponible en su sesión (spec: Composición de la tanda
+    // nueva por cuotas sobre el progreso)
     @Test
-    fun `given a phrase both carried and pending when composing then it appears once at position 0`() {
+    fun `given a phrase due at the current session when composing then it is a reinforce candidate`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), dueAtSession = 12)
         val catalog = listOf(aCatalogPhrase(id = "P"))
 
         // When
-        val result = compose(
-            carry = CarryQueue(ids("P")),
-            progress = listOf(phrase),
-            catalog = catalog,
-            size = BatchSize(10),
-        )
+        val result = compose(progress = listOf(phrase), catalog = catalog, currentSession = 12)
 
         // Then
         result.composed().batch.entries.map { it.id.value } shouldBe listOf("P")
     }
 
-    // Scenario: Frase programada no entra como nueva (spec: Frase en un único lugar)
+    // Scenario: Una frase con sesión futura no entra antes de su vencimiento (spec: Composición de la tanda
+    // nueva por cuotas sobre el progreso)
     @Test
-    fun `given a scheduled phrase of the chosen level when composing then there is no batch`() {
+    fun `given a phrase due at a future session when composing then it is not a reinforce candidate`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = Level(2), nextReview = LocalDate.of(2026, 3, 13))
-        val catalog = listOf(aCatalogPhrase(id = "P", level = CefrLevel.B1))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), dueAtSession = 13)
+        val catalog = listOf(aCatalogPhrase(id = "P"))
 
         // When
-        val result = compose(progress = listOf(phrase), catalog = catalog, cefrLevel = CefrLevel.B1)
+        val result = compose(progress = listOf(phrase), catalog = catalog, currentSession = 12)
 
         // Then
         result shouldBe BatchComposition.NothingAvailable
     }
 
-    // Scenario: El filtro CEFR no afecta a arrastradas ni pendientes (spec: Composición por prioridad)
+    // Scenario: El filtro CEFR no deja bajar de nivel a reforzar ni a dominadas (spec: Composición de la
+    // tanda nueva por cuotas sobre el progreso)
     @Test
-    fun `given a carried B2 and a pending C1 phrase with chosen level A1 when composing then both enter`() {
+    fun `given a below level reinforce and mastered phrase when composing then neither enters`() {
         // Given
-        val carried = aPhraseProgress(id = "X")
-        val pending = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        val reinforce = aPhraseProgress(id = "R", level = Level(1), dueAtSession = 0)
+        val mastered = aPhraseProgress(id = "M", level = Level(4), dueAtSession = 30)
         val catalog = listOf(
-            aCatalogPhrase(id = "X", level = CefrLevel.B2),
-            aCatalogPhrase(id = "P", level = CefrLevel.C1),
+            aCatalogPhrase(id = "R", level = CefrLevel.A1),
+            aCatalogPhrase(id = "M", level = CefrLevel.A2),
+            aCatalogPhrase(id = "N1", level = CefrLevel.B1),
         )
 
         // When
         val result = compose(
-            carry = CarryQueue(ids("X")),
-            progress = listOf(carried, pending),
+            progress = listOf(reinforce, mastered),
             catalog = catalog,
-            cefrLevel = CefrLevel.A1,
+            cefrLevel = CefrLevel.B1,
+            currentSession = 20,
         )
 
         // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("X", "P")
+        result.composed().batch.entries.map { it.id.value } shouldBe listOf("N1")
+    }
+
+    // Scenario: El filtro CEFR admite niveles iguales o superiores al elegido en reforzar y dominadas (spec:
+    // Composición de la tanda nueva por cuotas sobre el progreso)
+    @Test
+    fun `given a reinforce and mastered phrase of a higher level when composing then both enter`() {
+        // Given
+        val reinforce = aPhraseProgress(id = "R", level = Level(1), dueAtSession = 0)
+        val mastered = aPhraseProgress(id = "M", level = Level(4), dueAtSession = 30)
+        val catalog = listOf(
+            aCatalogPhrase(id = "R", level = CefrLevel.B1),
+            aCatalogPhrase(id = "M", level = CefrLevel.C1),
+        )
+
+        // When
+        val result = compose(
+            progress = listOf(reinforce, mastered),
+            catalog = catalog,
+            cefrLevel = CefrLevel.A1,
+            currentSession = 20,
+        )
+
+        // Then
+        result.composed().batch.entries.map { it.id.value } shouldBe listOf("R", "M")
+    }
+
+    // Scenario: Sin material del nivel elegido o superior la tanda sale más pequeña (spec: Composición de la
+    // tanda nueva por cuotas sobre el progreso)
+    @Test
+    fun `given only below level material when composing then there is no batch`() {
+        // Given
+        val reinforce = aPhraseProgress(id = "R", level = Level(1), dueAtSession = 0)
+        val mastered = aPhraseProgress(id = "M", level = Level(4), dueAtSession = 30)
+        val catalog = listOf(
+            aCatalogPhrase(id = "R", level = CefrLevel.A1),
+            aCatalogPhrase(id = "M", level = CefrLevel.A1),
+        )
+
+        // When
+        val result = compose(
+            progress = listOf(reinforce, mastered),
+            catalog = catalog,
+            cefrLevel = CefrLevel.B1,
+            currentSession = 20,
+        )
+
+        // Then
+        result shouldBe BatchComposition.NothingAvailable
+    }
+
+    // Scenario: Dominada sin vencer entra en el bloque de dominadas (spec: Frases dominadas disponibles para
+    // repaso ligero antes de su vencimiento)
+    @Test
+    fun `given a mastered phrase not yet due when composing then it enters as mastered`() {
+        // Given
+        val mastered = aPhraseProgress(id = "M", level = Level(5), dueAtSession = 30)
+        val catalog = listOf(aCatalogPhrase(id = "M"))
+
+        // When
+        val result = compose(progress = listOf(mastered), catalog = catalog, currentSession = 20)
+
+        // Then
+        result.composed().batch.entries.map { it.id.value } shouldBe listOf("M")
+    }
+
+    // Scenario: Dominada vencida cuenta como a reforzar (spec: Frases dominadas disponibles para repaso
+    // ligero antes de su vencimiento)
+    @Test
+    fun `given a mastered phrase that is due when composing then it enters only once as reinforce`() {
+        // Given
+        val masteredDue = aPhraseProgress(id = "M", level = Level(4), dueAtSession = 20)
+        val catalog = listOf(aCatalogPhrase(id = "M"))
+
+        // When
+        val result = compose(progress = listOf(masteredDue), catalog = catalog, currentSession = 20)
+
+        // Then
+        result.composed().batch.entries.map { it.id.value } shouldBe listOf("M")
     }
 
     // Scenario: Primera tanda con catálogo disponible (spec: Composición de la tanda o ausencia de tanda)
@@ -241,27 +298,22 @@ class ComposeNextBatchTest {
             entry.level shouldBe Level(0)
             entry.streak shouldBe Streak(0)
             entry.answeredInBatch shouldBe false
-            entry.nextReview shouldBe null
         }
     }
 
     // Scenario: Tanda menor que N si faltan frases (spec: Composición de la tanda o ausencia de tanda)
     @Test
-    fun `given three carried phrases and size 10 with nothing else available then the batch has three`() {
+    fun `given three reinforce candidates and size 10 with nothing else available then the batch has three`() {
         // Given
-        val progress = listOf("X", "Y", "Z").map { aPhraseProgress(id = it) }
-        val catalog = listOf("X", "Y", "Z").map { aCatalogPhrase(id = it) }
+        val reinforceIds = listOf("X", "Y", "Z")
+        val progress = reinforceIds.map { aPhraseProgress(id = it, dueAtSession = 0) }
+        val catalog = reinforceIds.map { aCatalogPhrase(id = it) }
 
         // When
-        val result = compose(
-            carry = CarryQueue(ids("X", "Y", "Z")),
-            progress = progress,
-            catalog = catalog,
-            size = BatchSize(10),
-        )
+        val result = compose(progress = progress, catalog = catalog, size = BatchSize(10))
 
         // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("X", "Y", "Z")
+        result.composed().batch.entries.map { it.id.value } shouldBe reinforceIds
     }
 
     // Scenario: Catálogo vacío sin progreso no crea tanda (spec: Composición de la tanda o ausencia de tanda)
@@ -274,7 +326,8 @@ class ComposeNextBatchTest {
         result shouldBe BatchComposition.NothingAvailable
     }
 
-    // Scenario: Catálogo sin frases del nivel elegido no crea tanda (spec: Composición de la tanda o ausencia de tanda)
+    // Scenario: Catálogo sin frases del nivel elegido no crea tanda (spec: Composición de la tanda o
+    // ausencia de tanda)
     @Test
     fun `given a catalog without phrases of the chosen level when composing then there is no batch`() {
         // Given
@@ -287,23 +340,25 @@ class ComposeNextBatchTest {
         result shouldBe BatchComposition.NothingAvailable
     }
 
-    // Scenario: Catálogo agotado sin pendientes no crea tanda (spec: Composición de la tanda o ausencia de tanda)
+    // Scenario: Catálogo agotado sin pendientes no crea tanda (spec: Composición de la tanda o ausencia de
+    // tanda)
     @Test
-    fun `given an exhausted B1 catalog with scheduled phrases and no carry then there is no batch`() {
+    fun `given an exhausted B1 catalog with phrases due in the future when composing then there is no batch`() {
         // Given
         val progress = listOf("B1-1", "B1-2", "B1-3").map {
-            aPhraseProgress(id = it, level = Level(2), nextReview = LocalDate.of(2026, 3, 13))
+            aPhraseProgress(id = it, level = Level(2), dueAtSession = 30)
         }
         val catalog = listOf("B1-1", "B1-2", "B1-3").map { aCatalogPhrase(id = it, level = CefrLevel.B1) }
 
         // When
-        val result = compose(progress = progress, catalog = catalog, cefrLevel = CefrLevel.B1)
+        val result = compose(progress = progress, catalog = catalog, cefrLevel = CefrLevel.B1, currentSession = 20)
 
         // Then
         result shouldBe BatchComposition.NothingAvailable
     }
 
-    // Scenario: Solo nuevas del nivel elegido (spec: Frases nuevas por nivel CEFR)
+    // Scenario: Solo nuevas del nivel elegido (spec: Frases nuevas por nivel CEFR, no afectado por este
+    // delta)
     @Test
     fun `given A1 and B1 new phrases with chosen level A1 when composing then only A1 phrases enter`() {
         // Given
@@ -320,109 +375,11 @@ class ComposeNextBatchTest {
         result.composed().batch.entries.map { it.id.value } shouldBe listOf("A1-1", "A1-2")
     }
 
-    // Scenario: Certificada que vuelve como pendiente entra con racha 0 (spec: Racha inicial en cada tanda nueva)
-    @Test
-    fun `given a certified phrase that comes back as pending when composing then it enters with streak 0`() {
-        // Given
-        val certified = aPhraseProgress(id = "C", level = Level(0), streak = Streak(3), answeredInBatch = true)
-        val closed = ResolveBatchClosure(FixedClock(today))(listOf(certified)).single().progress
-        val catalog = listOf(aCatalogPhrase(id = "C"))
-
-        // When
-        val result = ComposeNextBatch(FixedClock(LocalDate.of(2026, 3, 11)))(
-            carry = CarryQueue(emptyList()),
-            progress = listOf(closed),
-            catalog = catalog,
-            cefrLevel = CefrLevel.A1,
-            size = BatchSize.DEFAULT,
-        )
-
-        // Then
-        val entry = result.composed().batch.entries.single()
-        entry.level shouldBe Level(1)
-        entry.streak shouldBe Streak(0)
-        entry.answeredInBatch shouldBe false
-    }
-
-    // Scenario: Frase con repaso futuro no entra antes de su fecha (spec: Composición de la tanda nueva por prioridad)
-    @Test
-    fun `given a phrase scheduled for tomorrow when composing today then there is no batch`() {
-        // Given
-        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11))
-        val catalog = listOf(aCatalogPhrase(id = "P"))
-
-        // When
-        val result = compose(progress = listOf(phrase), catalog = catalog)
-
-        // Then
-        result shouldBe BatchComposition.NothingAvailable
-    }
-
-    // Scenario: Frase con repaso de hoy entra en su fecha (spec: Composición de la tanda nueva por prioridad)
-    @Test
-    fun `given a phrase scheduled for today when composing on that day then it enters the batch`() {
-        // Given
-        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 11))
-        val catalog = listOf(aCatalogPhrase(id = "P"))
-
-        // When
-        val result = ComposeNextBatch(FixedClock(LocalDate.of(2026, 3, 11)))(
-            carry = CarryQueue(emptyList()),
-            progress = listOf(phrase),
-            catalog = catalog,
-            cefrLevel = CefrLevel.A1,
-            size = BatchSize.DEFAULT,
-        )
-
-        // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("P")
-    }
-
-    // Scenario: Tanda activa conserva su tamaño al cambiar N (spec: Tamaño de tanda N)
-    @Test
-    fun `given a closed batch of 30 and a new size 10 when composing then the batch keeps 30 and the next has 10`() {
-        // Given
-        val ids = (1..30).map { "F%02d".format(it) }
-        val active = PracticeBatch(ids.map { aPhraseProgress(id = it) }, BatchSize(30))
-        val closed = ResolveBatchClosure(FixedClock(today))(active.entries)
-        val carried = closed.filterIsInstance<BatchClosureOutcome.Carried>().map { it.progress.id }
-        val catalog = ids.map { aCatalogPhrase(id = it) }
-
-        // When
-        val result = ComposeNextBatch(FixedClock(today))(
-            carry = CarryQueue(carried),
-            progress = closed.map { it.progress },
-            catalog = catalog,
-            cefrLevel = CefrLevel.A1,
-            size = BatchSize(10),
-        )
-
-        // Then
-        val closedBatch = PracticeBatch(closed.map { it.progress }, BatchSize(30))
-        closedBatch.entries.size shouldBe 30
-        closedBatch.capacity shouldBe BatchSize(30)
-        val next = result.composed().batch
-        next.entries.size shouldBeLessThanOrEqualTo 10
-        next.capacity shouldBe BatchSize(10)
-    }
-
-    // Scenario: Composición con una arrastrada sin progreso (spec: Invariantes de la tanda y de la cola)
-    @Test
-    fun `given a carried id without progress when composing then throws IllegalArgumentException`() {
-        // Given
-        val catalog = listOf(aCatalogPhrase(id = "X"))
-
-        // When / Then
-        shouldThrow<IllegalArgumentException> {
-            compose(carry = CarryQueue(ids("X")), catalog = catalog)
-        }
-    }
-
-    // Scenario: Progreso sin entrada en el catálogo (spec: Invariantes de la tanda y de la cola)
+    // Scenario: Progreso sin entrada en el catálogo (spec: Invariantes de la tanda)
     @Test
     fun `given progress of a phrase missing from the catalog when composing then throws IllegalArgumentException`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), dueAtSession = 0)
 
         // When / Then
         shouldThrow<IllegalArgumentException> {
@@ -430,7 +387,7 @@ class ComposeNextBatchTest {
         }
     }
 
-    // Scenario: Progreso con ids duplicados (spec: Invariantes de la tanda y de la cola)
+    // Scenario: Progreso con ids duplicados (spec: Invariantes de la tanda)
     @Test
     fun `given two progress entries of the same phrase when composing then throws IllegalArgumentException`() {
         // Given
@@ -443,11 +400,11 @@ class ComposeNextBatchTest {
         }
     }
 
-    // Scenario: Catálogo con ids duplicados (spec: Invariantes de la tanda y de la cola)
+    // Scenario: Catálogo con ids duplicados (spec: Invariantes de la tanda)
     @Test
     fun `given a catalog listing the same phrase twice when composing then throws IllegalArgumentException`() {
         // Given
-        val phrase = aPhraseProgress(id = "P", level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
+        val phrase = aPhraseProgress(id = "P", level = Level(1), dueAtSession = 0)
         val catalog = listOf(aCatalogPhrase(id = "P"), aCatalogPhrase(id = "P"))
 
         // When / Then
@@ -456,170 +413,13 @@ class ComposeNextBatchTest {
         }
     }
 
-    // Scenario: Cuotas por defecto con material suficiente (spec: Composición de la tanda nueva por cuotas)
-    @Test
-    fun `given enough carried pending mastered and new phrases when composing then quotas fill 8 8 and 4`() {
-        // Given
-        val carriedIds = (1..3).map { "C$it" }
-        val carried = carriedIds.map { aPhraseProgress(id = it) }
-        val pendingIds = (1..10).map { "P$it" }
-        val pending = pendingIds.map {
-            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        }
-        val masteredIds = (1..6).map { "M$it" }
-        val mastered = masteredIds.map {
-            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
-        }
-        val newIds = (1..20).map { "N$it" }
-        val catalog = (carriedIds + pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
-
-        // When
-        val result = compose(
-            carry = CarryQueue(ids(*carriedIds.toTypedArray())),
-            progress = carried + pending + mastered,
-            catalog = catalog,
-            size = BatchSize(20),
-        )
-
-        // Then
-        val entries = result.composed().batch.entries.map { it.id.value }
-        entries.count { it.startsWith("N") } shouldBe 8
-        entries.count { it in carriedIds || it in pendingIds } shouldBe 8
-        entries.count { it in masteredIds } shouldBe 4
-        entries.take(3) shouldBe carriedIds
-        entries.subList(3, 8) shouldBe pendingIds.take(5)
-    }
-
-    // Scenario: Reforzar corto cede su hueco a nuevas (spec: Composición de la tanda nueva por cuotas)
-    @Test
-    fun `given only five reinforce candidates with plenty of new and mastered when composing then new absorbs gap`() {
-        // Given
-        val pendingIds = (1..5).map { "P$it" }
-        val pending = pendingIds.map {
-            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        }
-        val masteredIds = (1..4).map { "M$it" }
-        val mastered = masteredIds.map {
-            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
-        }
-        val newIds = (1..20).map { "N$it" }
-        val catalog = (pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
-
-        // When
-        val result = compose(
-            progress = pending + mastered,
-            catalog = catalog,
-            size = BatchSize(20),
-        )
-
-        // Then
-        val entries = result.composed().batch.entries.map { it.id.value }
-        entries.count { it in pendingIds } shouldBe 5
-        entries.count { it.startsWith("N") } shouldBe 11
-        entries.count { it in masteredIds } shouldBe 4
-    }
-
-    // Scenario: Dominadas corto cede su hueco a reforzar (spec: Composición de la tanda nueva por cuotas)
-    @Test
-    fun `given one mastered candidate with plenty of reinforce and new when composing then reinforce absorbs gap`() {
-        // Given
-        val pendingIds = (1..20).map { "P$it" }
-        val pending = pendingIds.map {
-            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        }
-        val masteredIds = listOf("M1")
-        val mastered = masteredIds.map {
-            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
-        }
-        val newIds = (1..20).map { "N$it" }
-        val catalog = (pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
-
-        // When
-        val result = compose(
-            progress = pending + mastered,
-            catalog = catalog,
-            size = BatchSize(20),
-        )
-
-        // Then
-        val entries = result.composed().batch.entries.map { it.id.value }
-        entries.count { it in pendingIds } shouldBe 11
-        entries.count { it.startsWith("N") } shouldBe 8
-        entries.count { it in masteredIds } shouldBe 1
-    }
-
-    // Scenario: Cálculo de las cuotas con N igual a 20 (spec: Composición de la tanda nueva por cuotas)
-    @Test
-    fun `given size 20 when computing quotas then new is 8 reinforce is 8 and mastered is 4`() {
-        // Given
-        val pendingIds = (1..20).map { "P$it" }
-        val pending = pendingIds.map {
-            aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-        }
-        val masteredIds = (1..20).map { "M$it" }
-        val mastered = masteredIds.map {
-            aPhraseProgress(id = it, level = Level(4), nextReview = LocalDate.of(2026, 3, 20))
-        }
-        val newIds = (1..20).map { "N$it" }
-        val catalog = (pendingIds + masteredIds + newIds).map { aCatalogPhrase(id = it) }
-
-        // When
-        val result = compose(
-            progress = pending + mastered,
-            catalog = catalog,
-            size = BatchSize(20),
-        )
-
-        // Then
-        val entries = result.composed().batch.entries.map { it.id.value }
-        entries.count { it in pendingIds } shouldBe 8
-        entries.count { it.startsWith("N") } shouldBe 8
-        entries.count { it in masteredIds } shouldBe 4
-    }
-
-    // Scenario: Dominada sin repaso pendiente entra en dominadas (spec: Frases dominadas disponibles para repaso)
-    @Test
-    fun `given a mastered phrase without a pending review when composing then it enters as mastered`() {
-        // Given
-        val mastered = aPhraseProgress(id = "M", level = Level(5), nextReview = LocalDate.of(2026, 3, 20))
-        val catalog = listOf(aCatalogPhrase(id = "M"))
-
-        // When
-        val result = compose(progress = listOf(mastered), catalog = catalog)
-
-        // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("M")
-    }
-
-    // Scenario: Dominada pendiente hoy cuenta como a reforzar (spec: Frases dominadas disponibles para repaso ligero)
-    @Test
-    fun `given a mastered phrase pending today when composing then it enters only once as reinforce`() {
-        // Given
-        val masteredPending = aPhraseProgress(id = "M", level = Level(4), nextReview = today)
-        val catalog = listOf(aCatalogPhrase(id = "M"))
-
-        // When
-        val result = compose(progress = listOf(masteredPending), catalog = catalog)
-
-        // Then
-        result.composed().batch.entries.map { it.id.value } shouldBe listOf("M")
-    }
-
-    private fun twelvePendingIds(): List<String> = (1..12).map { "P%02d".format(it) }
-
-    private fun twelvePendingPhrases(): List<PhraseProgress> = twelvePendingIds().map {
-        aPhraseProgress(id = it, level = Level(1), nextReview = LocalDate.of(2026, 3, 9))
-    }
-
-    private fun ids(vararg values: String): List<PhraseId> = values.map { PhraseId(it) }
-
     private fun compose(
-        carry: CarryQueue = CarryQueue(emptyList()),
         progress: List<PhraseProgress> = emptyList(),
         catalog: List<CatalogPhrase> = emptyList(),
         cefrLevel: CefrLevel = CefrLevel.A1,
         size: BatchSize = BatchSize.DEFAULT,
-    ): BatchComposition = ComposeNextBatch(FixedClock(today))(carry, progress, catalog, cefrLevel, size)
+        currentSession: Int = 0,
+    ): BatchComposition = ComposeNextBatch()(progress, catalog, cefrLevel, size, currentSession)
 
     private fun BatchComposition.composed(): Composed = shouldBeInstanceOf<Composed>()
 }

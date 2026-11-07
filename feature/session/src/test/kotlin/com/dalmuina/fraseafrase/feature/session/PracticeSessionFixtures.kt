@@ -12,33 +12,27 @@ import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.CarryQueue
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ResolveBatchClosure
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePhrasePlayer
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
-import com.dalmuina.fraseafrase.core.testing.FixedClock
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.types.shouldBeInstanceOf
-import java.time.LocalDate
-
-/** Fecha fija de los tests de presentación. */
-internal val TODAY: LocalDate = LocalDate.of(2026, 3, 10)
 
 /** Snapshot con una tanda activa de frases [order], en ese orden, y el progreso dado (por defecto, sin respuestas). */
 internal fun activeBatchSnapshot(
     order: List<String>,
     progress: List<PhraseProgress> = order.map { aPhraseProgress(id = it) },
+    sessionCount: Int = 0,
 ): PracticeSnapshot = PracticeSnapshot(
     progress = progress,
     activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
-    carry = CarryQueue(emptyList()),
+    sessionCount = sessionCount,
 )
 
 internal fun loaded(vararg phrases: CatalogPhrase): CatalogLoadResult.Loaded =
@@ -61,17 +55,16 @@ internal fun PracticeSessionViewModel.practicing(): PracticeSessionUiState.Pract
     uiState.value.shouldBeInstanceOf<PracticeSessionUiState.Practicing>()
 
 /**
- * ViewModel con los casos de uso reales sobre los fakes de `:core:testing` y un reloj fijo.
+ * ViewModel con los casos de uso reales sobre los fakes de `:core:testing`.
  * Ningún caso de uso se mockea: son clases concretas y su lógica forma parte de lo que se verifica.
  */
 internal fun sessionViewModel(
     practice: FakePracticeRepository,
     catalog: CatalogLoadResult,
     settings: UserSettings = UserSettings.DEFAULT,
-    clock: FixedClock = FixedClock(TODAY),
     phrasePlayer: FakePhrasePlayer = FakePhrasePlayer(),
 ): PracticeSessionViewModel =
-    sessionViewModelWith(practice, FakeCatalogRepository(catalog), settings, clock, phrasePlayer)
+    sessionViewModelWith(practice, FakeCatalogRepository(catalog), settings, phrasePlayer)
 
 /** Catálogo cuyo resultado puede cambiar entre lecturas, para simular un catálogo que deja de cargarse. */
 internal class SwitchableCatalogRepository(var result: CatalogLoadResult) : CatalogRepository {
@@ -83,11 +76,10 @@ internal fun sessionViewModelWith(
     practice: FakePracticeRepository,
     catalogRepository: CatalogRepository,
     settings: UserSettings = UserSettings.DEFAULT,
-    clock: FixedClock = FixedClock(TODAY),
     phrasePlayer: FakePhrasePlayer = FakePhrasePlayer(),
 ): PracticeSessionViewModel {
     val settingsRepository = FakeSettingsRepository(settings)
-    val composeNextBatch = ComposeNextBatch(clock)
+    val composeNextBatch = ComposeNextBatch()
     val obtainActiveBatch = ObtainActiveBatch(
         composeNextBatch = composeNextBatch,
         catalogRepository = catalogRepository,
@@ -96,10 +88,9 @@ internal fun sessionViewModelWith(
     )
     return PracticeSessionViewModel(
         obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository),
-        answerPhrase = AnswerPhrase(practice, clock),
+        answerPhrase = AnswerPhrase(practice),
         generateSession = GenerateSession(
             practiceRepository = practice,
-            resolveBatchClosure = ResolveBatchClosure(clock),
             composeNextBatch = composeNextBatch,
             catalogRepository = catalogRepository,
             settingsRepository = settingsRepository,

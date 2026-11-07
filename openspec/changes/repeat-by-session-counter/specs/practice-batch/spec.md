@@ -76,7 +76,7 @@ disponibles, en el orden a reforzar, nuevas, dominadas.
 
 #### Scenario: Cuotas por defecto con material suficiente
 
-- **GIVEN** 10 frases a reforzar disponibles, 6 dominadas disponibles y nuevas suficientes del nivel elegido,
+- **GIVEN** 11 frases a reforzar disponibles, 6 dominadas disponibles y nuevas suficientes del nivel elegido,
   con N igual a 20
 - **WHEN** se compone la tanda
 - **THEN** la tanda contiene 4 frases nuevas, 11 a reforzar y 5 dominadas
