@@ -63,17 +63,17 @@
 
 ## 4. Practicar: contenido a ancho completo (design D2)
 
-- [ ] 4.1 Test instrumentado `givenRevealedState_whenShowingTheScreen_thenHitAndMissButtonsAreFullWidth`
+- [x] 4.1 Test instrumentado `givenRevealedState_whenShowingTheScreen_thenHitAndMissButtonsAreFullWidth`
   en `PracticeSessionScreenTest.kt` que obtiene el ancho de los nodos de "Fallo"/"Acierto" y
   comprueba que cada uno ocupa aproximadamente la mitad del ancho disponible de la pantalla (p. ej.
   usando `onRoot().getUnclippedBoundsInRoot()` como referencia); comprobar que falla con el layout
   centrado actual.
-- [ ] 4.2 Cambiar `PracticingContent`/`AssessmentButtons` para que el contenido use
+- [x] 4.2 Cambiar `PracticingContent`/`AssessmentButtons` para que el contenido use
   `Modifier.fillMaxWidth()` y `Row` con `Modifier.weight(1f)` en cada botón de autoevaluación
   (design D2), y verificar que el test de 4.1 pasa en verde.
-- [ ] 4.3 Test instrumentado `givenHiddenState_whenShowingTheScreen_thenRevealButtonIsFullWidth` que
+- [x] 4.3 Test instrumentado `givenHiddenState_whenShowingTheScreen_thenRevealButtonIsFullWidth` que
   comprueba el ancho del botón "Mostrar traducción" y falla con el layout actual.
-- [ ] 4.4 Añadir `Modifier.fillMaxWidth()` al botón "Mostrar traducción" y verificar que el test de
+- [x] 4.4 Añadir `Modifier.fillMaxWidth()` al botón "Mostrar traducción" y verificar que el test de
   4.3 pasa en verde.
 
 ## 5. Progreso: tarjeta destacada con color primario (design D3)

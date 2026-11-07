@@ -125,7 +125,7 @@ private fun PracticingContent(
     onAction: (PracticeSessionAction) -> Unit,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
         if (state.completed) {
@@ -142,7 +142,10 @@ private fun PracticingContent(
             if (state.revealed) {
                 AssessmentButtons(enabled = !state.busy, onAction = onAction)
             } else {
-                Button(onClick = { onAction(PracticeSessionAction.Reveal) }) {
+                Button(
+                    onClick = { onAction(PracticeSessionAction.Reveal) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     Text(text = stringResource(R.string.practice_reveal))
                 }
             }
@@ -259,7 +262,10 @@ private fun TranslationCard(
 /** Acierto y fallo para la frase revelada (ADR-0012). Se deshabilitan mientras hay una respuesta en curso. */
 @Composable
 private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.m)) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.m),
+    ) {
         OutlinedButton(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.MISS)) },
             enabled = enabled,
@@ -268,6 +274,7 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
                 width = ButtonDefaults.outlinedButtonBorder(enabled).width,
                 color = MaterialTheme.colorScheme.error,
             ),
+            modifier = Modifier.weight(1f),
         ) {
             Text(text = stringResource(R.string.practice_miss))
         }
@@ -278,6 +285,7 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onTertiary,
             ),
+            modifier = Modifier.weight(1f),
         ) {
             Text(text = stringResource(R.string.practice_hit))
         }

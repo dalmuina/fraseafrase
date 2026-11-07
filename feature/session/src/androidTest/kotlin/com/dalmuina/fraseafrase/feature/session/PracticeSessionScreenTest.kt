@@ -7,11 +7,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
@@ -34,6 +38,14 @@ class PracticeSessionScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    companion object {
+        /** Margen bajo "la mitad" al comparar anchos (design D2): da cabida al espaciado entre botones. */
+        private const val HALF_WIDTH_RATIO_TOLERANCE = 0.35f
+
+        /** Margen bajo "todo el ancho" al comparar anchos (design D2): da cabida al padding de la pantalla. */
+        private const val FULL_WIDTH_RATIO_TOLERANCE = 0.8f
+    }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
     @Test
@@ -475,6 +487,43 @@ class PracticeSessionScreenTest {
 
         assertEquals(expectedFontSize, layoutResults.first().layoutInput.style.fontSize)
     }
+
+    // Scenario: Revelar muestra la traducción en portugués (spec: practice-session), botones de
+    // autoevaluación a ancho completo (design D2, fix-style-pass-two)
+    @Test
+    fun givenRevealedState_whenShowingTheScreen_thenHitAndMissButtonsAreFullWidth() {
+        // Given: la pantalla muestra una frase revelada
+        setScreen(practicing(current = item(), revealed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: cada botón de autoevaluación ocupa aproximadamente la mitad del ancho disponible
+        val rootWidth = composeTestRule.onRoot().getUnclippedBoundsInRoot().widthValue()
+        val missWidth = composeTestRule.onNodeWithText("Fallo").getUnclippedBoundsInRoot().widthValue()
+        val hitWidth = composeTestRule.onNodeWithText("Acierto").getUnclippedBoundsInRoot().widthValue()
+
+        assertTrue(missWidth >= rootWidth * HALF_WIDTH_RATIO_TOLERANCE)
+        assertTrue(hitWidth >= rootWidth * HALF_WIDTH_RATIO_TOLERANCE)
+    }
+
+    // Scenario: Sin revelar no hay autoevaluación (spec: practice-session), botón de revelar a
+    // ancho completo (design D2, fix-style-pass-two)
+    @Test
+    fun givenHiddenState_whenShowingTheScreen_thenRevealButtonIsFullWidth() {
+        // Given: la pantalla muestra una frase sin revelar
+        setScreen(practicing(current = item(), revealed = false))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el botón "Mostrar traducción" ocupa aproximadamente todo el ancho disponible
+        val rootWidth = composeTestRule.onRoot().getUnclippedBoundsInRoot().widthValue()
+        val revealWidth = composeTestRule.onNodeWithText("Mostrar traducción").getUnclippedBoundsInRoot().widthValue()
+
+        assertTrue(revealWidth >= rootWidth * FULL_WIDTH_RATIO_TOLERANCE)
+    }
+
+    /** Ancho de un [DpRect], no expuesto como propiedad por la API de Compose UI. */
+    private fun DpRect.widthValue(): Dp = right - left
 
     private fun setScreen(uiState: PracticeSessionUiState) {
         composeTestRule.setContent {
