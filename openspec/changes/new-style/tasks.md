@@ -96,9 +96,9 @@
 
 ## 8. Verificación final
 
-- [ ] 8.1 Ejecutar `./gradlew check` y confirmar que pasa en verde (tests unitarios, ktlint,
+- [x] 8.1 Ejecutar `./gradlew check` y confirmar que pasa en verde (tests unitarios, ktlint,
       detekt).
-- [ ] 8.2 Ejecutar `./gradlew koverVerify` y confirmar que se cumplen los mínimos de cobertura
+- [x] 8.2 Ejecutar `./gradlew koverVerify` y confirmar que se cumplen los mínimos de cobertura
       (dominio 90 %, presentación 80 %, global 70 %).
 - [ ] 8.3 Ejecutar los tests instrumentados afectados (`DsLevelBadgeTest`, `FraseAFraseApp`,
       `ProgressScreenTest`, `PracticeSessionScreenTest`) en un emulador y confirmar que pasan.

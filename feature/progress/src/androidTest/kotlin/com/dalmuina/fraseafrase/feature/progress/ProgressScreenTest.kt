@@ -121,9 +121,9 @@ class ProgressScreenTest {
             ),
         )
 
-        // Then: ninguna fila muestra el texto "Nivel" seguido de un número; cada nivel se identifica
-        // solo por su insignia (o "Sin rango" en nivel 0)
-        composeTestRule.onAllNodesWithText("Nivel", substring = true).assertCountEquals(0)
+        // Then: la única aparición del texto "Nivel" es la de la tarjeta destacada de nivel CEFR
+        // vigente ("Nivel actual: ..."); ninguna fila de nivel por insignia lo usa.
+        composeTestRule.onAllNodesWithText("Nivel", substring = true).assertCountEquals(1)
     }
 
     private fun setScreen(uiState: ProgressUiState) {
