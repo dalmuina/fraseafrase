@@ -78,15 +78,15 @@
 
 ## 5. Progreso: tarjeta destacada con color primario (design D3)
 
-- [ ] 5.1 Test instrumentado en `ProgressScreenTest.kt` que comprueba el color de fondo de la
+- [x] 5.1 Test instrumentado en `ProgressScreenTest.kt` que comprueba el color de fondo de la
   tarjeta destacada (p. ej. capturando el nodo de la tarjeta y su `backgroundColor` reportado, o
   comprobando que el texto se pinta con `onPrimary` si no es practicable comprobar el fondo
   directamente) y falla con el `Card` de color por defecto actual.
-- [ ] 5.2 Implementar `CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary,
+- [x] 5.2 Implementar `CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary,
   contentColor = MaterialTheme.colorScheme.onPrimary)` en la tarjeta destacada de
   `ProgressScreen.kt` y separar "Frases disponibles" / número grande / "Nivel actual: <nivel>" en
   tres `Text` (design D3), y verificar que el test de 5.1 pasa en verde.
-- [ ] 5.3 Verificar manualmente con `ProgressScreenPreviews.kt` (`@PreviewLightDark`) que el
+- [x] 5.3 Verificar manualmente con `ProgressScreenPreviews.kt` (`@PreviewLightDark`) que el
   resultado coincide con el mock `Progreso.png` en claro y oscuro.
 
 ## 6. Verificación final

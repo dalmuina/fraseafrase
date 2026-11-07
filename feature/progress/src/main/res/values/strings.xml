@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="progress_title">Progreso</string>
-    <string name="progress_total_available_format">%1$d frases disponibles</string>
+    <string name="progress_available_label">Frases disponibles</string>
     <string name="progress_cefr_level_format">Nivel actual: %1$s</string>
     <string name="progress_phrases_count_format">%1$d frases</string>
     <string name="progress_no_rank_format">Sin rango: %1$d frases</string>
