@@ -100,7 +100,7 @@
       detekt).
 - [x] 8.2 Ejecutar `./gradlew koverVerify` y confirmar que se cumplen los mínimos de cobertura
       (dominio 90 %, presentación 80 %, global 70 %).
-- [ ] 8.3 Ejecutar los tests instrumentados afectados (`DsLevelBadgeTest`, `FraseAFraseApp`,
+- [x] 8.3 Ejecutar los tests instrumentados afectados (`DsLevelBadgeTest`, `FraseAFraseApp`,
       `ProgressScreenTest`, `PracticeSessionScreenTest`) en un emulador y confirmar que pasan.
 
 ## Workflow follow-up

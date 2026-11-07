@@ -39,9 +39,9 @@ class FraseAFraseAppTest {
     fun givenAppLaunched_whenLookingAtTheBottomBar_thenAllThreeDestinationsShowAnIcon() {
         // `NavigationBarItem` merges its icon's semantics into the item node, so the icon's own
         // testTag is only visible in the unmerged tree.
-        composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE_ICON, useUnmergedNode = true).assertExists()
-        composeTestRule.onNodeWithTag(NAV_TAG_PROGRESS_ICON, useUnmergedNode = true).assertExists()
-        composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS_ICON, useUnmergedNode = true).assertExists()
+        composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE_ICON, useUnmergedTree = true).assertExists()
+        composeTestRule.onNodeWithTag(NAV_TAG_PROGRESS_ICON, useUnmergedTree = true).assertExists()
+        composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS_ICON, useUnmergedTree = true).assertExists()
     }
 
     // Scenario: Arranque muestra la práctica seleccionada (spec: app-navigation)
