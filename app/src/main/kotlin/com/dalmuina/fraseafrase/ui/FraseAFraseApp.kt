@@ -1,6 +1,11 @@
 package com.dalmuina.fraseafrase.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -42,29 +47,10 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    modifier = Modifier.testTag("nav-practice"),
-                    selected = selectedDestination == BottomDestination.Practice,
-                    onClick = { selectedDestination = BottomDestination.Practice },
-                    icon = {},
-                    label = { Text(text = stringResource(R.string.nav_practice)) },
-                )
-                NavigationBarItem(
-                    modifier = Modifier.testTag("nav-progress"),
-                    selected = selectedDestination == BottomDestination.Progress,
-                    onClick = { selectedDestination = BottomDestination.Progress },
-                    icon = {},
-                    label = { Text(text = stringResource(R.string.nav_progress)) },
-                )
-                NavigationBarItem(
-                    modifier = Modifier.testTag("nav-settings"),
-                    selected = selectedDestination == BottomDestination.Settings,
-                    onClick = { selectedDestination = BottomDestination.Settings },
-                    icon = {},
-                    label = { Text(text = stringResource(R.string.nav_settings)) },
-                )
-            }
+            FraseAFraseBottomBar(
+                selectedDestination = selectedDestination,
+                onDestinationSelected = { selectedDestination = it },
+            )
         },
     ) { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
@@ -80,5 +66,58 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
                     },
                 )
         }
+    }
+}
+
+/**
+ * Barra de navegación inferior propiamente dicha, extraída de [FraseAFraseApp] para mantener su
+ * longitud dentro del límite de detekt. Cada destino muestra un icono de `material-icons-extended`
+ * además de su etiqueta de texto (spec `app-navigation`, design D5).
+ */
+@Composable
+private fun FraseAFraseBottomBar(
+    selectedDestination: BottomDestination,
+    onDestinationSelected: (BottomDestination) -> Unit,
+) {
+    NavigationBar {
+        NavigationBarItem(
+            modifier = Modifier.testTag("nav-practice"),
+            selected = selectedDestination == BottomDestination.Practice,
+            onClick = { onDestinationSelected(BottomDestination.Practice) },
+            icon = {
+                Icon(
+                    modifier = Modifier.testTag("nav-practice-icon"),
+                    imageVector = Icons.Default.AutoStories,
+                    contentDescription = null,
+                )
+            },
+            label = { Text(text = stringResource(R.string.nav_practice)) },
+        )
+        NavigationBarItem(
+            modifier = Modifier.testTag("nav-progress"),
+            selected = selectedDestination == BottomDestination.Progress,
+            onClick = { onDestinationSelected(BottomDestination.Progress) },
+            icon = {
+                Icon(
+                    modifier = Modifier.testTag("nav-progress-icon"),
+                    imageVector = Icons.Default.BarChart,
+                    contentDescription = null,
+                )
+            },
+            label = { Text(text = stringResource(R.string.nav_progress)) },
+        )
+        NavigationBarItem(
+            modifier = Modifier.testTag("nav-settings"),
+            selected = selectedDestination == BottomDestination.Settings,
+            onClick = { onDestinationSelected(BottomDestination.Settings) },
+            icon = {
+                Icon(
+                    modifier = Modifier.testTag("nav-settings-icon"),
+                    imageVector = Icons.Default.Tune,
+                    contentDescription = null,
+                )
+            },
+            label = { Text(text = stringResource(R.string.nav_settings)) },
+        )
     }
 }

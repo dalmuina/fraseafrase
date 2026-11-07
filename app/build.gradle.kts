@@ -154,6 +154,9 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
+    // Iconos de la barra de navegación inferior (design D5): no llega transitiva desde
+    // core/designsystem porque allí está declarada como `implementation`.
+    implementation(libs.androidx.compose.material.icons.extended)
     // El proveedor de la base de datos (PersistenceModule) expone su tipo de Room a Hilt.
     implementation(libs.room3.runtime)
 

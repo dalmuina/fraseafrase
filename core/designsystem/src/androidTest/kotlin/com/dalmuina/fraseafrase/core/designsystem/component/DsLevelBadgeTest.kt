@@ -22,9 +22,9 @@ class DsLevelBadgeTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    // Scenario: Nivel 0 no muestra insignia (spec: level-badges)
+    // Scenario: Nivel 0 no muestra insignia (ahora muestra "Sin rango", spec: level-badges)
     @Test
-    fun givenLevel0WhenPaintingThenNoIconNorLabelIsShown() {
+    fun givenLevel0WhenPaintingThenSinRangoIsShown() {
         // Given/When: se pinta la insignia de nivel 0
         composeTestRule.setContent {
             AppTheme {
@@ -32,7 +32,8 @@ class DsLevelBadgeTest {
             }
         }
 
-        // Then: no se muestra ninguna etiqueta de las insignias
+        // Then: se muestra la etiqueta "Sin rango" y ninguna otra
+        composeTestRule.onNodeWithText("Sin rango").assertExists()
         composeTestRule.onNodeWithText("Bronce").assertDoesNotExist()
         composeTestRule.onNodeWithText("Plata").assertDoesNotExist()
         composeTestRule.onNodeWithText("Oro").assertDoesNotExist()
@@ -124,5 +125,31 @@ class DsLevelBadgeTest {
             .config[SemanticsProperties.TestTag]
 
         assertNotEquals(silverIconTag, goldIconTag)
+    }
+
+    // Scenario: Sin rango y Bronce no comparten representación (spec: level-badges)
+    @Test
+    fun givenLevel0AndLevel1WhenPaintingThenIconsDiffer() {
+        // Given/When: se pintan las insignias de nivel 0 (Sin rango) y nivel 1 (Bronce)
+        composeTestRule.setContent {
+            AppTheme {
+                DsLevelBadge(level = 0, modifier = Modifier.testTag("sin-rango"))
+                DsLevelBadge(level = 1, modifier = Modifier.testTag("bronce"))
+            }
+        }
+
+        // Then: sus iconos usan un identificador de icono distinto entre sí
+        val sinRangoIconTag = composeTestRule.onNodeWithTag("sin-rango")
+            .onChildren()
+            .onFirst()
+            .fetchSemanticsNode()
+            .config[SemanticsProperties.TestTag]
+        val bronceIconTag = composeTestRule.onNodeWithTag("bronce")
+            .onChildren()
+            .onFirst()
+            .fetchSemanticsNode()
+            .config[SemanticsProperties.TestTag]
+
+        assertNotEquals(sinRangoIconTag, bronceIconTag)
     }
 }

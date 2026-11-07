@@ -39,10 +39,10 @@ class DsLevelBadgeTest {
         levelBadgeLabel(5) shouldBe "Diamante"
     }
 
-    // Scenario: nivel 0 no tiene insignia (design D6)
+    // Scenario: Nivel 0 no muestra insignia (ahora muestra "Sin rango", spec: level-badges, design D3)
     @Test
-    fun `given level 0 when getting label then returns null`() {
-        levelBadgeLabel(0) shouldBe null
+    fun `given level 0 when getting label then returns sin rango`() {
+        levelBadgeLabel(0) shouldBe "Sin rango"
     }
 
     // Scenario: nivel fuera de rango no tiene insignia (design D6)

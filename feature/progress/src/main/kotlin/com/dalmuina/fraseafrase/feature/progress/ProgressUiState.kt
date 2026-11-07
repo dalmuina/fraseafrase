@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.feature.progress
 
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 
 /**
@@ -11,18 +12,18 @@ sealed interface ProgressUiState {
     data object Loading : ProgressUiState
 
     /**
-     * Progreso mostrado. [certifiedInBatch] es `null` sin tanda activa (spec `progress-overview`,
-     * "Progreso sin tanda activa") y, si existe, lleva las certificadas sobre el total de la tanda.
-     * [byLevel] tiene una entrada por cada nivel de 0 a [Level.MAX_LEVEL] con el total del catálogo en ese nivel.
+     * Progreso mostrado. [totalAvailable] es la suma de [byLevel] (total de frases del catálogo) y
+     * [cefrLevel] es el nivel CEFR vigente de los ajustes (spec `progress-overview`, "Total de frases
+     * disponibles y nivel CEFR vigente"). [byLevel] tiene una entrada por cada nivel de 0 a
+     * [Level.MAX_LEVEL] con el total del catálogo en ese nivel. Ninguno de estos datos depende de si
+     * hay tanda activa.
      */
     data class Content(
-        val certifiedInBatch: CertifiedCount?,
+        val totalAvailable: Int,
+        val cefrLevel: CefrLevel,
         val byLevel: Map<Level, Int>,
     ) : ProgressUiState
 
     /** El catálogo no se pudo leer: no hay ningún número que mostrar (spec `progress-overview`). */
     data object CatalogError : ProgressUiState
 }
-
-/** Certificadas (racha ≥ 3) sobre el total de frases de la tanda activa. */
-data class CertifiedCount(val certified: Int, val total: Int)
