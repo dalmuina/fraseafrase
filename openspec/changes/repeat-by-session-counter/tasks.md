@@ -116,7 +116,7 @@
 - [x] 6.2 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
 - [x] 6.3 Ejecutar `./gradlew koverVerify` y comprobar los mínimos de cobertura (dominio 90 %, presentación
   80 %, global 70 %).
-- [ ] 6.4 Prueba manual en el emulador: cambiar el nivel CEFR a uno con poco catálogo y comprobar que nunca
+- [x] 6.4 Prueba manual en el emulador: cambiar el nivel CEFR a uno con poco catálogo y comprobar que nunca
   aparecen frases de nivel inferior; generar varias sesiones seguidas con un catálogo pequeño y comprobar que
   aparecen frases repetidas (a reforzar) en vez de solo nuevas, y que una frase certificada no reaparece hasta
   pasado su enfriamiento en sesiones.
