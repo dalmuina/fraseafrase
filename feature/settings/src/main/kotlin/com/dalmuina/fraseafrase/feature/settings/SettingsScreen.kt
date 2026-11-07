@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -29,8 +30,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 
 /**
  * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión
@@ -128,7 +133,12 @@ private fun CefrLevelCard(
                         modifier = Modifier.weight(1f),
                         selected = selected,
                         onClick = { onSelectLevel(level) },
-                        label = { Text(text = level.name) },
+                        label = {
+                            Text(
+                                text = level.name,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        },
                         shape = MaterialTheme.shapes.medium,
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
@@ -161,17 +171,16 @@ private fun BatchSizeCard(
                 text = stringResource(R.string.settings_batch_size_label),
                 style = MaterialTheme.typography.titleMedium,
             )
+            val currentBatchSize = batchSizeText.toIntOrNull()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
             ) {
-                OutlinedIconButton(
+                DecreaseBatchSizeButton(
+                    enabled = currentBatchSize != null && currentBatchSize > BatchSize.MIN,
                     onClick = { onBatchSizeTextChange(steppedBatchSizeText(batchSizeText, -1)) },
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Text(text = MINUS_SIGN, style = MaterialTheme.typography.titleLarge)
-                }
+                )
                 OutlinedTextField(
                     modifier = Modifier.weight(1f),
                     value = batchSizeText,
@@ -184,18 +193,48 @@ private fun BatchSizeCard(
                         }
                     },
                 )
-                FilledIconButton(
+                IncreaseBatchSizeButton(
+                    enabled = currentBatchSize != null && currentBatchSize < BatchSize.MAX,
                     onClick = { onBatchSizeTextChange(steppedBatchSizeText(batchSizeText, 1)) },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                }
+                )
             }
         }
+    }
+}
+
+/** Botón de disminuir N (design D5), con la altura del campo de texto adyacente y deshabilitado en [BatchSize.MIN]. */
+@Composable
+private fun DecreaseBatchSizeButton(enabled: Boolean, onClick: () -> Unit) {
+    val description = stringResource(R.string.settings_batch_size_decrease)
+    OutlinedIconButton(
+        modifier = Modifier
+            .size(TEXT_FIELD_HEIGHT)
+            .semantics { contentDescription = description },
+        onClick = onClick,
+        enabled = enabled,
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Text(text = MINUS_SIGN, style = MaterialTheme.typography.titleLarge)
+    }
+}
+
+/** Botón de aumentar N (design D5), con la altura del campo de texto adyacente y deshabilitado en [BatchSize.MAX]. */
+@Composable
+private fun IncreaseBatchSizeButton(enabled: Boolean, onClick: () -> Unit) {
+    val description = stringResource(R.string.settings_batch_size_increase)
+    FilledIconButton(
+        modifier = Modifier
+            .size(TEXT_FIELD_HEIGHT)
+            .semantics { contentDescription = description },
+        onClick = onClick,
+        enabled = enabled,
+        shape = MaterialTheme.shapes.medium,
+        colors = IconButtonDefaults.filledIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+    ) {
+        Icon(imageVector = Icons.Default.Add, contentDescription = null)
     }
 }
 
@@ -206,3 +245,7 @@ private fun steppedBatchSizeText(batchSizeText: String, delta: Int): String =
 // Signo menos tipográfico (no el guion ASCII) para el botón de decremento, como en el mock "Ajustes"; no hay
 // icono de "quitar" en material-icons-core (solo en la versión extended, no disponible en esta feature).
 private const val MINUS_SIGN = "−"
+
+// Altura efectiva por defecto de OutlinedTextField en Material 3 (design D5, fix-style-pass-two): no hay un
+// token compartido de altura entre IconButton y TextField, así que se fija aquí para igualar ambos controles.
+private val TEXT_FIELD_HEIGHT = 56.dp

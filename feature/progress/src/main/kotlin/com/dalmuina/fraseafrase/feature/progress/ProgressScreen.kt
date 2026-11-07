@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -70,13 +71,20 @@ private fun ContentState(state: ProgressUiState.Content, modifier: Modifier = Mo
             .padding(AppTheme.spacing.m),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        Card(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+        ) {
             Column(
                 modifier = Modifier.padding(AppTheme.spacing.m),
                 verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
             ) {
+                Text(text = stringResource(R.string.progress_available_label))
                 Text(
-                    text = stringResource(R.string.progress_total_available_format, state.totalAvailable),
+                    text = state.totalAvailable.toString(),
                     style = MaterialTheme.typography.headlineLarge,
                 )
                 Text(

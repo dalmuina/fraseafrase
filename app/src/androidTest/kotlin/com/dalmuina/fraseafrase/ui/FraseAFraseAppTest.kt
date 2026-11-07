@@ -1,6 +1,8 @@
 package com.dalmuina.fraseafrase.ui
 
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -29,7 +31,9 @@ class FraseAFraseAppTest {
     // Scenario: Los tres destinos están disponibles (spec: app-navigation)
     @Test
     fun givenAppLaunched_whenLookingAtTheBottomBar_thenAllThreeDestinationsAreShown() {
-        composeTestRule.onNodeWithText("Practicar").assertExists()
+        // La cabecera de Practicar también pinta el texto "Practicar" (fix-style-pass-two, design
+        // D1), así que ese destino se busca dentro de su elemento de la barra, no por texto suelto.
+        composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE).assert(hasText("Practicar"))
         composeTestRule.onNodeWithText("Progreso").assertExists()
         composeTestRule.onNodeWithText("Ajustes").assertExists()
     }

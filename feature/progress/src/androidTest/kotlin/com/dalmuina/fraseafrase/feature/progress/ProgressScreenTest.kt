@@ -1,13 +1,19 @@
 package com.dalmuina.fraseafrase.feature.progress
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.text.TextLayoutResult
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
@@ -37,8 +43,40 @@ class ProgressScreenTest {
         )
 
         // Then: se muestran el total disponible y el nivel CEFR vigente
-        composeTestRule.onNodeWithText("10 frases disponibles").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Frases disponibles").assertIsDisplayed()
+        composeTestRule.onNodeWithText("10").assertIsDisplayed()
         composeTestRule.onNodeWithText("Nivel actual: B1").assertIsDisplayed()
+    }
+
+    // Scenario: tarjeta destacada con color primario (design D3, fix-style-pass-two)
+    @Test
+    fun givenTheFeaturedCard_whenShowingTheScreen_thenItsTextUsesOnPrimaryColor() {
+        // Given: se captura el color onPrimary esperado del tema actual
+        var expectedColor: Color = Color.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedColor = MaterialTheme.colorScheme.onPrimary
+                // When: se muestra la pantalla con un catálogo con frases disponibles
+                ProgressScreen(
+                    uiState = ProgressUiState.Content(
+                        totalAvailable = 10,
+                        cefrLevel = CefrLevel.B1,
+                        byLevel = allLevels(levelZero = 10),
+                    ),
+                )
+            }
+        }
+
+        // Then: el color del texto de la tarjeta destacada coincide con onPrimary
+        val layoutResults = mutableListOf<TextLayoutResult>()
+        composeTestRule.onAllNodesWithText("frases disponibles", substring = true, ignoreCase = true)
+            .onFirst()
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(layoutResults)
+
+        assertEquals(expectedColor, layoutResults.first().layoutInput.style.color)
     }
 
     // Scenario: Sin tanda activa muestra solo el total por nivel (spec: progress-overview)
@@ -54,7 +92,8 @@ class ProgressScreenTest {
         )
 
         // Then: se muestran las 6 frases disponibles, el nivel CEFR B1 y el total del nivel 0
-        composeTestRule.onNodeWithText("6 frases disponibles").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Frases disponibles").assertIsDisplayed()
+        composeTestRule.onNodeWithText("6").assertIsDisplayed()
         composeTestRule.onNodeWithText("Nivel actual: B1").assertIsDisplayed()
         composeTestRule.onNodeWithText("Sin rango: 6 frases").assertIsDisplayed()
     }

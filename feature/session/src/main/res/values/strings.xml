@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="practice_title">Practicar</string>
     <string name="practice_reveal">Mostrar traducción</string>
     <string name="practice_hit">Acierto</string>
     <string name="practice_miss">Fallo</string>
