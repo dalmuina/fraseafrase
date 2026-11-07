@@ -22,7 +22,8 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0014](0014-estrategia-de-testing-junit-6-y-junit-4-instrumentado.md) | Estrategia de testing con JUnit 6 y JUnit 4 en instrumentados | Aceptado |
 | [0015](0015-bajada-instantanea-de-nivel-ante-un-fallo.md) | Bajada instantánea de nivel de consolidación ante un fallo | Sustituido por 0016 |
 | [0016](0016-generar-sesion-por-cuotas.md) | Generar sesión por cuotas en vez de cerrar tanda con aviso | Sustituido por 0017 |
-| [0017](0017-repeticion-por-contador-de-sesiones.md) | Repetición por contador de sesiones, sin cola de arrastradas | Aceptado |
+| [0017](0017-repeticion-por-contador-de-sesiones.md) | Repetición por contador de sesiones, sin cola de arrastradas | Sustituido por 0018 |
+| [0018](0018-progreso-basico-sin-certificadas-de-la-tanda-activa.md) | Progreso básico sin certificadas de la tanda activa | Aceptado |
 
 ## Plantilla
 

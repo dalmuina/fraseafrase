@@ -1,6 +1,6 @@
 # ADR-0017: Repetición por contador de sesiones, sin cola de arrastradas
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por ADR-0018
 - **Fecha:** 2026-11-06
 - **Sustituye a:** ADR-0016 (parcialmente). ADR-0015 ya está `Sustituido por ADR-0016`; este ADR no lo toca
   de nuevo, solo hereda y mantiene vigentes sus reglas de racha/nivel vía ADR-0016.
