@@ -30,17 +30,17 @@
 
 ## 3. `DsLevelBadge` con los 6 rangos
 
-- [ ] 3.1 Escribir el test (que debe fallar) de `DsLevelBadgeTest` (unit, `core/designsystem/src/test`)
+- [x] 3.1 Escribir el test (que debe fallar) de `DsLevelBadgeTest` (unit, `core/designsystem/src/test`)
       para `levelBadgeLabel(0) == "Sin rango"` (spec `level-badges`, escenario "Nivel 0 no muestra
       insignia" → pasa a mostrar "Sin rango").
-- [ ] 3.2 Actualizar `levelBadgeLabel`/`levelBadgeSpec` en `DsLevelBadge.kt` para que el nivel 0
+- [x] 3.2 Actualizar `levelBadgeLabel`/`levelBadgeSpec` en `DsLevelBadge.kt` para que el nivel 0
       devuelva una insignia ("Sin rango", icono `ic_rango_sin_rango`) en vez de `null`, y que los
       niveles 1 a 5 usen los vectores de la tarea 1.1 en vez de `Icons.Filled.*` (D3); verificar que
       el test de 3.1 pasa.
-- [ ] 3.3 Actualizar el test instrumentado `DsLevelBadgeTest` (`androidTest`) para el nuevo icono de
+- [x] 3.3 Actualizar el test instrumentado `DsLevelBadgeTest` (`androidTest`) para el nuevo icono de
       nivel 0 (spec `level-badges`, escenario "Sin rango y Bronce no comparten representación");
       verificar en el emulador que las 6 insignias pintan icono y etiqueta distintos entre sí.
-- [ ] 3.4 Actualizar las `@PreviewLightDark` de `DsLevelBadge.kt` para los 6 niveles (0 a 5) y
+- [x] 3.4 Actualizar las `@PreviewLightDark` de `DsLevelBadge.kt` para los 6 niveles (0 a 5) y
       verificar visualmente en el panel de previews que cada una usa su vector e incluye "Sin
       rango".
 
