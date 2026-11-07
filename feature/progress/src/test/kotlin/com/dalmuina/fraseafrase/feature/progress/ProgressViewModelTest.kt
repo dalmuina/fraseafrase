@@ -2,17 +2,11 @@ package com.dalmuina.fraseafrase.feature.progress
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
-import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
-import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
-import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
-import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -30,53 +24,59 @@ class ProgressViewModelTest {
     @RegisterExtension
     val mainDispatcher = MainDispatcherExtension(StandardTestDispatcher())
 
-    /** Frase certificada en la tanda: racha 3 respondida. */
-    private fun certified(id: String) = aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
-
     private fun loaded(vararg ids: String) = CatalogLoadResult.Loaded(ids.map { aCatalogPhrase(id = it) })
 
-    private fun activeBatch(order: List<String>, progress: List<PhraseProgress>) =
-        PracticeSnapshot(
-            progress = progress,
-            activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
-            sessionCount = 0,
-        )
-
-    // Scenario: Tanda con certificadas y no certificadas (spec: progress-overview)
+    // Scenario: El total coincide con la suma de los niveles (spec: progress-overview)
     @Test
-    fun `given certified and uncertified phrases when opening progress then it shows the certified count`() =
+    fun `given a catalog with phrases in several levels when opening progress then the total matches the sum`() =
         runTest {
-            // Given: tanda activa de cinco frases, dos con racha 3 y tres sin certificar
-            val progress = listOf(certified("A"), certified("B")) +
-                listOf("C", "D", "E").map { aPhraseProgress(id = it) }
-            val practice = FakePracticeRepository(
-                activeBatch(order = listOf("A", "B", "C", "D", "E"), progress = progress),
-            )
-            val catalog = loaded("A", "B", "C", "D", "E")
+            // Given: un catálogo de diez frases y el nivel CEFR B1 guardado
+            val catalog = loaded("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
+            val settings = UserSettings(cefrLevel = CefrLevel.B1, batchSize = UserSettings.DEFAULT.batchSize)
 
             // When: el usuario abre la pantalla de progreso
-            val viewModel = progressViewModel(catalog, practice)
+            val viewModel = progressViewModel(catalog, settings = settings)
             advanceUntilIdle()
 
-            // Then: la pantalla muestra 2 de 5 frases certificadas
+            // Then: la tarjeta destacada muestra 10 frases disponibles y el nivel CEFR B1
             val state = viewModel.uiState.value.shouldBeInstanceOf<ProgressUiState.Content>()
-            state.certifiedInBatch shouldBe CertifiedCount(certified = 2, total = 5)
+            state.totalAvailable shouldBe 10
+            state.cefrLevel shouldBe CefrLevel.B1
+            state.byLevel.values.sum() shouldBe state.totalAvailable
         }
 
-    // Scenario: Sin tanda activa muestra solo el total por nivel (spec: progress-overview)
+    // Scenario: El total se actualiza si cambia el catálogo disponible (spec: progress-overview)
     @Test
-    fun `given no active batch when opening progress then it shows a null certified count and the total by level`() =
+    fun `given a catalog of six phrases when opening progress then the featured card shows six phrases available`() =
         runTest {
-            // Given: no hay tanda activa y un catálogo de seis frases sin progreso
+            // Given: un catálogo de seis frases sin progreso
             val catalog = loaded("A", "B", "C", "D", "E", "F")
 
             // When: el usuario abre la pantalla de progreso
             val viewModel = progressViewModel(catalog)
             advanceUntilIdle()
 
-            // Then: la pantalla no muestra certificadas y muestra el nivel 0 con 6 frases
+            // Then: la tarjeta destacada muestra 6 frases disponibles
             val state = viewModel.uiState.value.shouldBeInstanceOf<ProgressUiState.Content>()
-            state.certifiedInBatch shouldBe null
+            state.totalAvailable shouldBe 6
+        }
+
+    // Scenario: Sin tanda activa muestra solo el total por nivel (spec: progress-overview)
+    @Test
+    fun `given no active batch when opening progress then it shows the total the cefr level and the levels`() =
+        runTest {
+            // Given: no hay tanda activa, un catálogo de seis frases sin progreso y el nivel CEFR B1 guardado
+            val catalog = loaded("A", "B", "C", "D", "E", "F")
+            val settings = UserSettings(cefrLevel = CefrLevel.B1, batchSize = UserSettings.DEFAULT.batchSize)
+
+            // When: el usuario abre la pantalla de progreso
+            val viewModel = progressViewModel(catalog, settings = settings)
+            advanceUntilIdle()
+
+            // Then: la pantalla muestra 6 frases disponibles, el nivel CEFR B1 y el nivel 0 con 6 frases
+            val state = viewModel.uiState.value.shouldBeInstanceOf<ProgressUiState.Content>()
+            state.totalAvailable shouldBe 6
+            state.cefrLevel shouldBe CefrLevel.B1
             state.byLevel shouldContainExactly mapOf(
                 Level(0) to 6,
                 Level(1) to 0,

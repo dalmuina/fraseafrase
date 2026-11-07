@@ -4,10 +4,9 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onChildren
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import org.junit.Rule
 import org.junit.Test
@@ -25,34 +24,38 @@ class ProgressScreenTest {
         Level(value) to if (value == 0) levelZero else 0
     }
 
-    // Scenario: Tanda con certificadas y no certificadas (spec: progress-overview)
+    // Scenario: El total coincide con la suma de los niveles (spec: progress-overview)
     @Test
-    fun givenABatchWithCertifiedAndUncertifiedPhrases_whenShowingTheScreen_thenTheCertifiedCountIsDisplayed() {
-        // Given/When: la pantalla muestra 2 de 5 frases certificadas
+    fun givenACatalogWithPhrasesInSeveralLevels_whenShowingTheScreen_thenTheFeaturedCardShowsTheTotalAndTheCefrLevel() {
+        // Given/When: la tarjeta destacada muestra 10 frases disponibles y el nivel CEFR B1
         setScreen(
             ProgressUiState.Content(
-                certifiedInBatch = CertifiedCount(certified = 2, total = 5),
-                byLevel = allLevels(levelZero = 3),
+                totalAvailable = 10,
+                cefrLevel = CefrLevel.B1,
+                byLevel = allLevels(levelZero = 6) + mapOf(Level(2) to 3, Level(5) to 1),
             ),
         )
 
-        // Then: se muestra el número de certificadas sobre el total de la tanda
-        composeTestRule.onNodeWithText("2 de 5 frases certificadas").assertIsDisplayed()
+        // Then: se muestran el total disponible y el nivel CEFR vigente
+        composeTestRule.onNodeWithText("10 frases disponibles").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Nivel actual: B1").assertIsDisplayed()
     }
 
     // Scenario: Sin tanda activa muestra solo el total por nivel (spec: progress-overview)
     @Test
-    fun givenNoActiveBatch_whenShowingTheScreen_thenItIndicatesNoActiveBatchAndShowsTheTotalByLevel() {
-        // Given/When: no hay tanda activa y el catálogo tiene 6 frases en el nivel 0
+    fun givenNoActiveBatch_whenShowingTheScreen_thenItShowsTheTotalAvailableTheCefrLevelAndTheTotalByLevel() {
+        // Given/When: no hay tanda activa, un catálogo de seis frases sin progreso y el nivel CEFR B1
         setScreen(
             ProgressUiState.Content(
-                certifiedInBatch = null,
+                totalAvailable = 6,
+                cefrLevel = CefrLevel.B1,
                 byLevel = allLevels(levelZero = 6),
             ),
         )
 
-        // Then: se indica que no hay tanda activa y se muestra el total del nivel 0
-        composeTestRule.onNodeWithText("No hay tanda activa").assertIsDisplayed()
+        // Then: se muestran las 6 frases disponibles, el nivel CEFR B1 y el total del nivel 0
+        composeTestRule.onNodeWithText("6 frases disponibles").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Nivel actual: B1").assertIsDisplayed()
         composeTestRule.onNodeWithText("Sin rango: 6 frases").assertIsDisplayed()
     }
 
@@ -73,7 +76,8 @@ class ProgressScreenTest {
         // Given/When: el nivel 3 tiene 3 frases
         setScreen(
             ProgressUiState.Content(
-                certifiedInBatch = null,
+                totalAvailable = 3,
+                cefrLevel = CefrLevel.A1,
                 byLevel = (0..Level.MAX_LEVEL).associate { value ->
                     Level(value) to if (value == 3) 3 else 0
                 },
@@ -86,22 +90,23 @@ class ProgressScreenTest {
         composeTestRule.onNodeWithText("Oro").assertIsDisplayed()
     }
 
-    // Scenario: La fila de nivel 0 no muestra insignia (spec: progress-overview)
+    // Scenario: La fila de nivel 0 no muestra insignia ni número de nivel (spec: progress-overview)
     @Test
-    fun givenACatalogWithPhrasesInLevelZero_whenShowingTheScreen_thenNoBadgeIsDisplayedForThatRow() {
+    fun givenACatalogWithPhrasesInLevelZero_whenShowingTheScreen_thenTheNoRankBadgeIsDisplayedForThatRow() {
         // Given/When: el catálogo tiene frases en nivel 0
         setScreen(
             ProgressUiState.Content(
-                certifiedInBatch = null,
+                totalAvailable = 6,
+                cefrLevel = CefrLevel.A1,
                 byLevel = allLevels(levelZero = 6),
             ),
         )
 
-        // Then: la fila de nivel 0 muestra su número de frases sin ninguna insignia. Los niveles 1 a
-        // 5 siempre muestran su propia insignia (spec `level-badges`), así que la comprobación se
-        // limita a los hermanos del texto de nivel 0 dentro de su fila, no a toda la pantalla.
+        // Then: la fila de nivel 0 muestra su número de frases junto a la insignia "Sin rango" (su
+        // etiqueta de nivel visible; el nivel 1 a 5 siempre muestran su propia insignia, spec
+        // `level-badges`)
+        composeTestRule.onNodeWithText("Sin rango").assertIsDisplayed()
         composeTestRule.onNodeWithText("Sin rango: 6 frases").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("progress_level_row_0").onChildren().assertCountEquals(1)
     }
 
     // Scenario: La fila de nivel 0 no muestra insignia ni número de nivel (spec: progress-overview)
@@ -110,7 +115,8 @@ class ProgressScreenTest {
         // Given/When: el catálogo tiene frases repartidas entre varios niveles
         setScreen(
             ProgressUiState.Content(
-                certifiedInBatch = null,
+                totalAvailable = (0..Level.MAX_LEVEL).sum(),
+                cefrLevel = CefrLevel.A1,
                 byLevel = (0..Level.MAX_LEVEL).associate { value -> Level(value) to value },
             ),
         )

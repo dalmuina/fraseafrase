@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuina.fraseafrase.core.domain.progress.ObtainProgressOverview
 import com.dalmuina.fraseafrase.core.domain.progress.ProgressOverviewResult
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProgressViewModel @Inject constructor(
     private val obtainProgressOverview: ObtainProgressOverview,
+    private val obtainUserSettings: ObtainUserSettings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ProgressUiState>(ProgressUiState.Loading)
@@ -33,7 +35,8 @@ class ProgressViewModel @Inject constructor(
     private suspend fun reload() {
         _uiState.value = when (val result = obtainProgressOverview()) {
             is ProgressOverviewResult.Available -> ProgressUiState.Content(
-                certifiedInBatch = result.batchProgress?.let { CertifiedCount(it.certified, it.total) },
+                totalAvailable = result.byLevel.values.sum(),
+                cefrLevel = obtainUserSettings().cefrLevel,
                 byLevel = result.byLevel,
             )
             is ProgressOverviewResult.CatalogUnavailable -> ProgressUiState.CatalogError

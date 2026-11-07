@@ -56,19 +56,19 @@
 
 ## 5. Pantalla de Progreso: total disponible y nivel CEFR
 
-- [ ] 5.1 Escribir los tests (que deben fallar) de `ProgressViewModelTest` para los escenarios de la
+- [x] 5.1 Escribir los tests (que deben fallar) de `ProgressViewModelTest` para los escenarios de la
       spec `progress-overview`: "El total coincide con la suma de los niveles", "El total se
       actualiza si cambia el catálogo disponible" y "Sin tanda activa muestra solo el total por
       nivel" (ahora con `totalAvailable`/`cefrLevel` en vez de `certifiedInBatch`).
-- [ ] 5.2 Sustituir `certifiedInBatch: CertifiedCount?` por `totalAvailable: Int` y
+- [x] 5.2 Sustituir `certifiedInBatch: CertifiedCount?` por `totalAvailable: Int` y
       `cefrLevel: CefrLevel` en `ProgressUiState.Content` (eliminar `CertifiedCount`, sin otro uso
       en el proyecto); actualizar `ProgressViewModel.kt` para inyectar `ObtainUserSettings` y
       calcular `totalAvailable = byLevel.values.sum()` (D6); verificar que los tests de 5.1 pasan.
-- [ ] 5.3 Actualizar `ProgressScreen.kt` para pintar la tarjeta superior con `totalAvailable` y
+- [x] 5.3 Actualizar `ProgressScreen.kt` para pintar la tarjeta superior con `totalAvailable` y
       `cefrLevel` en vez de la línea de certificadas, y actualizar `ProgressScreenPreviews.kt` con
       los nuevos campos; verificar con un test de Compose UI que la tarjeta muestra el texto
       esperado (p. ej. "120" y "B1").
-- [ ] 5.4 Actualizar `ProgressScreenTest.kt` (androidTest) para los escenarios de `progress-overview`
+- [x] 5.4 Actualizar `ProgressScreenTest.kt` (androidTest) para los escenarios de `progress-overview`
       afectados: "La fila de nivel 0 no muestra insignia ni número de nivel" (ahora con etiqueta
       "Sin rango") y la tarjeta de total disponible; verificar en el emulador.
 

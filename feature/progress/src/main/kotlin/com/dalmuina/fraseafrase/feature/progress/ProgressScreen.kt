@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -68,18 +70,20 @@ private fun ContentState(state: ProgressUiState.Content, modifier: Modifier = Mo
             .padding(AppTheme.spacing.m),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        val certifiedInBatch = state.certifiedInBatch
-        Text(
-            text = if (certifiedInBatch != null) {
-                stringResource(
-                    R.string.progress_certified_format,
-                    certifiedInBatch.certified,
-                    certifiedInBatch.total,
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(AppTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+            ) {
+                Text(
+                    text = stringResource(R.string.progress_total_available_format, state.totalAvailable),
+                    style = MaterialTheme.typography.headlineLarge,
                 )
-            } else {
-                stringResource(R.string.progress_no_active_batch)
-            },
-        )
+                Text(
+                    text = stringResource(R.string.progress_cefr_level_format, state.cefrLevel.name),
+                )
+            }
+        }
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s)) {
             for (value in 0..Level.MAX_LEVEL) {

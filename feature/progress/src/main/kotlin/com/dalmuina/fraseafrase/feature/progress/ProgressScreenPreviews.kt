@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.feature.progress
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 
 @PreviewLightDark
@@ -19,7 +20,8 @@ private fun ProgressScreenWithActiveBatchPreview() {
     AppTheme {
         ProgressScreen(
             uiState = ProgressUiState.Content(
-                certifiedInBatch = CertifiedCount(certified = 2, total = 5),
+                totalAvailable = 13,
+                cefrLevel = CefrLevel.B1,
                 byLevel = mapOf(
                     Level(0) to 6,
                     Level(1) to 3,
@@ -39,7 +41,8 @@ private fun ProgressScreenWithoutActiveBatchPreview() {
     AppTheme {
         ProgressScreen(
             uiState = ProgressUiState.Content(
-                certifiedInBatch = null,
+                totalAvailable = 6,
+                cefrLevel = CefrLevel.A1,
                 byLevel = mapOf(
                     Level(0) to 6,
                     Level(1) to 0,
