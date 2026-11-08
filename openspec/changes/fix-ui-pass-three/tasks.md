@@ -46,5 +46,5 @@
 
 ## 4. Verificación final
 
-- [ ] 4.1 Ejecutar `./gradlew check` y `./gradlew koverVerify` en verde, confirmando que no bajan los
+- [x] 4.1 Ejecutar `./gradlew check` y `./gradlew koverVerify` en verde, confirmando que no bajan los
       mínimos de cobertura (dominio 90 %, presentación 80 %, global 70 %).
