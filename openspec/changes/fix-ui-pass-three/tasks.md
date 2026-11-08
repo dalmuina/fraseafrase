@@ -31,14 +31,14 @@
 
 ## 3. Practicar: contenido desplazable con los controles de acción siempre visibles (`:feature:session`)
 
-- [ ] 3.1 Añadir a `PracticeSessionScreenTest` (`androidTest`) los tres escenarios de
+- [x] 3.1 Añadir a `PracticeSessionScreenTest` (`androidTest`) los tres escenarios de
       `specs/practice-session/spec.md` ("El control de revelar es visible con una frase muy larga",
       "Los controles de acierto y fallo son visibles con una traducción muy larga" y "La frase y la
       traducción muy largas se pueden desplazar"), usando una `PracticeItem` con `source`/`target` de
       longitud suficiente para desbordar la pantalla del test, y comprobando `assertIsDisplayed()` del
       control de revelar o de los de acierto/fallo sin `performScrollTo()` previo. Verificar que los
       tres fallan por el recorte actual antes de tocar `PracticeSessionScreen.kt`.
-- [ ] 3.2 Reestructurar `PracticingContent` en `PracticeSessionScreen.kt`: una `Column` con
+- [x] 3.2 Reestructurar `PracticingContent` en `PracticeSessionScreen.kt`: una `Column` con
       `Modifier.weight(1f).verticalScroll(rememberScrollState())` para `PhraseCard`/`TranslationCard`, y
       el botón de revelar o `AssessmentButtons` fuera de esa zona de scroll, al final de la `Column`
       exterior (design D2). Verificar que `./gradlew :feature:session:connectedAndroidTest` pasa,

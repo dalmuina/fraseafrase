@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
@@ -118,19 +121,40 @@ private fun PracticeHeader(index: Int, total: Int) {
     }
 }
 
-/** Frase actual con sus botones de revelar o autoevaluar, o el mensaje de tanda completada en su lugar. */
+/**
+ * Frase actual con sus botones de revelar o autoevaluar, o el mensaje de tanda completada en su lugar.
+ *
+ * La frase y la traducción viven en una zona desplazable con [Modifier.weight] para que, si no caben en
+ * el espacio disponible, el usuario pueda desplazarlas; el control de revelar o los de acierto/fallo
+ * quedan fuera de esa zona, al final de la columna, para que nunca se recorten ni se muevan (spec:
+ * practice-session, "Controles de acción siempre visibles y pulsables"; design D2).
+ */
 @Composable
 private fun PracticingContent(
     state: PracticeSessionUiState.Practicing,
     onAction: (PracticeSessionAction) -> Unit,
 ) {
+    if (state.completed) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+        ) {
+            CompletedMessage(enabled = !state.busy, onAction = onAction)
+        }
+        return
+    }
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        if (state.completed) {
-            CompletedMessage(enabled = !state.busy, onAction = onAction)
-        } else {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+        ) {
             PhraseCard(
                 item = state.current,
                 revealed = state.revealed,
@@ -139,15 +163,15 @@ private fun PracticingContent(
                 nextLevelBadgeLabel = state.nextLevelBadgeLabel,
                 onAction = onAction,
             )
-            if (state.revealed) {
-                AssessmentButtons(enabled = !state.busy, onAction = onAction)
-            } else {
-                Button(
-                    onClick = { onAction(PracticeSessionAction.Reveal) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = stringResource(R.string.practice_reveal))
-                }
+        }
+        if (state.revealed) {
+            AssessmentButtons(enabled = !state.busy, onAction = onAction)
+        } else {
+            Button(
+                onClick = { onAction(PracticeSessionAction.Reveal) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = stringResource(R.string.practice_reveal))
             }
         }
     }

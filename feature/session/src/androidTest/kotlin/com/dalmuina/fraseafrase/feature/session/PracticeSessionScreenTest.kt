@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
@@ -521,6 +522,56 @@ class PracticeSessionScreenTest {
 
         assertTrue(revealWidth >= rootWidth * FULL_WIDTH_RATIO_TOLERANCE)
     }
+
+    // Scenario: El control de revelar es visible con una frase muy larga (spec: practice-session)
+    @Test
+    fun givenVeryLongPhrase_whenScreenIsShown_thenRevealControlIsDisplayed() {
+        // Given: la pantalla muestra una frase sin revelar cuyo texto desborda la pantalla
+        setScreen(practicing(current = item(source = veryLongText())))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el control de revelar la traducción está visible sin necesitar desplazamiento
+        composeTestRule.onNodeWithText("Mostrar traducción").assertIsDisplayed()
+    }
+
+    // Scenario: Los controles de acierto y fallo son visibles con una traducción muy larga (spec: practice-session)
+    @Test
+    fun givenVeryLongTranslation_whenScreenIsShown_thenHitAndMissControlsAreDisplayed() {
+        // Given: la pantalla muestra una frase revelada cuya traducción desborda la pantalla
+        setScreen(practicing(current = item(target = veryLongText()), revealed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: los controles de acierto y fallo están visibles sin necesitar desplazamiento
+        composeTestRule.onNodeWithText("Acierto").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fallo").assertIsDisplayed()
+    }
+
+    // Scenario: La frase y la traducción muy largas se pueden desplazar (spec: practice-session)
+    @Test
+    fun givenVeryLongPhraseAndTranslation_whenContentIsScrolled_thenHitAndMissControlsStayDisplayed() {
+        // Given: la pantalla muestra una frase revelada cuya frase y traducción juntas desbordan la pantalla
+        setScreen(
+            practicing(
+                current = item(source = veryLongText(), target = veryLongText()),
+                revealed = true,
+            ),
+        )
+        val missBoundsBeforeScroll = composeTestRule.onNodeWithText("Fallo").getUnclippedBoundsInRoot()
+
+        // When: el usuario desplaza el contenido de la frase y la traducción
+        composeTestRule.onNodeWithText(veryLongText(), substring = true).performScrollTo()
+
+        // Then: los controles de acierto y fallo permanecen visibles y pulsables en el mismo lugar
+        composeTestRule.onNodeWithText("Acierto").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fallo").assertIsDisplayed()
+        val missBoundsAfterScroll = composeTestRule.onNodeWithText("Fallo").getUnclippedBoundsInRoot()
+        assertEquals(missBoundsBeforeScroll.top, missBoundsAfterScroll.top)
+    }
+
+    /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */
+    private fun veryLongText(): String = (1..40).joinToString(separator = " ") { "palabra$it" }
 
     /** Ancho de un [DpRect], no expuesto como propiedad por la API de Compose UI. */
     private fun DpRect.widthValue(): Dp = right - left
