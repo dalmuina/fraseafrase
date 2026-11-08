@@ -19,6 +19,7 @@ internal fun progressViewModel(
     obtainProgressOverview = ObtainProgressOverview(
         catalogRepository = FakeCatalogRepository(catalog),
         practiceRepository = practice,
+        obtainUserSettings = ObtainUserSettings(FakeSettingsRepository(settings)),
     ),
     obtainUserSettings = ObtainUserSettings(FakeSettingsRepository(settings)),
 )

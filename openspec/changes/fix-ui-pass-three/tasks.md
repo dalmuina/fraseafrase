@@ -2,17 +2,17 @@
 
 ## 1. Progreso: filtrar el recuento por el nivel CEFR vigente (`:core:domain`)
 
-- [ ] 1.1 Añadir a `ObtainProgressOverviewTest` los escenarios "Las frases de otros niveles CEFR no se
+- [x] 1.1 Añadir a `ObtainProgressOverviewTest` los escenarios "Las frases de otros niveles CEFR no se
       cuentan" (`byLevel`) y "El total no incluye frases de otros niveles CEFR" (total disponible) de
       `specs/progress-overview/spec.md`, usando `aCatalogPhrase(level = ...)` con frases de dos niveles
       CEFR distintos y un `FakeSettingsRepository`/`UserSettings` fijando el nivel CEFR vigente; y
       ajustar los tests existentes de `ObtainProgressOverviewTest` para que todas sus frases de catálogo
       compartan el nivel CEFR de los ajustes usados. Verificar que los dos tests nuevos fallan por el
       recuento actual (cuentan también las frases del otro nivel CEFR) antes de tocar la implementación.
-- [ ] 1.2 Inyectar `ObtainUserSettings` en `ObtainProgressOverview` y filtrar `loaded.phrases` por
+- [x] 1.2 Inyectar `ObtainUserSettings` en `ObtainProgressOverview` y filtrar `loaded.phrases` por
       `CatalogPhrase.level == settings.cefrLevel` antes de calcular `byLevel` (design D3). Verificar que
       `./gradlew :core:domain:test` pasa, incluidos los tests de 1.1.
-- [ ] 1.3 Actualizar `ProgressFixtures.kt` (`:feature:progress`, test) para construir
+- [x] 1.3 Actualizar `ProgressFixtures.kt` (`:feature:progress`, test) para construir
       `ObtainProgressOverview` con el nuevo parámetro de ajustes. Verificar que
       `./gradlew :feature:progress:test` sigue en verde sin cambios de comportamiento en
       `ProgressViewModelTest`.

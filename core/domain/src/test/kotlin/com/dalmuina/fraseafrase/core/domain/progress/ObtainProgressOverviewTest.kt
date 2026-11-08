@@ -3,8 +3,11 @@ package com.dalmuina.fraseafrase.core.domain.progress
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
+import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
@@ -12,6 +15,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
+import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.maps.shouldContainExactly
@@ -22,9 +26,14 @@ import org.junit.jupiter.api.Test
 
 class ObtainProgressOverviewTest {
 
-    private fun useCase(practice: FakePracticeRepository, catalog: CatalogLoadResult) = ObtainProgressOverview(
+    private fun useCase(
+        practice: FakePracticeRepository,
+        catalog: CatalogLoadResult,
+        settings: UserSettings = UserSettings.DEFAULT,
+    ) = ObtainProgressOverview(
         catalogRepository = FakeCatalogRepository(catalog),
         practiceRepository = practice,
+        obtainUserSettings = ObtainUserSettings(FakeSettingsRepository(settings)),
     )
 
     private fun activeBatch(order: List<String>, progress: List<PhraseProgress>) = PracticeSnapshot(
@@ -48,7 +57,10 @@ class ObtainProgressOverviewTest {
             val practice = FakePracticeRepository(
                 activeBatch(order = listOf("A", "B", "C", "D", "E"), progress = progress),
             )
-            val catalog = loaded(*listOf("A", "B", "C", "D", "E").map { aCatalogPhrase(id = it) }.toTypedArray())
+            val catalog = loaded(
+                *listOf("A", "B", "C", "D", "E").map { aCatalogPhrase(id = it, level = CefrLevel.A1) }
+                    .toTypedArray(),
+            )
 
             // When
             val result = useCase(practice, catalog).invoke()
@@ -69,7 +81,9 @@ class ObtainProgressOverviewTest {
             val practice = FakePracticeRepository(
                 activeBatch(order = listOf("A", "B", "C"), progress = progress),
             )
-            val catalog = loaded(*listOf("A", "B", "C").map { aCatalogPhrase(id = it) }.toTypedArray())
+            val catalog = loaded(
+                *listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.A1) }.toTypedArray(),
+            )
 
             // When
             val result = useCase(practice, catalog).invoke()
@@ -96,7 +110,8 @@ class ObtainProgressOverviewTest {
             PracticeSnapshot(progress = progress, activeBatch = null, sessionCount = 0),
         )
         val catalog = loaded(
-            *(levelTwoIds + levelFiveId + withoutProgressIds).map { aCatalogPhrase(id = it) }.toTypedArray(),
+            *(levelTwoIds + levelFiveId + withoutProgressIds)
+                .map { aCatalogPhrase(id = it, level = CefrLevel.A1) }.toTypedArray(),
         )
 
         // When
@@ -120,7 +135,9 @@ class ObtainProgressOverviewTest {
         runTest {
             // Given: catálogo de ocho frases sin ningún progreso registrado
             val practice = FakePracticeRepository()
-            val catalog = loaded(*(1..8).map { aCatalogPhrase(id = "phrase-$it") }.toTypedArray())
+            val catalog = loaded(
+                *(1..8).map { aCatalogPhrase(id = "phrase-$it", level = CefrLevel.A1) }.toTypedArray(),
+            )
 
             // When
             val result = useCase(practice, catalog).invoke()
@@ -150,7 +167,9 @@ class ObtainProgressOverviewTest {
                 ),
             ),
         )
-        val catalog = loaded(*listOf("A", "B", "C", "D", "E").map { aCatalogPhrase(id = it) }.toTypedArray())
+        val catalog = loaded(
+            *listOf("A", "B", "C", "D", "E").map { aCatalogPhrase(id = it, level = CefrLevel.A1) }.toTypedArray(),
+        )
 
         // When
         val result = useCase(practice, catalog).invoke()
@@ -165,7 +184,9 @@ class ObtainProgressOverviewTest {
     fun `given no active batch when opening progress then batchProgress is null`() = runTest {
         // Given: no hay tanda activa y un catálogo de seis frases sin progreso
         val practice = FakePracticeRepository()
-        val catalog = loaded(*(1..6).map { aCatalogPhrase(id = "phrase-$it") }.toTypedArray())
+        val catalog = loaded(
+            *(1..6).map { aCatalogPhrase(id = "phrase-$it", level = CefrLevel.A1) }.toTypedArray(),
+        )
 
         // When
         val result = useCase(practice, catalog).invoke()
@@ -187,5 +208,51 @@ class ObtainProgressOverviewTest {
 
         // Then
         result shouldBe ProgressOverviewResult.CatalogUnavailable(CatalogLoadError.AssetUnreadable)
+    }
+
+    // Scenario: Las frases de otros niveles CEFR no se cuentan (spec: progress-overview)
+    @Test
+    fun `given phrases of another cefr level when opening progress then byLevel does not count them`() = runTest {
+        // Given: el nivel CEFR B1 vigente y seis frases de nivel B1 sin progreso, más cuatro de nivel C1
+        val b1Ids = (1..6).map { "b1-$it" }
+        val c1Ids = (1..4).map { "c1-$it" }
+        val practice = FakePracticeRepository()
+        val catalog = loaded(
+            *(
+                b1Ids.map { aCatalogPhrase(id = it, level = CefrLevel.B1) } +
+                    c1Ids.map { aCatalogPhrase(id = it, level = CefrLevel.C1) }
+                ).toTypedArray(),
+        )
+        val settings = UserSettings.DEFAULT.copy(cefrLevel = CefrLevel.B1)
+
+        // When
+        val result = useCase(practice, catalog, settings).invoke()
+
+        // Then
+        val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
+        available.byLevel[Level(0)] shouldBe 6
+    }
+
+    // Scenario: El total no incluye frases de otros niveles CEFR (spec: progress-overview)
+    @Test
+    fun `given phrases of another cefr level when opening progress then the total excludes them`() = runTest {
+        // Given: el nivel CEFR B1 guardado y seis frases de nivel B1 sin progreso, más cuatro de nivel C1
+        val b1Ids = (1..6).map { "b1-$it" }
+        val c1Ids = (1..4).map { "c1-$it" }
+        val practice = FakePracticeRepository()
+        val catalog = loaded(
+            *(
+                b1Ids.map { aCatalogPhrase(id = it, level = CefrLevel.B1) } +
+                    c1Ids.map { aCatalogPhrase(id = it, level = CefrLevel.C1) }
+                ).toTypedArray(),
+        )
+        val settings = UserSettings.DEFAULT.copy(cefrLevel = CefrLevel.B1)
+
+        // When
+        val result = useCase(practice, catalog, settings).invoke()
+
+        // Then
+        val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
+        available.byLevel.values.sum() shouldBe 6
     }
 }
