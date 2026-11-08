@@ -8,11 +8,13 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
@@ -45,6 +47,9 @@ class PracticeSessionScreenTest {
 
         /** Margen bajo "todo el ancho" al comparar anchos (design D2): da cabida al padding de la pantalla. */
         private const val FULL_WIDTH_RATIO_TOLERANCE = 0.8f
+
+        /** Tag del contenedor desplazable con la frase y la traducción, ver [PracticeSessionScreen]. */
+        private const val SCROLLABLE_CONTENT_TAG = "practice_scrollable_content"
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -521,6 +526,58 @@ class PracticeSessionScreenTest {
 
         assertTrue(revealWidth >= rootWidth * FULL_WIDTH_RATIO_TOLERANCE)
     }
+
+    // Scenario: El control de revelar es visible con una frase muy larga (spec: practice-session)
+    @Test
+    fun givenVeryLongPhrase_whenScreenIsShown_thenRevealControlIsDisplayed() {
+        // Given: la pantalla muestra una frase sin revelar cuyo texto desborda la pantalla
+        setScreen(practicing(current = item(source = veryLongText())))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el control de revelar la traducción está visible sin necesitar desplazamiento
+        composeTestRule.onNodeWithText("Mostrar traducción").assertIsDisplayed()
+    }
+
+    // Scenario: Los controles de acierto y fallo son visibles con una traducción muy larga (spec: practice-session)
+    @Test
+    fun givenVeryLongTranslation_whenScreenIsShown_thenHitAndMissControlsAreDisplayed() {
+        // Given: la pantalla muestra una frase revelada cuya traducción desborda la pantalla
+        setScreen(practicing(current = item(target = veryLongText()), revealed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: los controles de acierto y fallo están visibles sin necesitar desplazamiento
+        composeTestRule.onNodeWithText("Acierto").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fallo").assertIsDisplayed()
+    }
+
+    // Scenario: La frase y la traducción muy largas se pueden desplazar (spec: practice-session)
+    @Test
+    fun givenVeryLongPhraseAndTranslation_whenContentIsScrolled_thenHitAndMissControlsStayDisplayed() {
+        // Given: la pantalla muestra una frase revelada cuya frase y traducción juntas desbordan la pantalla
+        setScreen(
+            practicing(
+                current = item(source = veryLongText("frase"), target = veryLongText("traduccion")),
+                revealed = true,
+            ),
+        )
+        val missBoundsBeforeScroll = composeTestRule.onNodeWithText("Fallo").getUnclippedBoundsInRoot()
+
+        // When: el usuario desplaza el contenido de la frase y la traducción
+        composeTestRule.onNodeWithTag(SCROLLABLE_CONTENT_TAG)
+            .performScrollToNode(hasText(veryLongText("traduccion"), substring = true))
+
+        // Then: los controles de acierto y fallo permanecen visibles y pulsables en el mismo lugar
+        composeTestRule.onNodeWithText("Acierto").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fallo").assertIsDisplayed()
+        val missBoundsAfterScroll = composeTestRule.onNodeWithText("Fallo").getUnclippedBoundsInRoot()
+        assertEquals(missBoundsBeforeScroll.top, missBoundsAfterScroll.top)
+    }
+
+    /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */
+    private fun veryLongText(prefix: String = "palabra"): String =
+        (1..40).joinToString(separator = " ") { "$prefix$it" }
 
     /** Ancho de un [DpRect], no expuesto como propiedad por la API de Compose UI. */
     private fun DpRect.widthValue(): Dp = right - left

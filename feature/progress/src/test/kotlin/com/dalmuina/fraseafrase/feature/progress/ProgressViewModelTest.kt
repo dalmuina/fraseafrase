@@ -24,14 +24,15 @@ class ProgressViewModelTest {
     @RegisterExtension
     val mainDispatcher = MainDispatcherExtension(StandardTestDispatcher())
 
-    private fun loaded(vararg ids: String) = CatalogLoadResult.Loaded(ids.map { aCatalogPhrase(id = it) })
+    private fun loaded(vararg ids: String, level: CefrLevel = CefrLevel.A1) =
+        CatalogLoadResult.Loaded(ids.map { aCatalogPhrase(id = it, level = level) })
 
     // Scenario: El total coincide con la suma de los niveles (spec: progress-overview)
     @Test
     fun `given a catalog with phrases in several levels when opening progress then the total matches the sum`() =
         runTest {
             // Given: un catálogo de diez frases y el nivel CEFR B1 guardado
-            val catalog = loaded("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
+            val catalog = loaded("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", level = CefrLevel.B1)
             val settings = UserSettings(cefrLevel = CefrLevel.B1, batchSize = UserSettings.DEFAULT.batchSize)
 
             // When: el usuario abre la pantalla de progreso
@@ -66,7 +67,7 @@ class ProgressViewModelTest {
     fun `given no active batch when opening progress then it shows the total the cefr level and the levels`() =
         runTest {
             // Given: no hay tanda activa, un catálogo de seis frases sin progreso y el nivel CEFR B1 guardado
-            val catalog = loaded("A", "B", "C", "D", "E", "F")
+            val catalog = loaded("A", "B", "C", "D", "E", "F", level = CefrLevel.B1)
             val settings = UserSettings(cefrLevel = CefrLevel.B1, batchSize = UserSettings.DEFAULT.batchSize)
 
             // When: el usuario abre la pantalla de progreso

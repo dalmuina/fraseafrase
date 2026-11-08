@@ -5,17 +5,19 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import javax.inject.Inject
 
 /**
  * Lee el resumen de progreso (ADR-0012): certificadas de la tanda activa y total de frases por
- * nivel. Combina [CatalogRepository.phrases] y [PracticeRepository.read]; no modifica ninguno de
- * los dos.
+ * nivel del nivel CEFR vigente en ajustes. Combina [CatalogRepository.phrases], [PracticeRepository.read]
+ * y [ObtainUserSettings]; no modifica ninguno de los tres.
  */
 class ObtainProgressOverview @Inject constructor(
     private val catalogRepository: CatalogRepository,
     private val practiceRepository: PracticeRepository,
+    private val obtainUserSettings: ObtainUserSettings,
 ) {
 
     suspend operator fun invoke(): ProgressOverviewResult = when (val loaded = catalogRepository.phrases()) {
@@ -25,12 +27,14 @@ class ObtainProgressOverview @Inject constructor(
 
     private suspend fun available(loaded: CatalogLoadResult.Loaded): ProgressOverviewResult.Available {
         val snapshot = practiceRepository.read()
+        val settings = obtainUserSettings()
+        val phrasesAtCefrLevel = loaded.phrases.filter { it.level == settings.cefrLevel }
         val batchProgress = snapshot.batch()?.let { batch ->
             BatchProgress(certified = batch.entries.count { it.isCertified }, total = batch.entries.size)
         }
         return ProgressOverviewResult.Available(
             batchProgress = batchProgress,
-            byLevel = byLevel(loaded.phrases, snapshot),
+            byLevel = byLevel(phrasesAtCefrLevel, snapshot),
         )
     }
 
