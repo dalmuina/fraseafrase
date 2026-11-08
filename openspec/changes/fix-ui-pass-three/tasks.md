@@ -19,13 +19,13 @@
 
 ## 2. Ajustes: alinear el stepper con el campo de texto (`:feature:settings`)
 
-- [ ] 2.1 Añadir a `SettingsScreenTest` (`androidTest`) los dos escenarios de
+- [x] 2.1 Añadir a `SettingsScreenTest` (`androidTest`) los dos escenarios de
       `specs/settings-screen/spec.md` ("Los controles se alinean con el campo de texto sin error
       visible" y "Los controles se mantienen alineados cuando el campo muestra el texto de error"),
       comprobando que el borde superior (`top`) de los nodos de disminuir y aumentar coincide con el
       del campo de texto, con y sin el texto de error visible. Verificar que ambos tests fallan por el
       desplazamiento actual antes de tocar `SettingsScreen.kt`.
-- [ ] 2.2 Cambiar `verticalAlignment` del `Row` de `BatchSizeCard` en `SettingsScreen.kt` de
+- [x] 2.2 Cambiar `verticalAlignment` del `Row` de `BatchSizeCard` en `SettingsScreen.kt` de
       `Alignment.CenterVertically` a `Alignment.Top` (design D1). Verificar que
       `./gradlew :feature:settings:connectedAndroidTest` pasa, incluidos los tests de 2.1.
 

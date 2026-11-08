@@ -174,7 +174,7 @@ private fun BatchSizeCard(
             val currentBatchSize = batchSizeText.toIntOrNull()
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
             ) {
                 DecreaseBatchSizeButton(

@@ -8,6 +8,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -130,6 +131,43 @@ class SettingsScreenTest {
         assertEquals(expectedFontSize, layoutResults.first().layoutInput.style.fontSize)
     }
 
+    // Scenario: Los controles se alinean con el campo de texto sin error visible (spec: settings-screen,
+    // fix-ui-pass-three)
+    @Test
+    fun givenNoBatchSizeError_whenShowingTheScreen_thenStepperButtonsAlignWithTextFieldTop() {
+        // Given/When: la pantalla muestra un tamaño de tanda válido, sin texto de error visible
+        setScreen(loaded(batchSizeText = "20", isBatchSizeValid = true))
+
+        // Then: el borde superior de los controles de disminuir y aumentar coincide con el del campo de texto
+        val textFieldTop = composeTestRule.onNodeWithText("20").getBoundsInRoot().top
+        val decreaseTop = composeTestRule.onNodeWithContentDescription("Disminuir tamaño de tanda")
+            .getBoundsInRoot().top
+        val increaseTop = composeTestRule.onNodeWithContentDescription("Aumentar tamaño de tanda")
+            .getBoundsInRoot().top
+
+        assertEquals(textFieldTop.value, decreaseTop.value, BOUNDS_TOLERANCE)
+        assertEquals(textFieldTop.value, increaseTop.value, BOUNDS_TOLERANCE)
+    }
+
+    // Scenario: Los controles se mantienen alineados cuando el campo muestra el texto de error (spec:
+    // settings-screen, fix-ui-pass-three)
+    @Test
+    fun givenBatchSizeErrorVisible_whenShowingTheScreen_thenStepperButtonsAlignWithTextFieldTop() {
+        // Given/When: la pantalla muestra un tamaño de tanda no válido, con su texto de error visible
+        setScreen(loaded(batchSizeText = "5", isBatchSizeValid = false))
+
+        // Then: el borde superior de los controles de disminuir y aumentar sigue coincidiendo con el del
+        // campo de texto
+        val textFieldTop = composeTestRule.onNodeWithText("5").getBoundsInRoot().top
+        val decreaseTop = composeTestRule.onNodeWithContentDescription("Disminuir tamaño de tanda")
+            .getBoundsInRoot().top
+        val increaseTop = composeTestRule.onNodeWithContentDescription("Aumentar tamaño de tanda")
+            .getBoundsInRoot().top
+
+        assertEquals(textFieldTop.value, decreaseTop.value, BOUNDS_TOLERANCE)
+        assertEquals(textFieldTop.value, increaseTop.value, BOUNDS_TOLERANCE)
+    }
+
     private fun setScreen(uiState: SettingsUiState) {
         composeTestRule.setContent {
             AppTheme {
@@ -147,4 +185,10 @@ class SettingsScreenTest {
         batchSizeText = batchSizeText,
         isBatchSizeValid = isBatchSizeValid,
     )
+
+    private companion object {
+        // Margen para redondeos de píxeles al comparar límites de layout entre nodos (design D1,
+        // fix-ui-pass-three).
+        const val BOUNDS_TOLERANCE = 0.5f
+    }
 }
