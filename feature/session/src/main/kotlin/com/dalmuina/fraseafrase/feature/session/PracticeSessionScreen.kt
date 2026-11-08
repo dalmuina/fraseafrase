@@ -152,7 +152,8 @@ private fun PracticingContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .testTag("practice_scrollable_content"),
             verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
         ) {
             PhraseCard(
