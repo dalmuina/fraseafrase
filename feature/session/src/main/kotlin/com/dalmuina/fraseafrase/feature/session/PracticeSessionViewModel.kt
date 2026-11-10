@@ -88,16 +88,27 @@ class PracticeSessionViewModel @Inject constructor(
             val levelBefore = state.current.level
             viewModelScope.launch {
                 val levelAfter = answerPhrase(state.current.id, assessment)
-                reload(previous = state)
                 val badgeChange = badgeChangeFor(levelBefore, levelAfter)
-                updatePracticing { copy(badgeChange = badgeChange, busy = badgeChange != null) }
+                if (badgeChange != null) {
+                    // Con cambio de nivel, la frase respondida sigue en pantalla con `busy` ya en `true`: el avance
+                    // lo dispara `consumeBadgeChange()` al terminar la transición (spec: new-badge-animation,
+                    // design, Decisión 1), no esta respuesta.
+                    updatePracticing { copy(badgeChange = badgeChange) }
+                } else {
+                    reload(previous = state)
+                }
             }
         }
     }
 
-    /** Limpia el indicador de cambio de insignia ya mostrado y libera los controles (design D2/D3). */
-    private fun consumeBadgeChange() = updatePracticing {
-        copy(badgeChange = null, busy = false)
+    /**
+     * Avanza a la frase siguiente al terminar la transición de insignia (spec: new-badge-animation, design,
+     * Decisión 1). `reload()` ya construye el siguiente estado con `busy = false` y `badgeChange = null` por
+     * defecto, así que no hace falta ningún `copy` adicional para limpiarlos.
+     */
+    private fun consumeBadgeChange() {
+        val state = currentPracticing() ?: return
+        viewModelScope.launch { reload(previous = state) }
     }
 
     /** Escuchar se ignora sin revelar, con una respuesta en curso (`busy`) o con la tanda completada. */
@@ -181,7 +192,8 @@ private fun PracticeItem.nextLevelBadgeLabel(): String {
 
 /**
  * Cambio de insignia a animar tras comparar el nivel [before] (antes de autoevaluar) con [after] (devuelto por
- * [AnswerPhrase]); `null` si el nivel no cambió (spec: add-level-change-animation, design D1/D2).
+ * [AnswerPhrase]); `null` si el nivel no cambió (spec: add-level-change-animation, design D1/D2; spec:
+ * new-badge-animation, design, Decisión 3).
  */
 private fun badgeChangeFor(before: Level, after: Level): BadgeChange? {
     if (before.value == after.value) return null
@@ -189,5 +201,5 @@ private fun badgeChangeFor(before: Level, after: Level): BadgeChange? {
     val badgeLabel = requireNotNull(levelBadgeLabel(after.value)) {
         "Level ${after.value} should always have a badge label"
     }
-    return BadgeChange(direction, badgeLabel, after.value)
+    return BadgeChange(direction, badgeLabel, fromLevel = before.value, toLevel = after.value)
 }

@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.designsystem.component
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -14,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -23,31 +25,51 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 private const val HALO_TEST_TAG = "ds-level-badge-change-halo"
 private val HALO_SIZE = 56.dp
 private const val HALO_ALPHA = 0.25f
+private const val POP_START_SCALE = 0.8f
+private const val POP_END_SCALE = 1f
 
 /**
  * Indicador animado de un cambio de nivel (subida o bajada, ADR-0012/ADR-0015). A diferencia de
- * [DsLevelBadge], que solo muestra el estado actual, este composable representa una transición:
- * [emphasized] distingue el estilo de una subida (con halo, `true`) de una bajada (sin halo,
- * `false`), design-add-level-change-animation D4. Reutiliza el icono y la etiqueta de
- * [DsLevelBadge].
+ * [DsLevelBadge], que solo muestra el estado actual, este composable representa una transición de
+ * verdad entre [fromLevel] y [toLevel] (crossfade + "pop" de escala, new-badge-animation design
+ * D4): [emphasized] distingue el estilo de una subida (con halo, `true`) de una bajada (sin halo,
+ * `false`). Reutiliza el icono y la etiqueta de [DsLevelBadge]. Se asume que este composable se
+ * inserta de nuevo en el árbol en cada aparición (no sobrevive entre cambios sucesivos), por lo
+ * que [LaunchedEffect] se dispara una sola vez por instancia con `Unit` como clave.
  */
 @Composable
-fun DsLevelBadgeChange(level: Int, emphasized: Boolean, modifier: Modifier = Modifier) {
+fun DsLevelBadgeChange(fromLevel: Int, toLevel: Int, emphasized: Boolean, modifier: Modifier = Modifier) {
     val motion = LocalMotion.current
     var animateIn by remember { mutableStateOf(false) }
+    var displayedLevel by remember { mutableStateOf(fromLevel) }
     val haloAlpha by animateFloatAsState(
         targetValue = if (animateIn) HALO_ALPHA else 0f,
         animationSpec = tween(
-            durationMillis = motion.durationShortMillis,
+            durationMillis = motion.durationMediumMillis,
             easing = motion.emphasizedEasing
         ),
         label = "ds-level-badge-change-halo-alpha"
     )
-    LaunchedEffect(emphasized) {
-        animateIn = emphasized
+    val scale by animateFloatAsState(
+        targetValue = if (animateIn) POP_END_SCALE else POP_START_SCALE,
+        animationSpec = tween(
+            durationMillis = motion.durationMediumMillis,
+            easing = motion.standardEasing
+        ),
+        label = "ds-level-badge-change-scale"
+    )
+    LaunchedEffect(Unit) {
+        animateIn = true
+        displayedLevel = toLevel
     }
 
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier.graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        },
+        contentAlignment = Alignment.Center
+    ) {
         if (emphasized) {
             val haloColor = MaterialTheme.colorScheme.tertiary
             Canvas(
@@ -61,7 +83,16 @@ fun DsLevelBadgeChange(level: Int, emphasized: Boolean, modifier: Modifier = Mod
                 )
             }
         }
-        DsLevelBadge(level = level)
+        Crossfade(
+            targetState = displayedLevel,
+            animationSpec = tween(
+                durationMillis = motion.durationMediumMillis,
+                easing = motion.standardEasing
+            ),
+            label = "ds-level-badge-change-crossfade"
+        ) { level ->
+            DsLevelBadge(level = level)
+        }
     }
 }
 
@@ -69,7 +100,7 @@ fun DsLevelBadgeChange(level: Int, emphasized: Boolean, modifier: Modifier = Mod
 @Composable
 private fun DsLevelBadgeChangeEmphasizedPreview() {
     AppTheme {
-        DsLevelBadgeChange(level = 2, emphasized = true)
+        DsLevelBadgeChange(fromLevel = 1, toLevel = 2, emphasized = true)
     }
 }
 
@@ -77,6 +108,6 @@ private fun DsLevelBadgeChangeEmphasizedPreview() {
 @Composable
 private fun DsLevelBadgeChangeNotEmphasizedPreview() {
     AppTheme {
-        DsLevelBadgeChange(level = 2, emphasized = false)
+        DsLevelBadgeChange(fromLevel = 2, toLevel = 1, emphasized = false)
     }
 }

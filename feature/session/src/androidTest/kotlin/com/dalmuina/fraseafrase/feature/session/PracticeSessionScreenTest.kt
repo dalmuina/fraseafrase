@@ -31,6 +31,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import kotlin.math.abs
 
 /**
  * Tests de UI de [PracticeSessionScreen] (ADR-0007). Verifican lo que ve el usuario: textos, botones habilitados y
@@ -57,6 +58,13 @@ class PracticeSessionScreenTest {
          * en [PracticeSessionScreen].
          */
         private const val INTERMEDIATE_DURATION_MILLIS = 850L
+
+        /**
+         * Margen al comparar la altura del indicador de cambio de insignia con la de la etiqueta del nivel
+         * CEFR (design D2 de `new-badge-animation`): comparten fila, así que deben quedar a una altura
+         * similar, muy lejos de estar centrados en toda la pantalla.
+         */
+        private const val ROW_ALIGNMENT_TOLERANCE_DP = 24f
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -586,39 +594,49 @@ class PracticeSessionScreenTest {
     // sigue presente mientras se anima el cambio de insignia (spec: add-level-change-animation)
     @Test
     fun givenUpBadgeChange_whenScreenShown_thenHaloIsShownAndRevealControlStaysPresent() {
-        // Given: una autoevaluación que certifica muestra el indicador con dirección UP (insignia "Oro")
+        // Given: una autoevaluación que certifica cambia el nivel de la frase revelada, respondida (busy)
         setScreen(
             practicing(
                 current = item(),
+                revealed = true,
                 busy = true,
-                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", level = 3),
+                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", fromLevel = 2, toLevel = 3),
             ),
         )
 
         // When: la pantalla se muestra (estado dado)
 
-        // Then: el halo del indicador está presente y el control de revelar sigue en el árbol semántico
+        // Then: el halo del indicador está presente, la traducción sigue visible y los controles de
+        // acierto/fallo de esa frase siguen presentes, deshabilitados por la respuesta en curso
         composeTestRule.onNodeWithTag("ds-level-badge-change-halo").assertExists()
-        composeTestRule.onNodeWithText("Mostrar traducción").assertExists()
+        composeTestRule.onNodeWithText("Bom dia").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Acierto").assertIsNotEnabled()
+        composeTestRule.onNodeWithText("Fallo").assertIsNotEnabled()
     }
 
     // Scenario: La bajada se muestra sin halo (spec: add-level-change-animation)
     @Test
     fun givenDownBadgeChange_whenScreenShown_thenHaloIsAbsent() {
-        // Given: una autoevaluación que baja el nivel muestra el indicador con dirección DOWN (insignia "Plata")
+        // Given: una autoevaluación que baja el nivel cambia el nivel de la frase revelada, respondida (busy)
         setScreen(
             practicing(
                 current = item(),
+                revealed = true,
                 busy = true,
-                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", level = 2),
+                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", fromLevel = 3, toLevel = 2),
             ),
         )
 
         // When: la pantalla se muestra (estado dado)
 
-        // Then: el indicador de cambio de insignia está presente, sin halo
+        // Then: el indicador de cambio de insignia está presente sin halo, la traducción sigue visible y
+        // los controles de acierto/fallo de esa frase siguen presentes, deshabilitados por la respuesta
+        // en curso
         composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
         composeTestRule.onNodeWithTag("ds-level-badge-change-halo").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Bom dia").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Acierto").assertIsNotEnabled()
+        composeTestRule.onNodeWithText("Fallo").assertIsNotEnabled()
     }
 
     // Scenario: Un acierto que no certifica no muestra el indicador (spec: add-level-change-animation)
@@ -642,7 +660,7 @@ class PracticeSessionScreenTest {
             practicing(
                 current = item(),
                 busy = true,
-                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", level = 2),
+                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", fromLevel = 3, toLevel = 2),
             ),
         )
         composeTestRule.setContent {
@@ -679,7 +697,7 @@ class PracticeSessionScreenTest {
             practicing(
                 current = item(),
                 busy = true,
-                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", level = 3),
+                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", fromLevel = 2, toLevel = 3),
             ),
         )
         composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
@@ -700,7 +718,7 @@ class PracticeSessionScreenTest {
             practicing(
                 current = item(),
                 busy = true,
-                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", level = 2),
+                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", fromLevel = 3, toLevel = 2),
             ),
         )
         composeTestRule.setContent {
@@ -726,6 +744,30 @@ class PracticeSessionScreenTest {
 
         // Then: el indicador ya no está presente, porque DOWN dura menos que ese tiempo intermedio
         composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertDoesNotExist()
+    }
+
+    // Scenario: La transición no oculta el resto de la tarjeta (spec: new-badge-animation)
+    @Test
+    fun givenBadgeChange_whenScreenShown_thenAnsweredPhraseStaysVisibleAndIndicatorIsAtCefrLabelHeight() {
+        // Given: una autoevaluación que cambia el nivel de consolidación de la frase respondida, revelada
+        setScreen(
+            practicing(
+                current = item(source = "Buenos días", cefrLevel = CefrLevel.B1),
+                revealed = true,
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", fromLevel = 2, toLevel = 3),
+            ),
+        )
+
+        // When: la pantalla muestra la transición de insignia sobre esa frase (estado dado)
+
+        // Then: la frase respondida sigue visible (no una frase siguiente), y el indicador queda a la
+        // misma altura que la etiqueta del nivel CEFR, no centrado en toda la pantalla
+        composeTestRule.onNodeWithText("Buenos días").assertIsDisplayed()
+        val cefrLabelTop = composeTestRule.onNodeWithText("B1").getUnclippedBoundsInRoot().top
+        val indicatorTop = composeTestRule.onNodeWithTag("practice_badge_change_indicator")
+            .getUnclippedBoundsInRoot().top
+        assertTrue(abs((indicatorTop - cefrLabelTop).value) <= ROW_ALIGNMENT_TOLERANCE_DP)
     }
 
     /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */

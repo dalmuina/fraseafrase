@@ -138,66 +138,57 @@ private fun PracticingContent(
     state: PracticeSessionUiState.Practicing,
     onAction: (PracticeSessionAction) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (state.completed) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
-            ) {
-                CompletedMessage(enabled = !state.busy, onAction = onAction)
-            }
-        } else {
+    if (state.completed) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+        ) {
+            CompletedMessage(enabled = !state.busy, onAction = onAction)
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+        ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .testTag("practice_scrollable_content"),
                 verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                        .testTag("practice_scrollable_content"),
-                    verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+                PhraseCard(
+                    item = state.current,
+                    revealed = state.revealed,
+                    enabled = !state.busy,
+                    remainingHitsForNextLevel = state.remainingHitsForNextLevel,
+                    nextLevelBadgeLabel = state.nextLevelBadgeLabel,
+                    badgeChange = state.badgeChange,
+                    onAction = onAction,
+                )
+            }
+            if (state.revealed) {
+                AssessmentButtons(enabled = !state.busy, onAction = onAction)
+            } else {
+                Button(
+                    onClick = { onAction(PracticeSessionAction.Reveal) },
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    PhraseCard(
-                        item = state.current,
-                        revealed = state.revealed,
-                        enabled = !state.busy,
-                        remainingHitsForNextLevel = state.remainingHitsForNextLevel,
-                        nextLevelBadgeLabel = state.nextLevelBadgeLabel,
-                        onAction = onAction,
-                    )
-                }
-                if (state.revealed) {
-                    AssessmentButtons(enabled = !state.busy, onAction = onAction)
-                } else {
-                    Button(
-                        onClick = { onAction(PracticeSessionAction.Reveal) },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(text = stringResource(R.string.practice_reveal))
-                    }
+                    Text(text = stringResource(R.string.practice_reveal))
                 }
             }
-        }
-        val badgeChange = state.badgeChange
-        if (badgeChange != null) {
-            BadgeChangeIndicator(
-                badgeChange = badgeChange,
-                onAction = onAction,
-                modifier = Modifier.align(Alignment.Center),
-            )
         }
     }
 }
 
 /**
- * Capa superpuesta con el indicador animado de cambio de insignia (spec: add-level-change-animation).
- * No forma parte del ciclo de vida de [PhraseCard]: cuando se muestra, [state.current] ya es la frase
- * siguiente de la tanda circular, no la que cambió de nivel (design.md D2). Se oculta sola, pasada la
- * duración correspondiente a su [BadgeChange.direction], sin bloquear los controles de la frase
- * siguiente, que siguen presentes (solo deshabilitados por `busy`).
+ * Indicador animado de cambio de insignia (spec: add-level-change-animation), en el sitio de
+ * [DsLevelBadge] dentro de la fila de nivel CEFR de [PhraseCard]: la insignia de la propia frase
+ * respondida transiciona ahí, sin ocultar el resto de la tarjeta (spec: new-badge-animation, design,
+ * Decisión 2). Se oculta sola, pasada la duración correspondiente a su [BadgeChange.direction], sin
+ * bloquear los controles de esa misma frase, que siguen presentes (solo deshabilitados por `busy`).
  */
 @Composable
 private fun BadgeChangeIndicator(
@@ -211,7 +202,8 @@ private fun BadgeChangeIndicator(
         onAction(PracticeSessionAction.ConsumeBadgeChange)
     }
     DsLevelBadgeChange(
-        level = badgeChange.level,
+        fromLevel = badgeChange.fromLevel,
+        toLevel = badgeChange.toLevel,
         emphasized = badgeChange.direction == BadgeChange.Direction.UP,
         modifier = modifier.testTag("practice_badge_change_indicator"),
     )
@@ -256,6 +248,7 @@ private fun PhraseCard(
     enabled: Boolean,
     remainingHitsForNextLevel: Int,
     nextLevelBadgeLabel: String,
+    badgeChange: BadgeChange?,
     onAction: (PracticeSessionAction) -> Unit,
 ) {
     Column(
@@ -275,7 +268,11 @@ private fun PhraseCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(text = item.cefrLevel.name, style = MaterialTheme.typography.labelMedium)
-                    DsLevelBadge(level = item.level.value)
+                    if (badgeChange != null) {
+                        BadgeChangeIndicator(badgeChange = badgeChange, onAction = onAction)
+                    } else {
+                        DsLevelBadge(level = item.level.value)
+                    }
                 }
                 Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
                 Text(
