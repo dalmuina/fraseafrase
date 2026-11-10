@@ -50,6 +50,13 @@ class PracticeSessionScreenTest {
 
         /** Tag del contenedor desplazable con la frase y la traducción, ver [PracticeSessionScreen]. */
         private const val SCROLLABLE_CONTENT_TAG = "practice_scrollable_content"
+
+        /**
+         * Tiempo intermedio entre la duración de visibilidad de DOWN (750 ms) y la de UP (950 ms) con los
+         * tokens por defecto de [com.dalmuina.fraseafrase.core.designsystem.theme.Motion], ver `visibleDurationMillis`
+         * en [PracticeSessionScreen].
+         */
+        private const val INTERMEDIATE_DURATION_MILLIS = 850L
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -660,6 +667,64 @@ class PracticeSessionScreenTest {
         composeTestRule.waitForIdle()
 
         // Then: el indicador se ocultó por sí solo
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertDoesNotExist()
+    }
+
+    // Scenario: La bajada permanece visible menos tiempo que la subida (spec: add-level-change-animation)
+    @Test
+    fun givenUpBadgeChange_whenIntermediateTimeElapses_thenIndicatorStaysVisible() {
+        // Given: el indicador de cambio de insignia con dirección UP, con el reloj de composición controlado
+        composeTestRule.mainClock.autoAdvance = false
+        setScreen(
+            practicing(
+                current = item(),
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", level = 3),
+            ),
+        )
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+
+        // When: transcurre un tiempo intermedio, mayor que la duración de DOWN pero menor que la de UP
+        composeTestRule.mainClock.advanceTimeBy(INTERMEDIATE_DURATION_MILLIS)
+
+        // Then: el indicador sigue presente, porque UP dura más que ese tiempo intermedio
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+    }
+
+    // Scenario: La bajada permanece visible menos tiempo que la subida (spec: add-level-change-animation)
+    @Test
+    fun givenDownBadgeChange_whenIntermediateTimeElapses_thenIndicatorIsGone() {
+        // Given: el indicador de cambio de insignia con dirección DOWN, con el reloj de composición controlado
+        composeTestRule.mainClock.autoAdvance = false
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(
+                current = item(),
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", level = 2),
+            ),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.ConsumeBadgeChange) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(
+                                badgeChange = null,
+                                busy = false,
+                            )
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+
+        // When: transcurre el mismo tiempo intermedio, mayor que la duración de DOWN
+        composeTestRule.mainClock.advanceTimeBy(INTERMEDIATE_DURATION_MILLIS)
+        composeTestRule.waitForIdle()
+
+        // Then: el indicador ya no está presente, porque DOWN dura menos que ese tiempo intermedio
         composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertDoesNotExist()
     }
 
