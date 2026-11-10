@@ -26,4 +26,10 @@ sealed interface PracticeSessionAction {
      * `completed` ni `index`.
      */
     data object Resume : PracticeSessionAction
+
+    /**
+     * Confirma que el indicador de cambio de insignia ya se mostró: lo limpia y libera los controles
+     * (spec: add-level-change-animation, design D2/D3).
+     */
+    data object ConsumeBadgeChange : PracticeSessionAction
 }

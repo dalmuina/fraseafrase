@@ -50,6 +50,13 @@ class PracticeSessionScreenTest {
 
         /** Tag del contenedor desplazable con la frase y la traducción, ver [PracticeSessionScreen]. */
         private const val SCROLLABLE_CONTENT_TAG = "practice_scrollable_content"
+
+        /**
+         * Tiempo intermedio entre la duración de visibilidad de DOWN (750 ms) y la de UP (950 ms) con los
+         * tokens por defecto de [com.dalmuina.fraseafrase.core.designsystem.theme.Motion], ver `visibleDurationMillis`
+         * en [PracticeSessionScreen].
+         */
+        private const val INTERMEDIATE_DURATION_MILLIS = 850L
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -575,6 +582,152 @@ class PracticeSessionScreenTest {
         assertEquals(missBoundsBeforeScroll.top, missBoundsAfterScroll.top)
     }
 
+    // Scenario: La subida se muestra con halo (spec: add-level-change-animation) / El control de revelar
+    // sigue presente mientras se anima el cambio de insignia (spec: add-level-change-animation)
+    @Test
+    fun givenUpBadgeChange_whenScreenShown_thenHaloIsShownAndRevealControlStaysPresent() {
+        // Given: una autoevaluación que certifica muestra el indicador con dirección UP (insignia "Oro")
+        setScreen(
+            practicing(
+                current = item(),
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", level = 3),
+            ),
+        )
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el halo del indicador está presente y el control de revelar sigue en el árbol semántico
+        composeTestRule.onNodeWithTag("ds-level-badge-change-halo").assertExists()
+        composeTestRule.onNodeWithText("Mostrar traducción").assertExists()
+    }
+
+    // Scenario: La bajada se muestra sin halo (spec: add-level-change-animation)
+    @Test
+    fun givenDownBadgeChange_whenScreenShown_thenHaloIsAbsent() {
+        // Given: una autoevaluación que baja el nivel muestra el indicador con dirección DOWN (insignia "Plata")
+        setScreen(
+            practicing(
+                current = item(),
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", level = 2),
+            ),
+        )
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el indicador de cambio de insignia está presente, sin halo
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+        composeTestRule.onNodeWithTag("ds-level-badge-change-halo").assertDoesNotExist()
+    }
+
+    // Scenario: Un acierto que no certifica no muestra el indicador (spec: add-level-change-animation)
+    @Test
+    fun givenNoBadgeChange_whenScreenShown_thenBadgeChangeIndicatorIsNotShown() {
+        // Given: una autoevaluación sin cambio de nivel visible
+        setScreen(practicing(current = item(), badgeChange = null))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: no se pinta ningún indicador de cambio de insignia
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertDoesNotExist()
+    }
+
+    // Scenario: El indicador desaparece sin intervención del usuario (spec: add-level-change-animation)
+    @Test
+    fun givenBadgeChange_whenDurationElapses_thenConsumeBadgeChangeIsDispatchedAutomatically() {
+        // Given: la pantalla muestra el indicador de cambio de insignia, con el reloj de composición controlado
+        composeTestRule.mainClock.autoAdvance = false
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(
+                current = item(),
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", level = 2),
+            ),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.ConsumeBadgeChange) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(
+                                badgeChange = null,
+                                busy = false,
+                            )
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+
+        // When: transcurre tiempo de sobra, sin que el usuario interactúe con la pantalla
+        composeTestRule.mainClock.advanceTimeBy(5_000)
+        composeTestRule.waitForIdle()
+
+        // Then: el indicador se ocultó por sí solo
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertDoesNotExist()
+    }
+
+    // Scenario: La bajada permanece visible menos tiempo que la subida (spec: add-level-change-animation)
+    @Test
+    fun givenUpBadgeChange_whenIntermediateTimeElapses_thenIndicatorStaysVisible() {
+        // Given: el indicador de cambio de insignia con dirección UP, con el reloj de composición controlado
+        composeTestRule.mainClock.autoAdvance = false
+        setScreen(
+            practicing(
+                current = item(),
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.UP, "Oro", level = 3),
+            ),
+        )
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+
+        // When: transcurre un tiempo intermedio, mayor que la duración de DOWN pero menor que la de UP
+        composeTestRule.mainClock.advanceTimeBy(INTERMEDIATE_DURATION_MILLIS)
+
+        // Then: el indicador sigue presente, porque UP dura más que ese tiempo intermedio
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+    }
+
+    // Scenario: La bajada permanece visible menos tiempo que la subida (spec: add-level-change-animation)
+    @Test
+    fun givenDownBadgeChange_whenIntermediateTimeElapses_thenIndicatorIsGone() {
+        // Given: el indicador de cambio de insignia con dirección DOWN, con el reloj de composición controlado
+        composeTestRule.mainClock.autoAdvance = false
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(
+                current = item(),
+                busy = true,
+                badgeChange = BadgeChange(BadgeChange.Direction.DOWN, "Plata", level = 2),
+            ),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.ConsumeBadgeChange) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(
+                                badgeChange = null,
+                                busy = false,
+                            )
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertExists()
+
+        // When: transcurre el mismo tiempo intermedio, mayor que la duración de DOWN
+        composeTestRule.mainClock.advanceTimeBy(INTERMEDIATE_DURATION_MILLIS)
+        composeTestRule.waitForIdle()
+
+        // Then: el indicador ya no está presente, porque DOWN dura menos que ese tiempo intermedio
+        composeTestRule.onNodeWithTag("practice_badge_change_indicator").assertDoesNotExist()
+    }
+
     /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */
     private fun veryLongText(prefix: String = "palabra"): String =
         (1..40).joinToString(separator = " ") { "$prefix$it" }
@@ -595,6 +748,7 @@ class PracticeSessionScreenTest {
         revealed: Boolean = false,
         busy: Boolean = false,
         completed: Boolean = false,
+        badgeChange: BadgeChange? = null,
     ): PracticeSessionUiState.Practicing = PracticeSessionUiState.Practicing(
         current = current,
         revealed = revealed,
@@ -604,6 +758,7 @@ class PracticeSessionScreenTest {
         total = 1,
         remainingHitsForNextLevel = 0,
         nextLevelBadgeLabel = "Bronce",
+        badgeChange = badgeChange,
     )
 
     /** Frase de presentación. */

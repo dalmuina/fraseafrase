@@ -4,6 +4,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.assertions.throwables.shouldThrow
@@ -90,5 +91,103 @@ class AnswerPhraseTest {
         shouldThrow<IllegalArgumentException> {
             AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
         }
+    }
+
+    // Scenario: AnswerPhrase expone el nivel resultante (spec: practice-batch)
+    @Test
+    fun `given a hit that certifies the phrase when answering then it returns the new level`() = runTest {
+        // Given: streak a una de certificar, nivel 0
+        val progress = aPhraseProgress(id = "A", level = Level(0), streak = Streak(2))
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(progress, aPhraseProgress(id = "B")),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                sessionCount = 5,
+            ),
+        )
+
+        // When
+        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+
+        // Then
+        result shouldBe Level(1)
+    }
+
+    @Test
+    fun `given a hit that does not certify the phrase when answering then it returns the same level`() = runTest {
+        // Given: streak lejos de certificar, nivel 2
+        val progress = aPhraseProgress(id = "A", level = Level(2), streak = Streak(0))
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(progress, aPhraseProgress(id = "B")),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                sessionCount = 5,
+            ),
+        )
+
+        // When
+        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+
+        // Then
+        result shouldBe Level(2)
+    }
+
+    @Test
+    fun `given a miss on a phrase with level 1 or higher when answering then it returns the dropped level`() =
+        runTest {
+            // Given: nivel 2
+            val progress = aPhraseProgress(id = "A", level = Level(2))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(progress, aPhraseProgress(id = "B")),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                    sessionCount = 5,
+                ),
+            )
+
+            // When
+            val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
+
+            // Then
+            result shouldBe Level(1)
+        }
+
+    @Test
+    fun `given a miss on a phrase at level 0 when answering then it returns level 0`() = runTest {
+        // Given: nivel 0
+        val progress = aPhraseProgress(id = "A", level = Level(0))
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(progress, aPhraseProgress(id = "B")),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                sessionCount = 5,
+            ),
+        )
+
+        // When
+        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
+
+        // Then
+        result shouldBe Level(0)
+    }
+
+    // Scenario: Certificar de nuevo en nivel máximo se mantiene en 5 (ADR-0015)
+    @Test
+    fun `given a hit that certifies the phrase at max level when answering then it returns level 5`() = runTest {
+        // Given: nivel máximo, streak a una de certificar de nuevo
+        val progress = aPhraseProgress(id = "A", level = Level(5), streak = Streak(2))
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(progress, aPhraseProgress(id = "B")),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                sessionCount = 5,
+            ),
+        )
+
+        // When
+        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+
+        // Then
+        result shouldBe Level(5)
     }
 }

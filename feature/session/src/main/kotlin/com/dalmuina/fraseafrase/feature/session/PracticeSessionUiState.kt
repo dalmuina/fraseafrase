@@ -18,7 +18,9 @@ sealed interface PracticeSessionUiState {
      * `replace-batch-closure-with-session-generation`). [index] es la posición (1-based) de [current] dentro de la
      * vuelta actual a la tanda; [total] es su tamaño (design D1 de `add-practice-batch-indicator`).
      * [remainingHitsForNextLevel] es cuántos aciertos consecutivos le faltan a [current] para la insignia
-     * [nextLevelBadgeLabel] (spec: practice-session, "Aciertos para el próximo nivel visibles").
+     * [nextLevelBadgeLabel] (spec: practice-session, "Aciertos para el próximo nivel visibles"). [badgeChange] es
+     * el cambio de insignia a animar tras la última autoevaluación, o `null` si no hubo cambio de nivel visible
+     * o ya se consumió (spec: add-level-change-animation, design D2).
      */
     data class Practicing(
         val current: PracticeItem,
@@ -29,6 +31,7 @@ sealed interface PracticeSessionUiState {
         val total: Int,
         val remainingHitsForNextLevel: Int,
         val nextLevelBadgeLabel: String,
+        val badgeChange: BadgeChange? = null,
     ) : PracticeSessionUiState
 
     /** No hay frases para practicar (ADR-0012). */
@@ -36,4 +39,15 @@ sealed interface PracticeSessionUiState {
 
     /** El catálogo no se puede cargar: no se puede practicar. */
     data object CatalogError : PracticeSessionUiState
+}
+
+/**
+ * Cambio de insignia a animar tras una autoevaluación, con su [direction], la etiqueta de la insignia
+ * resultante y su [level] numérico para pintar [com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadgeChange]
+ * (ADR-0010: el design system recibe `Int`, no `Level`; spec: add-level-change-animation, design D2/D4).
+ */
+data class BadgeChange(val direction: Direction, val badgeLabel: String, val level: Int) {
+
+    /** Sentido del cambio de nivel: [UP] si sube, [DOWN] si baja. */
+    enum class Direction { UP, DOWN }
 }

@@ -9,6 +9,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSessionResult
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,6 +52,7 @@ class PracticeSessionViewModel @Inject constructor(
             // leída (frase actual, orden y tamaño) difiere de la ya cargada; si es la misma, no toca `revealed`,
             // `busy`, `completed` ni `index`.
             PracticeSessionAction.Resume -> viewModelScope.launch { reload(onlyIfChanged = true) }
+            PracticeSessionAction.ConsumeBadgeChange -> consumeBadgeChange()
         }
     }
 
@@ -83,11 +85,19 @@ class PracticeSessionViewModel @Inject constructor(
         if (state.isAnswerable()) {
             // `busy` se activa antes de lanzar la corrutina: un segundo toque antes de terminar se descarta (D2).
             _uiState.value = state.copy(busy = true)
+            val levelBefore = state.current.level
             viewModelScope.launch {
-                answerPhrase(state.current.id, assessment)
+                val levelAfter = answerPhrase(state.current.id, assessment)
                 reload(previous = state)
+                val badgeChange = badgeChangeFor(levelBefore, levelAfter)
+                updatePracticing { copy(badgeChange = badgeChange, busy = badgeChange != null) }
             }
         }
+    }
+
+    /** Limpia el indicador de cambio de insignia ya mostrado y libera los controles (design D2/D3). */
+    private fun consumeBadgeChange() = updatePracticing {
+        copy(badgeChange = null, busy = false)
     }
 
     /** Escuchar se ignora sin revelar, con una respuesta en curso (`busy`) o con la tanda completada. */
@@ -167,4 +177,17 @@ private fun PracticeItem.nextLevelBadgeLabel(): String {
     return requireNotNull(levelBadgeLabel(nextLevel)) {
         "Level $nextLevel should always have a badge label"
     }
+}
+
+/**
+ * Cambio de insignia a animar tras comparar el nivel [before] (antes de autoevaluar) con [after] (devuelto por
+ * [AnswerPhrase]); `null` si el nivel no cambió (spec: add-level-change-animation, design D1/D2).
+ */
+private fun badgeChangeFor(before: Level, after: Level): BadgeChange? {
+    if (before.value == after.value) return null
+    val direction = if (after.value > before.value) BadgeChange.Direction.UP else BadgeChange.Direction.DOWN
+    val badgeLabel = requireNotNull(levelBadgeLabel(after.value)) {
+        "Level ${after.value} should always have a badge label"
+    }
+    return BadgeChange(direction, badgeLabel, after.value)
 }

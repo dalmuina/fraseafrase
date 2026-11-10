@@ -28,15 +28,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
+import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadgeChange
+import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import kotlinx.coroutines.delay
 
 /**
  * Pantalla de práctica sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión con el
@@ -134,48 +138,95 @@ private fun PracticingContent(
     state: PracticeSessionUiState.Practicing,
     onAction: (PracticeSessionAction) -> Unit,
 ) {
-    if (state.completed) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
-        ) {
-            CompletedMessage(enabled = !state.busy, onAction = onAction)
-        }
-        return
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .testTag("practice_scrollable_content"),
-            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
-        ) {
-            PhraseCard(
-                item = state.current,
-                revealed = state.revealed,
-                enabled = !state.busy,
-                remainingHitsForNextLevel = state.remainingHitsForNextLevel,
-                nextLevelBadgeLabel = state.nextLevelBadgeLabel,
-                onAction = onAction,
-            )
-        }
-        if (state.revealed) {
-            AssessmentButtons(enabled = !state.busy, onAction = onAction)
-        } else {
-            Button(
-                onClick = { onAction(PracticeSessionAction.Reveal) },
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (state.completed) {
+            Column(
                 modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
             ) {
-                Text(text = stringResource(R.string.practice_reveal))
+                CompletedMessage(enabled = !state.busy, onAction = onAction)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .testTag("practice_scrollable_content"),
+                    verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+                ) {
+                    PhraseCard(
+                        item = state.current,
+                        revealed = state.revealed,
+                        enabled = !state.busy,
+                        remainingHitsForNextLevel = state.remainingHitsForNextLevel,
+                        nextLevelBadgeLabel = state.nextLevelBadgeLabel,
+                        onAction = onAction,
+                    )
+                }
+                if (state.revealed) {
+                    AssessmentButtons(enabled = !state.busy, onAction = onAction)
+                } else {
+                    Button(
+                        onClick = { onAction(PracticeSessionAction.Reveal) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = stringResource(R.string.practice_reveal))
+                    }
+                }
             }
         }
+        val badgeChange = state.badgeChange
+        if (badgeChange != null) {
+            BadgeChangeIndicator(
+                badgeChange = badgeChange,
+                onAction = onAction,
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
     }
+}
+
+/**
+ * Capa superpuesta con el indicador animado de cambio de insignia (spec: add-level-change-animation).
+ * No forma parte del ciclo de vida de [PhraseCard]: cuando se muestra, [state.current] ya es la frase
+ * siguiente de la tanda circular, no la que cambió de nivel (design.md D2). Se oculta sola, pasada la
+ * duración correspondiente a su [BadgeChange.direction], sin bloquear los controles de la frase
+ * siguiente, que siguen presentes (solo deshabilitados por `busy`).
+ */
+@Composable
+private fun BadgeChangeIndicator(
+    badgeChange: BadgeChange,
+    onAction: (PracticeSessionAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val motion = AppTheme.motion
+    LaunchedEffect(badgeChange) {
+        delay(badgeChange.direction.visibleDurationMillis(motion))
+        onAction(PracticeSessionAction.ConsumeBadgeChange)
+    }
+    DsLevelBadgeChange(
+        level = badgeChange.level,
+        emphasized = badgeChange.direction == BadgeChange.Direction.UP,
+        modifier = modifier.testTag("practice_badge_change_indicator"),
+    )
+}
+
+/**
+ * Duración total que el indicador permanece visible antes de consumirse, acorde a los mismos tokens de
+ * [Motion] con los que [DsLevelBadgeChange] resuelve su propia animación (design.md D4): más larga para
+ * una subida que para una bajada.
+ */
+private fun BadgeChange.Direction.visibleDurationMillis(motion: Motion): Long = when (this) {
+    BadgeChange.Direction.UP ->
+        (motion.durationShortMillis + motion.durationLongMillis + motion.durationMediumMillis).toLong()
+    BadgeChange.Direction.DOWN ->
+        (motion.durationMediumMillis + motion.durationShortMillis + motion.durationMediumMillis).toLong()
 }
 
 /** Mensaje positivo al completar una vuelta a la tanda, con el botón para generar la siguiente sesión (D7). */
