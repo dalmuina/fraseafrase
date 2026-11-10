@@ -36,11 +36,9 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 - Cada cambio se trabaja en su propia rama, que crea el usuario desde `develop` con el formato
   `<versión>/<nombre-del-cambio>`, por ejemplo `1.0.0/add-practice-batch`. La versión es la de la
   release objetivo (actual: `1.0.0`) y el nombre coincide con el del cambio de OpenSpec.
-- Antes de cada commit, comprueba con `git branch --show-current` que no estás en `develop` ni en `master`.
-  Si lo estás, para y avisa.
-- Los commits van a la rama actual: uno por grupo de tareas, siempre en verde y con Conventional Commits
-  en inglés. No se commitean rojos ni se reescribe el historial (sin rebase, sin amend de commits ya
-  publicados, sin force push).
+- Los commits van a la rama actual: uno por grupo de tareas, con Conventional Commits en inglés. No se reescribe
+  el historial (sin rebase, sin amend de commits ya publicados, sin force push). Un hook del proyecto bloquea
+  el commit si la rama es `develop`/`master` o si `./gradlew check` falla, así que no hace falta comprobarlo a mano.
 - Al terminar el cambio, en su misma rama y antes de la PR: ejecuta `/opsx:archive` y haz un último commit con el
   archivo del cambio y las specs sincronizadas. El archivo nunca va en una rama aparte ni después de la
   integración en `develop`.
@@ -138,7 +136,7 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 ## No hacer
 
 - No hagas commit, push ni merge en `develop` ni en `master`.
-- No modifiques `gradle/gradle-daemon-jvm.properties` ni el JDK del daemon (ADR-0011).
+- No modifiques el JDK del daemon (ADR-0011); un permiso del proyecto bloquea editar `gradle/gradle-daemon-jvm.properties`.
 - No uses sintaxis de Kotlin 2.2+ que detekt 1.23 no analiza: parámetros de contexto, guardas en `when`, interpolación con varios `$` (ADR-0011).
 - No añadas librerías sin justificarlo en el `design.md` del cambio; las versiones van en `gradle/libs.versions.toml`.
 - No apliques `org.jetbrains.kotlin.android`: con AGP 9 Kotlin viene integrado en el plugin de Android.
