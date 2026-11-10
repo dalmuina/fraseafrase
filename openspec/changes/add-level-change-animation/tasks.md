@@ -64,10 +64,10 @@
 
 ## 5. Verificación final
 
-- [ ] 5.1 Ejecutar `./gradlew test` y comprobar que todos los tests, incluidos los de los grupos 1 a 4,
+- [x] 5.1 Ejecutar `./gradlew test` y comprobar que todos los tests, incluidos los de los grupos 1 a 4,
   están en verde.
-- [ ] 5.2 Ejecutar `./gradlew detekt` (ktlint incluido) y corregir cualquier aviso en los archivos tocados
+- [x] 5.2 Ejecutar `./gradlew detekt` (ktlint incluido) y corregir cualquier aviso en los archivos tocados
   por este cambio.
-- [ ] 5.3 Ejecutar `./gradlew koverVerify` y comprobar que `:core:domain`, `:feature:session` y
+- [x] 5.3 Ejecutar `./gradlew koverVerify` y comprobar que `:core:domain`, `:feature:session` y
   `:core:designsystem` siguen cumpliendo sus mínimos de cobertura (90 %, 80 % y el mínimo global) tras los
   tests nuevos.
