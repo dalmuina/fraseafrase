@@ -412,9 +412,12 @@ class PracticeSessionViewModelTest {
             advanceUntilIdle()
             viewModel.onAction(PracticeSessionAction.Reveal)
 
-            // When: el usuario se autoevalúa con fallo; el fallo baja el nivel de A a 1 (ADR-0015)
+            // When: el usuario se autoevalúa con fallo; el fallo baja el nivel de A a 1 (ADR-0015), lo que muestra
+            // el indicador de cambio de insignia (spec: add-level-change-animation) y hay que consumirlo para
+            // liberar los controles
             viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
             advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.ConsumeBadgeChange)
             viewModel.onAction(PracticeSessionAction.Reveal)
             viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
             advanceUntilIdle()
@@ -620,6 +623,166 @@ class PracticeSessionViewModelTest {
             viewModel.practicing().index shouldBe 1
             practice.activeOrder() shouldNotBe emptyList<String>()
             viewModel.practicing() shouldNotBe before
+        }
+
+    // Scenario: Un acierto que certifica muestra el indicador (spec: add-level-change-animation)
+    @Test
+    fun `given a level 2 phrase with streak 2 when answering with a hit then badgeChange shows UP to Oro`() =
+        runTest {
+            // Given: tanda A (nivel 2, racha 2) y B, con A revelada
+            val practice = FakePracticeRepository(
+                activeBatchSnapshot(
+                    order = listOf("A", "B"),
+                    progress = listOf(
+                        aPhraseProgress(id = "A", level = Level(2), streak = Streak(2), answeredInBatch = true),
+                        aPhraseProgress(id = "B"),
+                    ),
+                ),
+            )
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+
+            // When
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+
+            // Then
+            val badgeChange = viewModel.practicing().badgeChange
+            badgeChange?.direction shouldBe BadgeChange.Direction.UP
+            badgeChange?.badgeLabel shouldBe "Oro"
+        }
+
+    // Scenario: Un fallo que baja el nivel muestra el indicador (spec: add-level-change-animation)
+    @Test
+    fun `given a level 3 phrase when answering with a miss then badgeChange shows DOWN to Plata`() = runTest {
+        // Given: tanda A (nivel 3) y B, con A revelada
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A", "B"),
+                progress = listOf(
+                    aPhraseProgress(id = "A", level = Level(3), answeredInBatch = true),
+                    aPhraseProgress(id = "B"),
+                ),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // When
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
+        advanceUntilIdle()
+
+        // Then
+        val badgeChange = viewModel.practicing().badgeChange
+        badgeChange?.direction shouldBe BadgeChange.Direction.DOWN
+        badgeChange?.badgeLabel shouldBe "Plata"
+    }
+
+    // Scenario: Un acierto que no certifica no muestra el indicador (spec: add-level-change-animation)
+    @Test
+    fun `given a level 1 phrase with streak 0 when answering with a hit then badgeChange is null`() = runTest {
+        // Given: tanda A (nivel 1, racha 0) y B, con A revelada
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A", "B"),
+                progress = listOf(
+                    aPhraseProgress(id = "A", level = Level(1), streak = Streak(0), answeredInBatch = true),
+                    aPhraseProgress(id = "B"),
+                ),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // When
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().badgeChange shouldBe null
+    }
+
+    // Scenario: Un fallo en nivel 0 no muestra el indicador (spec: add-level-change-animation)
+    @Test
+    fun `given a level 0 phrase when answering with a miss then badgeChange is null`() = runTest {
+        // Given: tanda A (nivel 0) y B, con A revelada
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A", "B"),
+                progress = listOf(
+                    aPhraseProgress(id = "A", level = Level(0), answeredInBatch = true),
+                    aPhraseProgress(id = "B"),
+                ),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // When
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().badgeChange shouldBe null
+    }
+
+    // Scenario: Certificar de nuevo en nivel máximo no muestra el indicador (spec: add-level-change-animation)
+    @Test
+    fun `given a level 5 phrase with streak 2 when answering with a hit then badgeChange is null`() = runTest {
+        // Given: tanda A (nivel 5, racha 2) y B, con A revelada
+        val practice = FakePracticeRepository(
+            activeBatchSnapshot(
+                order = listOf("A", "B"),
+                progress = listOf(
+                    aPhraseProgress(id = "A", level = Level(5), streak = Streak(2), answeredInBatch = true),
+                    aPhraseProgress(id = "B"),
+                ),
+            ),
+        )
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // When
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().badgeChange shouldBe null
+    }
+
+    // Scenario: design.md, Decisión 3: `busy` permanece true mientras se anima el cambio de insignia
+    @Test
+    fun `given a badgeChange shown when ConsumeBadgeChange is dispatched then badgeChange is null and busy is false`() =
+        runTest {
+            // Given: tanda A (nivel 2, racha 2) y B, con A revelada y respondida con acierto que certifica
+            val practice = FakePracticeRepository(
+                activeBatchSnapshot(
+                    order = listOf("A", "B"),
+                    progress = listOf(
+                        aPhraseProgress(id = "A", level = Level(2), streak = Streak(2), answeredInBatch = true),
+                        aPhraseProgress(id = "B"),
+                    ),
+                ),
+            )
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+            viewModel.practicing().badgeChange shouldNotBe null
+            viewModel.practicing().busy shouldBe true
+
+            // When
+            viewModel.onAction(PracticeSessionAction.ConsumeBadgeChange)
+
+            // Then
+            viewModel.practicing().badgeChange shouldBe null
+            viewModel.practicing().busy shouldBe false
         }
 
     /** Frase certificada: racha 3 respondida en la tanda. */

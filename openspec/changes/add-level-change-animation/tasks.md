@@ -24,24 +24,24 @@
 
 ## 3. Presentación: estado y acción del cambio de insignia
 
-- [ ] 3.1 Escribir el test de `PracticeSessionViewModel` que espera `badgeChange` con dirección `UP` y la
+- [x] 3.1 Escribir el test de `PracticeSessionViewModel` que espera `badgeChange` con dirección `UP` y la
   etiqueta de la insignia resultante tras un acierto que certifica (spec: "Un acierto que certifica muestra
   el indicador"), y comprobar que falla porque `Practicing` no tiene ese campo todavía.
-- [ ] 3.2 Añadir `BadgeChange`/`BadgeChange.Direction` y el campo `badgeChange: BadgeChange?` a
+- [x] 3.2 Añadir `BadgeChange`/`BadgeChange.Direction` y el campo `badgeChange: BadgeChange?` a
   `PracticeSessionUiState.Practicing`, y hacer que `PracticeSessionViewModel.answer()` lo calcule comparando
   `state.current.level` (antes) con el `Level` que ahora devuelve `AnswerPhrase` (después); verificar que el
   test de 3.1 pasa.
-- [ ] 3.3 Escribir el test que espera `badgeChange` con dirección `DOWN` tras un fallo que baja el nivel
+- [x] 3.3 Escribir el test que espera `badgeChange` con dirección `DOWN` tras un fallo que baja el nivel
   (spec: "Un fallo que baja el nivel muestra el indicador") y que espera `badgeChange` nulo tras un acierto
   que no certifica, tras un fallo en nivel 0 y tras certificar de nuevo en nivel 5 (spec: "Un acierto que no
   certifica no muestra el indicador", "Un fallo en nivel 0 no muestra el indicador", "Certificar de nuevo en
   nivel máximo no muestra el indicador"), y comprobarlo en rojo si la comparación de 3.2 no cubre todavía
   esos cuatro casos.
-- [ ] 3.4 Ajustar `answer()` para que esos tres casos pasen sin romper 3.1.
-- [ ] 3.5 Escribir el test que espera que `busy` siga en `true` mientras `badgeChange` no es nulo, y vuelva
+- [x] 3.4 Ajustar `answer()` para que esos tres casos pasen sin romper 3.1.
+- [x] 3.5 Escribir el test que espera que `busy` siga en `true` mientras `badgeChange` no es nulo, y vuelva
   a `false` al recibir `PracticeSessionAction.ConsumeBadgeChange`, que además pone `badgeChange` a `null`
   (design.md, Decisión 3), y comprobar que falla porque la acción no existe todavía.
-- [ ] 3.6 Añadir `PracticeSessionAction.ConsumeBadgeChange` y su manejo en `onAction()`; verificar que el
+- [x] 3.6 Añadir `PracticeSessionAction.ConsumeBadgeChange` y su manejo en `onAction()`; verificar que el
   test de 3.5 pasa.
 
 ## 4. Presentación: reproducir la animación en pantalla
