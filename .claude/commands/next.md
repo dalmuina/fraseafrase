@@ -4,7 +4,7 @@ description: Diagnostica en qué punto del flujo SDD está el cambio y ejecuta e
 
 # /next
 
-Decide el siguiente paso del flujo de CLAUDE.md (explore → propose → android-architect → apply por grupos → code-reviewer → verify → archive → push → PR del usuario) y, si no hay nada que decidir, ejecútalo. Un solo paso por invocación.
+Decide el siguiente paso del flujo de CLAUDE.md (explore → propose → android-architect → apply por grupos → code-reviewer → verify → archive con push + PR automáticos → revisión y merge del usuario) y, si no hay nada que decidir, ejecútalo. Un solo paso por invocación.
 
 ## 1. Diagnóstico (solo lectura)
 - git branch --show-current, git status --short, git log --oneline develop..HEAD
@@ -23,8 +23,8 @@ Si el handoff y el repositorio no coinciden, para y explica la discrepancia.
 7. Todas las tareas marcadas y code-reviewer sin ejecutar: code-reviewer.
 8. Sugerencias del reviewer que afectan a spec o design: aplicarlas.
 9. Revisión limpia y verify sin ejecutar: /opsx:verify.
-10. Verify correcto: tareas de cierre (líneas de estado de los ADR si las hay), /opsx:archive, openspec validate --specs y push de la rama. Antes de archivar, muestra un resumen y pide confirmación.
-11. Rama archivada y con push hecho: es un paso del usuario, abrir la PR a develop, comprobar la CI y hacer merge.
+10. Verify correcto: tareas de cierre (líneas de estado de los ADR si las hay), /opsx:archive y openspec validate --specs. Antes de archivar, muestra un resumen y pide confirmación. El commit final de archive (`docs(openspec): archive ... and sync specs`) dispara push + apertura de PR a develop automáticamente (hook `post-archive-pr.sh`).
+11. PR ya abierta por el hook: paso del usuario, comprobar la CI y hacer merge.
 
 ## 2b. Presupuesto de revisión
 Aplica el apartado "Presupuesto de revisión" de CLAUDE.md: solo un bloqueante (comportamiento incorrecto, escenario sin test, contradicción entre artefactos, pérdida de datos, cierre de la app o seguridad) detiene el avance; los hallazgos "Corregir" se arreglan en una pasada sin nueva revisión; "Descartar" no se hace; máximo dos rondas por fase; el cambio ligero lleva una ronda de android-architect y una de code-reviewer; y el presupuesto va en el prompt de cada subagente de revisión.
@@ -32,7 +32,7 @@ Aplica el apartado "Presupuesto de revisión" de CLAUDE.md: solo un bloqueante (
 ## 3. Límites
 - Ejecuta solo el paso decidido y para. Nunca encadenes dos pasos.
 - Nunca crees ni borres ramas, hagas merge, abras PR ni lances /opsx:apply sin APROBADO.
-- En los pasos del usuario (3 y 11) solo indica qué hacer.
+- En el paso del usuario (3) solo indica qué hacer; en el 11, confirma que el hook ha abierto la PR y recuerda comprobar la CI antes de mergear.
 
 ## 4. Salida
 Termina con:
