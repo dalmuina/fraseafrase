@@ -13,6 +13,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
@@ -33,6 +34,30 @@ internal fun activeBatchSnapshot(
     progress = progress,
     activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
     sessionCount = sessionCount,
+)
+
+/**
+ * Tanda A (nivel 2, racha 2) y B sin responder: un acierto en A certifica a nivel 3 (Oro), lo que muestra el
+ * indicador de cambio de insignia (spec: add-level-change-animation, new-badge-animation).
+ */
+internal fun levelUpOnHitSnapshot(): PracticeSnapshot = activeBatchSnapshot(
+    order = listOf("A", "B"),
+    progress = listOf(
+        aPhraseProgress(id = "A", level = Level(2), streak = Streak(2), answeredInBatch = true),
+        aPhraseProgress(id = "B"),
+    ),
+)
+
+/**
+ * Tanda A (nivel 1, racha 0) y B sin responder: un acierto en A no certifica, así que no hay cambio de
+ * insignia que animar (spec: add-level-change-animation, new-badge-animation).
+ */
+internal fun noLevelChangeOnHitSnapshot(): PracticeSnapshot = activeBatchSnapshot(
+    order = listOf("A", "B"),
+    progress = listOf(
+        aPhraseProgress(id = "A", level = Level(1), streak = Streak(0), answeredInBatch = true),
+        aPhraseProgress(id = "B"),
+    ),
 )
 
 internal fun loaded(vararg phrases: CatalogPhrase): CatalogLoadResult.Loaded =
