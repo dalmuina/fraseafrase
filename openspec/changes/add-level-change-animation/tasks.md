@@ -2,11 +2,11 @@
 
 ## 1. Dominio: `AnswerPhrase` expone el nivel resultante
 
-- [ ] 1.1 Escribir el test de `AnswerPhrase` que espera que `invoke(...)` devuelva el `Level` resultante de
+- [x] 1.1 Escribir el test de `AnswerPhrase` que espera que `invoke(...)` devuelva el `Level` resultante de
   la frase respondida (acierto que certifica, acierto que no certifica, fallo con nivel ≥ 1, fallo en
   nivel 0 y acierto que certifica de nuevo en nivel 5, que se mantiene en 5, ADR-0015) y comprobar que
   falla al compilar/ejecutar porque `invoke` todavía devuelve `Unit`.
-- [ ] 1.2 Cambiar `AnswerPhrase.invoke` para que devuelva `Level` (localizando la frase ya resuelta por
+- [x] 1.2 Cambiar `AnswerPhrase.invoke` para que devuelva `Level` (localizando la frase ya resuelta por
   `PracticeBatch.answer()` en el nuevo snapshot por su `id`) y verificar que el test de 1.1 pasa en los
   cuatro casos.
 
