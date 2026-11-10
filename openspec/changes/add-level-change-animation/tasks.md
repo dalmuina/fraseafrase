@@ -12,14 +12,14 @@
 
 ## 2. Design system: indicador animado de insignia
 
-- [ ] 2.1 Escribir el test de Compose UI de `DsLevelBadgeChange` que espera un halo visible (por `testTag`)
+- [x] 2.1 Escribir el test de Compose UI de `DsLevelBadgeChange` que espera un halo visible (por `testTag`)
   cuando `emphasized = true` y ausente cuando `emphasized = false`, y comprobar que falla porque el
   componente no existe todavía.
-- [ ] 2.2 Implementar `DsLevelBadgeChange(level: Int, emphasized: Boolean, modifier: Modifier = Modifier)`
+- [x] 2.2 Implementar `DsLevelBadgeChange(level: Int, emphasized: Boolean, modifier: Modifier = Modifier)`
   en `:core:designsystem` junto a `DsLevelBadge`, reutilizando sus mismos `drawableRes`/etiquetas, con los
   tokens de `Motion` para las duraciones y curvas (design.md, Decisión 4) y comprobar que el test de 2.1
   pasa.
-- [ ] 2.3 Añadir `@PreviewLightDark` para el caso `emphasized = true` y `emphasized = false`, igual que ya
+- [x] 2.3 Añadir `@PreviewLightDark` para el caso `emphasized = true` y `emphasized = false`, igual que ya
   tiene `DsLevelBadge`.
 
 ## 3. Presentación: estado y acción del cambio de insignia
