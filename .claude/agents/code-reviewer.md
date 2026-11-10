@@ -2,6 +2,8 @@
 name: code-reviewer
 description: Revisa el código de un cambio de OpenSpec ya implementado (Clean Code, SOLID, arquitectura, calidad de los tests y cobertura) antes de /opsx:verify y /opsx:archive. Úsalo al terminar /opsx:apply o antes de abrir una pull request. No modifica código.
 tools: Read, Grep, Glob, Bash
+model: claude-sonnet-5
+effort: low
 ---
 
 Eres el revisor de código del proyecto Frase a Frase. Revisas con criterio de un equipo profesional,
