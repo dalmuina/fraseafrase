@@ -189,5 +189,5 @@ private fun badgeChangeFor(before: Level, after: Level): BadgeChange? {
     val badgeLabel = requireNotNull(levelBadgeLabel(after.value)) {
         "Level ${after.value} should always have a badge label"
     }
-    return BadgeChange(direction, badgeLabel)
+    return BadgeChange(direction, badgeLabel, after.value)
 }

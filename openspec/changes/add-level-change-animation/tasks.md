@@ -46,20 +46,20 @@
 
 ## 4. Presentación: reproducir la animación en pantalla
 
-- [ ] 4.1 Escribir el test de Compose UI de `PracticeSessionScreen` que, tras una autoevaluación que cambia
+- [x] 4.1 Escribir el test de Compose UI de `PracticeSessionScreen` que, tras una autoevaluación que cambia
   el nivel, espera que `DsLevelBadgeChange` aparezca con `emphasized` acorde a la dirección (spec: "La
   subida se muestra con halo", "La bajada se muestra sin halo") y que el control de revelar de la frase
   siguiente siga presente en el árbol semántico mientras se muestra (spec: "El control de revelar sigue
   presente mientras se anima el cambio de insignia"), y comprobar que falla porque la pantalla no pinta el
   indicador todavía.
-- [ ] 4.2 Pintar `DsLevelBadgeChange` en `PracticeSessionScreen` cuando `uiState.badgeChange` no es nulo,
+- [x] 4.2 Pintar `DsLevelBadgeChange` en `PracticeSessionScreen` cuando `uiState.badgeChange` no es nulo,
   con `emphasized = true` para `Direction.UP` y `false` para `Direction.DOWN`, y disparar
   `ConsumeBadgeChange` desde un `LaunchedEffect(uiState.badgeChange)` tras la duración correspondiente a su
   dirección; verificar que el test de 4.1 pasa.
-- [ ] 4.3 Escribir el test que espera que el indicador deje de mostrarse por sí solo transcurrida su
+- [x] 4.3 Escribir el test que espera que el indicador deje de mostrarse por sí solo transcurrida su
   duración, sin ninguna interacción del usuario (spec: "El indicador desaparece sin intervención del
   usuario"), y verificar que pasa con la implementación de 4.2.
-- [ ] 4.4 Escribir el test que espera que una autoevaluación sin cambio de nivel no pinte
+- [x] 4.4 Escribir el test que espera que una autoevaluación sin cambio de nivel no pinte
   `DsLevelBadgeChange` en absoluto, y verificar que pasa.
 
 ## 5. Verificación final

@@ -42,10 +42,11 @@ sealed interface PracticeSessionUiState {
 }
 
 /**
- * Cambio de insignia a animar tras una autoevaluación, con su [direction] y la etiqueta de la insignia
- * resultante (spec: add-level-change-animation, design D2).
+ * Cambio de insignia a animar tras una autoevaluación, con su [direction], la etiqueta de la insignia
+ * resultante y su [level] numérico para pintar [com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadgeChange]
+ * (ADR-0010: el design system recibe `Int`, no `Level`; spec: add-level-change-animation, design D2/D4).
  */
-data class BadgeChange(val direction: Direction, val badgeLabel: String) {
+data class BadgeChange(val direction: Direction, val badgeLabel: String, val level: Int) {
 
     /** Sentido del cambio de nivel: [UP] si sube, [DOWN] si baja. */
     enum class Direction { UP, DOWN }
