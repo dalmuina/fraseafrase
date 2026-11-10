@@ -109,17 +109,31 @@ que `DsLevelBadgeChange` pueda mostrar de dónde viene la transición, no solo a
 ### 4. `DsLevelBadgeChange` transiciona de verdad: `Crossfade` + escala, disparador corregido
 
 Firma nueva: `DsLevelBadgeChange(fromLevel: Int, toLevel: Int, emphasized: Boolean, modifier: Modifier = Modifier)`.
-Dos defectos corregidos a la vez:
+Tres defectos corregidos a la vez:
 
 - `LaunchedEffect(emphasized)` (clave `Boolean`, no se repite en cambios sucesivos de la misma
   dirección) pasa a `LaunchedEffect(Unit)`: correcto ahora porque, tras la Decisión 2, el
   composable se inserta de nuevo en el árbol en cada aparición (swap `if/else` contra
   `DsLevelBadge`), no una instancia que sobrevive entre cambios.
-- La transición entre `DsLevelBadge(fromLevel)` y `DsLevelBadge(toLevel)` se hace con `Crossfade`
-  (tokens `Motion.durationMediumMillis` + `standardEasing`) envuelto en un `Box` con un `scale`
-  de "pop" vía `animateFloatAsState` + `Modifier.graphicsLayer`. El halo (`Canvas`, ya existente)
-  se mantiene solo para `emphasized = true`, con la misma duración `durationMediumMillis` para
-  que coincida con el crossfade en vez de los 150 ms actuales, casi imperceptibles.
+- El halo deja de envolver el pill completo de `DsLevelBadge` (icono + etiqueta de texto).
+  `DsLevelBadge` es un `Row(Icon, Text)`: su icono ocupa solo la parte izquierda del pill, así que
+  un `Box(contentAlignment = Center)` que envuelve el pill entero centra el halo respecto al ancho
+  total (variable según la etiqueta: "Bronce" vs. "Diamante"), no respecto al icono — el halo
+  terminaba apareciendo al lado del icono, no detrás, y el ancho del indicador no coincidía con el
+  de `DsLevelBadge` al intercambiarlos en la `Row` de `PhraseCard`, provocando un salto de layout
+  al montar/desmontar. `DsLevelBadgeChange` pasa a reconstruir la misma estructura `Row(Icon, Text)`
+  que `DsLevelBadge`, pero con dos `Crossfade` independientes (mismo `targetState`/`animationSpec`,
+  así que quedan sincronizados visualmente): uno solo para el `Icon`, envuelto en un
+  `Box(contentAlignment = Center)` junto al halo (ahí sí comparten el mismo bounding box, así que
+  el halo queda centrado exactamente sobre el icono); otro solo para el `Text` de la etiqueta. Para
+  reutilizar el icono/etiqueta de cada nivel sin duplicar el `when` de recursos, `levelBadgeSpec` y
+  `LevelBadgeSpec` (hoy `private` en `DsLevelBadge.kt`) pasan a `internal`, visibles solo dentro de
+  `:core:designsystem` (ADR-0010).
+- La transición del icono y de la etiqueta usa `Crossfade` (tokens `Motion.durationMediumMillis` +
+  `standardEasing`) envuelto en un `Box` con un `scale` de "pop" vía `animateFloatAsState` +
+  `Modifier.graphicsLayer`, aplicado a la `Row` completa. El halo (`Canvas`, ya existente) se
+  mantiene solo para `emphasized = true`, con la misma duración `durationMediumMillis` para que
+  coincida con el crossfade en vez de los 150 ms originales, casi imperceptibles.
 
 Se mantiene la firma de `DsLevelBadge` sin cambios y se sigue sin tipos del dominio en el design
 system (ADR-0010). Se actualizan los `@PreviewLightDark` existentes para pasar
@@ -129,6 +143,11 @@ system (ADR-0010). Se actualizan los `@PreviewLightDark` existentes para pasar
 por tamaño. Se descarta por ahora: `Crossfade` ya resuelve la transición visual pedida
 (insignia anterior → insignia nueva) sin la complejidad añadida de animar también el tamaño del
 contenedor, que `DsLevelBadge` no varía entre niveles (mismo `Row` con icono + texto).
+
+**Alternativa descartada (icono+halo)**: medir la posición del icono con `onGloballyPositioned` y
+desplazar el halo a esas coordenadas. Se descarta por complejidad innecesaria: reconstruir el
+mismo `Row(Icon, Text)` con un `Crossfade` por elemento consigue el mismo resultado (halo
+compartiendo bounding box exacto con el icono) sin medir posiciones en tiempo de layout.
 
 ## Riesgos / Trade-offs
 
@@ -164,4 +183,7 @@ contenedor, que `DsLevelBadge` no varía entre niveles (mismo `Row` con icono + 
   (`assertIsNotEnabled()`). El resto de tests de halo-presencia y duración total solo cambian de
   posición (misma altura que la etiqueta CEFR, ya no centrado en pantalla).
 - **`:core:designsystem`** (Compose UI test, `DsLevelBadgeChangeTest`): mismo patrón
-  antes/después con el reloj pausado, directamente sobre el componente con `fromLevel`/`toLevel`.
+  antes/después con el reloj pausado, directamente sobre el componente con `fromLevel`/`toLevel`;
+  además, con `emphasized = true`, el centro del halo (`getUnclippedBoundsInRoot()`) coincide con
+  el centro del nodo del icono (mismo tag que usa `DsLevelBadge`), no con el centro del pill
+  completo — la aserción geométrica que distingue "detrás del icono" de "al lado".

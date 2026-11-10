@@ -38,8 +38,12 @@ fun DsLevelBadge(level: Int, modifier: Modifier = Modifier) {
     }
 }
 
-/** Icono y etiqueta de un nivel de consolidación de 0 a 5 (design D3). */
-private data class LevelBadgeSpec(
+/**
+ * Icono y etiqueta de un nivel de consolidación de 0 a 5 (design D3). `internal`: lo reutiliza
+ * [DsLevelBadgeChange] para reconstruir la misma estructura `Row(Icon, Text)` con un `Crossfade`
+ * por elemento (design new-badge-animation D4), sin salir de `:core:designsystem` (ADR-0010).
+ */
+internal data class LevelBadgeSpec(
     val drawableRes: Int,
     val iconTestTag: String,
     val label: String
@@ -63,7 +67,7 @@ fun levelBadgeLabel(level: Int): String? = when (level) {
     else -> null
 }
 
-private fun levelBadgeSpec(level: Int): LevelBadgeSpec? {
+internal fun levelBadgeSpec(level: Int): LevelBadgeSpec? {
     val label = levelBadgeLabel(level) ?: return null
     return when (level) {
         LEVEL_SIN_RANGO -> LevelBadgeSpec(

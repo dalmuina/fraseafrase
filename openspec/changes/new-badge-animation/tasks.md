@@ -80,3 +80,29 @@
 
 - [x] 5.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
 - [x] 5.2 Ejecutar `./gradlew koverVerify` en verde.
+
+## 6. Corrección: el halo queda detrás del icono, no del pill completo
+
+Hallazgo de prueba manual tras el cierre del grupo 5 (design.md D4 corregido): el halo se
+centraba respecto al pill entero de `DsLevelBadge` (icono + etiqueta), no respecto al icono, así
+que aparecía "al lado" en vez de "detrás"; además el ancho del indicador no coincidía con el de
+`DsLevelBadge` al intercambiarlos en la `Row` de `PhraseCard`, provocando un salto de layout al
+montar/desmontar.
+
+- [x] 6.1 Añadir a `DsLevelBadgeChangeTest` el test
+  `givenEmphasizedWhenPaintedThenHaloIsCenteredOnIcon`: con `emphasized = true`, el centro de
+  `getUnclippedBoundsInRoot()` del nodo con el tag del halo coincide (con un margen de 1dp) con el
+  centro del nodo con el tag del icono de `fromLevel` (mismo tag que usa `DsLevelBadge`, p. ej.
+  `ds-level-badge-icon-bronce`). Ejecutar y comprobar que falla (hoy el halo se centra respecto al
+  pill completo, no al icono). Escenario: spec `practice-session` "Un acierto que certifica
+  muestra el indicador".
+- [x] 6.2 Cambiar `levelBadgeSpec`/`LevelBadgeSpec` de `private` a `internal` en
+  `DsLevelBadge.kt` (visibles solo dentro de `:core:designsystem`, ADR-0010).
+- [x] 6.3 Reescribir `DsLevelBadgeChange` para reconstruir la misma estructura `Row(Icon, Text)`
+  que `DsLevelBadge`, con dos `Crossfade` independientes (mismo `targetState`/`animationSpec`):
+  uno para el `Icon` envuelto junto al halo en un `Box(contentAlignment = Center)` propio (halo e
+  icono comparten bounding box), y otro para el `Text` de la etiqueta, fuera de ese `Box`. El
+  `scale` de "pop" (`graphicsLayer`) se aplica a la `Row` completa. Verificar: el test de 6.1
+  pasa, y los tests existentes de `DsLevelBadgeChangeTest` (halo presente/ausente,
+  fromLevel/toLevel antes/después) siguen en verde.
+- [x] 6.4 Ejecutar `./gradlew check` y `./gradlew koverVerify` en verde.

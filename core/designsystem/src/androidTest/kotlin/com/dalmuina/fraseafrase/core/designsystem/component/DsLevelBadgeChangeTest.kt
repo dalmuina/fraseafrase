@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.designsystem.component
 
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -7,6 +8,10 @@ import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import org.junit.Rule
 import org.junit.Test
+import kotlin.math.abs
+
+/** Margen de centrado aceptable entre el halo y el icono, en dp. */
+private const val CENTER_TOLERANCE_DP = 1f
 
 /** Margen sobre [Motion.durationMediumMillis] para asegurar que la transición ya ha terminado. */
 private const val EXTRA_MILLIS = 50L
@@ -85,5 +90,26 @@ class DsLevelBadgeChangeTest {
         // Then: se ve la etiqueta de toLevel y ya no la de fromLevel
         composeTestRule.onNodeWithText(levelBadgeLabel(2)!!).assertExists()
         composeTestRule.onNodeWithText(levelBadgeLabel(1)!!).assertDoesNotExist()
+    }
+
+    // Scenario: Un acierto que certifica muestra el indicador (spec: practice-session)
+    @Test
+    fun givenEmphasizedWhenPaintedThenHaloIsCenteredOnIcon() {
+        // Given/When: se pinta el cambio de insignia enfatizado (subida)
+        composeTestRule.setContent {
+            AppTheme {
+                DsLevelBadgeChange(fromLevel = 1, toLevel = 2, emphasized = true)
+            }
+        }
+
+        // Then: el centro del halo coincide con el centro del icono de toLevel (ya asentado, el
+        // reloj corre libre), no con el centro del pill completo (icono + etiqueta)
+        val haloBounds = composeTestRule.onNodeWithTag("ds-level-badge-change-halo").getUnclippedBoundsInRoot()
+        val iconBounds = composeTestRule.onNodeWithTag("ds-level-badge-icon-plata").getUnclippedBoundsInRoot()
+        val haloCenterX = (haloBounds.left + haloBounds.right) / 2
+        val iconCenterX = (iconBounds.left + iconBounds.right) / 2
+        assert(abs((haloCenterX - iconCenterX).value) <= CENTER_TOLERANCE_DP) {
+            "halo center x=$haloCenterX, icon center x=$iconCenterX"
+        }
     }
 }
