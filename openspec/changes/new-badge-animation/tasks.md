@@ -92,10 +92,10 @@ montar/desmontar.
 - [x] 6.1 Añadir a `DsLevelBadgeChangeTest` el test
   `givenEmphasizedWhenPaintedThenHaloIsCenteredOnIcon`: con `emphasized = true`, el centro de
   `getUnclippedBoundsInRoot()` del nodo con el tag del halo coincide (con un margen de 1dp) con el
-  centro del nodo con el tag del icono de `fromLevel` (mismo tag que usa `DsLevelBadge`, p. ej.
-  `ds-level-badge-icon-bronce`). Ejecutar y comprobar que falla (hoy el halo se centra respecto al
-  pill completo, no al icono). Escenario: spec `practice-session` "Un acierto que certifica
-  muestra el indicador".
+  centro del nodo con el tag del icono de `toLevel` (ya asentado al no pausar el reloj; mismo tag
+  que usa `DsLevelBadge`, p. ej. `ds-level-badge-icon-plata`). Ejecutar y comprobar que falla (hoy
+  el halo se centra respecto al pill completo, no al icono). Escenario: spec `practice-session`
+  "Un acierto que certifica muestra el indicador".
 - [x] 6.2 Cambiar `levelBadgeSpec`/`LevelBadgeSpec` de `private` a `internal` en
   `DsLevelBadge.kt` (visibles solo dentro de `:core:designsystem`, ADR-0010).
 - [x] 6.3 Reescribir `DsLevelBadgeChange` para reconstruir la misma estructura `Row(Icon, Text)`
