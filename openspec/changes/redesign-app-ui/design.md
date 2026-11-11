@@ -90,7 +90,14 @@ promocionan entonces, no antes.
 - Se añade como parte del estado persistido de la tanda activa, detrás del puerto
   `PracticeRepository` que ya existe (ADR-0010): sigue habiendo una única fuente
   (`RoomPracticeDataSource`), así que no se introduce ningún `Repository` de estrategia nuevo, solo
-  se amplía esa fuente y su migración de esquema Room.
+  se amplían sus columnas. El único precedente real de cambio de esquema en `PracticeDatabase`
+  (v1→v2, cambio `repeat-by-session-counter`) usa `fallbackToDestructiveMigration()` a propósito,
+  documentado con "proyecto pre-1.0.0, sin usuarios en producción: el progreso existente se pierde,
+  igual que una instalación nueva". Esta tarea sigue ese mismo precedente: se sube la versión de
+  `PracticeDatabase`, se añaden las columnas de `BatchOutcome` y se mantiene
+  `fallbackToDestructiveMigration()`, sin escribir una `Migration` real ni añadir `room3-testing`/
+  `MigrationTestHelper` (no está en el version catalog y no hay nada que justifique esa dependencia
+  nueva para datos que, por ese mismo precedente, no se preservan entre versiones de esquema).
 - `AnswerPhrase` incrementa `hits` o `misses` según la autoevaluación, y además incrementa
   `levelUps` cuando el nivel de consolidación resultante de esa respuesta es estrictamente mayor que
   el nivel de la frase inmediatamente antes de esa misma respuesta (igual que ya hace para decidir la
@@ -116,9 +123,11 @@ promocionan entonces, no antes.
 
 ## Risks / Trade-offs
 
-- [Migración de esquema Room para `BatchOutcome`] → Usar el mecanismo de migración de Room ya
-  presente en el proyecto (no es una librería nueva); escribir el test de migración igual que las
-  migraciones anteriores del mismo `RoomPracticeDataSource`.
+- [Subir la versión de esquema de `PracticeDatabase` con `fallbackToDestructiveMigration()` pierde
+  cualquier tanda activa guardada al actualizar la app] → Aceptado a propósito, siguiendo el único
+  precedente real del proyecto para esta misma base de datos (pre-1.0.0, sin usuarios en producción);
+  no se introduce una `Migration` real ni la dependencia `room3-testing` para preservar datos que el
+  proyecto ya decidió no preservar entre versiones de esquema.
 - [Re-tema global de color/tipografía puede afectar al contraste accesible en estados ya probados
   (p. ej. `FilterChip` seleccionado, textos sobre `primaryContainer`)] → Revisar contraste 4.5:1 de
   cada combinación de color tocada como parte de la tarea de tokens, antes de reestilizar las
