@@ -136,8 +136,8 @@
 
 ## 4. Verificación final
 
-- [ ] 4.1 Ejecutar `./gradlew test`, `./gradlew detekt` y `./gradlew koverVerify` en verde.
-- [ ] 4.2 Ejecutar `./gradlew check` en verde antes de dar la tarea por terminada.
+- [x] 4.1 Ejecutar `./gradlew test`, `./gradlew detekt` y `./gradlew koverVerify` en verde.
+- [x] 4.2 Ejecutar `./gradlew check` en verde antes de dar la tarea por terminada.
 
 ## Workflow follow-up
 
