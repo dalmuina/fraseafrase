@@ -4,10 +4,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -104,6 +110,28 @@ class SettingsScreenTest {
 
         // Then: el control de disminuir deja de estar deshabilitado
         composeTestRule.onNodeWithContentDescription("Disminuir tamaño de tanda").assertIsEnabled()
+    }
+
+    // Scenario: Elegir un nivel CEFR de la lista (spec: settings-screen) - selector segmentado accesible como
+    // grupo de radio (design.md - Risks/Trade-offs)
+    @Test
+    fun givenCefrLevelSelector_whenShowingTheScreen_thenItIsASelectableRadioGroup() {
+        // Given/When: la pantalla se muestra con el nivel B1 seleccionado
+        setScreen(loaded(cefrLevel = CefrLevel.B1))
+
+        // Then: el contenedor de los cinco niveles es un grupo de selección única
+        composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.SelectableGroup))
+            .assertExists()
+
+        // Then: el botón del nivel seleccionado tiene rol de radio y está marcado como seleccionado
+        composeTestRule.onNodeWithText("B1")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+            .assertIsSelected()
+
+        // Then: un botón no seleccionado también tiene rol de radio, pero no está marcado como seleccionado
+        composeTestRule.onNodeWithText("A1")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+            .assertIsNotSelected()
     }
 
     // Scenario: estilo de etiqueta pequeña compartido para insignias y nivel CEFR (design D4,

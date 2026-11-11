@@ -140,19 +140,19 @@
 
 ## 8. Presentación - `feature:settings`
 
-- [ ] 8.1 Test de Compose UI: el selector de nivel CEFR se muestra como grupo de cinco botones
+- [x] 8.1 Test de Compose UI: el selector de nivel CEFR se muestra como grupo de cinco botones
       segmentados con selección única, accesible como grupo de radio. Verificar: test falla antes de
       sustituir los `FilterChip`, pasa después; cubre "Selección del nivel CEFR" (ya vigente, sin
       delta).
-- [ ] 8.2 Reemplazar `CefrLevelCard` (chips) por el selector segmentado, con
+- [x] 8.2 Reemplazar `CefrLevelCard` (chips) por el selector segmentado, con
       `Modifier.selectableGroup()` y rol de radio por botón, reestilizado con los tokens del grupo 4.
       Verificar: test de 8.1 en verde.
-- [ ] 8.3 Test de Compose UI: el stepper de tamaño de tanda sigue deshabilitando disminuir/aumentar en
+- [x] 8.3 Test de Compose UI: el stepper de tamaño de tanda sigue deshabilitando disminuir/aumentar en
       los límites 10/30 y mantiene su borde superior alineado con el campo de texto, incluido con el
       texto de error visible. Verificar: test existente adaptado al nuevo estilo sigue en verde tras
       el reestilizado; cubre "Edición del tamaño de tanda N con validación" y "Alineación visual del
       stepper" (ambos ya vigentes, sin delta).
-- [ ] 8.4 Reestilizar `BatchSizeCard` con los tokens del grupo 4 sin tocar su lógica de validación.
+- [x] 8.4 Reestilizar `BatchSizeCard` con los tokens del grupo 4 sin tocar su lógica de validación.
       Verificar: test de 8.3 en verde.
 
 ## 9. Integración en `:app`
