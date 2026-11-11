@@ -157,13 +157,22 @@
 
 ## 9. Integración en `:app`
 
-- [ ] 9.1 Test de Compose UI: la bottom bar (`FraseAFraseApp.kt`) muestra los tres destinos con los
+- [x] 9.1 Test de Compose UI: la bottom bar (`FraseAFraseApp.kt`) muestra los tres destinos con los
       colores actualizados del tema, sin cambiar sus rutas ni comportamiento. Verificar: test de
       navegación existente sigue en verde tras aplicar los tokens del grupo 4.
-- [ ] 9.2 Verificación manual en el emulador/dispositivo: recorrer Practicar → revelar → acierto/fallo
+- [x] 9.2 Verificación manual en el emulador/dispositivo: recorrer Practicar → revelar → acierto/fallo
       → tanda completada → "Ver mi progreso" → Ajustes → guardar cambio de nivel CEFR, comprobando
       que el aspecto coincide con el mock y que ninguna regla de negocio existente cambió. Verificar:
       captura o nota de la comprobación en la PR.
+
+      Hecho en `emulator-5554` (Pixel 7a API 17): Practicar muestra pastilla "X de Y",
+      `DsProgressBar` de cabecera, insignias CEFR+rango y botón "Escuchar" en la misma tarjeta;
+      revelar muestra traducción + Fallo/Acierto en la misma vista scrolleable; tras completar
+      las 20 frases con acierto, la pantalla de tanda completada muestra 20/0/0 en los tres
+      `DsStatTile` y el enlace "Ver mi progreso"; ese enlace navega a Progreso (tarjeta destacada
+      30 frases disponibles, nivel A1, filas con `DsProgressBar` por rango); en Ajustes, el
+      selector segmentado cambia el nivel CEFR a A2 y "Guardar" muestra "Ajustes guardados" y
+      recompone Practicar con la nueva tanda de A2. Ninguna regla de negocio existente cambió.
 
 ## 10. Verificación final
 
