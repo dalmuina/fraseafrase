@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
@@ -24,6 +25,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.practice.RevertLastAnswer
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
@@ -35,6 +37,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
@@ -109,6 +112,38 @@ class PracticeSessionRouteTest {
         composeTestRule.onNodeWithText("Mostrar traducción").assertIsDisplayed()
     }
 
+    // Scenario: Doble toque en revertir solo revierte una vez (spec: practice-session, design D5); cobertura
+    // de la tarea 2.9 a nivel de UI
+    @Test
+    fun givenRevertButtonVisible_whenTappedTwice_thenOnlyOneRevertIsAppliedByTheViewModel() {
+        // Given: tanda A, B, C; A revelada y autoevaluada con acierto; el botón de revertir visible
+        val practice = TestPracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+        val viewModel = practiceSessionViewModel(practice, catalogOf("A", "B", "C"))
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionRoute(viewModel = viewModel)
+            }
+        }
+        composeTestRule.onNodeWithText("Mostrar traducción").performClick()
+        composeTestRule.onNodeWithText("Acierto").performClick()
+        val revertButton = composeTestRule.onNodeWithTag("practice_revert_last_answer_button")
+        revertButton.assertIsDisplayed()
+
+        // When: se pulsa el botón de revertir dos veces seguidas. El guard síncrono de design D5 oculta el botón
+        // en cuanto se procesa el primer toque, así que el segundo puede coincidir con esa desaparición a mitad
+        // de la inyección del gesto y fallar con "Failed to inject touch input" en vez de limitarse a no
+        // encontrar el nodo; `runCatching` tolera ambos desenlaces, porque los dos demuestran que el segundo
+        // toque no tiene efecto (la aserción real está en el orden final de la tanda, más abajo).
+        revertButton.performClick()
+        runCatching { revertButton.performClick() }
+        composeTestRule.waitForIdle()
+
+        // Then: solo se aplica una reversión, sin ningún efecto adicional ni excepción: la tanda vuelve a su
+        // orden original
+        val orderAfter = runBlocking { practice.read() }.activeBatch?.order?.map { it.value }
+        assertEquals(listOf("A", "B", "C"), orderAfter)
+    }
+
     private fun activeBatchSnapshot(order: List<String>): PracticeSnapshot = PracticeSnapshot(
         progress = order.map { phraseProgress(it) },
         activeBatch = ActiveBatch(order = order.map { PhraseId(it) }, capacity = BatchSize(10)),
@@ -174,6 +209,7 @@ class PracticeSessionRouteTest {
                 settingsRepository = settingsRepository,
             ),
             playPhraseAudio = PlayPhraseAudio(TestPhrasePlayer()),
+            revertLastAnswer = RevertLastAnswer(practice),
         )
     }
 

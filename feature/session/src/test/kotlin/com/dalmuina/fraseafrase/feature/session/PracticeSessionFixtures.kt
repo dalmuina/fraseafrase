@@ -10,6 +10,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.practice.RevertLastAnswer
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
@@ -121,5 +122,6 @@ internal fun sessionViewModelWith(
             settingsRepository = settingsRepository,
         ),
         playPhraseAudio = PlayPhraseAudio(phrasePlayer),
+        revertLastAnswer = RevertLastAnswer(practice),
     )
 }
