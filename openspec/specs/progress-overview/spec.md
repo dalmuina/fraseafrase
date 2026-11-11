@@ -2,8 +2,9 @@
 
 ## Purpose
 
-Define el progreso básico del ADR-0012: cuántas frases de la tanda activa están certificadas y
-cuántas frases del catálogo hay en cada nivel de consolidación, y la pantalla que los muestra.
+Define el progreso básico (ADR-0018): el total de frases disponibles del catálogo para el nivel
+CEFR vigente, ese mismo nivel CEFR, y cuántas de esas frases hay en cada nivel de consolidación, más
+la pantalla que los muestra.
 
 ## Requirements
 
