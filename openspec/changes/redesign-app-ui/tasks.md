@@ -80,16 +80,16 @@
 
 ## 5. Design system - componentes `Ds*` nuevos
 
-- [ ] 5.1 Test: `DsStatTile` renderiza el valor y la etiqueta recibidos, en variante `large` y
+- [x] 5.1 Test: `DsStatTile` renderiza el valor y la etiqueta recibidos, en variante `large` y
       `compact`. Verificar: test falla antes de crear el componente, pasa después; añadir
       `@PreviewLightDark`.
-- [ ] 5.2 Implementar `DsStatTile` en `:core:designsystem` sin dependencias del dominio, usando
+- [x] 5.2 Implementar `DsStatTile` en `:core:designsystem` sin dependencias del dominio, usando
       `AppTheme.spacing`/tokens de color. Verificar: test de 5.1 en verde; `detekt`/`ktlint` sin
       errores.
-- [ ] 5.3 Test: `DsProgressBar` renderiza la proporción `progress` recibida con la forma/color del
+- [x] 5.3 Test: `DsProgressBar` renderiza la proporción `progress` recibida con la forma/color del
       tema. Verificar: test falla antes de crear el componente, pasa después; añadir
       `@PreviewLightDark`.
-- [ ] 5.4 Implementar `DsProgressBar` envolviendo `LinearProgressIndicator`. Verificar: test de 5.3 en
+- [x] 5.4 Implementar `DsProgressBar` envolviendo `LinearProgressIndicator`. Verificar: test de 5.3 en
       verde; `detekt`/`ktlint` sin errores.
 
 ## 6. Presentación - `feature:session`
