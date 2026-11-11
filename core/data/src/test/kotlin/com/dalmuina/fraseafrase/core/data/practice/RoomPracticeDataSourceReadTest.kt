@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.data.practice
 
+import com.dalmuina.fraseafrase.core.domain.practice.BatchOutcome
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
@@ -94,6 +95,20 @@ class RoomPracticeDataSourceReadTest {
 
         // Then
         snapshot.activeBatch.shouldBeNull()
+    }
+
+    // Scenario: columnas nuevas de BatchOutcome en una base recién creada (design: "Contador de la tanda
+    // completada", precedente de fallbackToDestructiveMigration() de PracticeDatabase)
+    @Test
+    fun `given a freshly created active batch when reading then the batch outcome is zero`() = runTest {
+        // Given
+        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10, hits = 0, misses = 0, levelUps = 0))
+
+        // When
+        val snapshot = source.read()
+
+        // Then
+        snapshot.batchOutcome shouldBe BatchOutcome()
     }
 
     // Scenario: Lectura coherente del estado (spec: practice-persistence). Las lecturas se hacen tras cada escritura

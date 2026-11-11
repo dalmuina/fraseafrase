@@ -52,16 +52,16 @@
 
 ## 3. Datos - persistencia del desglose de la tanda
 
-- [ ] 3.1 Test: tras subir la versión de `PracticeDatabase` con las columnas nuevas, una tanda activa
+- [x] 3.1 Test: tras subir la versión de `PracticeDatabase` con las columnas nuevas, una tanda activa
       leída (en una base recién creada, acorde al `fallbackToDestructiveMigration()` ya usado por el
       único precedente real de esta base de datos) siempre tiene `BatchOutcome` en (0,0,0).
       Verificar: test falla antes de añadir las columnas (no compila o el campo no existe), pasa
       después. No se preserva una tanda persistida con el esquema anterior: ese precedente ya está
       documentado en `design.md` - Decisiones y Risks.
-- [ ] 3.2 Añadir las columnas de `BatchOutcome` a la entidad Room de la tanda activa, subir la
+- [x] 3.2 Añadir las columnas de `BatchOutcome` a la entidad Room de la tanda activa, subir la
       versión de `PracticeDatabase` y mantener `fallbackToDestructiveMigration()`. Verificar: test de
       3.1 en verde; `./gradlew :core:data:test` en verde.
-- [ ] 3.3 `FakePracticeRepository` en `:core:testing` es genérico sobre `PracticeSnapshot` y no
+- [x] 3.3 `FakePracticeRepository` en `:core:testing` es genérico sobre `PracticeSnapshot` y no
       necesita cambios de compilación para el campo nuevo de `BatchOutcome` si este tiene un valor
       por defecto (0,0,0). Añadir solo un builder de conveniencia para construir snapshots con un
       `BatchOutcome` concreto, usado por los tests del grupo 1 que verifican acumulación/reversión.
