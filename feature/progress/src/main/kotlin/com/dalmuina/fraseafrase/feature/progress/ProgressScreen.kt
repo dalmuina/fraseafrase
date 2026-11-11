@@ -7,11 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
+import com.dalmuina.fraseafrase.core.designsystem.component.DsProgressBar
+import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTile
+import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTileSize
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 
@@ -71,37 +71,38 @@ private fun ContentState(state: ProgressUiState.Content, modifier: Modifier = Mo
             .padding(AppTheme.spacing.m),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        Card(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
         ) {
-            Column(
-                modifier = Modifier.padding(AppTheme.spacing.m),
-                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
-            ) {
-                Text(text = stringResource(R.string.progress_available_label))
-                Text(
-                    text = state.totalAvailable.toString(),
-                    style = MaterialTheme.typography.headlineLarge,
-                )
-                Text(
-                    text = stringResource(R.string.progress_cefr_level_format, state.cefrLevel.name),
-                )
-            }
+            DsStatTile(
+                value = state.totalAvailable.toString(),
+                label = stringResource(R.string.progress_available_label),
+                size = DsStatTileSize.Large,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("progress_available_tile"),
+            )
+            Text(text = stringResource(R.string.progress_cefr_level_format, state.cefrLevel.name))
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s)) {
             for (value in 0..Level.MAX_LEVEL) {
                 val count = state.byLevel[Level(value)] ?: 0
+                val proportion = if (state.totalAvailable > 0) count / state.totalAvailable.toFloat() else 0f
                 Row(
                     modifier = Modifier.testTag("progress_level_row_$value"),
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     DsLevelBadge(value)
+                    DsProgressBar(
+                        progress = proportion,
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("progress_level_bar_$value"),
+                    )
                     Text(
                         text = if (value == 0) {
                             stringResource(R.string.progress_no_rank_format, count)

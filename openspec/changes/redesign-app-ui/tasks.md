@@ -124,17 +124,17 @@
 
 ## 7. Presentación - `feature:progress`
 
-- [ ] 7.1 Test de Compose UI: la tarjeta destacada de Progreso usa `DsStatTile` (variante `large`)
+- [x] 7.1 Test de Compose UI: la tarjeta destacada de Progreso usa `DsStatTile` (variante `large`)
       con el total disponible y el nivel CEFR vigente, leyendo la forma corregida de
       `ProgressOverviewResult` del grupo 2. Verificar: test falla antes del cambio (forma antigua),
       pasa después; cubre los escenarios de "Total de frases disponibles y nivel CEFR vigente".
-- [ ] 7.2 Conectar `ProgressScreen` a la forma corregida de `ProgressOverviewResult` y reestilizar la
+- [x] 7.2 Conectar `ProgressScreen` a la forma corregida de `ProgressOverviewResult` y reestilizar la
       tarjeta destacada con `DsStatTile`. Verificar: test de 7.1 en verde.
-- [ ] 7.3 Test de Compose UI: cada fila de nivel muestra `DsLevelBadge`, su recuento y una
+- [x] 7.3 Test de Compose UI: cada fila de nivel muestra `DsLevelBadge`, su recuento y una
       `DsProgressBar` proporcional al total de esa fila frente al total disponible, sin mostrar el
       número de nivel como texto. Verificar: test falla antes de añadir la barra, pasa después;
       cubre "Total de frases por nivel" (ya vigente, sin delta).
-- [ ] 7.4 Añadir `DsProgressBar` a cada fila de `ProgressScreen` y reestilizar con los tokens del
+- [x] 7.4 Añadir `DsProgressBar` a cada fila de `ProgressScreen` y reestilizar con los tokens del
       grupo 4. Verificar: test de 7.3 en verde; tests de Compose UI existentes de `ProgressScreen`
       (recuento por nivel) siguen en verde sin modificarlos.
 
