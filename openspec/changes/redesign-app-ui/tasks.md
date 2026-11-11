@@ -2,39 +2,39 @@
 
 ## 1. Dominio - desglose de la tanda completada
 
-- [ ] 1.1 Test: `BatchOutcome` empieza en (0,0,0) y un acierto que no sube de nivel incrementa solo
+- [x] 1.1 Test: `BatchOutcome` empieza en (0,0,0) y un acierto que no sube de nivel incrementa solo
       `hits`; falla antes de crear el tipo. Verificar: el test falla por "unresolved reference
       BatchOutcome" y pasa tras crear `BatchOutcome(hits, misses, levelUps)` en `:core:domain`
       (`practice`), cubre el escenario "El mensaje muestra el desglose..." del delta de
       `practice-session`.
-- [ ] 1.2 Test: un fallo incrementa solo `misses`; un acierto que sube de nivel incrementa `hits` y
+- [x] 1.2 Test: un fallo incrementa solo `misses`; un acierto que sube de nivel incrementa `hits` y
       `levelUps`. Verificar: `./gradlew :core:domain:test` en verde para ambos casos, mismo
       escenario que 1.1.
-- [ ] 1.3 Test: una frase que sube y luego baja de nivel en la misma tanda conserva `levelUps` en 1 (no
+- [x] 1.3 Test: una frase que sube y luego baja de nivel en la misma tanda conserva `levelUps` en 1 (no
       baja). Verificar: test en verde; cubre el escenario "Una frase que sube y vuelve a bajar de
       nivel en la misma tanda cuenta como subida".
-- [ ] 1.4 Implementar la acumulación de `BatchOutcome` en `AnswerPhrase`, comparando el nivel de la
+- [x] 1.4 Implementar la acumulación de `BatchOutcome` en `AnswerPhrase`, comparando el nivel de la
       frase inmediatamente antes y después de cada respuesta. Verificar: tests de 1.1-1.3 en verde.
-- [ ] 1.5 Test: `RevertLastAnswer` deshace exactamente el último incremento de `BatchOutcome`
+- [x] 1.5 Test: `RevertLastAnswer` deshace exactamente el último incremento de `BatchOutcome`
       (resta 1 de `hits` o `misses`, y de `levelUps` si esa respuesta había contado como subida).
       Verificar: test falla antes de tocar `RevertLastAnswer`, pasa después; cubre el escenario "Una
       frase revertida no cuenta en el desglose".
-- [ ] 1.6 Implementar la reversión de `BatchOutcome` en `RevertLastAnswer`. Verificar: test de 1.5 en
+- [x] 1.6 Implementar la reversión de `BatchOutcome` en `RevertLastAnswer`. Verificar: test de 1.5 en
       verde y los tests existentes de `RevertLastAnswer` siguen en verde.
-- [ ] 1.7 Test: `composeNextBatchInto` (`PracticeTransitions.kt`, compartido por `GenerateSession`,
+- [x] 1.7 Test: `composeNextBatchInto` (`PracticeTransitions.kt`, compartido por `GenerateSession`,
       `RegenerateActiveBatchForLevel` y `ObtainActiveBatch`) reinicia `BatchOutcome` a (0,0,0) al
       componer una tanda nueva. Verificar: test falla antes, pasa después de reiniciar el contador
       ahí; cubre el escenario "Generar sesión reinicia el desglose para la tanda siguiente" y,
       explícitamente, el camino de cambio de nivel CEFR/N desde Ajustes (`RegenerateActiveBatchForLevel`,
       ADR-0017), que comparte la misma función y debe reiniciar el contador igual.
-- [ ] 1.8 Implementar el reinicio de `BatchOutcome` en `composeNextBatchInto`. Verificar: test de 1.7
+- [x] 1.8 Implementar el reinicio de `BatchOutcome` en `composeNextBatchInto`. Verificar: test de 1.7
       en verde para los tres llamantes (`GenerateSession`, `RegenerateActiveBatchForLevel`,
       `ObtainActiveBatch`).
-- [ ] 1.9 Test: `PracticeSessionResult` (tipo que representa la tanda completada) expone el
+- [x] 1.9 Test: `PracticeSessionResult` (tipo que representa la tanda completada) expone el
       `BatchOutcome` de la tanda que se acaba de completar. Verificar: test falla antes de ampliar el
       tipo, pasa después; cubre el escenario "Tanda completa muestra el mensaje positivo" junto con
       el desglose.
-- [ ] 1.10 Ampliar `PracticeSessionResult`/el caso de uso que detecta tanda completada para incluir el
+- [x] 1.10 Ampliar `PracticeSessionResult`/el caso de uso que detecta tanda completada para incluir el
       `BatchOutcome`. Verificar: test de 1.9 en verde; `./gradlew :core:domain:test` completo en
       verde; cobertura de dominio de Kover sigue ≥ 90 %.
 

@@ -113,7 +113,7 @@ internal fun sessionViewModelWith(
         practiceRepository = practice,
     )
     return PracticeSessionViewModel(
-        obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository),
+        obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository, practice),
         answerPhrase = AnswerPhrase(practice),
         generateSession = GenerateSession(
             practiceRepository = practice,

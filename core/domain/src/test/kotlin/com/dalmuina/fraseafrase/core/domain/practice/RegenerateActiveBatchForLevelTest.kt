@@ -111,4 +111,23 @@ class RegenerateActiveBatchForLevelTest {
             ids.count { it in reinforce } shouldBe 11
             ids.count { it in mastered } shouldBe 5
         }
+
+    // Scenario: Generar sesión reinicia el desglose para la tanda siguiente (spec: practice-session), aplicado
+    // también al cambio de nivel CEFR/N desde Ajustes (ADR-0017)
+    @Test
+    fun `given a completed batch outcome when changing the cefr level then the batch outcome resets to zero`() =
+        runTest {
+            // Given: tanda activa con un desglose de 2 aciertos y 1 fallo acumulado
+            val practice = FakePracticeRepository(
+                snapshot(order = listOf("A"), progress = listOf(aPhraseProgress(id = "A")))
+                    .copy(batchOutcome = BatchOutcome(hits = 2, misses = 1, levelUps = 0)),
+            )
+            val catalog = CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "A", level = CefrLevel.B1)))
+
+            // When
+            useCase(practice, catalog).invoke(CefrLevel.B1, BatchSize(10))
+
+            // Then: el desglose de la tanda anterior no se arrastra a la nueva composición
+            practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
+        }
 }

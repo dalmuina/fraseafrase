@@ -60,4 +60,26 @@ class GenerateSessionTest {
             val order = practice.read().activeBatch?.order?.map { it.value }
             order.shouldNotBeNull() shouldContain "P"
         }
+
+    // Scenario: Generar sesión reinicia el desglose para la tanda siguiente (spec: practice-session)
+    @Test
+    fun `given a completed batch outcome when generating session then the batch outcome resets to zero`() =
+        runTest {
+            // Given: tanda completa de A con un desglose de 2 aciertos y 1 fallo acumulado
+            val progress = listOf(aPhraseProgress(id = "A", answeredInBatch = true))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = progress,
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(20)),
+                    sessionCount = 9,
+                    batchOutcome = BatchOutcome(hits = 2, misses = 1, levelUps = 0),
+                ),
+            )
+
+            // When
+            generateSession(practice, catalogIds = listOf("A")).invoke()
+
+            // Then: el desglose de la tanda anterior no se arrastra a la siguiente
+            practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
+        }
 }
