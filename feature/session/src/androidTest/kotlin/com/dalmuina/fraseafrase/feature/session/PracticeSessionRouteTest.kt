@@ -129,9 +129,13 @@ class PracticeSessionRouteTest {
         val revertButton = composeTestRule.onNodeWithTag("practice_revert_last_answer_button")
         revertButton.assertIsDisplayed()
 
-        // When: se pulsa el botón de revertir dos veces seguidas
+        // When: se pulsa el botón de revertir dos veces seguidas. El guard síncrono de design D5 oculta el botón
+        // en cuanto se procesa el primer toque, así que el segundo puede coincidir con esa desaparición a mitad
+        // de la inyección del gesto y fallar con "Failed to inject touch input" en vez de limitarse a no
+        // encontrar el nodo; `runCatching` tolera ambos desenlaces, porque los dos demuestran que el segundo
+        // toque no tiene efecto (la aserción real está en el orden final de la tanda, más abajo).
         revertButton.performClick()
-        revertButton.performClick()
+        runCatching { revertButton.performClick() }
         composeTestRule.waitForIdle()
 
         // Then: solo se aplica una reversión, sin ningún efecto adicional ni excepción: la tanda vuelve a su
