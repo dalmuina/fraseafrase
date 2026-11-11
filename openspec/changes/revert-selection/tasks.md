@@ -46,11 +46,11 @@
 
 ## 2. Presentación: acción, estado y lógica del ViewModel (`:feature:session`)
 
-- [ ] 2.1 Test: en `PracticeSessionViewModelTest`, dada una tanda A, B con A revelada, al autoevaluar
+- [x] 2.1 Test: en `PracticeSessionViewModelTest`, dada una tanda A, B con A revelada, al autoevaluar
   A con acierto y avanzar a B, `uiState` expone `canRevertLastAnswer = true` (spec: practice-session,
   "El botón aparece tras autoevaluar"). Ejecutar y comprobar que falla porque `Practicing` no tiene
   ese campo todavía.
-- [ ] 2.2 Añadir `canRevertLastAnswer: Boolean` a `PracticeSessionUiState.Practicing` (por defecto
+- [x] 2.2 Añadir `canRevertLastAnswer: Boolean` a `PracticeSessionUiState.Practicing` (por defecto
   `false`) y `RevertLastAnswer : PracticeSessionAction` (data object) en `PracticeSessionAction`.
   Añadir el campo privado `pendingUndo: PendingUndo?` al ViewModel (`PendingUndo(val answer:
   UndoableAnswer, val indexBefore: Int)`, design D3) y la dependencia inyectada `RevertLastAnswer`.
@@ -60,55 +60,55 @@
   `consumeBadgeChange()`); en `reload()` sin `previous`, limpiar también `pendingUndo = null` (design
   D3, riesgo de `pendingUndo` obsoleto tras una recarga que no continúa una autoevaluación).
   Verificar: 2.1 en verde.
-- [ ] 2.3 Test: dado un acierto que certifica y dispara `badgeChange`, mientras la transición está en
+- [x] 2.3 Test: dado un acierto que certifica y dispara `badgeChange`, mientras la transición está en
   curso (antes de `ConsumeBadgeChange`) `canRevertLastAnswer` es `false`; al consumirla, pasa a
   `true` (spec: practice-session, "El botón no aparece durante la transición de cambio de
   insignia"). Ejecutar y comprobar que falla si 2.2 no distingue ambos momentos.
-- [ ] 2.4 Ajustar `answer()` para que, al fijar `badgeChange`, `canRevertLastAnswer` quede en `false`
+- [x] 2.4 Ajustar `answer()` para que, al fijar `badgeChange`, `canRevertLastAnswer` quede en `false`
   explícitamente (no heredado de `copy()`). Verificar: 2.3 en verde.
-- [ ] 2.5 Test: dada la pantalla recién abierta sin ninguna autoevaluación todavía, `uiState` expone
+- [x] 2.5 Test: dada la pantalla recién abierta sin ninguna autoevaluación todavía, `uiState` expone
   `canRevertLastAnswer = false` (spec: practice-session, "El botón no aparece antes de la primera
   autoevaluación"). Verificar junto con 2.2 (ya debería pasar; si no, ajustar `reload()` sin
   `previous` para fijar siempre `false`).
-- [ ] 2.6 Test: dada una tanda A, B, C con A ya autoevaluada (pantalla en B, `canRevertLastAnswer =
+- [x] 2.6 Test: dada una tanda A, B, C con A ya autoevaluada (pantalla en B, `canRevertLastAnswer =
   true`, apuntando al deshacer de A), al autoevaluar B, `canRevertLastAnswer` pasa a `false` de
   inmediato (de forma síncrona, antes de que termine la corrutina de esa segunda autoevaluación), no
   solo cuando la pantalla termine de avanzar a C (spec: practice-session, "El botón no aparece
   mientras se registra una nueva autoevaluación"). Ejecutar y comprobar que falla porque el `copy()`
   que fija `busy = true` en `answer()` todavía conserva el `canRevertLastAnswer` anterior.
-- [ ] 2.7 Ajustar `answer()` para que el primer `copy()` síncrono (el que ya fija `busy = true` antes
+- [x] 2.7 Ajustar `answer()` para que el primer `copy()` síncrono (el que ya fija `busy = true` antes
   de lanzar la corrutina) fije también `canRevertLastAnswer = false`, simétrico a como ya se trata en
   2.4 para el camino de `badgeChange`. Verificar: 2.6 en verde.
-- [ ] 2.8 Test: dada una tanda A, B, C con A revelada, autoevaluada con acierto (pantalla en B,
+- [x] 2.8 Test: dada una tanda A, B, C con A revelada, autoevaluada con acierto (pantalla en B,
   `canRevertLastAnswer = true`), al enviar `RevertLastAnswer`, `uiState` vuelve a mostrar A revelada,
   en la posición `indexBefore`, con su racha e insignia anteriores, y `canRevertLastAnswer = false`
   (spec: practice-session, "Revertir un acierto vuelve a mostrar la frase anterior"). Ejecutar y
   comprobar que falla porque `onAction` no maneja `RevertLastAnswer` todavía.
-- [ ] 2.9 Test: con el botón de revertir visible, enviar `RevertLastAnswer` dos veces seguidas solo
+- [x] 2.9 Test: con el botón de revertir visible, enviar `RevertLastAnswer` dos veces seguidas solo
   revierte una vez (spec: practice-session, "Doble toque en revertir solo revierte una vez"); y, por
   separado, enviar `RevertLastAnswer` mientras `busy` ya es `true` por otra operación en curso (una
   autoevaluación o una reversión previa sin terminar) no tiene ningún efecto ni lanza una excepción
   (cubre el riesgo de carrera de design D5: dos corrutinas compitiendo por la misma transacción de
   `PracticeRepository.transact`). Ejecutar y comprobar que ambos casos fallan porque `revertLast()`
   no tiene ningún guard de `busy` todavía.
-- [ ] 2.10 Implementar el manejo de `RevertLastAnswer` en `onAction`/un método privado
+- [x] 2.10 Implementar el manejo de `RevertLastAnswer` en `onAction`/un método privado
   `revertLast()`: si `state.busy` es `true` o `pendingUndo` es `null`, ignorar sin lanzar nada; si
   no, fijar `busy = true` de forma síncrona y capturar/limpiar `pendingUndo` a `null` antes de
   lanzar la corrutina (mismo guard que ya usa `answer()`, design D5), llamar a
   `revertLastAnswer(undo.answer)`, leer de nuevo con `obtainPracticeSession()` y construir el
   `Practicing` final con `revealed = true`, `busy = false`, `index = undo.indexBefore`,
   `canRevertLastAnswer = false`, `badgeChange = null`. Verificar: 2.8 y 2.9 en verde.
-- [ ] 2.11 Test: tras revertir, autoevaluar A de nuevo y avanzar vuelve a exponer
+- [x] 2.11 Test: tras revertir, autoevaluar A de nuevo y avanzar vuelve a exponer
   `canRevertLastAnswer = true` (spec: practice-session, "Autoevaluar de nuevo tras revertir vuelve a
   ofrecer el botón"). Verificar: ya debería pasar con 2.2/2.10; si no, ajustar dónde se fija
   `pendingUndo`.
-- [ ] 2.12 Test: tras la última autoevaluación de la tanda (mensaje de tanda completada con
+- [x] 2.12 Test: tras la última autoevaluación de la tanda (mensaje de tanda completada con
   `canRevertLastAnswer = true`), al enviar `GenerateSession`, la tanda siguiente se expone con
   `canRevertLastAnswer = false` (spec: practice-session, "Generar sesión hace desaparecer el
   botón"). Ejecutar y comprobar que falla si `requestGenerateSession()` no limpia `pendingUndo`.
-- [ ] 2.13 Limpiar `pendingUndo = null` al inicio de `requestGenerateSession()`. Verificar: 2.12 en
+- [x] 2.13 Limpiar `pendingUndo = null` al inicio de `requestGenerateSession()`. Verificar: 2.12 en
   verde.
-- [ ] 2.14 Test: dado `pendingUndo` activo tras autoevaluar A (botón visible apuntando a A), cuando
+- [x] 2.14 Test: dado `pendingUndo` activo tras autoevaluar A (botón visible apuntando a A), cuando
   `Resume` detecta que la tanda activa cambió (p. ej. por un ajuste que la recompuso) y `reload()`
   sin `previous` reconstruye el `Practicing`, enviar `RevertLastAnswer` después no tiene ningún
   efecto ni lanza una excepción (design D3, limpieza de `pendingUndo` fuera del flujo de

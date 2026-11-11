@@ -32,4 +32,11 @@ sealed interface PracticeSessionAction {
      * (spec: add-level-change-animation, design D2/D3).
      */
     data object ConsumeBadgeChange : PracticeSessionAction
+
+    /**
+     * Revierte la autoevaluación más reciente de la tanda activa, devolviendo la frase afectada a su posición,
+     * nivel y racha anteriores (spec: revert-selection). Se ignora si no hay ninguna autoevaluación que revertir
+     * o mientras hay una respuesta en curso (design D5).
+     */
+    data object RevertLastAnswer : PracticeSessionAction
 }

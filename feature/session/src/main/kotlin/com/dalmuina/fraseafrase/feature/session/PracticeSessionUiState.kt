@@ -20,7 +20,10 @@ sealed interface PracticeSessionUiState {
      * [remainingHitsForNextLevel] es cuántos aciertos consecutivos le faltan a [current] para la insignia
      * [nextLevelBadgeLabel] (spec: practice-session, "Aciertos para el próximo nivel visibles"). [badgeChange] es
      * el cambio de insignia a animar tras la última autoevaluación, o `null` si no hubo cambio de nivel visible
-     * o ya se consumió (spec: add-level-change-animation, design D2).
+     * o ya se consumió (spec: add-level-change-animation, design D2). [canRevertLastAnswer] indica si hay una
+     * autoevaluación reciente que se puede revertir con [PracticeSessionAction.RevertLastAnswer]: es `false`
+     * antes de la primera autoevaluación, mientras se registra una autoevaluación nueva (`busy`) o mientras se
+     * anima un cambio de insignia (spec: revert-selection, design D3/D4).
      */
     data class Practicing(
         val current: PracticeItem,
@@ -32,6 +35,7 @@ sealed interface PracticeSessionUiState {
         val remainingHitsForNextLevel: Int,
         val nextLevelBadgeLabel: String,
         val badgeChange: BadgeChange? = null,
+        val canRevertLastAnswer: Boolean = false,
     ) : PracticeSessionUiState
 
     /** No hay frases para practicar (ADR-0012). */
