@@ -70,10 +70,10 @@
 
 ## 4. Design system - tokens visuales
 
-- [ ] 4.1 Test de snapshot/preview: `AppTheme` expone el color primario, los radios de tarjeta y los
+- [x] 4.1 Test de snapshot/preview: `AppTheme` expone el color primario, los radios de tarjeta y los
       tamaños tipográficos actualizados en claro y oscuro. Verificar: test de tokens falla antes del
       cambio (valores antiguos), pasa después.
-- [ ] 4.2 Actualizar `theme/Color.kt` (primario índigo, contenedores, éxito/fallo), `theme/AppShapes.kt`
+- [x] 4.2 Actualizar `theme/Color.kt` (primario índigo, contenedores, éxito/fallo), `theme/AppShapes.kt`
       (radio de tarjeta ~24dp) y `theme/Type.kt` (tamaños/peso/`letterSpacing` de titulares y cuerpo)
       según `design.md` - Decisiones. Verificar: test de 4.1 en verde; contraste 4.5:1 comprobado
       para cada combinación de color tocada (texto sobre `primaryContainer`, etiquetas de 11-13px).
