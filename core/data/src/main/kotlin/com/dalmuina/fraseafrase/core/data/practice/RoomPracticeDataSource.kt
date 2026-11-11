@@ -5,6 +5,7 @@ import androidx.room3.useWriterConnection
 import androidx.room3.withReadTransaction
 import com.dalmuina.fraseafrase.core.data.di.IoDispatcher
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
+import com.dalmuina.fraseafrase.core.domain.practice.BatchOutcome
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
@@ -53,6 +54,7 @@ class RoomPracticeDataSource @Inject constructor(
             progress = rows.map { it.toDomain() },
             activeBatch = activeBatch,
             sessionCount = sessionCount,
+            batchOutcome = activeRow?.toBatchOutcome() ?: BatchOutcome(),
         )
     }
 
@@ -93,17 +95,28 @@ class RoomPracticeDataSource @Inject constructor(
             }
         }
 
-        writeActiveBatch(next.activeBatch?.capacity?.value)
+        writeActiveBatch(next.activeBatch?.capacity?.value, next.batchOutcome)
         writeSessionCounter(next.sessionCount)
     }
 
-    private suspend fun writeActiveBatch(capacity: Int?) {
+    private suspend fun writeActiveBatch(capacity: Int?, batchOutcome: BatchOutcome) {
         val activeBatches = database.activeBatchDao()
         val existing = activeBatches.all().firstOrNull()
         when {
             capacity == null -> if (existing != null) activeBatches.clear()
-            existing == null -> activeBatches.insert(ActiveBatchEntity(id = 1, capacity = capacity))
-            existing.capacity != capacity -> activeBatches.update(ActiveBatchEntity(id = 1, capacity = capacity))
+            else -> {
+                val entity = ActiveBatchEntity(
+                    id = 1,
+                    capacity = capacity,
+                    hits = batchOutcome.hits,
+                    misses = batchOutcome.misses,
+                    levelUps = batchOutcome.levelUps,
+                )
+                when {
+                    existing == null -> activeBatches.insert(entity)
+                    existing != entity -> activeBatches.update(entity)
+                }
+            }
         }
     }
 

@@ -8,12 +8,15 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PracticeBatch
 /**
  * Instantánea del estado del usuario (ADR-0012, ADR-0017). [progress] tiene una entrada por cada frase con
  * progreso o con posición en la tanda activa. [activeBatch] indica si hay tanda activa y en qué orden;
- * [sessionCount] es el contador de sesiones generadas.
+ * [sessionCount] es el contador de sesiones generadas. [batchOutcome] es el desglose de aciertos, fallos y
+ * subidas de nivel de la tanda activa (spec `practice-session`); se reinicia a cero al componer la tanda
+ * siguiente.
  */
 data class PracticeSnapshot(
     val progress: List<PhraseProgress>,
     val activeBatch: ActiveBatch?,
     val sessionCount: Int,
+    val batchOutcome: BatchOutcome = BatchOutcome(),
 ) {
 
     /** La tanda activa con sus entradas en el orden guardado, o null si no hay tanda activa. */

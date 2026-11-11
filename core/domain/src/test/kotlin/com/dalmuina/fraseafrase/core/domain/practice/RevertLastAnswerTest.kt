@@ -40,6 +40,74 @@ class RevertLastAnswerTest {
             snapshot.progress.first { it.id.value == "A" } shouldBe progressBefore
         }
 
+    // Scenario: Una frase revertida no cuenta en el desglose (spec: practice-session)
+    @Test
+    fun `given a hit when reverting it then the batch outcome returns to zero`() = runTest {
+        // Given: tanda de A y B, A respondida con acierto
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(aPhraseProgress(id = "A"), aPhraseProgress(id = "B")),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                sessionCount = 10,
+            ),
+        )
+        val outcome = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+
+        // When: se revierte esa autoevaluación
+        RevertLastAnswer(practice).invoke(outcome.undo)
+
+        // Then: el desglose no cuenta la autoevaluación revertida
+        practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
+    }
+
+    // Scenario: Una frase revertida no cuenta en el desglose (spec: practice-session)
+    @Test
+    fun `given a reverted hit and a miss when answering the hit again then the outcome counts 1 hit and 1 miss`() =
+        runTest {
+            // Given: tanda de A y B, A respondida con acierto y después revertida, y B respondida con fallo
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(aPhraseProgress(id = "A"), aPhraseProgress(id = "B")),
+                    activeBatch = ActiveBatch(
+                        order = listOf(PhraseId("A"), PhraseId("B")),
+                        capacity = BatchSize(10),
+                    ),
+                    sessionCount = 10,
+                ),
+            )
+            val answerPhrase = AnswerPhrase(practice)
+            val firstOutcome = answerPhrase.invoke(PhraseId("A"), SelfAssessment.HIT)
+            RevertLastAnswer(practice).invoke(firstOutcome.undo)
+            answerPhrase.invoke(PhraseId("B"), SelfAssessment.MISS)
+
+            // When: se responde A de nuevo con acierto
+            answerPhrase.invoke(PhraseId("A"), SelfAssessment.HIT)
+
+            // Then: el desglose no cuenta la autoevaluación revertida de A
+            practice.read().batchOutcome shouldBe BatchOutcome(hits = 1, misses = 1, levelUps = 0)
+        }
+
+    // Scenario: Una frase revertida no cuenta en el desglose (spec: practice-session)
+    @Test
+    fun `given a hit that levels up when reverting it then the level up is undone too`() = runTest {
+        // Given: A a una racha de certificar, de nivel 2 a nivel 3
+        val progress = aPhraseProgress(id = "A", level = Level(2), streak = Streak(2))
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(progress, aPhraseProgress(id = "B")),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                sessionCount = 10,
+            ),
+        )
+        val outcome = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+
+        // When
+        RevertLastAnswer(practice).invoke(outcome.undo)
+
+        // Then: la subida de nivel también se deshace
+        practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
+    }
+
     // Scenario: La reversión no se acumula (spec: spaced-repetition)
     @Test
     fun `given A was answered and then B when reverting A then throws IllegalArgumentException`() = runTest {

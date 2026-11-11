@@ -3,9 +3,17 @@ package com.dalmuina.fraseafrase.core.data.practice
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
-/** Tanda activa: una sola fila con id 1 (ADR-0013, design D5). Su existencia indica que hay tanda activa. */
+/**
+ * Tanda activa: una sola fila con id 1 (ADR-0013, design D5). Su existencia indica que hay tanda activa.
+ * [hits], [misses] y [levelUps] persisten el [com.dalmuina.fraseafrase.core.domain.practice.BatchOutcome] de esa
+ * tanda (design `redesign-app-ui`, "Contador de la tanda completada"); por defecto 0, como al componer una tanda
+ * nueva.
+ */
 @Entity(tableName = "active_batch")
 data class ActiveBatchEntity(
     @PrimaryKey val id: Int,
     val capacity: Int,
+    val hits: Int = 0,
+    val misses: Int = 0,
+    val levelUps: Int = 0,
 )

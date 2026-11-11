@@ -191,6 +191,35 @@ class AnswerPhraseTest {
         result.resultingLevel shouldBe Level(5)
     }
 
+    // Scenario: El mensaje muestra el desglose de aciertos, fallos y subidas de nivel (spec: practice-session)
+    @Test
+    fun `given a hit, a miss and a leveling hit when answering then the outcome counts 2 hits, 1 miss, 1 level up`() =
+        runTest {
+            // Given: A con racha 0 (un acierto no certifica), B cualquiera, y C a una racha de certificar
+            val progressA = aPhraseProgress(id = "A", level = Level(1), streak = Streak(0))
+            val progressB = aPhraseProgress(id = "B", level = Level(1))
+            val progressC = aPhraseProgress(id = "C", level = Level(2), streak = Streak(2))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(progressA, progressB, progressC),
+                    activeBatch = ActiveBatch(
+                        order = listOf(PhraseId("A"), PhraseId("B"), PhraseId("C")),
+                        capacity = BatchSize(10),
+                    ),
+                    sessionCount = 5,
+                ),
+            )
+            val answerPhrase = AnswerPhrase(practice)
+
+            // When: A acierta sin subir de nivel, B falla, y C acierta certificando de nivel 2 a nivel 3
+            answerPhrase.invoke(PhraseId("A"), SelfAssessment.HIT)
+            answerPhrase.invoke(PhraseId("B"), SelfAssessment.MISS)
+            answerPhrase.invoke(PhraseId("C"), SelfAssessment.HIT)
+
+            // Then
+            practice.read().batchOutcome shouldBe BatchOutcome(hits = 2, misses = 1, levelUps = 1)
+        }
+
     // Scenario: Revertir un fallo restaura el nivel, la racha y el vencimiento anteriores (spec: spaced-repetition)
     @Test
     fun `given a miss on a level 3 phrase when answering then undo exposes the progress before the miss`() =

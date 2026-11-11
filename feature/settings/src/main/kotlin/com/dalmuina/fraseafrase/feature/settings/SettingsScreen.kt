@@ -16,14 +16,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -104,7 +105,13 @@ private fun LoadedContent(
     }
 }
 
-/** Tarjeta de selección del nivel CEFR con un chip por nivel (mock "Ajustes"). */
+/**
+ * Tarjeta de selección del nivel CEFR con un selector segmentado de selección única (mock "Ajustes"). Usa
+ * [SingleChoiceSegmentedButtonRow]/[SegmentedButton] en vez de `FilterChip` para no perder la semántica
+ * accesible de grupo de radio que `FilterChip` ya tenía por defecto (design.md - Risks/Trade-offs de
+ * `redesign-app-ui`): el contenedor aplica `Modifier.selectableGroup()` y cada botón expone `role =
+ * Role.RadioButton` internamente.
+ */
 @Composable
 private fun CefrLevelCard(
     selectedLevel: CefrLevel,
@@ -123,27 +130,25 @@ private fun CefrLevelCard(
                 text = stringResource(R.string.settings_cefr_level_label),
                 style = MaterialTheme.typography.titleMedium,
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
-            ) {
-                CefrLevel.entries.forEach { level ->
+            val levelCount = CefrLevel.entries.size
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                CefrLevel.entries.forEachIndexed { index, level ->
                     val selected = level == selectedLevel
-                    FilterChip(
-                        modifier = Modifier.weight(1f),
+                    SegmentedButton(
                         selected = selected,
                         onClick = { onSelectLevel(level) },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = levelCount),
+                        colors = SegmentedButtonDefaults.colors(
+                            activeContainerColor = MaterialTheme.colorScheme.primary,
+                            activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
+                        icon = {},
                         label = {
                             Text(
                                 text = level.name,
                                 style = MaterialTheme.typography.labelMedium,
                             )
                         },
-                        shape = MaterialTheme.shapes.medium,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
                     )
                 }
             }

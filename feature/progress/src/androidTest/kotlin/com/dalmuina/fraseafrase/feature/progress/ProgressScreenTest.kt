@@ -2,12 +2,15 @@ package com.dalmuina.fraseafrase.feature.progress
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.text.TextLayoutResult
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
@@ -48,14 +51,17 @@ class ProgressScreenTest {
         composeTestRule.onNodeWithText("Nivel actual: B1").assertIsDisplayed()
     }
 
-    // Scenario: tarjeta destacada con color primario (design D3, fix-style-pass-two)
+    // Scenario: tarjeta destacada reestilizada con DsStatTile (design - Corrección de
+    // progress-overview, redesign-app-ui tasks 7.1/7.2). DsStatTile fuerza sus propios colores de
+    // contenedor/contenido (onPrimaryContainer), ya no el onPrimary del Card manual anterior
+    // (design D3, fix-style-pass-two, sustituido por la reutilización del componente compartido).
     @Test
-    fun givenTheFeaturedCard_whenShowingTheScreen_thenItsTextUsesOnPrimaryColor() {
-        // Given: se captura el color onPrimary esperado del tema actual
+    fun givenTheFeaturedCard_whenShowingTheScreen_thenItsTextUsesOnPrimaryContainerColor() {
+        // Given: se captura el color onPrimaryContainer esperado del tema actual
         var expectedColor: Color = Color.Unspecified
         composeTestRule.setContent {
             AppTheme {
-                expectedColor = MaterialTheme.colorScheme.onPrimary
+                expectedColor = MaterialTheme.colorScheme.onPrimaryContainer
                 // When: se muestra la pantalla con un catálogo con frases disponibles
                 ProgressScreen(
                     uiState = ProgressUiState.Content(
@@ -67,7 +73,7 @@ class ProgressScreenTest {
             }
         }
 
-        // Then: el color del texto de la tarjeta destacada coincide con onPrimary
+        // Then: el color del texto de la tarjeta destacada coincide con onPrimaryContainer
         val layoutResults = mutableListOf<TextLayoutResult>()
         composeTestRule.onAllNodesWithText("frases disponibles", substring = true, ignoreCase = true)
             .onFirst()
@@ -77,6 +83,22 @@ class ProgressScreenTest {
             ?.invoke(layoutResults)
 
         assertEquals(expectedColor, layoutResults.first().layoutInput.style.color)
+    }
+
+    // Scenario: Total de frases disponibles y nivel CEFR vigente (spec: progress-overview)
+    @Test
+    fun givenACatalogWithPhrasesAvailable_whenShowingTheScreen_thenTheFeaturedCardUsesDsStatTile() {
+        // Given/When: la tarjeta destacada muestra 10 frases disponibles y el nivel CEFR B1
+        setScreen(
+            ProgressUiState.Content(
+                totalAvailable = 10,
+                cefrLevel = CefrLevel.B1,
+                byLevel = allLevels(levelZero = 6) + mapOf(Level(2) to 3, Level(5) to 1),
+            ),
+        )
+
+        // Then: la tarjeta destacada se construye con el componente compartido DsStatTile
+        composeTestRule.onNodeWithTag("progress_available_tile").assertIsDisplayed()
     }
 
     // Scenario: Sin tanda activa muestra solo el total por nivel (spec: progress-overview)
@@ -163,6 +185,24 @@ class ProgressScreenTest {
         // Then: la única aparición del texto "Nivel" es la de la tarjeta destacada de nivel CEFR
         // vigente ("Nivel actual: ..."); ninguna fila de nivel por insignia lo usa.
         composeTestRule.onAllNodesWithText("Nivel", substring = true).assertCountEquals(1)
+    }
+
+    // Scenario: Total de frases por nivel (spec: progress-overview) - reestilizado con
+    // DsProgressBar (design - Componentes Ds* nuevos, redesign-app-ui tasks 7.3/7.4)
+    @Test
+    fun givenACatalogWithPhrasesInSeveralLevels_whenShowingTheScreen_thenEachLevelRowShowsAProportionalProgressBar() {
+        // Given/When: total disponible 10, nivel 2 con 3 frases (proporción 0.3)
+        setScreen(
+            ProgressUiState.Content(
+                totalAvailable = 10,
+                cefrLevel = CefrLevel.B1,
+                byLevel = allLevels(levelZero = 6) + mapOf(Level(2) to 3, Level(5) to 1),
+            ),
+        )
+
+        // Then: la fila del nivel 2 muestra una barra de progreso proporcional (3 de 10)
+        composeTestRule.onNodeWithTag("progress_level_bar_2")
+            .assertRangeInfoEquals(ProgressBarRangeInfo(current = 0.3f, range = 0f..1f))
     }
 
     private fun setScreen(uiState: ProgressUiState) {

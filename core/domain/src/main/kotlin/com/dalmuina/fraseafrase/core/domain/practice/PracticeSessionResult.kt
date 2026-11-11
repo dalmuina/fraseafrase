@@ -16,12 +16,14 @@ sealed interface PracticeSessionResult {
     /**
      * Tanda activa con su texto, en el orden de la tanda. [isComplete] es si el usuario ya ha dado una vuelta
      * completa a la lista circular, es decir, si todas sus frases están respondidas (spec `practice-session`,
-     * "Mensaje de tanda completada y generación de sesión"). Calcularlo no modifica la tanda, sus rachas ni el
-     * progreso.
+     * "Mensaje de tanda completada y generación de sesión"). [batchOutcome] es el desglose de aciertos, fallos
+     * y subidas de nivel acumulado de esta misma tanda, que el mensaje de tanda completada muestra junto con
+     * [isComplete]. Calcularlo no modifica la tanda, sus rachas ni el progreso.
      */
     data class Ready(
         val items: List<PracticeItem>,
         val isComplete: Boolean,
+        val batchOutcome: BatchOutcome,
     ) : PracticeSessionResult
 
     /** No hay arrastradas, pendientes ni frases nuevas: no hay nada que practicar (ADR-0012). */

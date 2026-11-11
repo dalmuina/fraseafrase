@@ -38,6 +38,7 @@ class ObtainPracticeSessionTest {
             practiceRepository = practice,
         ),
         catalogRepository = FakeCatalogRepository(catalog),
+        practiceRepository = practice,
     )
 
     private fun activeBatch(
@@ -288,6 +289,25 @@ class ObtainPracticeSessionTest {
         // Then
         result.shouldBeInstanceOf<PracticeSessionResult.Ready>().isComplete shouldBe false
     }
+
+    // Scenario: El mensaje muestra el desglose de aciertos, fallos y subidas de nivel (spec: practice-session)
+    @Test
+    fun `given an active batch with a batch outcome when opening the session then the result exposes it`() =
+        runTest {
+            // Given: tanda activa con un desglose de 2 aciertos, 1 fallo y 1 subida de nivel ya acumulado
+            val practice = FakePracticeRepository(
+                activeBatch(order = listOf("A"), progress = listOf(aPhraseProgress(id = "A")))
+                    .copy(batchOutcome = BatchOutcome(hits = 2, misses = 1, levelUps = 1)),
+            )
+            val catalog = loaded(aCatalogPhrase(id = "A"))
+
+            // When
+            val result = useCase(practice, catalog).invoke()
+
+            // Then
+            val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
+            ready.batchOutcome shouldBe BatchOutcome(hits = 2, misses = 1, levelUps = 1)
+        }
 
     // Scenario: Asset de catálogo ilegible (spec: practice-session, Error de catálogo)
     @Test

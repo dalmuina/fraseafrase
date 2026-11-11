@@ -27,7 +27,7 @@ internal fun composeNextBatchInto(
     return when (composed) {
         is BatchComposition.NothingAvailable -> PracticeChange(snapshot, ActiveBatchResult.NothingAvailable)
         is BatchComposition.Composed -> PracticeChange(
-            next = snapshot.storing(composed.batch),
+            next = snapshot.storing(composed.batch).copy(batchOutcome = BatchOutcome()),
             result = ActiveBatchResult.Created(composed.batch),
         )
     }

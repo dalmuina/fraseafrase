@@ -44,57 +44,6 @@ class ObtainProgressOverviewTest {
 
     private fun loaded(vararg phrases: CatalogPhrase) = CatalogLoadResult.Loaded(phrases.toList())
 
-    /** Frase certificada en la tanda: racha 3 respondida. */
-    private fun certified(id: String) = aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)
-
-    // Scenario: Tanda con certificadas y no certificadas (spec: progress-overview)
-    @Test
-    fun `given certified and uncertified phrases when opening progress then it shows two of five certified`() =
-        runTest {
-            // Given: tanda activa de cinco frases, dos con racha 3 y tres sin certificar
-            val progress = listOf(certified("A"), certified("B")) +
-                listOf("C", "D", "E").map { aPhraseProgress(id = it) }
-            val practice = FakePracticeRepository(
-                activeBatch(order = listOf("A", "B", "C", "D", "E"), progress = progress),
-            )
-            val catalog = loaded(
-                *listOf("A", "B", "C", "D", "E").map { aCatalogPhrase(id = it, level = CefrLevel.A1) }
-                    .toTypedArray(),
-            )
-
-            // When
-            val result = useCase(practice, catalog).invoke()
-
-            // Then
-            val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
-            val batchProgress = requireNotNull(available.batchProgress)
-            batchProgress.certified shouldBe 2
-            batchProgress.total shouldBe 5
-        }
-
-    // Scenario: Tanda sin ninguna certificada (spec: progress-overview)
-    @Test
-    fun `given a batch with no certified phrases when opening progress then it shows zero of three certified`() =
-        runTest {
-            // Given: tanda activa de tres frases, ninguna con racha 3
-            val progress = listOf("A", "B", "C").map { aPhraseProgress(id = it) }
-            val practice = FakePracticeRepository(
-                activeBatch(order = listOf("A", "B", "C"), progress = progress),
-            )
-            val catalog = loaded(
-                *listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.A1) }.toTypedArray(),
-            )
-
-            // When
-            val result = useCase(practice, catalog).invoke()
-
-            // Then
-            val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
-            val batchProgress = requireNotNull(available.batchProgress)
-            batchProgress.certified shouldBe 0
-            batchProgress.total shouldBe 3
-        }
-
     // Scenario: Catálogo con frases en varios niveles (spec: progress-overview)
     @Test
     fun `given phrases at several levels when opening progress then byLevel counts each level`() = runTest {
@@ -179,23 +128,27 @@ class ObtainProgressOverviewTest {
         available.byLevel[Level(0)] shouldBe 5
     }
 
-    // Scenario: Sin tanda activa muestra solo el total por nivel (spec: progress-overview)
+    // Scenario: Sin tanda activa muestra el total disponible, el nivel CEFR y el total por nivel
+    // (spec: progress-overview)
     @Test
-    fun `given no active batch when opening progress then batchProgress is null`() = runTest {
-        // Given: no hay tanda activa y un catálogo de seis frases sin progreso
-        val practice = FakePracticeRepository()
-        val catalog = loaded(
-            *(1..6).map { aCatalogPhrase(id = "phrase-$it", level = CefrLevel.A1) }.toTypedArray(),
-        )
+    fun `given no active batch when opening progress then it shows the total available and the cefr level`() =
+        runTest {
+            // Given: no hay tanda activa, un catálogo de seis frases sin progreso y el nivel CEFR B1 guardado
+            val practice = FakePracticeRepository()
+            val catalog = loaded(
+                *(1..6).map { aCatalogPhrase(id = "phrase-$it", level = CefrLevel.B1) }.toTypedArray(),
+            )
+            val settings = UserSettings.DEFAULT.copy(cefrLevel = CefrLevel.B1)
 
-        // When
-        val result = useCase(practice, catalog).invoke()
+            // When
+            val result = useCase(practice, catalog, settings).invoke()
 
-        // Then
-        val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
-        available.batchProgress shouldBe null
-        available.byLevel[Level(0)] shouldBe 6
-    }
+            // Then
+            val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
+            available.totalAvailable shouldBe 6
+            available.cefrLevel shouldBe CefrLevel.B1
+            available.byLevel[Level(0)] shouldBe 6
+        }
 
     // Scenario: Catálogo ilegible al abrir el progreso (spec: progress-overview)
     @Test

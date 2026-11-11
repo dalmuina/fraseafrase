@@ -10,9 +10,10 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import javax.inject.Inject
 
 /**
- * Lee el resumen de progreso (ADR-0012): certificadas de la tanda activa y total de frases por
- * nivel del nivel CEFR vigente en ajustes. Combina [CatalogRepository.phrases], [PracticeRepository.read]
- * y [ObtainUserSettings]; no modifica ninguno de los tres.
+ * Lee el resumen de progreso (ADR-0018): el total disponible de frases del catálogo del nivel CEFR
+ * vigente, ese mismo nivel CEFR y el total por nivel de consolidación; ninguno de los tres depende
+ * de si hay tanda activa. Combina [CatalogRepository.phrases], [PracticeRepository.read] y
+ * [ObtainUserSettings]; no modifica ninguno de los tres.
  */
 class ObtainProgressOverview @Inject constructor(
     private val catalogRepository: CatalogRepository,
@@ -29,12 +30,11 @@ class ObtainProgressOverview @Inject constructor(
         val snapshot = practiceRepository.read()
         val settings = obtainUserSettings()
         val phrasesAtCefrLevel = loaded.phrases.filter { it.level == settings.cefrLevel }
-        val batchProgress = snapshot.batch()?.let { batch ->
-            BatchProgress(certified = batch.entries.count { it.isCertified }, total = batch.entries.size)
-        }
+        val byLevel = byLevel(phrasesAtCefrLevel, snapshot)
         return ProgressOverviewResult.Available(
-            batchProgress = batchProgress,
-            byLevel = byLevel(phrasesAtCefrLevel, snapshot),
+            totalAvailable = byLevel.values.sum(),
+            cefrLevel = settings.cefrLevel,
+            byLevel = byLevel,
         )
     }
 

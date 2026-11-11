@@ -13,6 +13,7 @@ import javax.inject.Inject
 class ObtainPracticeSession @Inject constructor(
     private val obtainActiveBatch: ObtainActiveBatch,
     private val catalogRepository: CatalogRepository,
+    private val practiceRepository: PracticeRepository,
 ) {
 
     suspend operator fun invoke(): PracticeSessionResult = when (val active = obtainActiveBatch()) {
@@ -32,6 +33,7 @@ class ObtainPracticeSession @Inject constructor(
                     PracticeSessionResult.Ready(
                         items = practiceItems,
                         isComplete = batch.entries.all { it.answeredInBatch },
+                        batchOutcome = practiceRepository.read().batchOutcome,
                     )
                 }
             }

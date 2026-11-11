@@ -23,18 +23,30 @@ class AnswerPhrase @Inject constructor(
             val answeredBatch = batch.answer(id, assessment, snapshot.sessionCount)
             val progressBefore = batch.entries.first { it.id == id }
             val resultingLevel = answeredBatch.entries.first { it.id == id }.level
-            val outcome = AnswerOutcome(resultingLevel, UndoableAnswer(id, progressBefore))
-            PracticeChange(snapshot.storing(answeredBatch), outcome)
+            val leveledUp = resultingLevel.value > progressBefore.level.value
+            val outcome = AnswerOutcome(
+                resultingLevel,
+                UndoableAnswer(id, progressBefore, assessment, leveledUp),
+            )
+            val updatedSnapshot = snapshot.storing(answeredBatch)
+                .copy(batchOutcome = snapshot.batchOutcome.record(assessment, leveledUp))
+            PracticeChange(updatedSnapshot, outcome)
         }
     }
 }
 
 /**
- * Lo necesario para revertir una autoevaluación con [RevertLastAnswer]: la frase afectada y su
- * [PhraseProgress] inmediatamente antes de autoevaluarla (design D1). Nunca se persiste: vive solo en
+ * Lo necesario para revertir una autoevaluación con [RevertLastAnswer]: la frase afectada, su
+ * [PhraseProgress] inmediatamente antes de autoevaluarla (design D1), la [assessment] registrada y si
+ * [leveledUp] contó como subida en el [BatchOutcome] de la tanda. Nunca se persiste: vive solo en
  * memoria mientras sigue siendo la autoevaluación más reciente de la tanda.
  */
-data class UndoableAnswer(val phraseId: PhraseId, val progressBefore: PhraseProgress)
+data class UndoableAnswer(
+    val phraseId: PhraseId,
+    val progressBefore: PhraseProgress,
+    val assessment: SelfAssessment,
+    val leveledUp: Boolean,
+)
 
 /** Resultado de [AnswerPhrase]: el [Level] resultante de la frase respondida y su [UndoableAnswer]. */
 data class AnswerOutcome(val resultingLevel: Level, val undo: UndoableAnswer)

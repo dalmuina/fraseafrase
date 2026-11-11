@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.data.practice
 
+import com.dalmuina.fraseafrase.core.domain.practice.BatchOutcome
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
@@ -26,3 +27,6 @@ internal fun PhraseProgress.toEntity(batchPosition: Int?): PhraseProgressEntity 
     )
 
 internal fun ActiveBatchEntity.capacity(): BatchSize = BatchSize(capacity)
+
+internal fun ActiveBatchEntity.toBatchOutcome(): BatchOutcome =
+    BatchOutcome(hits = hits, misses = misses, levelUps = levelUps)

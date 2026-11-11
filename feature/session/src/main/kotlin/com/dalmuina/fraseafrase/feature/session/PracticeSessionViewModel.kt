@@ -176,6 +176,9 @@ class PracticeSessionViewModel @Inject constructor(
                     remainingHitsForNextLevel = current.remainingHitsForNextLevel(),
                     nextLevelBadgeLabel = current.nextLevelBadgeLabel(),
                     canRevertLastAnswer = pendingUndo != null,
+                    hits = session.batchOutcome.hits,
+                    misses = session.batchOutcome.misses,
+                    levelUps = session.batchOutcome.levelUps,
                 )
             }
             PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
@@ -214,6 +217,9 @@ class PracticeSessionViewModel @Inject constructor(
                     nextLevelBadgeLabel = current.nextLevelBadgeLabel(),
                     badgeChange = null,
                     canRevertLastAnswer = false,
+                    hits = session.batchOutcome.hits,
+                    misses = session.batchOutcome.misses,
+                    levelUps = session.batchOutcome.levelUps,
                 )
             }
         }

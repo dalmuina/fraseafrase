@@ -134,4 +134,26 @@ class ObtainActiveBatchTest {
             result.shouldBeInstanceOf<ActiveBatchResult.Created>()
             result.batch.entries.map { it.id.value } shouldContain "P"
         }
+
+    // Scenario: Generar sesión reinicia el desglose para la tanda siguiente (spec: practice-session), aplicado
+    // también a componer la tanda sin una activa (ObtainActiveBatch comparte `composeNextBatchInto`)
+    @Test
+    fun `given a stale batch outcome with no active batch when composing the next batch then it resets to zero`() =
+        runTest {
+            // Given: sin tanda activa, pero con un desglose no reiniciado de una tanda anterior
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = emptyList(),
+                    activeBatch = null,
+                    sessionCount = 0,
+                    batchOutcome = BatchOutcome(hits = 3, misses = 2, levelUps = 1),
+                ),
+            )
+
+            // When
+            useCase(practice, a1Catalog(15)).invoke()
+
+            // Then
+            practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
+        }
 }

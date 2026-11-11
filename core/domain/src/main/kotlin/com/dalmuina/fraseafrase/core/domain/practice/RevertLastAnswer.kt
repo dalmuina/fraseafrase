@@ -18,7 +18,9 @@ class RevertLastAnswer @Inject constructor(
         practiceRepository.transact { snapshot ->
             val batch = requireNotNull(snapshot.batch()) { "There is no active batch to revert" }
             val revertedBatch = batch.revertLastAnswer(undo.phraseId, undo.progressBefore)
-            PracticeChange(snapshot.storing(revertedBatch), Unit)
+            val updatedSnapshot = snapshot.storing(revertedBatch)
+                .copy(batchOutcome = snapshot.batchOutcome.revert(undo.assessment, undo.leveledUp))
+            PracticeChange(updatedSnapshot, Unit)
         }
     }
 }

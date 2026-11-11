@@ -55,7 +55,10 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
     ) { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
         when (selectedDestination) {
-            BottomDestination.Practice -> PracticeSessionRoute(modifier = contentModifier)
+            BottomDestination.Practice -> PracticeSessionRoute(
+                modifier = contentModifier,
+                onNavigateToProgress = { selectedDestination = BottomDestination.Progress },
+            )
             BottomDestination.Progress -> ProgressRoute(modifier = contentModifier)
             BottomDestination.Settings ->
                 SettingsRoute(
