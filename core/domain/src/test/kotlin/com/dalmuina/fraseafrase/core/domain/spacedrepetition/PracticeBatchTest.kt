@@ -120,6 +120,36 @@ class PracticeBatchTest {
         }
     }
 
+    // Scenario: Revertir un acierto devuelve la frase a su posición original (spec: practice-batch)
+    @Test
+    fun `given a batch of A B C where A was answered then reverting A restores the order A B C`() {
+        // Given
+        val batch = batchOf("A", "B", "C")
+        val answered = batch.answer(PhraseId("A"), SelfAssessment.HIT, currentSession)
+        val progressBefore = batch.entries.first { it.id == PhraseId("A") }
+
+        // When
+        val reverted = answered.revertLastAnswer(PhraseId("A"), progressBefore)
+
+        // Then
+        reverted.entries.map { it.id } shouldContainExactly listOf(PhraseId("A"), PhraseId("B"), PhraseId("C"))
+    }
+
+    // Scenario: No se puede revertir la posición tras una segunda autoevaluación (spec: practice-batch)
+    @Test
+    fun `given a batch where B was answered after A then reverting A throws IllegalArgumentException`() {
+        // Given
+        val batch = batchOf("A", "B", "C")
+        val afterA = batch.answer(PhraseId("A"), SelfAssessment.HIT, currentSession)
+        val afterB = afterA.answer(PhraseId("B"), SelfAssessment.HIT, currentSession)
+        val progressBeforeA = batch.entries.first { it.id == PhraseId("A") }
+
+        // When / Then
+        shouldThrow<IllegalArgumentException> {
+            afterB.revertLastAnswer(PhraseId("A"), progressBeforeA)
+        }
+    }
+
     // Scenario: Tamaño de tanda N (spec: Tanda activa conserva su tamaño al cambiar N)
     @Test
     fun `given a batch of 30 entries when answering then the capacity stays 30`() {

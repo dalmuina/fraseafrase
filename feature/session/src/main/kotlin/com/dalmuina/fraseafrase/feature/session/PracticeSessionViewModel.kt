@@ -87,7 +87,7 @@ class PracticeSessionViewModel @Inject constructor(
             _uiState.value = state.copy(busy = true)
             val levelBefore = state.current.level
             viewModelScope.launch {
-                val levelAfter = answerPhrase(state.current.id, assessment)
+                val levelAfter = answerPhrase(state.current.id, assessment).resultingLevel
                 val badgeChange = badgeChangeFor(levelBefore, levelAfter)
                 if (badgeChange != null) {
                     // Con cambio de nivel, la frase respondida sigue en pantalla con `busy` ya en `true`: el avance

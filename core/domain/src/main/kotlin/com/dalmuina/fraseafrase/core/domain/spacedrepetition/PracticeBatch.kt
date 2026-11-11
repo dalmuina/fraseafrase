@@ -30,4 +30,17 @@ data class PracticeBatch(
         val answered = entries.first { it.id == id }.record(assessment, currentSession)
         return copy(entries = entries.filterNot { it.id == id } + answered)
     }
+
+    /**
+     * Revierte la autoevaluación más reciente de toda la tanda, que siempre deja a la frase respondida en la última
+     * posición ([answer]). Exige que la última entrada sea [expectedId]: revertir cualquier otra es un error de
+     * programación, porque ya no es la autoevaluación más reciente. Devuelve [progressBefore] a la posición que
+     * ocupaba antes, delante del resto de entradas, sin alterar su orden relativo.
+     */
+    fun revertLastAnswer(expectedId: PhraseId, progressBefore: PhraseProgress): PracticeBatch {
+        require(entries.last().id == expectedId) {
+            "Phrase ${expectedId.value} is not the most recent answer in the batch"
+        }
+        return copy(entries = listOf(progressBefore) + entries.dropLast(1))
+    }
 }

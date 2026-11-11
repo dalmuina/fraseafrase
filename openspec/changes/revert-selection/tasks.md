@@ -2,44 +2,44 @@
 
 ## 1. Dominio: value object y caso de uso para revertir (`:core:domain`)
 
-- [ ] 1.1 Test: `PracticeBatchTest` - dada una tanda A, B, C donde A se autoevaluó (orden B, C, A),
+- [x] 1.1 Test: `PracticeBatchTest` - dada una tanda A, B, C donde A se autoevaluó (orden B, C, A),
   `revertLastAnswer(PhraseId("A"), progressBefore)` devuelve la tanda en el orden A, B, C con el
   `progressBefore` de A restaurado (spec: practice-batch, "Revertir un acierto devuelve la frase a
   su posición original"). Ejecutar y comprobar que falla porque `revertLastAnswer` no existe
   todavía.
-- [ ] 1.2 Implementar `PracticeBatch.revertLastAnswer(expectedId: PhraseId, progressBefore:
+- [x] 1.2 Implementar `PracticeBatch.revertLastAnswer(expectedId: PhraseId, progressBefore:
   PhraseProgress): PracticeBatch`: exige `entries.last().id == expectedId` (si no,
   `IllegalArgumentException`, spec: practice-batch "No se puede revertir la posición tras una
   segunda autoevaluación") y antepone `progressBefore` al resto de `entries` sin la última posición.
   Verificar: pasa 1.1 y el test de la invariante.
-- [ ] 1.3 Test: añadir a `PracticeBatchTest` el caso en que B se autoevaluó después de A y se pide
+- [x] 1.3 Test: añadir a `PracticeBatchTest` el caso en que B se autoevaluó después de A y se pide
   revertir A - debe lanzar `IllegalArgumentException` (mismo escenario que 1.2, cubre también el
   caso simétrico de `spaced-repetition`, "Solo la autoevaluación más reciente..."). Verificar: pasa
   en verde con 1.2 ya implementado.
-- [ ] 1.4 Andamiaje sin lógica (no es una excepción a rojo→verde: solo declara los tipos que 1.5
+- [x] 1.4 Andamiaje sin lógica (no es una excepción a rojo→verde: solo declara los tipos que 1.5
   necesita para compilar): crear `UndoableAnswer(val phraseId: PhraseId, val progressBefore:
   PhraseProgress)` y `AnswerOutcome(val resultingLevel: Level, val undo: UndoableAnswer)` en
   `core/domain/.../practice/AnswerPhrase.kt` (o fichero propio en el mismo paquete).
-- [ ] 1.5 Test: actualizar `AnswerPhraseTest` para que cada aserción sobre el nivel devuelto use
+- [x] 1.5 Test: actualizar `AnswerPhraseTest` para que cada aserción sobre el nivel devuelto use
   `result.resultingLevel` en vez de `result` (p. ej. `given a hit that certifies the phrase...`,
   `given a miss on a phrase with level 1 or higher...`), y añadir un test nuevo: dada una frase de
   nivel 3 racha 1 `dueAtSession` 5 en sesión 10 que falla, `AnswerPhrase` devuelve en `undo` el
   `phraseId` de la frase y su `progressBefore` con nivel 3, racha 1 y `dueAtSession` 5 (spec:
   spaced-repetition, "Revertir un fallo restaura el nivel, la racha y el vencimiento anteriores").
   Ejecutar y comprobar que el test nuevo falla porque `AnswerPhrase` todavía devuelve solo `Level`.
-- [ ] 1.6 Cambiar `AnswerPhrase.invoke` para devolver `AnswerOutcome`, capturando el `PhraseProgress`
+- [x] 1.6 Cambiar `AnswerPhrase.invoke` para devolver `AnswerOutcome`, capturando el `PhraseProgress`
   de la frase antes de llamar a `batch.answer(...)`. Verificar: `AnswerPhraseTest` en verde.
-- [ ] 1.7 Test: `RevertLastAnswerTest` (archivo nuevo) - dado un `UndoableAnswer` de una frase que
+- [x] 1.7 Test: `RevertLastAnswerTest` (archivo nuevo) - dado un `UndoableAnswer` de una frase que
   está en la última posición de la tanda activa, `RevertLastAnswer` restaura su nivel, racha y
   `dueAtSession` y la devuelve a la primera posición (spec: spaced-repetition, "Revertir un acierto
   que certificó restaura el nivel y la racha anteriores"; spec: practice-batch, "Revertir un acierto
   devuelve la frase a su posición original"). Ejecutar y comprobar que falla porque la clase no
   existe.
-- [ ] 1.8 Implementar `RevertLastAnswer` (`@Inject constructor(private val practiceRepository:
+- [x] 1.8 Implementar `RevertLastAnswer` (`@Inject constructor(private val practiceRepository:
   PracticeRepository)`, `suspend operator fun invoke(undo: UndoableAnswer)`): `transact` sobre el
   snapshot, llama a `batch.revertLastAnswer(undo.phraseId, undo.progressBefore)` y persiste con
   `snapshot.storing(...)`. Verificar: 1.7 en verde.
-- [ ] 1.9 Test: añadir a `RevertLastAnswerTest` el caso en que la frase a revertir ya no está en la
+- [x] 1.9 Test: añadir a `RevertLastAnswerTest` el caso en que la frase a revertir ya no está en la
   última posición (porque se autoevaluó otra después) - debe lanzar `IllegalArgumentException`
   (spec: spaced-repetition, "La reversión no se acumula"). Verificar: pasa en verde con 1.8 ya
   implementado.

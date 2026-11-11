@@ -110,7 +110,7 @@ class AnswerPhraseTest {
         val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
 
         // Then
-        result shouldBe Level(1)
+        result.resultingLevel shouldBe Level(1)
     }
 
     @Test
@@ -129,7 +129,7 @@ class AnswerPhraseTest {
         val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
 
         // Then
-        result shouldBe Level(2)
+        result.resultingLevel shouldBe Level(2)
     }
 
     @Test
@@ -149,7 +149,7 @@ class AnswerPhraseTest {
             val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
 
             // Then
-            result shouldBe Level(1)
+            result.resultingLevel shouldBe Level(1)
         }
 
     @Test
@@ -168,7 +168,7 @@ class AnswerPhraseTest {
         val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
 
         // Then
-        result shouldBe Level(0)
+        result.resultingLevel shouldBe Level(0)
     }
 
     // Scenario: Certificar de nuevo en nivel máximo se mantiene en 5 (ADR-0015)
@@ -188,6 +188,28 @@ class AnswerPhraseTest {
         val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
 
         // Then
-        result shouldBe Level(5)
+        result.resultingLevel shouldBe Level(5)
     }
+
+    // Scenario: Revertir un fallo restaura el nivel, la racha y el vencimiento anteriores (spec: spaced-repetition)
+    @Test
+    fun `given a miss on a level 3 phrase when answering then undo exposes the progress before the miss`() =
+        runTest {
+            // Given: nivel 3, racha 1, dueAtSession 5, sesión actual 10
+            val progress = aPhraseProgress(id = "A", level = Level(3), streak = Streak(1), dueAtSession = 5)
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(progress, aPhraseProgress(id = "B")),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A"), PhraseId("B")), capacity = BatchSize(10)),
+                    sessionCount = 10,
+                ),
+            )
+
+            // When
+            val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
+
+            // Then
+            result.undo.phraseId shouldBe PhraseId("A")
+            result.undo.progressBefore shouldBe progress
+        }
 }
