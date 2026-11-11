@@ -40,12 +40,12 @@
 
 ## 2. Dominio - corrección de `progress-overview`
 
-- [ ] 2.1 Test: `ObtainProgressOverview` devuelve el total disponible del nivel CEFR vigente y ese
+- [x] 2.1 Test: `ObtainProgressOverview` devuelve el total disponible del nivel CEFR vigente y ese
       nivel CEFR, sin depender de si hay tanda activa. Verificar: test falla antes del cambio
       (comprueba la forma antigua `BatchProgress`), pasa después; cubre el escenario "Sin tanda
       activa muestra el total disponible, el nivel CEFR y el total por nivel" de `progress-overview`
       (spec ya vigente, sin delta en este cambio).
-- [ ] 2.2 Sustituir `ProgressOverviewResult.Available.batchProgress` por el total disponible + nivel
+- [x] 2.2 Sustituir `ProgressOverviewResult.Available.batchProgress` por el total disponible + nivel
       CEFR vigente, y actualizar `ObtainProgressOverview` para calcularlo a partir de `byLevel`.
       Verificar: test de 2.1 en verde; tests existentes de `ObtainProgressOverview` actualizados y en
       verde.
