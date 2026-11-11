@@ -24,7 +24,9 @@ Si el handoff y el repositorio no coinciden, para y explica la discrepancia.
 8. Sugerencias del reviewer que afectan a spec o design: aplicarlas.
 9. Revisión limpia y verify sin ejecutar: /opsx:verify.
 10. Verify correcto: tareas de cierre (líneas de estado de los ADR si las hay), /opsx:archive y openspec validate --specs. Antes de archivar, muestra un resumen y pide confirmación. El commit final de archive (`docs(openspec): archive ... and sync specs`) dispara push + apertura de PR a develop automáticamente (hook `post-archive-pr.sh`).
-11. PR ya abierta por el hook: paso del usuario, comprobar la CI y hacer merge.
+11. PR ya abierta por el hook: paso del usuario, comprobar la CI y hacer merge. Resetea `.claude/handoff.md`
+    a la plantilla mínima de CLAUDE.md (sección "Contexto y sesiones"): no queda cambio activo ni
+    histórico del cambio recién cerrado, solo una referencia de una línea a él.
 
 ## 2b. Presupuesto de revisión
 Aplica el apartado "Presupuesto de revisión" de CLAUDE.md: solo un bloqueante (comportamiento incorrecto, escenario sin test, contradicción entre artefactos, pérdida de datos, cierre de la app o seguridad) detiene el avance; los hallazgos "Corregir" se arreglan en una pasada sin nueva revisión; "Descartar" no se hace; máximo dos rondas por fase; el cambio ligero lleva una ronda de android-architect y una de code-reviewer; y el presupuesto va en el prompt de cada subagente de revisión.
