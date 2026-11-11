@@ -23,7 +23,11 @@ sealed interface PracticeSessionUiState {
      * o ya se consumió (spec: add-level-change-animation, design D2). [canRevertLastAnswer] indica si hay una
      * autoevaluación reciente que se puede revertir con [PracticeSessionAction.RevertLastAnswer]: es `false`
      * antes de la primera autoevaluación, mientras se registra una autoevaluación nueva (`busy`) o mientras se
-     * anima un cambio de insignia (spec: revert-selection, design D3/D4).
+     * anima un cambio de insignia (spec: revert-selection, design D3/D4). [hits], [misses] y [levelUps] son el
+     * desglose acumulado de la tanda activa (`BatchOutcome` del dominio): cuántas autoevaluaciones fueron
+     * acierto, cuántas fallo y cuántas frases subieron de nivel de consolidación en algún momento de la tanda.
+     * El mensaje de tanda completada los muestra mientras [completed] es `true` (spec: practice-session, "El
+     * mensaje muestra el desglose de aciertos, fallos y subidas de nivel").
      */
     data class Practicing(
         val current: PracticeItem,
@@ -36,6 +40,9 @@ sealed interface PracticeSessionUiState {
         val nextLevelBadgeLabel: String,
         val badgeChange: BadgeChange? = null,
         val canRevertLastAnswer: Boolean = false,
+        val hits: Int = 0,
+        val misses: Int = 0,
+        val levelUps: Int = 0,
     ) : PracticeSessionUiState
 
     /** No hay frases para practicar (ADR-0012). */

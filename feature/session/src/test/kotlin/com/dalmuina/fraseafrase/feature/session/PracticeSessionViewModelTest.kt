@@ -348,6 +348,46 @@ class PracticeSessionViewModelTest {
             viewModel.practicing().completed shouldBe true
         }
 
+    // Scenario: El mensaje muestra el desglose de aciertos, fallos y subidas de nivel (spec: practice-session)
+    @Test
+    fun `given two hits one miss and one level up when the batch completes then the outcome breakdown is shown`() =
+        runTest {
+            // Given: tanda A, B y C; C de nivel 2 y racha 2, así que un acierto la certifica a nivel 3
+            val practice = FakePracticeRepository(
+                activeBatchSnapshot(
+                    order = listOf("A", "B", "C"),
+                    progress = listOf(
+                        aPhraseProgress(id = "A"),
+                        aPhraseProgress(id = "B"),
+                        aPhraseProgress(id = "C", level = Level(2), streak = Streak(2)),
+                    ),
+                ),
+            )
+            val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"))
+            advanceUntilIdle()
+
+            // When: A acierta sin subir de nivel, B falla y C acierta subiendo de nivel 2 a nivel 3
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
+            advanceUntilIdle()
+            viewModel.onAction(PracticeSessionAction.Reveal)
+            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+            advanceUntilIdle()
+            // C certifica: la pantalla anima el cambio de insignia antes de completar la tanda (design D1 de
+            // `new-badge-animation`), así que hay que consumirlo para que `reload()` recalcule `completed`.
+            viewModel.onAction(PracticeSessionAction.ConsumeBadgeChange)
+            advanceUntilIdle()
+
+            // Then: la tanda está completa y el mensaje muestra 2 aciertos, 1 fallo y 1 subida de nivel
+            viewModel.practicing().completed shouldBe true
+            viewModel.practicing().hits shouldBe 2
+            viewModel.practicing().misses shouldBe 1
+            viewModel.practicing().levelUps shouldBe 1
+        }
+
     // Scenario: Una respuesta en curso ignora la petición de generar sesión (spec: practice-session)
     @Test
     fun `given a response being registered when GenerateSession is dispatched then the batch does not change`() =

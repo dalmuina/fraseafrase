@@ -312,6 +312,23 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithTag("listen_icon", useUnmergedTree = true).assertIsDisplayed()
     }
 
+    // Scenario: El control de escuchar muestra un icono de audio (spec: phrase-audio) - reestilizado: el control
+    // se mueve a la cabecera de la tarjeta, junto a las pastillas de nivel CEFR e insignia de rango (design -
+    // redesign-app-ui), icono y etiqueta siguen visibles
+    @Test
+    fun givenRevealedPhrase_whenScreenShown_thenListenPillIsAtTheSameHeightAsTheCefrPill() {
+        // Given: la pantalla muestra una frase de nivel CEFR B1 revelada
+        setScreen(practicing(current = item(cefrLevel = CefrLevel.B1), revealed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el control de escuchar (icono + "Escuchar") queda en la cabecera, a la misma altura que la
+        // pastilla del nivel CEFR, no debajo de la traducción
+        val cefrTop = composeTestRule.onNodeWithText("B1").getUnclippedBoundsInRoot().top
+        val listenTop = composeTestRule.onNodeWithText("Escuchar").getUnclippedBoundsInRoot().top
+        assertTrue(abs((listenTop - cefrTop).value) <= ROW_ALIGNMENT_TOLERANCE_DP)
+    }
+
     // Scenario: Contador visible tras un acierto (spec: practice-session)
     @Test
     fun givenPhraseWithStreak1WhenShowingItThenTheRemainingHitsCounterIsDisplayed() {
@@ -390,8 +407,8 @@ class PracticeSessionScreenTest {
         // When: la pantalla se muestra (estado dado)
 
         // Then: se muestra el mensaje positivo con la opción de generar sesión, no la frase
-        composeTestRule.onNodeWithText("¡Has completado la tanda!").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Generar sesión").assertIsDisplayed()
+        composeTestRule.onNodeWithText("¡Has completado la sesión!").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Generar sesión nueva").assertIsDisplayed()
         composeTestRule.onNodeWithText("Buenos días").assertDoesNotExist()
     }
 
@@ -410,10 +427,52 @@ class PracticeSessionScreenTest {
         }
 
         // When: el usuario pide generar sesión
-        composeTestRule.onNodeWithText("Generar sesión").performClick()
+        composeTestRule.onNodeWithText("Generar sesión nueva").performClick()
 
         // Then: se despacha GenerateSession
         assertTrue(receivedAction == PracticeSessionAction.GenerateSession)
+    }
+
+    // Scenario: El mensaje muestra el desglose de aciertos, fallos y subidas de nivel (spec: practice-session)
+    @Test
+    fun givenCompletedBatchWithOutcome_whenShowingTheScreen_thenTheBreakdownStatTilesAndSuccessIconAreDisplayed() {
+        // Given: la tanda completada con 3 aciertos, 2 fallos y 1 subida de nivel
+        setScreen(practicing(current = item(), completed = true).copy(hits = 3, misses = 2, levelUps = 1))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: se muestran el icono de éxito y las tres tarjetas de estadística con sus valores y etiquetas
+        composeTestRule.onNodeWithTag("practice_completed_success_icon").assertIsDisplayed()
+        composeTestRule.onNodeWithText("3").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Aciertos").assertIsDisplayed()
+        composeTestRule.onNodeWithText("2").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fallos").assertIsDisplayed()
+        composeTestRule.onNodeWithText("1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Suben de rango").assertIsDisplayed()
+    }
+
+    // Scenario: El mensaje ofrece ir a Progreso sin generar sesión (spec: practice-session)
+    @Test
+    fun givenCompletedBatchWhenActivatingViewProgressLinkThenOnNavigateToProgressIsInvokedWithoutGeneratingSession() {
+        // Given: la pantalla muestra el mensaje de tanda completada
+        var receivedAction: PracticeSessionAction? = null
+        var navigatedToProgress = false
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = practicing(current = item(), completed = true),
+                    onAction = { action -> receivedAction = action },
+                    onNavigateToProgress = { navigatedToProgress = true },
+                )
+            }
+        }
+
+        // When: el usuario activa el enlace a Progreso
+        composeTestRule.onNodeWithText("Ver mi progreso").performClick()
+
+        // Then: se navega a Progreso sin despachar ninguna acción de generar sesión ni cambiar la tanda activa
+        assertTrue(navigatedToProgress)
+        assertTrue(receivedAction == null)
     }
 
     // Scenario: Estado vacío sin frases disponibles (spec: practice-session)
@@ -438,7 +497,7 @@ class PracticeSessionScreenTest {
         // When: la pantalla muestra el estado con la respuesta en curso (estado dado)
 
         // Then: el botón de generar sesión está deshabilitado
-        composeTestRule.onNodeWithText("Generar sesión").assertIsNotEnabled()
+        composeTestRule.onNodeWithText("Generar sesión nueva").assertIsNotEnabled()
     }
 
     // Scenario: Posición en la tanda visible (spec: practice-session), cabecera fija (design D1,

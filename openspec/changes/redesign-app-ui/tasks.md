@@ -94,29 +94,29 @@
 
 ## 6. Presentación - `feature:session`
 
-- [ ] 6.1 Test: `PracticeSessionUiState.Completed` (o equivalente) expone aciertos, fallos y subidas
+- [x] 6.1 Test: `PracticeSessionUiState.Completed` (o equivalente) expone aciertos, fallos y subidas
       de rango del `BatchOutcome` recibido del dominio. Verificar: test de ViewModel con
       `MainDispatcherExtension` + Turbine falla antes del cambio, pasa después; cubre "El mensaje
       muestra el desglose de aciertos, fallos y subidas de nivel".
-- [ ] 6.2 Ampliar `PracticeSessionUiState`/`PracticeSessionViewModel` para exponer el desglose desde
+- [x] 6.2 Ampliar `PracticeSessionUiState`/`PracticeSessionViewModel` para exponer el desglose desde
       el `BatchOutcome` del caso de uso. Verificar: test de 6.1 en verde.
-- [ ] 6.3 Test de Compose UI: la pantalla de sesión completada muestra tres `DsStatTile`
+- [x] 6.3 Test de Compose UI: la pantalla de sesión completada muestra tres `DsStatTile`
       (aciertos/fallos/subidas) y un icono de éxito. Verificar: test falla antes de construir la
       pantalla, pasa después; cubre el mismo escenario que 6.1 a nivel de UI.
-- [ ] 6.4 Reemplazar `CompletedMessage` por la pantalla de sesión completada del mock (icono de
+- [x] 6.4 Reemplazar `CompletedMessage` por la pantalla de sesión completada del mock (icono de
       éxito, tres `DsStatTile`, botón "Generar sesión nueva", enlace "Ver mi progreso"), con los
       tokens de `AppTheme` del grupo 4. Verificar: test de 6.3 en verde.
-- [ ] 6.5 Test de Compose UI: activar el enlace "Ver mi progreso" navega a Progreso sin generar
+- [x] 6.5 Test de Compose UI: activar el enlace "Ver mi progreso" navega a Progreso sin generar
       sesión ni cambiar la tanda activa. Verificar: test falla antes de conectar el enlace, pasa
       después; cubre el escenario "El mensaje ofrece ir a Progreso sin generar sesión".
-- [ ] 6.6 Conectar el enlace "Ver mi progreso" a la navegación del destino Progreso ya existente en
+- [x] 6.6 Conectar el enlace "Ver mi progreso" a la navegación del destino Progreso ya existente en
       `:app`. Verificar: test de 6.5 en verde.
-- [ ] 6.7 Test de Compose UI: la cabecera de `PhraseCard` muestra el nivel CEFR y la insignia de rango
+- [x] 6.7 Test de Compose UI: la cabecera de `PhraseCard` muestra el nivel CEFR y la insignia de rango
       como pastillas, y el control de escuchar muestra icono y una etiqueta de texto visible en la
       cabecera cuando la frase está revelada. Verificar: test falla antes de mover el control, pasa
       después; confirma que `phrase-audio` sigue cumpliéndose (icono + texto visibles) tal como
       exige su spec, sin delta.
-- [ ] 6.8 Reestilizar `PracticeSessionScreen`/`PhraseCard`/`RevertLastAnswerButton` con los tokens y
+- [x] 6.8 Reestilizar `PracticeSessionScreen`/`PhraseCard`/`RevertLastAnswerButton` con los tokens y
       componentes de los grupos 4 y 5 (pastillas de cabecera, `DsProgressBar` en el indicador de
       posición, color del botón de revertir), sin tocar la lógica de revelar/autoevaluar/revertir ya
       cubierta por tests existentes. Verificar: test de 6.7 en verde; tests de Compose UI existentes
