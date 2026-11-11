@@ -82,6 +82,27 @@ private fun PracticeSessionScreenRevealedPreview() {
 
 @PreviewLightDark
 @Composable
+private fun PracticeSessionScreenRevertAvailablePreview() {
+    AppTheme {
+        PracticeSessionScreen(
+            uiState = PracticeSessionUiState.Practicing(
+                current = newItem,
+                revealed = false,
+                busy = false,
+                completed = false,
+                index = 2,
+                total = 2,
+                remainingHitsForNextLevel = 3,
+                nextLevelBadgeLabel = "Bronce",
+                canRevertLastAnswer = true,
+            ),
+            onAction = {},
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
 private fun PracticeSessionScreenCompletedPreview() {
     AppTheme {
         PracticeSessionScreen(

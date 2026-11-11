@@ -65,6 +65,9 @@ class PracticeSessionScreenTest {
          * similar, muy lejos de estar centrados en toda la pantalla.
          */
         private const val ROW_ALIGNMENT_TOLERANCE_DP = 24f
+
+        /** Tag del botón flotante para deshacer la última autoevaluación (spec: revert-selection). */
+        private const val REVERT_LAST_ANSWER_BUTTON_TAG = "practice_revert_last_answer_button"
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -768,6 +771,43 @@ class PracticeSessionScreenTest {
         val indicatorTop = composeTestRule.onNodeWithTag("practice_badge_change_indicator")
             .getUnclippedBoundsInRoot().top
         assertTrue(abs((indicatorTop - cefrLabelTop).value) <= ROW_ALIGNMENT_TOLERANCE_DP)
+    }
+
+    // Scenario: El botón aparece tras autoevaluar (spec: practice-session)
+    @Test
+    fun givenCanRevertLastAnswerTrue_whenScreenShown_thenRevertButtonIsDisplayedAndClickable() {
+        // Given: una tanda activa con una autoevaluación reciente que se puede revertir
+        var receivedAction: PracticeSessionAction? = null
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = practicing(current = item()).copy(canRevertLastAnswer = true),
+                    onAction = { action -> receivedAction = action },
+                )
+            }
+        }
+
+        // When: el usuario pulsa el botón de revertir, en la esquina inferior izquierda
+        composeTestRule.onNodeWithTag(REVERT_LAST_ANSWER_BUTTON_TAG).apply {
+            assertIsDisplayed()
+            performClick()
+        }
+
+        // Then: se despacha RevertLastAnswer
+        assertTrue(receivedAction == PracticeSessionAction.RevertLastAnswer)
+    }
+
+    // Scenario: El botón no aparece antes de la primera autoevaluación / no aparece mientras se registra una
+    // nueva autoevaluación (spec: practice-session)
+    @Test
+    fun givenCanRevertLastAnswerFalse_whenScreenShown_thenRevertButtonDoesNotExist() {
+        // Given: no hay ninguna autoevaluación pendiente de revertir
+        setScreen(practicing(current = item()).copy(canRevertLastAnswer = false))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el botón de revertir no existe en el árbol semántico
+        composeTestRule.onNodeWithTag(REVERT_LAST_ANSWER_BUTTON_TAG).assertDoesNotExist()
     }
 
     /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */

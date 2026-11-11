@@ -118,20 +118,20 @@
 
 ## 3. UI: botón flotante en la pantalla de práctica (`:feature:session`)
 
-- [ ] 3.1 Test instrumentado en `PracticeSessionScreenTest`: con `canRevertLastAnswer = true` en el
+- [x] 3.1 Test instrumentado en `PracticeSessionScreenTest`: con `canRevertLastAnswer = true` en el
   `Practicing` de la previsualización/fake, el botón de revertir es visible y pulsable en la esquina
   inferior izquierda; con `canRevertLastAnswer = false`, no existe en el árbol semántico (spec:
   practice-session, escenarios de aparición y desaparición del botón). Nombrar con el patrón
   `givenX_whenY_thenZ` (ADR-0007). Ejecutar y comprobar que falla porque el botón no existe en
   `PracticeSessionScreen`.
-- [ ] 3.2 Añadir el `FloatingActionButton` de Material 3 en `PracticeSessionScreen`, posicionado en
+- [x] 3.2 Añadir el `FloatingActionButton` de Material 3 en `PracticeSessionScreen`, posicionado en
   la esquina inferior izquierda con `AppTheme.spacing`, visible solo cuando
   `uiState.canRevertLastAnswer` es `true`, que emite `PracticeSessionAction.RevertLastAnswer` al
   pulsarlo. Verificar: 3.1 en verde.
-- [ ] 3.3 Test instrumentado: pulsar el botón dos veces seguidas solo envía una reversión efectiva en
+- [x] 3.3 Test instrumentado: pulsar el botón dos veces seguidas solo envía una reversión efectiva en
   el ViewModel (reutiliza la cobertura de doble toque de la tarea 2.9 a nivel de UI). Verificar junto
   con 3.2.
-- [ ] 3.4 Actualizar `PracticeSessionScreenPreviews.kt` para incluir una previsualización con el
+- [x] 3.4 Actualizar `PracticeSessionScreenPreviews.kt` para incluir una previsualización con el
   botón visible (`canRevertLastAnswer = true`), siguiendo el patrón `@PreviewLightDark` existente.
 
 ## 4. Verificación final

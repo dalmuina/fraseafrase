@@ -11,4 +11,5 @@
     <string name="practice_remaining_hits_for_next_level">Te faltan %1$d aciertos para la insignia %2$s</string>
     <string name="practice_batch_completed">¡Has completado la tanda!</string>
     <string name="practice_generate_session">Generar sesión</string>
+    <string name="practice_revert_last_answer">Deshacer la última autoevaluación</string>
 </resources>
