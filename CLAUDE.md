@@ -21,6 +21,7 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
 
 | Paso | Comando | Subagente |
 |---|---|---|
+| Decidir y ejecutar el siguiente paso | `/next` | – |
 | Alcance poco claro | `/opsx:explore` | – |
 | Proponer el cambio | `/opsx:propose` | – |
 | Revisar propuesta y diseño **antes de aprobar** | – | `android-architect` |
@@ -28,6 +29,9 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
 | Revisar el código | – | `code-reviewer` |
 | Verificar contra la especificación | `/opsx:verify` | – |
 | Cerrar (en la rama del cambio, antes de la PR) | `/opsx:archive` | – |
+
+Normalmente se invoca `/next`, que diagnostica en qué paso de esta tabla está el cambio y lo ejecuta;
+usa los comandos `/opsx:*` sueltos solo cuando ya sabes exactamente en qué paso estás.
 
 Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas de los artefactos: `openspec/config.yaml`.
 
@@ -42,9 +46,10 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 - Al terminar el cambio, en su misma rama y antes de la PR: ejecuta `/opsx:archive` y haz un último commit con el
   archivo del cambio y las specs sincronizadas. El archivo nunca va en una rama aparte ni después de la
   integración en `develop`.
-- Tras ese commit, haz push de la rama actual (`git push -u origin HEAD`) y abre la pull request a `develop`
-  con `gh pr create`, con título y descripción (resumen y plan de pruebas) a partir del cambio de OpenSpec.
-  Después para: el usuario la revisa con la CI y la mergea.
+- Ese commit de archive (`docs(openspec): archive <cambio> and sync specs`) dispara automáticamente el hook
+  `post-archive-pr.sh`: hace push de la rama actual y abre la pull request a `develop` con `gh pr create`
+  (título y descripción a partir del cambio de OpenSpec). No hagas push ni `gh pr create` a mano después de ese
+  commit. Después para: el usuario revisa la PR ya abierta con la CI y la mergea.
 - Los artefactos de OpenSpec se commitean en cuanto el cambio recibe el APROBADO de android-architect, antes de
   `/opsx:apply`, con un commit `docs(openspec): ...` propio. Así no se pierden si se cambia de rama o se limpia el árbol.
 - No crees ramas por iniciativa propia: es el usuario quien las crea. Puedes crear la rama solo si el usuario lo
@@ -152,6 +157,11 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 - `handoff.md` lleva siempre dos campos de estado:
   - **Fase:** `explore` | `propose` | `architect` | `apply grupo N` | `review` | `verify` | `archive` | `pr`.
   - **Veredicto android-architect:** `pendiente` | `APROBADO` + fecha.
+- Cuando un cambio llega a **Fase: `pr`** con la PR ya abierta por el hook y nada pendiente salvo que
+  el usuario mergee, `handoff.md` se resetea a una plantilla mínima (cambio y rama: ninguno activo, con
+  una referencia de una línea al último cambio cerrado; fase: ninguna; veredicto: pendiente; siguiente
+  paso: el usuario decide el próximo cambio; decisiones pendientes: ninguna). No se acumula el histórico
+  de cambios cerrados: ya lo cuentan `git log`, las PRs y `openspec/changes/archive/`.
 - Cada parada termina con una línea de estado de contexto:
   - ✅ Seguro para `/clear`: todo commiteado, `tasks.md` y `handoff.md` al día, nada solo en la conversación.
   - ⚠️ Mejor `/compact`: trabajo a medias o decisión todavía no escrita.
