@@ -2,21 +2,27 @@ package com.dalmuina.fraseafrase.feature.progress
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertRangeInfoEquals
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Rule
 import org.junit.Test
 
@@ -51,17 +57,16 @@ class ProgressScreenTest {
         composeTestRule.onNodeWithText("Nivel actual: B1").assertIsDisplayed()
     }
 
-    // Scenario: tarjeta destacada reestilizada con DsStatTile (design - Corrección de
-    // progress-overview, redesign-app-ui tasks 7.1/7.2). DsStatTile fuerza sus propios colores de
-    // contenedor/contenido (onPrimaryContainer), ya no el onPrimary del Card manual anterior
-    // (design D3, fix-style-pass-two, sustituido por la reutilización del componente compartido).
+    // Scenario: tarjeta destacada reestilizada con DsHeroStat (design D3, fix-redesign-ui-mismatches
+    // tasks 10.3/10.4). DsHeroStat pinta su texto con el color de contenido indicado (onPrimary),
+    // ya no el onPrimaryContainer del DsStatTile centrado anterior.
     @Test
-    fun givenTheFeaturedCard_whenShowingTheScreen_thenItsTextUsesOnPrimaryContainerColor() {
-        // Given: se captura el color onPrimaryContainer esperado del tema actual
+    fun givenTheFeaturedCard_whenShowingTheScreen_thenItsTextUsesOnPrimaryColor() {
+        // Given: se captura el color onPrimary esperado del tema actual
         var expectedColor: Color = Color.Unspecified
         composeTestRule.setContent {
             AppTheme {
-                expectedColor = MaterialTheme.colorScheme.onPrimaryContainer
+                expectedColor = MaterialTheme.colorScheme.onPrimary
                 // When: se muestra la pantalla con un catálogo con frases disponibles
                 ProgressScreen(
                     uiState = ProgressUiState.Content(
@@ -73,7 +78,7 @@ class ProgressScreenTest {
             }
         }
 
-        // Then: el color del texto de la tarjeta destacada coincide con onPrimaryContainer
+        // Then: el color del texto de la tarjeta destacada coincide con onPrimary
         val layoutResults = mutableListOf<TextLayoutResult>()
         composeTestRule.onAllNodesWithText("frases disponibles", substring = true, ignoreCase = true)
             .onFirst()
@@ -85,9 +90,43 @@ class ProgressScreenTest {
         assertEquals(expectedColor, layoutResults.first().layoutInput.style.color)
     }
 
-    // Scenario: Total de frases disponibles y nivel CEFR vigente (spec: progress-overview)
+    // Scenario: la cabecera usa el mismo patrón de título grande que Practicar, sin TopAppBar
+    // (design D7, fix-redesign-ui-mismatches, mismo patrón que 9.3 en SettingsScreenTest)
     @Test
-    fun givenACatalogWithPhrasesAvailable_whenShowingTheScreen_thenTheFeaturedCardUsesDsStatTile() {
+    fun givenACatalogWithPhrasesAvailable_whenShowingTheScreen_thenTitleUsesHeadlineLargeTypography() {
+        // Given: se captura el tamaño de fuente esperado para headlineLarge del tema actual
+        var expectedFontSize: TextUnit = TextUnit.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedFontSize = MaterialTheme.typography.headlineLarge.fontSize
+                // When: se muestra la pantalla con un catálogo con frases disponibles
+                ProgressScreen(
+                    uiState = ProgressUiState.Content(
+                        totalAvailable = 10,
+                        cefrLevel = CefrLevel.B1,
+                        byLevel = allLevels(levelZero = 10),
+                    ),
+                )
+            }
+        }
+
+        // Then: el tamaño de fuente del título "Progreso" coincide con headlineLarge, no con la
+        // tipografía pequeña por defecto de TopAppBar
+        val layoutResults = mutableListOf<TextLayoutResult>()
+        composeTestRule.onNodeWithText("Progreso")
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(layoutResults)
+
+        assertEquals(expectedFontSize, layoutResults.first().layoutInput.style.fontSize)
+    }
+
+    // Scenario: Total de frases disponibles y nivel CEFR vigente, en una tarjeta destacada con
+    // fondo de color propio y texto alineado a la izquierda (spec: progress-overview, design D3,
+    // fix-redesign-ui-mismatches)
+    @Test
+    fun givenACatalogWithPhrasesAvailable_whenShowingTheScreen_thenTheFeaturedCardHasADistinctBackground() {
         // Given/When: la tarjeta destacada muestra 10 frases disponibles y el nivel CEFR B1
         setScreen(
             ProgressUiState.Content(
@@ -97,7 +136,37 @@ class ProgressScreenTest {
             ),
         )
 
-        // Then: la tarjeta destacada se construye con el componente compartido DsStatTile
+        // Then: el valor, la etiqueta y el nivel CEFR vigente comparten el mismo borde izquierdo
+        val valueLeft = composeTestRule.onNodeWithText("10").getUnclippedBoundsInRoot().left
+        val labelLeft = composeTestRule.onNodeWithText("Frases disponibles")
+            .getUnclippedBoundsInRoot().left
+        val secondaryLeft = composeTestRule.onNodeWithText("Nivel actual: B1")
+            .getUnclippedBoundsInRoot().left
+        assertEquals(valueLeft, labelLeft)
+        assertEquals(valueLeft, secondaryLeft)
+
+        // Then: el fondo de la tarjeta destacada es distinto del fondo general de la pantalla
+        val cardPixelMap = composeTestRule.onNodeWithTag("progress_available_tile")
+            .captureToImage()
+            .toPixelMap()
+        val cardColor = cardPixelMap[2, cardPixelMap.height / 2]
+        val screenColor = composeTestRule.onRoot().captureToImage().toPixelMap()[0, 0]
+        assertNotEquals(screenColor, cardColor)
+    }
+
+    // Scenario: Total de frases disponibles y nivel CEFR vigente (spec: progress-overview)
+    @Test
+    fun givenACatalogWithPhrasesAvailable_whenShowingTheScreen_thenTheFeaturedCardIsDisplayed() {
+        // Given/When: la tarjeta destacada muestra 10 frases disponibles y el nivel CEFR B1
+        setScreen(
+            ProgressUiState.Content(
+                totalAvailable = 10,
+                cefrLevel = CefrLevel.B1,
+                byLevel = allLevels(levelZero = 6) + mapOf(Level(2) to 3, Level(5) to 1),
+            ),
+        )
+
+        // Then: la tarjeta destacada se construye con el componente compartido DsHeroStat
         composeTestRule.onNodeWithTag("progress_available_tile").assertIsDisplayed()
     }
 

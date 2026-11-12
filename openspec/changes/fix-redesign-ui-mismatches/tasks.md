@@ -162,17 +162,17 @@
 
 ## 10. Progreso: cabecera de título y tarjeta destacada (punto 4 parte, punto 5)
 
-- [ ] 10.1 Test (`ProgressScreenTest`, `androidTest`): el título "Progreso" se pinta con
+- [x] 10.1 Test (`ProgressScreenTest`, `androidTest`): el título "Progreso" se pinta con
   `MaterialTheme.typography.headlineLarge` dentro del contenido, sin `TopAppBar` (mismo patrón que
   9.3). Verificación: el test falla con la `TopAppBar` actual.
-- [ ] 10.2 Sustituir el `Scaffold(topBar = { TopAppBar(...) })` de `ProgressScreen.kt` por el mismo
+- [x] 10.2 Sustituir el `Scaffold(topBar = { TopAppBar(...) })` de `ProgressScreen.kt` por el mismo
   patrón de título grande (design D7). Verificación: test de 10.1 en verde.
-- [ ] 10.3 Test (`ProgressScreenTest`, `androidTest`): la tarjeta de "Frases disponibles" pinta el
+- [x] 10.3 Test (`ProgressScreenTest`, `androidTest`): la tarjeta de "Frases disponibles" pinta el
   total y el nivel CEFR vigente dentro de un nodo con fondo de color distinto del fondo general de
   la pantalla, con el texto alineado a la izquierda (spec: `progress-overview`, "Total de frases
   disponibles y nivel CEFR vigente"). Verificación: el test falla con el `DsStatTile` centrado
   actual.
-- [ ] 10.4 Sustituir el `DsStatTile(Large)` + `Text` de nivel CEFR en `ContentState` de
+- [x] 10.4 Sustituir el `DsStatTile(Large)` + `Text` de nivel CEFR en `ContentState` de
   `ProgressScreen.kt` por `DsHeroStat`, con color `primary`/`onPrimary` (design D3). Verificación:
   test de 10.3 en verde, `./gradlew :feature:progress:testDebugUnitTest`.
 
