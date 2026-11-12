@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -19,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBanner
+import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBannerSegment
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadgeChange
 import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
@@ -62,13 +65,16 @@ internal fun PhraseCard(
                     onAction = onAction,
                 )
                 Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
-                Text(
-                    text = stringResource(
-                        R.string.practice_remaining_hits_for_next_level,
-                        remainingHitsForNextLevel,
-                        nextLevelBadgeLabel,
+                DsInfoBanner(
+                    icon = Icons.Default.Star,
+                    iconContentDescription = stringResource(R.string.practice_remaining_hits_icon_description),
+                    segments = listOf(
+                        DsInfoBannerSegment(text = stringResource(R.string.practice_remaining_hits_prefix)),
+                        DsInfoBannerSegment(text = remainingHitsForNextLevel.toString(), emphasized = true),
+                        DsInfoBannerSegment(text = stringResource(R.string.practice_remaining_hits_middle)),
+                        DsInfoBannerSegment(text = nextLevelBadgeLabel, emphasized = true),
                     ),
-                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

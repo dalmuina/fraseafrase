@@ -10,6 +10,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -68,6 +69,13 @@ class PracticeSessionScreenTest {
 
         /** Tag del botón flotante para deshacer la última autoevaluación (spec: revert-selection). */
         private const val REVERT_LAST_ANSWER_BUTTON_TAG = "practice_revert_last_answer_button"
+
+        /**
+         * Descripción accesible del icono de insignia de la caja de aciertos para el siguiente nivel
+         * (design D2, fix-redesign-ui-mismatches), igual al valor de
+         * `practice_remaining_hits_icon_description`.
+         */
+        private const val REMAINING_HITS_BADGE_ICON_DESCRIPTION = "Insignia del siguiente nivel"
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -339,6 +347,20 @@ class PracticeSessionScreenTest {
 
         // Then: la pantalla muestra el contador
         composeTestRule.onNodeWithText("Te faltan 2 aciertos para la insignia Bronce").assertIsDisplayed()
+    }
+
+    // Scenario: Aciertos para el próximo nivel visibles (spec: practice-session), con el icono de
+    // insignia visible junto al mensaje (design D2, fix-redesign-ui-mismatches)
+    @Test
+    fun givenPhraseWithStreak1_whenShowingIt_thenRemainingHitsMessageShowsBadgeIcon() {
+        // Given: una frase de nivel 0 con racha 1, le faltan 2 aciertos para la insignia "Bronce"
+        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 2, nextLevelBadgeLabel = "Bronce"))
+
+        // When: la pantalla la muestra (estado dado)
+
+        // Then: el mensaje se muestra junto a un icono de insignia visible
+        composeTestRule.onNodeWithText("Te faltan 2 aciertos para la insignia Bronce").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(REMAINING_HITS_BADGE_ICON_DESCRIPTION).assertIsDisplayed()
     }
 
     // Scenario: Fallo reinicia el contador (spec: practice-session)

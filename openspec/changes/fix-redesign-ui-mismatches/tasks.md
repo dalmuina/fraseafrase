@@ -36,11 +36,11 @@
 
 ## 4. Practicar: caja de "aciertos para el siguiente nivel" (punto 2)
 
-- [ ] 4.1 Test (`PracticeSessionScreenTest`, `androidTest`): el mensaje "Te faltan N aciertos para
+- [x] 4.1 Test (`PracticeSessionScreenTest`, `androidTest`): el mensaje "Te faltan N aciertos para
   subir a X" se muestra dentro de un nodo con el icono de insignia visible (spec:
   `practice-session`, "Aciertos para el próximo nivel visibles"). Verificación: el test falla con
   la implementación actual (`Text` suelto sin icono).
-- [ ] 4.2 Sustituir el `Text` de `PhraseCard` (líneas 65-72 de `PracticeSessionPhraseCard.kt`) por
+- [x] 4.2 Sustituir el `Text` de `PhraseCard` (líneas 65-72 de `PracticeSessionPhraseCard.kt`) por
   `DsInfoBanner`, con el icono de insignia del siguiente nivel y el número de aciertos/nombre de
   insignia en negrita, color `secondaryContainer`. Verificación: test de 4.1 en verde,
   `./gradlew :feature:session:testDebugUnitTest`.
