@@ -640,6 +640,50 @@ class PracticeSessionScreenTest {
         assertTrue(revealWidth >= rootWidth * FULL_WIDTH_RATIO_TOLERANCE)
     }
 
+    // Scenario: Controles de acción siempre visibles y pulsables (spec: practice-session), con icono
+    // junto al texto (design D8, fix-redesign-ui-mismatches)
+    @Test
+    fun givenHiddenState_whenShowingTheScreen_thenRevealButtonShowsIconNextToText() {
+        // Given: la pantalla muestra una frase sin revelar
+        setScreen(practicing(current = item(), revealed = false))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el botón "Mostrar traducción" muestra un icono junto al texto
+        composeTestRule.onNodeWithTag("practice_reveal_icon", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Mostrar traducción").assertIsDisplayed()
+    }
+
+    // Scenario: Controles de acción siempre visibles y pulsables (spec: practice-session), con icono
+    // junto al texto (design D8, fix-redesign-ui-mismatches)
+    @Test
+    fun givenRevealedState_whenShowingTheScreen_thenMissAndHitButtonsShowIconsNextToText() {
+        // Given: la pantalla muestra una frase revelada
+        setScreen(practicing(current = item(), revealed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: los botones "Fallo" y "Acierto" muestran un icono junto al texto
+        composeTestRule.onNodeWithTag("practice_miss_icon", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fallo").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("practice_hit_icon", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Acierto").assertIsDisplayed()
+    }
+
+    // Scenario: Mensaje de tanda completada (spec: practice-session), con icono junto al texto del
+    // botón de generar sesión (design D8, fix-redesign-ui-mismatches)
+    @Test
+    fun givenCompletedBatch_whenShowingTheScreen_thenGenerateSessionButtonShowsIconNextToText() {
+        // Given: la tanda activa está completa
+        setScreen(practicing(current = item(), completed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el botón "Generar sesión nueva" muestra un icono junto al texto
+        composeTestRule.onNodeWithTag("practice_generate_session_icon", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Generar sesión nueva").assertIsDisplayed()
+    }
+
     // Scenario: El control de revelar es visible con una frase muy larga (spec: practice-session)
     @Test
     fun givenVeryLongPhrase_whenScreenIsShown_thenRevealControlIsDisplayed() {

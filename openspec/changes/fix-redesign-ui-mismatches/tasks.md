@@ -58,20 +58,31 @@
 
 ## 6. Practicar: altura, icono y margen de los botones inferiores (punto 1, parte de Practicar)
 
-- [ ] 6.1 Test (`PracticeSessionScreenTest`, `androidTest`): los botones "Mostrar traducción",
+- [x] 6.1 Test (`PracticeSessionScreenTest`, `androidTest`): los botones "Mostrar traducción",
   "Fallo", "Acierto" y "Generar sesión nueva" muestran un icono junto al texto (spec:
   `practice-session`, escenarios de "Controles de acción siempre visibles y pulsables" y de
   "Mensaje de tanda completada"). Verificación: el test falla porque ninguno de los cuatro botones
   tiene icono hoy.
-- [ ] 6.2 Añadir icono a cada uno de los cuatro botones en `PracticeSessionScreen.kt` (ojo para
+- [x] 6.2 Añadir icono a cada uno de los cuatro botones en `PracticeSessionScreen.kt` (ojo para
   revelar, X para fallo, check para acierto, flecha circular para generar sesión) y aplicar
   `Modifier.height(AppTheme.dimensions.primaryActionHeight)` a los cuatro. Verificación: test de
   6.1 en verde.
-- [ ] 6.3 Reducir el padding inferior del `Box` de contenido de `PracticeSessionScreen` (hoy
+
+  Nota de implementación: `Icons.Default.Visibility` (el "ojo" previsto para revelar) solo existe
+  en `material-icons-extended`, no en `material-icons-core` (comprobado inspeccionando el aar),
+  que es la única dependencia de iconos que declara `:feature:session`; se usó
+  `Icons.Default.Search` como alternativa disponible más cercana a "revelar/ver contenido oculto",
+  documentado con un comentario en `RevealButton` (`PracticeSessionScreen.kt`), igual que el grupo
+  5 hizo con `VolumeUp` → `PlayArrow`. `Icons.Default.Close`, `Check` y `Refresh` sí están en
+  `material-icons-core`, como esperaba la tarea.
+- [x] 6.3 Reducir el padding inferior del `Box` de contenido de `PracticeSessionScreen` (hoy
   `AppTheme.spacing.m` sobre el `innerPadding` del `Scaffold`) a `AppTheme.spacing.s`, para acercar
   el botón principal a la barra de navegación como en el mock. Verificación de dispositivo/emulador
   (no asertable por test: es una distancia visual), comparando contra `Main.dc.html`/
   `AudioCompacto.dc.html` del mock.
+
+  Aplicado sin verificación visual propia en este grupo (el agente no tiene forma de comparar
+  contra el mock); pendiente de la verificación conjunta de dispositivo/emulador de la tarea 11.3.
 
 ## 7. Practicar: colores y altura de los chips de resultado (punto 6)
 
