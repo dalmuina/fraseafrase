@@ -2,17 +2,17 @@
 
 ## 1. Design system: token de altura y color de `DsStatTile`
 
-- [ ] 1.1 Test (`AppThemeTest` o similar en `:core:designsystem`): un nuevo token
+- [x] 1.1 Test (`AppThemeTest` o similar en `:core:designsystem`): un nuevo token
   `AppTheme.dimensions.primaryActionHeight` existe y vale 56.dp (design D8). Verificación: el test
   falla porque el token no existe, luego pasa al añadirlo.
-- [ ] 1.2 Añadir `AppTheme.dimensions.primaryActionHeight` (y la clase `Dimensions`/`Dimens` que lo
+- [x] 1.2 Añadir `AppTheme.dimensions.primaryActionHeight` (y la clase `Dimensions`/`Dimens` que lo
   contenga) en `:core:designsystem`, análogo a `AppTheme.spacing`. Verificación: test de 1.1 en
   verde, `./gradlew :core:designsystem:testDebugUnitTest`.
-- [ ] 1.3 Test (`DsStatTileTest`): `DsStatTile` acepta un color de contenedor/contenido opcional y,
+- [x] 1.3 Test (`DsStatTileTest`): `DsStatTile` acepta un color de contenedor/contenido opcional y,
   sin indicarlo, sigue usando `primaryContainer`/`onPrimaryContainer` (compatibilidad); indicando
   `tertiaryContainer`, el `Surface` resultante usa ese color (design D4). Verificación: el test
   falla antes de añadir el parámetro.
-- [ ] 1.4 Añadir el parámetro de color a `DsStatTile` con el valor por defecto actual. Verificación:
+- [x] 1.4 Añadir el parámetro de color a `DsStatTile` con el valor por defecto actual. Verificación:
   tests de 1.3 en verde, `./gradlew :core:designsystem:testDebugUnitTest` y `connectedAndroidTest`
   de `DsStatTileTest` en verde.
 
