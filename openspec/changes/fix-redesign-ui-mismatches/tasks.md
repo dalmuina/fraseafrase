@@ -47,11 +47,11 @@
 
 ## 5. Practicar: control de escuchar como icono simple (punto 3, delta `phrase-audio`)
 
-- [ ] 5.1 Test (`PracticeSessionScreenTest`, `androidTest`): el control de escuchar no muestra
+- [x] 5.1 Test (`PracticeSessionScreenTest`, `androidTest`): el control de escuchar no muestra
   ningún texto visible y expone `contentDescription` con el texto equivalente (spec: `phrase-audio`,
   "El control de escuchar muestra un icono de audio"). Verificación: el test falla con
   `ListenPill` actual (icono + texto visible).
-- [ ] 5.2 Sustituir `ListenPill` por un `IconButton`/`FilledIconButton` de icono simple
+- [x] 5.2 Sustituir `ListenPill` por un `IconButton`/`FilledIconButton` de icono simple
   (`Icons.Default.VolumeUp`) en `PracticeSessionPhraseCard.kt`, manteniendo `revealed`/`enabled` y
   añadiendo `contentDescription`. Retirar el string `practice_listen` visible y añadir el de
   descripción accesible si no existe ya uno equivalente. Verificación: test de 5.1 en verde.

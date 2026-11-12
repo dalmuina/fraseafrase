@@ -132,7 +132,7 @@ class PracticeSessionScreenTest {
         // When: la pantalla se muestra sin revelar (no hay acción que cambie el estado)
 
         // Then: no se muestra ningún control de escuchar
-        composeTestRule.onNodeWithText("Escuchar").assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription("Escuchar").assertDoesNotExist()
     }
 
     // Scenario: Revelar muestra el control de escuchar / Escuchar reproduce la frase en su locale (spec: phrase-audio)
@@ -150,7 +150,7 @@ class PracticeSessionScreenTest {
         }
 
         // When: el usuario activa el control de escuchar
-        composeTestRule.onNodeWithText("Escuchar").apply {
+        composeTestRule.onNodeWithContentDescription("Escuchar").apply {
             assertIsDisplayed()
             performClick()
         }
@@ -168,7 +168,21 @@ class PracticeSessionScreenTest {
         // When: la pantalla muestra el estado con la respuesta en curso (estado dado)
 
         // Then: el control de escuchar está deshabilitado
-        composeTestRule.onNodeWithText("Escuchar").assertIsNotEnabled()
+        composeTestRule.onNodeWithContentDescription("Escuchar").assertIsNotEnabled()
+    }
+
+    // Scenario: El control de escuchar muestra un icono de audio (spec: phrase-audio, fix-redesign-ui-mismatches)
+    @Test
+    fun givenRevealedPhrase_whenScreenShown_thenListenControlShowsNoVisibleTextButExposesContentDescription() {
+        // Given: la pantalla muestra una frase revelada
+        setScreen(practicing(current = item(), revealed = true))
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: el control de escuchar no muestra ningún texto visible, y expone una descripción
+        // accesible equivalente al texto que antes se mostraba
+        composeTestRule.onNodeWithText("Escuchar").assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription("Escuchar").assertIsDisplayed()
     }
 
     // Scenario: Primera frase de una tanda de cinco (spec: practice-session)
@@ -316,24 +330,24 @@ class PracticeSessionScreenTest {
 
         // When: la pantalla se muestra (estado dado)
 
-        // Then: el control de escuchar muestra un icono de audio junto a su texto
+        // Then: el control de escuchar muestra un icono de audio, sin texto visible junto a él
         composeTestRule.onNodeWithTag("listen_icon", useUnmergedTree = true).assertIsDisplayed()
     }
 
-    // Scenario: El control de escuchar muestra un icono de audio (spec: phrase-audio) - reestilizado: el control
-    // se mueve a la cabecera de la tarjeta, junto a las pastillas de nivel CEFR e insignia de rango (design -
-    // redesign-app-ui), icono y etiqueta siguen visibles
+    // Scenario: Revelar muestra el control de escuchar (spec: phrase-audio) - reestilizado: el control se
+    // mueve a la cabecera de la tarjeta, junto a las pastillas de nivel CEFR e insignia de rango (design -
+    // redesign-app-ui); desde fix-redesign-ui-mismatches (design D5) es un icono simple, sin texto visible
     @Test
-    fun givenRevealedPhrase_whenScreenShown_thenListenPillIsAtTheSameHeightAsTheCefrPill() {
+    fun givenRevealedPhrase_whenScreenShown_thenListenButtonIsAtTheSameHeightAsTheCefrPill() {
         // Given: la pantalla muestra una frase de nivel CEFR B1 revelada
         setScreen(practicing(current = item(cefrLevel = CefrLevel.B1), revealed = true))
 
         // When: la pantalla se muestra (estado dado)
 
-        // Then: el control de escuchar (icono + "Escuchar") queda en la cabecera, a la misma altura que la
-        // pastilla del nivel CEFR, no debajo de la traducción
+        // Then: el control de escuchar queda en la cabecera, a la misma altura que la pastilla del nivel
+        // CEFR, no debajo de la traducción
         val cefrTop = composeTestRule.onNodeWithText("B1").getUnclippedBoundsInRoot().top
-        val listenTop = composeTestRule.onNodeWithText("Escuchar").getUnclippedBoundsInRoot().top
+        val listenTop = composeTestRule.onNodeWithContentDescription("Escuchar").getUnclippedBoundsInRoot().top
         assertTrue(abs((listenTop - cefrTop).value) <= ROW_ALIGNMENT_TOLERANCE_DP)
     }
 
