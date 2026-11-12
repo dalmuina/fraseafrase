@@ -18,10 +18,10 @@
 
 ## 2. Design system: `DsInfoBanner`
 
-- [ ] 2.1 Test (`DsInfoBannerTest`, `:core:designsystem`): dado un icono, un texto con tramos en
+- [x] 2.1 Test (`DsInfoBannerTest`, `:core:designsystem`): dado un icono, un texto con tramos en
   negrita y un color de contenedor, el componente pinta el icono, el texto completo y respeta el
   color de fondo indicado. Verificación: el test falla porque `DsInfoBanner` no existe todavía.
-- [ ] 2.2 Implementar `DsInfoBanner` en `:core:designsystem` (design D2): icono + texto con
+- [x] 2.2 Implementar `DsInfoBanner` en `:core:designsystem` (design D2): icono + texto con
   parámetros de tramo normal/negrita, sin tipos del dominio, `modifier: Modifier = Modifier` primero,
   con `@PreviewLightDark`. Verificación: test de 2.1 en verde.
 
