@@ -142,16 +142,21 @@
 
 ## 9. Ajustes: icono del botón "Guardar" y cabecera (punto 1 parte de Ajustes, punto 4 parte)
 
-- [ ] 9.1 Test (`SettingsScreenTest`, `androidTest`): el botón "Guardar" muestra un icono de check
+- [x] 9.1 Test (`SettingsScreenTest`, `androidTest`): el botón "Guardar" muestra un icono de check
   junto al texto (spec: `settings-screen`, "Confirmación visual al guardar" sigue cumpliéndose; el
   icono es un detalle de presentación cubierto por el mock, no un escenario nuevo de spec).
   Verificación: el test falla porque el botón no tiene icono hoy.
-- [ ] 9.2 Añadir icono de check al `Button` de "Guardar" en `SettingsScreen.kt` y aplicarle
+
+  `Icons.Default.Check` ya está en `material-icons-core` (confirmado por su uso existente en
+  `AssessmentButtons` de `PracticeSessionScreen.kt`, en `:feature:session`, que tampoco declara
+  `material-icons-extended` aparte del añadido puntual del grupo 8 para `Undo`), así que no hace
+  falta sustituir icono ni tocar `feature/settings/build.gradle.kts`.
+- [x] 9.2 Añadir icono de check al `Button` de "Guardar" en `SettingsScreen.kt` y aplicarle
   `Modifier.height(AppTheme.dimensions.primaryActionHeight)`. Verificación: test de 9.1 en verde.
-- [ ] 9.3 Test (`SettingsScreenTest`, `androidTest`): el título "Ajustes" se pinta con
+- [x] 9.3 Test (`SettingsScreenTest`, `androidTest`): el título "Ajustes" se pinta con
   `MaterialTheme.typography.headlineLarge` dentro del contenido, sin `TopAppBar`. Verificación: el
   test falla con la `TopAppBar` actual.
-- [ ] 9.4 Sustituir el `Scaffold(topBar = { TopAppBar(...) })` de `SettingsScreen.kt` por el mismo
+- [x] 9.4 Sustituir el `Scaffold(topBar = { TopAppBar(...) })` de `SettingsScreen.kt` por el mismo
   patrón de título grande sin barra propia que usa `PracticeHeader` (design D7). Verificación: test
   de 9.3 en verde, `./gradlew :feature:settings:testDebugUnitTest`.
 
