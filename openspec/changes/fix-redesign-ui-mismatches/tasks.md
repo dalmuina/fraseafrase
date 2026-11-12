@@ -27,10 +27,10 @@
 
 ## 3. Design system: `DsHeroStat`
 
-- [ ] 3.1 Test (`DsHeroStatTest`, `:core:designsystem`): dados un valor, una etiqueta, una línea
+- [x] 3.1 Test (`DsHeroStatTest`, `:core:designsystem`): dados un valor, una etiqueta, una línea
   secundaria y un color de fondo, el componente los pinta alineados a la izquierda con ese fondo.
   Verificación: el test falla porque `DsHeroStat` no existe todavía.
-- [ ] 3.2 Implementar `DsHeroStat` en `:core:designsystem` (design D3): tarjeta de ancho completo,
+- [x] 3.2 Implementar `DsHeroStat` en `:core:designsystem` (design D3): tarjeta de ancho completo,
   fondo de color configurable, slot para icono(s) decorativo(s) detrás del texto, contenido
   alineado a la izquierda. Verificación: test de 3.1 en verde.
 
