@@ -17,6 +17,7 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextLayoutResult
@@ -194,6 +195,43 @@ class SettingsScreenTest {
 
         assertEquals(textFieldTop.value, decreaseTop.value, BOUNDS_TOLERANCE)
         assertEquals(textFieldTop.value, increaseTop.value, BOUNDS_TOLERANCE)
+    }
+
+    // Scenario: Confirmación visual al guardar (spec: settings-screen; el icono es un detalle de
+    // presentación del mock, fix-redesign-ui-mismatches)
+    @Test
+    fun givenLoadedSettings_whenShowingTheScreen_thenSaveButtonShowsACheckIcon() {
+        // Given/When: la pantalla muestra el botón de guardar
+        setScreen(loaded())
+
+        // Then: el botón de guardar incluye un icono de check junto al texto
+        composeTestRule.onNodeWithTag("settings_save_icon", useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    // Scenario: la cabecera usa el mismo patrón de título grande que Practicar, sin TopAppBar
+    // (design D7, fix-redesign-ui-mismatches)
+    @Test
+    fun givenLoadedSettings_whenShowingTheScreen_thenTitleUsesHeadlineLargeTypography() {
+        // Given: se captura el tamaño de fuente esperado para headlineLarge del tema actual
+        var expectedFontSize: TextUnit = TextUnit.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedFontSize = MaterialTheme.typography.headlineLarge.fontSize
+                // When: se muestra la pantalla con ajustes cargados
+                SettingsScreen(uiState = loaded(), onAction = {})
+            }
+        }
+
+        // Then: el tamaño de fuente del título "Ajustes" coincide con headlineLarge, no con la
+        // tipografía pequeña por defecto de TopAppBar
+        val layoutResults = mutableListOf<TextLayoutResult>()
+        composeTestRule.onNodeWithText("Ajustes")
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(layoutResults)
+
+        assertEquals(expectedFontSize, layoutResults.first().layoutInput.style.fontSize)
     }
 
     private fun setScreen(uiState: SettingsUiState) {

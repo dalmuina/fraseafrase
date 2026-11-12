@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
@@ -23,13 +24,15 @@ fun DsStatTile(
     value: String,
     label: String,
     size: DsStatTileSize = DsStatTileSize.Compact,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer
 ) {
     val valueStyle = statTileValueStyle(size)
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.primaryContainer
+        color = containerColor
     ) {
         Column(
             modifier = Modifier.padding(statTilePadding(size)),
@@ -39,12 +42,12 @@ fun DsStatTile(
             Text(
                 text = value,
                 style = valueStyle,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = contentColor
             )
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = contentColor
             )
         }
     }

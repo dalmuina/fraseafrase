@@ -4,32 +4,34 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -40,36 +42,29 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 
 /**
  * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión
- * con el ViewModel está en [SettingsRoute]. Su `Scaffold` solo aporta el `topBar`: la confirmación de guardado se
- * muestra en el `Scaffold` de `:app`, que sobrevive al cambio de pestaña (design D6 revisada de
- * `add-settings-apply-flow`).
+ * con el ViewModel está en [SettingsRoute]. La confirmación de guardado se muestra en el `Scaffold` de `:app`,
+ * que sobrevive al cambio de pestaña (design D6 revisada de `add-settings-apply-flow`). La cabecera deja la
+ * `TopAppBar` de Material 3 por el mismo patrón de título grande sin barra propia que usa `PracticeHeader` en
+ * `PracticeSessionScreen.kt` (design D7, fix-redesign-ui-mismatches).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
     uiState: SettingsUiState,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = { TopAppBar(title = { Text(text = stringResource(R.string.settings_title)) }) },
-    ) { innerPadding ->
-        when (uiState) {
-            SettingsUiState.Loading -> Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
-            is SettingsUiState.Loaded -> LoadedContent(
-                state = uiState,
-                onAction = onAction,
-                modifier = Modifier.padding(innerPadding),
-            )
+    when (uiState) {
+        SettingsUiState.Loading -> Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressIndicator()
         }
+        is SettingsUiState.Loaded -> LoadedContent(
+            state = uiState,
+            onAction = onAction,
+            modifier = modifier,
+        )
     }
 }
 
@@ -85,6 +80,10 @@ private fun LoadedContent(
             .padding(AppTheme.spacing.m),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
+        Text(
+            text = stringResource(R.string.settings_title),
+            style = MaterialTheme.typography.headlineLarge,
+        )
         CefrLevelCard(
             selectedLevel = state.cefrLevel,
             onSelectLevel = { onAction(SettingsAction.SelectCefrLevel(it)) },
@@ -95,11 +94,21 @@ private fun LoadedContent(
             onBatchSizeTextChange = { onAction(SettingsAction.ChangeBatchSizeText(it)) },
         )
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(AppTheme.dimensions.primaryActionHeight),
             shape = MaterialTheme.shapes.large,
             onClick = { onAction(SettingsAction.Save) },
             enabled = state.isBatchSizeValid,
         ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(ButtonDefaults.IconSize)
+                    .testTag("settings_save_icon"),
+            )
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = stringResource(R.string.settings_save))
         }
     }

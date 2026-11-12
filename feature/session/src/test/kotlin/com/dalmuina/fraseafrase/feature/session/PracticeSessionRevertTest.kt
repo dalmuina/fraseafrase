@@ -249,6 +249,26 @@ class PracticeSessionRevertTest {
         viewModel.practicing() shouldBe before
     }
 
+    // Scenario: El botón desaparece al revelar la frase siguiente (spec: practice-session)
+    @Test
+    fun `given a pending undo when revealing the next phrase then canRevertLastAnswer is false`() = runTest {
+        // Given: tanda A, B y C; A autoevaluada; la pantalla muestra B sin revelar con el botón visible
+        val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("A", "B", "C")))
+        val viewModel = sessionViewModel(practice, catalogOf("A", "B", "C"))
+        advanceUntilIdle()
+        viewModel.onAction(PracticeSessionAction.Reveal)
+        viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
+        advanceUntilIdle()
+        viewModel.practicing().canRevertLastAnswer shouldBe true
+        viewModel.practicing().revealed shouldBe false
+
+        // When
+        viewModel.onAction(PracticeSessionAction.Reveal)
+
+        // Then
+        viewModel.practicing().canRevertLastAnswer shouldBe false
+    }
+
     /** Frase certificada: racha 3 respondida en la tanda. */
     private fun certified(id: String): PhraseProgress =
         aPhraseProgress(id = id, streak = Streak(3), answeredInBatch = true)

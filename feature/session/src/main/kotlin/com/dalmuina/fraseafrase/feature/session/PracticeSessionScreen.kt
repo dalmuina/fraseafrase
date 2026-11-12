@@ -1,24 +1,31 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -57,18 +64,12 @@ internal fun PracticeSessionScreen(
                 PracticeHeader(index = uiState.index, total = uiState.total)
             }
         },
-        floatingActionButton = {
-            if (uiState is PracticeSessionUiState.Practicing && uiState.canRevertLastAnswer) {
-                RevertLastAnswerButton(onAction = onAction)
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Start,
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(AppTheme.spacing.m),
+                .padding(AppTheme.spacing.s),
             contentAlignment = Alignment.Center,
         ) {
             when (uiState) {
@@ -179,17 +180,49 @@ private fun PracticingContent(
                     onAction = onAction,
                 )
             }
+            // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches): ya
+            // no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio flotante
+            // sobre el contenido en vez de desplazarlo. `AnimatedVisibility` repone la animación de
+            // aparición/desaparición que ese slot daba automáticamente.
+            AnimatedVisibility(visible = state.canRevertLastAnswer) {
+                RevertLastAnswerButton(onAction = onAction)
+            }
             if (state.revealed) {
                 AssessmentButtons(enabled = !state.busy, onAction = onAction)
             } else {
-                Button(
-                    onClick = { onAction(PracticeSessionAction.Reveal) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = stringResource(R.string.practice_reveal))
-                }
+                RevealButton(onAction = onAction)
             }
         }
+    }
+}
+
+/**
+ * Botón para revelar la traducción, con icono y 56dp de alto (design D8, fix-redesign-ui-mismatches).
+ *
+ * Usa [Icons.Default.Search] en vez del ojo (`Icons.Default.Visibility`) previsto en el diseño porque,
+ * cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no declaraba
+ * esa dependencia (igual que `ListenButton` en `PracticeSessionPhraseCard.kt` sustituyó `VolumeUp` por
+ * `PlayArrow`; ver su kdoc sobre `material-icons-extended` desde el grupo 8). `Search` ya está disponible
+ * en `material-icons-core` y es la metáfora más cercana a "revelar/ver
+ * contenido oculto" sin depender de `material-icons-extended` solo por este icono.
+ */
+@Composable
+private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {
+    Button(
+        onClick = { onAction(PracticeSessionAction.Reveal) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(AppTheme.dimensions.primaryActionHeight),
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = null,
+            modifier = Modifier
+                .size(ButtonDefaults.IconSize)
+                .testTag("practice_reveal_icon"),
+        )
+        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+        Text(text = stringResource(R.string.practice_reveal))
     }
 }
 
@@ -225,41 +258,85 @@ private fun CompletedMessage(
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
     )
+    OutcomeBreakdownRow(hits = hits, misses = misses, levelUps = levelUps)
+    GenerateSessionButton(enabled = enabled, onAction = onAction)
+    TextButton(onClick = onNavigateToProgress) {
+        Text(
+            text = stringResource(R.string.practice_view_progress),
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+/**
+ * Fila con las tres tarjetas de resultado de [CompletedMessage], con colores diferenciados por rol
+ * (verde para aciertos, rojo para fallos, naranja para "sube de rango") y la misma altura entre las
+ * tres aunque alguna etiqueta ocupe más líneas que otra (spec: practice-session, "El mensaje muestra
+ * el desglose de aciertos, fallos y subidas de nivel"; design D4, fix-redesign-ui-mismatches).
+ */
+@Composable
+private fun OutcomeBreakdownRow(hits: Int, misses: Int, levelUps: Int) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max),
         horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
     ) {
         DsStatTile(
             value = hits.toString(),
             label = stringResource(R.string.practice_outcome_hits),
             size = DsStatTileSize.Compact,
-            modifier = Modifier.weight(1f),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .testTag("practice_outcome_hits_tile"),
         )
         DsStatTile(
             value = misses.toString(),
             label = stringResource(R.string.practice_outcome_misses),
             size = DsStatTileSize.Compact,
-            modifier = Modifier.weight(1f),
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .testTag("practice_outcome_misses_tile"),
         )
         DsStatTile(
             value = levelUps.toString(),
             label = stringResource(R.string.practice_outcome_level_ups),
             size = DsStatTileSize.Compact,
-            modifier = Modifier.weight(1f),
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .testTag("practice_outcome_level_ups_tile"),
         )
     }
+}
+
+/** Botón para generar la siguiente sesión, con icono y 56dp de alto (design D8, fix-redesign-ui-mismatches). */
+@Composable
+private fun GenerateSessionButton(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
     Button(
         onClick = { onAction(PracticeSessionAction.GenerateSession) },
         enabled = enabled,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(AppTheme.dimensions.primaryActionHeight),
     ) {
-        Text(text = stringResource(R.string.practice_generate_session))
-    }
-    TextButton(onClick = onNavigateToProgress) {
-        Text(
-            text = stringResource(R.string.practice_view_progress),
-            style = MaterialTheme.typography.labelLarge,
+        Icon(
+            imageVector = Icons.Default.Refresh,
+            contentDescription = null,
+            modifier = Modifier
+                .size(ButtonDefaults.IconSize)
+                .testTag("practice_generate_session_icon"),
         )
+        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+        Text(text = stringResource(R.string.practice_generate_session))
     }
 }
 
@@ -278,8 +355,18 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
                 width = ButtonDefaults.outlinedButtonBorder(enabled).width,
                 color = MaterialTheme.colorScheme.error,
             ),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .height(AppTheme.dimensions.primaryActionHeight),
         ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(ButtonDefaults.IconSize)
+                    .testTag("practice_miss_icon"),
+            )
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = stringResource(R.string.practice_miss))
         }
         Button(
@@ -289,8 +376,18 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onTertiary,
             ),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .height(AppTheme.dimensions.primaryActionHeight),
         ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(ButtonDefaults.IconSize)
+                    .testTag("practice_hit_icon"),
+            )
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = stringResource(R.string.practice_hit))
         }
     }

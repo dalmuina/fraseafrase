@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBanner
+import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBannerSegment
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadgeChange
 import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
@@ -62,13 +67,16 @@ internal fun PhraseCard(
                     onAction = onAction,
                 )
                 Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
-                Text(
-                    text = stringResource(
-                        R.string.practice_remaining_hits_for_next_level,
-                        remainingHitsForNextLevel,
-                        nextLevelBadgeLabel,
+                DsInfoBanner(
+                    icon = Icons.Default.Star,
+                    iconContentDescription = stringResource(R.string.practice_remaining_hits_icon_description),
+                    segments = listOf(
+                        DsInfoBannerSegment(text = stringResource(R.string.practice_remaining_hits_prefix)),
+                        DsInfoBannerSegment(text = remainingHitsForNextLevel.toString(), emphasized = true),
+                        DsInfoBannerSegment(text = stringResource(R.string.practice_remaining_hits_middle)),
+                        DsInfoBannerSegment(text = nextLevelBadgeLabel, emphasized = true),
                     ),
-                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -81,8 +89,8 @@ internal fun PhraseCard(
 /**
  * Cabecera de [PhraseCard] (design `redesign-app-ui`, mock "Alternativa B · audio en la tarjeta"): a la
  * izquierda, la pastilla del nivel CEFR ([CefrLevelPill]) y la insignia de rango (o su transición
- * animada, [BadgeChangeIndicator]); a la derecha, el control de escuchar como pastilla ([ListenPill]),
- * solo mientras la frase está revelada. El control vivía bajo la traducción, dentro de
+ * animada, [BadgeChangeIndicator]); a la derecha, el control de escuchar como icono simple
+ * ([ListenButton]), solo mientras la frase está revelada. El control vivía bajo la traducción, dentro de
  * `TranslationCard`; se mueve aquí para que combine visualmente con las otras dos pastillas, sin
  * cambiar ninguna de sus condiciones de visibilidad o habilitación (spec: phrase-audio).
  */
@@ -112,7 +120,7 @@ private fun PhraseCardHeader(
             }
         }
         if (revealed) {
-            ListenPill(enabled = enabled, onAction = onAction)
+            ListenButton(enabled = enabled, onAction = onAction)
         }
     }
 }
@@ -134,31 +142,32 @@ private fun CefrLevelPill(cefrLevel: CefrLevel) {
 }
 
 /**
- * Control de escuchar como pastilla, con el mismo estilo que las otras dos de la cabecera (design
- * `redesign-app-ui`, mock): icono y etiqueta de texto siempre visibles juntos, también deshabilitado
- * (spec: phrase-audio, "Botón de escuchar tras revelar").
+ * Control de escuchar como icono simple, sin texto visible junto a él en ningún estado en el que es
+ * visible, incluido deshabilitado, con una descripción accesible equivalente al texto que ya no se
+ * muestra (spec: phrase-audio, "Botón de escuchar tras revelar"; design D5, fix-redesign-ui-mismatches).
+ *
+ * Usa [Icons.Default.PlayArrow] en vez del altavoz (`Icons.Default.VolumeUp`) previsto en el diseño
+ * porque, cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no
+ * declaraba esa dependencia; `PlayArrow` ya estaba disponible en `material-icons-core` y ya se usaba en
+ * este control. `:feature:session` sí declara `material-icons-extended` desde el grupo 8 de
+ * `fix-redesign-ui-mismatches` (design D6, icono `Undo` del botón de deshacer), pero revisar esta
+ * elección con esa dependencia ya disponible queda fuera del alcance de esa tarea.
  */
 @Composable
-private fun ListenPill(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
-    Surface(
+private fun ListenButton(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
+    FilledIconButton(
         onClick = { onAction(PracticeSessionAction.PlayAudio) },
         enabled = enabled,
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        colors = IconButtonDefaults.filledIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        ),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = AppTheme.spacing.s, vertical = AppTheme.spacing.xs),
-            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.xs),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = null,
-                modifier = Modifier.testTag("listen_icon"),
-            )
-            Text(text = stringResource(R.string.practice_listen), style = MaterialTheme.typography.labelMedium)
-        }
+        Icon(
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = stringResource(R.string.practice_listen),
+            modifier = Modifier.testTag("listen_icon"),
+        )
     }
 }
 

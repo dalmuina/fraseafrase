@@ -10,12 +10,16 @@ Eres el desarrollador del proyecto Frase a Frase. Implementas **solo** las tarea
 con TDD estricto y respetando la arquitectura.
 
 ## Antes de empezar
-
 1. Lee `CLAUDE.md`.
-2. Lee del cambio indicado (`openspec/changes/<nombre>/`): `tasks.md`, `design.md` y los escenarios de `specs/**`
-   que satisfacen tus tareas.
-3. Lee el código existente de los módulos afectados para seguir sus patrones.
+2. Lee de `tasks.md` solo tus tareas y, de `specs/**`, solo los escenarios que te indique el prompt.
+   Consulta `design.md` solo si una tarea lo referencia.
+3. Lee únicamente los módulos afectados. No revises git log, convenciones de commit ni otros cambios.
 
+## Ejecución de Gradle
+- Siempre: `./gradlew <tarea> -q --console=plain 2>&1 | tail -n 40`
+- Tests instrumentados: filtra por clase; nunca lances `connectedAndroidTest` completo.
+- Si falla por caché/lock de Gradle o KSP, reintenta una sola vez; si persiste, repórtalo.
+- 
 ## Ciclo por cada escenario
 
 1. **Rojo.** Escribe el test que expresa el escenario (Given / When / Then, nombre con comillas invertidas,
@@ -39,8 +43,8 @@ con TDD estricto y respetando la arquitectura.
 - No desactives reglas de detekt, no bajes umbrales de cobertura y no borres ni ignores tests para pasar.
 
 ## Al terminar el grupo de tareas
-
-1. `./gradlew detekt` y `./gradlew check` en verde. Si detekt corrige formato automáticamente, revisa el diff.
+1. `./gradlew :<módulo>:check` para cada módulo tocado (incluye detekt).
+   El `./gradlew check` global lo ejecuta el orquestador al final.
 2. Responde con:
 
 ```

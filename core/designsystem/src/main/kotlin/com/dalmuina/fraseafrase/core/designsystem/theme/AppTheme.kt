@@ -7,6 +7,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import com.dalmuina.fraseafrase.core.designsystem.motion.LocalMotion
 import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
+import com.dalmuina.fraseafrase.core.designsystem.tokens.Dimensions
+import com.dalmuina.fraseafrase.core.designsystem.tokens.LocalDimensions
 import com.dalmuina.fraseafrase.core.designsystem.tokens.LocalSpacing
 import com.dalmuina.fraseafrase.core.designsystem.tokens.Spacing
 
@@ -18,7 +20,8 @@ import com.dalmuina.fraseafrase.core.designsystem.tokens.Spacing
 fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalSpacing provides Spacing(),
-        LocalMotion provides Motion()
+        LocalMotion provides Motion(),
+        LocalDimensions provides Dimensions()
     ) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkColors else LightColors,
@@ -40,4 +43,9 @@ object AppTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalMotion.current
+
+    val dimensions: Dimensions
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalDimensions.current
 }

@@ -83,9 +83,14 @@ class PracticeSessionViewModel @Inject constructor(
         }
     }
 
-    /** Revelar se ignora con una respuesta en curso (`busy`) o con la tanda completada (design D3). */
+    /**
+     * Revelar se ignora con una respuesta en curso (`busy`) o con la tanda completada (design D3).
+     * `canRevertLastAnswer` se fija a `false` al revelar: el botón de revertir deja de mostrarse en cuanto el
+     * usuario pasa a mirar la frase siguiente, aunque [pendingUndo] siga apuntando a la autoevaluación anterior
+     * (spec: practice-session, "El botón desaparece al revelar la frase siguiente"; design D6).
+     */
     private fun reveal() = updatePracticing {
-        if (busy || completed) this else copy(revealed = true)
+        if (busy || completed) this else copy(revealed = true, canRevertLastAnswer = false)
     }
 
     /**

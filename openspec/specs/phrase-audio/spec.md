@@ -11,8 +11,9 @@ en el locale BCP-47 de la frase, como parte del método de aprendizaje del ADR-0
 
 La pantalla de práctica MUST mostrar un control para escuchar el audio de la frase actual en
 portugués únicamente cuando su traducción está revelada. Sin revelar, MUST NOT mostrarse ese
-control. El control MUST mostrar un icono de audio (altavoz o boca hablando) junto a su texto,
-en todos los estados en los que el control es visible, incluido cuando está deshabilitado.
+control. El control MUST mostrarse como un icono de audio (altavoz), sin texto visible, en todos
+los estados en los que el control es visible, incluido cuando está deshabilitado, y MUST exponer
+una descripción accesible equivalente al texto que ya no se muestra.
 
 #### Scenario: Revelar muestra el control de escuchar
 
@@ -30,7 +31,8 @@ en todos los estados en los que el control es visible, incluido cuando está des
 
 - **GIVEN** la pantalla muestra una frase revelada
 - **WHEN** el usuario observa el control de escuchar
-- **THEN** el control muestra un icono de audio junto a su texto
+- **THEN** el control muestra un icono de audio sin ningún texto visible junto a él, y expone una
+  descripción accesible equivalente
 
 ### Requirement: Reproducción del audio en el locale de la frase
 
