@@ -4,9 +4,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -69,6 +72,11 @@ class PracticeSessionScreenTest {
 
         /** Tag del botón flotante para deshacer la última autoevaluación (spec: revert-selection). */
         private const val REVERT_LAST_ANSWER_BUTTON_TAG = "practice_revert_last_answer_button"
+
+        /** Tags de las tres tarjetas de resultado de [CompletedMessage] (design D4, fix-redesign-ui-mismatches). */
+        private const val HITS_TILE_TAG = "practice_outcome_hits_tile"
+        private const val MISSES_TILE_TAG = "practice_outcome_misses_tile"
+        private const val LEVEL_UPS_TILE_TAG = "practice_outcome_level_ups_tile"
 
         /**
          * Descripción accesible del icono de insignia de la caja de aciertos para el siguiente nivel
@@ -485,6 +493,37 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Fallos").assertIsDisplayed()
         composeTestRule.onNodeWithText("1").assertIsDisplayed()
         composeTestRule.onNodeWithText("Suben de rango").assertIsDisplayed()
+    }
+
+    // Scenario: El mensaje muestra el desglose de aciertos, fallos y subidas de nivel (spec:
+    // practice-session), con colores diferenciados y la misma altura entre las tres tarjetas,
+    // aunque una etiqueta ocupe más líneas que otra (design D4, fix-redesign-ui-mismatches)
+    @Test
+    fun givenCompletedBatchWithOutcome_whenShowingTheScreen_thenOutcomeTilesHaveDistinctColorsAndEqualHeight() {
+        // Given: la tanda completada; se capturan los colores de contenedor esperados del tema
+        // actual para aciertos, fallos y subidas de rango, en ese orden
+        var expectedColors = emptyList<Color>()
+        composeTestRule.setContent {
+            AppTheme {
+                val scheme = MaterialTheme.colorScheme
+                expectedColors = listOf(scheme.tertiaryContainer, scheme.errorContainer, scheme.secondaryContainer)
+                PracticeSessionScreen(
+                    uiState = practicing(current = item(), completed = true).copy(hits = 3, misses = 2, levelUps = 1),
+                    onAction = {},
+                )
+            }
+        }
+        val tags = listOf(HITS_TILE_TAG, MISSES_TILE_TAG, LEVEL_UPS_TILE_TAG)
+
+        // When: la pantalla se muestra (estado dado)
+
+        // Then: cada tarjeta usa el color de fondo esperado para su rol, distinto del de las otras
+        // dos, y las tres miden lo mismo aunque "Suben de rango" ocupe más líneas que las otras
+        val actualColors = tags.map { outcomeTileBackgroundColor(it) }
+        val heights = tags.map { composeTestRule.onNodeWithTag(it).getUnclippedBoundsInRoot().heightValue() }
+        assertEquals(expectedColors, actualColors)
+        assertEquals(actualColors.size, actualColors.toSet().size)
+        assertTrue(heights.all { it == heights.first() })
     }
 
     // Scenario: El mensaje ofrece ir a Progreso sin generar sesión (spec: practice-session)
@@ -955,6 +994,15 @@ class PracticeSessionScreenTest {
 
     /** Ancho de un [DpRect], no expuesto como propiedad por la API de Compose UI. */
     private fun DpRect.widthValue(): Dp = right - left
+
+    /** Alto de un [DpRect], no expuesto como propiedad por la API de Compose UI. */
+    private fun DpRect.heightValue(): Dp = bottom - top
+
+    /** Color del píxel central del nodo con [tag], igual que `DsStatTileTest` en `:core:designsystem`. */
+    private fun outcomeTileBackgroundColor(tag: String): Color {
+        val pixelMap = composeTestRule.onNodeWithTag(tag).captureToImage().toPixelMap()
+        return pixelMap[pixelMap.width / 2, pixelMap.height / 2]
+    }
 
     private fun setScreen(uiState: PracticeSessionUiState) {
         composeTestRule.setContent {

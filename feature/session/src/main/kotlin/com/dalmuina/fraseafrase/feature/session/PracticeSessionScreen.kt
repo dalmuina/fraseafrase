@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -255,34 +256,62 @@ private fun CompletedMessage(
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
     )
+    OutcomeBreakdownRow(hits = hits, misses = misses, levelUps = levelUps)
+    GenerateSessionButton(enabled = enabled, onAction = onAction)
+    TextButton(onClick = onNavigateToProgress) {
+        Text(
+            text = stringResource(R.string.practice_view_progress),
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+/**
+ * Fila con las tres tarjetas de resultado de [CompletedMessage], con colores diferenciados por rol
+ * (verde para aciertos, rojo para fallos, naranja para "sube de rango") y la misma altura entre las
+ * tres aunque alguna etiqueta ocupe más líneas que otra (spec: practice-session, "El mensaje muestra
+ * el desglose de aciertos, fallos y subidas de nivel"; design D4, fix-redesign-ui-mismatches).
+ */
+@Composable
+private fun OutcomeBreakdownRow(hits: Int, misses: Int, levelUps: Int) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max),
         horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
     ) {
         DsStatTile(
             value = hits.toString(),
             label = stringResource(R.string.practice_outcome_hits),
             size = DsStatTileSize.Compact,
-            modifier = Modifier.weight(1f),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .testTag("practice_outcome_hits_tile"),
         )
         DsStatTile(
             value = misses.toString(),
             label = stringResource(R.string.practice_outcome_misses),
             size = DsStatTileSize.Compact,
-            modifier = Modifier.weight(1f),
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .testTag("practice_outcome_misses_tile"),
         )
         DsStatTile(
             value = levelUps.toString(),
             label = stringResource(R.string.practice_outcome_level_ups),
             size = DsStatTileSize.Compact,
-            modifier = Modifier.weight(1f),
-        )
-    }
-    GenerateSessionButton(enabled = enabled, onAction = onAction)
-    TextButton(onClick = onNavigateToProgress) {
-        Text(
-            text = stringResource(R.string.practice_view_progress),
-            style = MaterialTheme.typography.labelLarge,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .testTag("practice_outcome_level_ups_tile"),
         )
     }
 }

@@ -86,13 +86,13 @@
 
 ## 7. Practicar: colores y altura de los chips de resultado (punto 6)
 
-- [ ] 7.1 Test (`PracticeSessionScreenTest`, `androidTest`): los tres `DsStatTile` de
+- [x] 7.1 Test (`PracticeSessionScreenTest`, `androidTest`): los tres `DsStatTile` de
   `CompletedMessage` usan colores distintos entre sí (verde para aciertos, rojo para fallos, naranja
   para "sube de rango") y las tres columnas miden la misma altura aunque la etiqueta de una ocupe
   dos líneas (spec: `practice-session`, "El mensaje muestra el desglose de aciertos, fallos y
   subidas de nivel"). Verificación: el test falla porque hoy las tres usan el mismo color y pueden
   medir alturas distintas.
-- [ ] 7.2 Pasar `tertiaryContainer`/`onTertiaryContainer`, `errorContainer`/`onErrorContainer` y
+- [x] 7.2 Pasar `tertiaryContainer`/`onTertiaryContainer`, `errorContainer`/`onErrorContainer` y
   `secondaryContainer`/`onSecondaryContainer` a los tres `DsStatTile` de `CompletedMessage`, y
   envolver la `Row` en `Modifier.height(IntrinsicSize.Max)` con cada `DsStatTile.fillMaxHeight()`.
   Verificación: test de 7.1 en verde.
