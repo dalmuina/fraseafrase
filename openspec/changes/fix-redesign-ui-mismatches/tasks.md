@@ -178,16 +178,69 @@
 
 ## 11. Verificación final
 
-- [ ] 11.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde.
-- [ ] 11.2 Ejecutar `./gradlew koverVerify` en verde (cobertura dominio 90 %, presentación 80 %,
+- [x] 11.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) en verde. Verificación: `./gradlew
+  check` desde la raíz, `BUILD SUCCESSFUL` (472 tareas, 16 ejecutadas, 456 up-to-date), sin
+  cambios de código necesarios.
+- [x] 11.2 Ejecutar `./gradlew koverVerify` en verde (cobertura dominio 90 %, presentación 80 %,
   global 70 % sin bajar por los componentes nuevos de `:core:designsystem` ni por
-  `PracticeSessionViewModel`).
-- [ ] 11.3 Verificación de dispositivo/emulador de los 7 puntos del mock a la vez (altura y margen
+  `PracticeSessionViewModel`). Verificación: `./gradlew koverVerify` desde la raíz y
+  `./gradlew :core:designsystem:koverVerify` en concreto, ambos `BUILD SUCCESSFUL`; ningún módulo
+  bajó de su mínimo, por lo que no hizo falta añadir tests nuevos de cobertura.
+- [x] 11.3 Verificación de dispositivo/emulador de los 7 puntos del mock a la vez (altura y margen
   de botones, caja de aviso, icono de escuchar, cabeceras, tarjeta de Progreso, chips de resultado,
   posición e icono del botón de deshacer), citando explícitamente las tareas 6.3 (margen inferior)
   y 8.5 (posición y transición del botón de deshacer) como los dos puntos que solo se verifican
   aquí, con capturas o nota de qué se comparó contra el mock del artifact, en este propio
   `tasks.md`.
+
+  Verificación realizada instalando `:app:installDebug` en el emulador `Pixel_7a(AVD) - 17`
+  (`emulator-5554`) y navegando Practicar → Progreso → Ajustes con `adb shell input tap` +
+  `adb shell screencap`, comparando cada punto contra la descripción del mock de `proposal.md`/
+  `design.md` (no se dispone del artifact visual del mock en este entorno, así que la comparación
+  es contra el texto de las tareas 1-10, que sí describen explícitamente cada medida del mock):
+
+  - Punto 1 (botones inferiores): "Mostrar traducción" muestra icono de búsqueda (alternativa
+    documentada en 6.2 a `Visibility`, no disponible en `material-icons-core`) + texto, altura
+    visualmente igual al resto de controles primarios (56dp vía
+    `AppTheme.dimensions.primaryActionHeight`); "Fallo"/"Acierto" muestran icono de X/check;
+    "Generar sesión nueva" muestra icono de flecha circular. Los cuatro con la misma altura entre
+    sí.
+  - Punto 2 (caja de aviso): "Te faltan 3 aciertos para la insignia Bronce" se pinta dentro de un
+    `DsInfoBanner` con icono de estrella, fondo `secondaryContainer` (melocotón) y "3"/"Bronce" en
+    negrita.
+  - Punto 3 (icono de escuchar): al revelar, el control de audio es un icono-solo (triángulo de
+    reproducir, alternativa documentada en 5.2 a `VolumeUp`), sin ningún texto visible junto a él.
+  - Punto 4 (cabeceras): "Progreso" y "Ajustes" se pintan como título grande dentro del contenido,
+    sobre el mismo fondo que el resto de la pantalla, sin `TopAppBar` ni franja blanca distinta.
+  - Punto 5 (tarjeta de Progreso): la tarjeta "Frases disponibles" es un `DsHeroStat` de ancho
+    completo, fondo `primary` (morado), "30" grande y "Nivel actual: A2" como línea secundaria,
+    todo alineado a la izquierda.
+  - Punto 6 (chips de resultado): en el mensaje de tanda completada, "Aciertos" usa fondo verde
+    (`tertiaryContainer`), "Fallos" fondo rojo/rosa (`errorContainer`) y "Suben de rango" fondo
+    naranja (`secondaryContainer`); las tres columnas miden la misma altura aunque "Suben de rango"
+    ocupa dos líneas de etiqueta.
+  - Punto 7 (botón de deshacer): tras una autoevaluación, el botón circular con icono `Undo`
+    aparece apilado encima del botón "Mostrar traducción" dentro de la misma columna de contenido
+    (no flotando sobre la pantalla ni superpuesto a otro control); al revelar la frase siguiente
+    desaparece. Confirmado también a nivel de código que usa `AnimatedVisibility` (no un `if` seco),
+    por lo que la aparición/desaparición anima con fundido/expansión en vez de aparecer de golpe; no
+    se ha grabado vídeo, pero la transición por defecto de `AnimatedVisibility` es la misma que ya
+    usaba el slot `floatingActionButton` del `Scaffold` antes del cambio, así que no hay regresión
+    de fluidez.
+
+  Citadas explícitamente las dos tareas sin verificación visual previa:
+  - **6.3** (margen inferior de los botones respecto a la bottom nav): confirmado en el padding
+    real del `Box` de contenido (`AppTheme.spacing.s` en las cuatro direcciones, antes
+    `AppTheme.spacing.m`) y visualmente en las capturas: el botón "Mostrar traducción"/"Fallo"-
+    "Acierto" queda con un margen visualmente ajustado respecto a la barra de navegación inferior,
+    sin quedar pegado ni con un hueco grande como antes del cambio.
+  - **8.5** (posición apilada del botón de deshacer y transición al revelar): confirmado que el
+    botón ya no vive en el slot `floatingActionButton` (no flota sobre el contenido ni se superpone
+    a los botones de autoevaluación) sino que se pinta antes del botón principal dentro de la misma
+    `Column`, y que `AnimatedVisibility` (no un condicional sin animación) envuelve su aparición/
+    desaparición, preservando la transición que antes daba el `Scaffold`.
+
+  No se encontró ninguna discrepancia bloqueante con el mock en los 7 puntos.
 
 ## Workflow follow-up
 
