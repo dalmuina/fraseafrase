@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +26,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -64,12 +64,6 @@ internal fun PracticeSessionScreen(
                 PracticeHeader(index = uiState.index, total = uiState.total)
             }
         },
-        floatingActionButton = {
-            if (uiState is PracticeSessionUiState.Practicing && uiState.canRevertLastAnswer) {
-                RevertLastAnswerButton(onAction = onAction)
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Start,
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -186,6 +180,13 @@ private fun PracticingContent(
                     onAction = onAction,
                 )
             }
+            // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches): ya
+            // no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio flotante
+            // sobre el contenido en vez de desplazarlo. `AnimatedVisibility` repone la animación de
+            // aparición/desaparición que ese slot daba automáticamente.
+            AnimatedVisibility(visible = state.canRevertLastAnswer) {
+                RevertLastAnswerButton(onAction = onAction)
+            }
             if (state.revealed) {
                 AssessmentButtons(enabled = !state.busy, onAction = onAction)
             } else {
@@ -198,11 +199,12 @@ private fun PracticingContent(
 /**
  * Botón para revelar la traducción, con icono y 56dp de alto (design D8, fix-redesign-ui-mismatches).
  *
- * Usa [Icons.Default.Search] en vez del ojo (`Icons.Default.Visibility`) previsto en el diseño porque
- * ese icono solo está en `material-icons-extended`, que `:feature:session` no declara como dependencia
- * (igual que `ListenButton` en `PracticeSessionPhraseCard.kt` sustituyó `VolumeUp` por `PlayArrow`);
- * `Search` ya está disponible en `material-icons-core` y es la metáfora más cercana a "revelar/ver
- * contenido oculto" sin añadir esa dependencia.
+ * Usa [Icons.Default.Search] en vez del ojo (`Icons.Default.Visibility`) previsto en el diseño porque,
+ * cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no declaraba
+ * esa dependencia (igual que `ListenButton` en `PracticeSessionPhraseCard.kt` sustituyó `VolumeUp` por
+ * `PlayArrow`; ver su kdoc sobre `material-icons-extended` desde el grupo 8). `Search` ya está disponible
+ * en `material-icons-core` y es la metáfora más cercana a "revelar/ver
+ * contenido oculto" sin depender de `material-icons-extended` solo por este icono.
  */
 @Composable
 private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {

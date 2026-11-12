@@ -25,12 +25,8 @@ import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
-import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -70,9 +66,6 @@ class PracticeSessionScreenTest {
          */
         private const val ROW_ALIGNMENT_TOLERANCE_DP = 24f
 
-        /** Tag del botón flotante para deshacer la última autoevaluación (spec: revert-selection). */
-        private const val REVERT_LAST_ANSWER_BUTTON_TAG = "practice_revert_last_answer_button"
-
         /** Tags de las tres tarjetas de resultado de [CompletedMessage] (design D4, fix-redesign-ui-mismatches). */
         private const val HITS_TILE_TAG = "practice_outcome_hits_tile"
         private const val MISSES_TILE_TAG = "practice_outcome_misses_tile"
@@ -90,7 +83,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenHiddenPhraseWhenShowingTheScreenThenNoAssessmentIsOffered() {
         // Given: la frase A sin revelar
-        setScreen(practicing(current = item(source = "Buenos días", target = "Bom dia")))
+        composeTestRule.setScreen(practicing(current = item(source = "Buenos días", target = "Bom dia")))
 
         // When: la pantalla se muestra sin revelar (no hay acción que cambie el estado)
 
@@ -135,7 +128,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenHiddenPhraseWhenShowingTheScreenThenNoListenControlIsShown() {
         // Given: la frase A sin revelar
-        setScreen(practicing(current = item()))
+        composeTestRule.setScreen(practicing(current = item()))
 
         // When: la pantalla se muestra sin revelar (no hay acción que cambie el estado)
 
@@ -171,7 +164,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenAnswerInProgressWhenShowingTheScreenThenTheListenControlIsDisabled() {
         // Given: una frase revelada cuya autoevaluación se está registrando (busy = true)
-        setScreen(practicing(current = item(), revealed = true, busy = true))
+        composeTestRule.setScreen(practicing(current = item(), revealed = true, busy = true))
 
         // When: la pantalla muestra el estado con la respuesta en curso (estado dado)
 
@@ -183,7 +176,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenRevealedPhrase_whenScreenShown_thenListenControlShowsNoVisibleTextButExposesContentDescription() {
         // Given: la pantalla muestra una frase revelada
-        setScreen(practicing(current = item(), revealed = true))
+        composeTestRule.setScreen(practicing(current = item(), revealed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -197,7 +190,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPracticingState_whenScreenShown_thenPositionIndicatorIsDisplayed() {
         // Given: una tanda activa de cinco frases, mostrando la primera
-        setScreen(practicing(current = item()).copy(index = 1, total = 5))
+        composeTestRule.setScreen(practicing(current = item()).copy(index = 1, total = 5))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -209,7 +202,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPracticingState_whenScreenShown_thenCefrLevelIsDisplayed() {
         // Given: una frase de nivel CEFR B1 sin revelar
-        setScreen(practicing(current = item(cefrLevel = CefrLevel.B1), revealed = false))
+        composeTestRule.setScreen(practicing(current = item(cefrLevel = CefrLevel.B1), revealed = false))
 
         // When: la pantalla se muestra sin revelar (estado dado)
 
@@ -221,7 +214,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseWithConsolidationLevel2_whenScreenShown_thenSilverBadgeIsDisplayed() {
         // Given: una tanda activa cuya primera frase tiene nivel de consolidación 2
-        setScreen(practicing(current = item().copy(level = Level(2)), revealed = false))
+        composeTestRule.setScreen(practicing(current = item().copy(level = Level(2)), revealed = false))
 
         // When: el usuario abre la pantalla de práctica (estado dado)
 
@@ -317,7 +310,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseWithConsolidationLevel0_whenScreenShown_thenNoRankBadgeIsDisplayed() {
         // Given: una frase nueva con nivel de consolidación 0
-        setScreen(practicing(current = item().copy(level = Level(0))))
+        composeTestRule.setScreen(practicing(current = item().copy(level = Level(0))))
 
         // When: la pantalla la muestra (estado dado)
 
@@ -334,7 +327,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseRevealed_whenScreenShown_thenListenControlShowsAudioIcon() {
         // Given: la pantalla muestra una frase revelada
-        setScreen(practicing(current = item(), revealed = true))
+        composeTestRule.setScreen(practicing(current = item(), revealed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -348,7 +341,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenRevealedPhrase_whenScreenShown_thenListenButtonIsAtTheSameHeightAsTheCefrPill() {
         // Given: la pantalla muestra una frase de nivel CEFR B1 revelada
-        setScreen(practicing(current = item(cefrLevel = CefrLevel.B1), revealed = true))
+        composeTestRule.setScreen(practicing(current = item(cefrLevel = CefrLevel.B1), revealed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -363,7 +356,9 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseWithStreak1WhenShowingItThenTheRemainingHitsCounterIsDisplayed() {
         // Given: una frase de nivel 0 con racha 1, le faltan 2 aciertos para la insignia "Bronce"
-        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 2, nextLevelBadgeLabel = "Bronce"))
+        composeTestRule.setScreen(
+            practicing(current = item()).copy(remainingHitsForNextLevel = 2, nextLevelBadgeLabel = "Bronce"),
+        )
 
         // When: la pantalla la muestra (estado dado)
 
@@ -376,7 +371,9 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseWithStreak1_whenShowingIt_thenRemainingHitsMessageShowsBadgeIcon() {
         // Given: una frase de nivel 0 con racha 1, le faltan 2 aciertos para la insignia "Bronce"
-        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 2, nextLevelBadgeLabel = "Bronce"))
+        composeTestRule.setScreen(
+            practicing(current = item()).copy(remainingHitsForNextLevel = 2, nextLevelBadgeLabel = "Bronce"),
+        )
 
         // When: la pantalla la muestra (estado dado)
 
@@ -422,7 +419,9 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseWithStreak3WhenShowingItThenTheCounterShowsZero() {
         // Given: una frase de nivel 1 con racha 3, le faltan 0 aciertos para la insignia "Plata"
-        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 0, nextLevelBadgeLabel = "Plata"))
+        composeTestRule.setScreen(
+            practicing(current = item()).copy(remainingHitsForNextLevel = 0, nextLevelBadgeLabel = "Plata"),
+        )
 
         // When: la pantalla la muestra (estado dado)
 
@@ -434,7 +433,9 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPhraseAtMaxLevelWhenShowingItThenTheCounterStillShows() {
         // Given: una frase de nivel 5 con racha 3, le faltan 0 aciertos para la insignia "Diamante"
-        setScreen(practicing(current = item()).copy(remainingHitsForNextLevel = 0, nextLevelBadgeLabel = "Diamante"))
+        composeTestRule.setScreen(
+            practicing(current = item()).copy(remainingHitsForNextLevel = 0, nextLevelBadgeLabel = "Diamante"),
+        )
 
         // When: la pantalla la muestra (estado dado)
 
@@ -446,7 +447,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenCompletedBatchWhenShowingTheScreenThenThePositiveMessageIsDisplayedInsteadOfAPhrase() {
         // Given: la tanda activa está completa
-        setScreen(practicing(current = item(), completed = true))
+        composeTestRule.setScreen(practicing(current = item(), completed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -481,7 +482,9 @@ class PracticeSessionScreenTest {
     @Test
     fun givenCompletedBatchWithOutcome_whenShowingTheScreen_thenTheBreakdownStatTilesAndSuccessIconAreDisplayed() {
         // Given: la tanda completada con 3 aciertos, 2 fallos y 1 subida de nivel
-        setScreen(practicing(current = item(), completed = true).copy(hits = 3, misses = 2, levelUps = 1))
+        composeTestRule.setScreen(
+            practicing(current = item(), completed = true).copy(hits = 3, misses = 2, levelUps = 1),
+        )
 
         // When: la pantalla se muestra (estado dado)
 
@@ -556,7 +559,7 @@ class PracticeSessionScreenTest {
         // Given: no hay frases disponibles
 
         // When: la pantalla se muestra en el estado NothingToPractice
-        setScreen(PracticeSessionUiState.NothingToPractice)
+        composeTestRule.setScreen(PracticeSessionUiState.NothingToPractice)
 
         // Then: la pantalla indica que no hay frases para practicar y no muestra ninguna frase
         composeTestRule.onNodeWithText("No hay frases para practicar").assertIsDisplayed()
@@ -567,7 +570,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenAnswerInProgressWhenShowingTheScreenThenTheGenerateSessionButtonIsDisabled() {
         // Given: la tanda está completa y, además, una autoevaluación se está registrando (busy = true)
-        setScreen(practicing(current = item(), busy = true, completed = true))
+        composeTestRule.setScreen(practicing(current = item(), busy = true, completed = true))
 
         // When: la pantalla muestra el estado con la respuesta en curso (estado dado)
 
@@ -580,7 +583,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPracticingState_whenShowingTheScreen_thenTitleAndProgressPillAreDisplayed() {
         // Given: una tanda activa de cinco frases, mostrando la segunda
-        setScreen(practicing(current = item(source = "Buenos días")).copy(index = 2, total = 5))
+        composeTestRule.setScreen(practicing(current = item(source = "Buenos días")).copy(index = 2, total = 5))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -595,7 +598,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenPracticingState_whenShowingTheScreen_thenProgressIndicatorIsDisplayed() {
         // Given: una tanda activa de cinco frases, mostrando la segunda
-        setScreen(practicing(current = item()).copy(index = 2, total = 5))
+        composeTestRule.setScreen(practicing(current = item()).copy(index = 2, total = 5))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -610,7 +613,7 @@ class PracticeSessionScreenTest {
         // Given: no hay frases disponibles
 
         // When: la pantalla se muestra en el estado NothingToPractice
-        setScreen(PracticeSessionUiState.NothingToPractice)
+        composeTestRule.setScreen(PracticeSessionUiState.NothingToPractice)
 
         // Then: no aparecen el título ni la píldora de posición ni la barra de progreso
         composeTestRule.onNodeWithText("Practicar").assertDoesNotExist()
@@ -650,7 +653,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenRevealedState_whenShowingTheScreen_thenHitAndMissButtonsAreFullWidth() {
         // Given: la pantalla muestra una frase revelada
-        setScreen(practicing(current = item(), revealed = true))
+        composeTestRule.setScreen(practicing(current = item(), revealed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -668,7 +671,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenHiddenState_whenShowingTheScreen_thenRevealButtonIsFullWidth() {
         // Given: la pantalla muestra una frase sin revelar
-        setScreen(practicing(current = item(), revealed = false))
+        composeTestRule.setScreen(practicing(current = item(), revealed = false))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -684,7 +687,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenHiddenState_whenShowingTheScreen_thenRevealButtonShowsIconNextToText() {
         // Given: la pantalla muestra una frase sin revelar
-        setScreen(practicing(current = item(), revealed = false))
+        composeTestRule.setScreen(practicing(current = item(), revealed = false))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -698,7 +701,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenRevealedState_whenShowingTheScreen_thenMissAndHitButtonsShowIconsNextToText() {
         // Given: la pantalla muestra una frase revelada
-        setScreen(practicing(current = item(), revealed = true))
+        composeTestRule.setScreen(practicing(current = item(), revealed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -714,7 +717,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenCompletedBatch_whenShowingTheScreen_thenGenerateSessionButtonShowsIconNextToText() {
         // Given: la tanda activa está completa
-        setScreen(practicing(current = item(), completed = true))
+        composeTestRule.setScreen(practicing(current = item(), completed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -727,7 +730,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenVeryLongPhrase_whenScreenIsShown_thenRevealControlIsDisplayed() {
         // Given: la pantalla muestra una frase sin revelar cuyo texto desborda la pantalla
-        setScreen(practicing(current = item(source = veryLongText())))
+        composeTestRule.setScreen(practicing(current = item(source = veryLongText())))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -739,7 +742,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenVeryLongTranslation_whenScreenIsShown_thenHitAndMissControlsAreDisplayed() {
         // Given: la pantalla muestra una frase revelada cuya traducción desborda la pantalla
-        setScreen(practicing(current = item(target = veryLongText()), revealed = true))
+        composeTestRule.setScreen(practicing(current = item(target = veryLongText()), revealed = true))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -752,7 +755,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenVeryLongPhraseAndTranslation_whenContentIsScrolled_thenHitAndMissControlsStayDisplayed() {
         // Given: la pantalla muestra una frase revelada cuya frase y traducción juntas desbordan la pantalla
-        setScreen(
+        composeTestRule.setScreen(
             practicing(
                 current = item(source = veryLongText("frase"), target = veryLongText("traduccion")),
                 revealed = true,
@@ -776,7 +779,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenUpBadgeChange_whenScreenShown_thenHaloIsShownAndRevealControlStaysPresent() {
         // Given: una autoevaluación que certifica cambia el nivel de la frase revelada, respondida (busy)
-        setScreen(
+        composeTestRule.setScreen(
             practicing(
                 current = item(),
                 revealed = true,
@@ -799,7 +802,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenDownBadgeChange_whenScreenShown_thenHaloIsAbsent() {
         // Given: una autoevaluación que baja el nivel cambia el nivel de la frase revelada, respondida (busy)
-        setScreen(
+        composeTestRule.setScreen(
             practicing(
                 current = item(),
                 revealed = true,
@@ -824,7 +827,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenNoBadgeChange_whenScreenShown_thenBadgeChangeIndicatorIsNotShown() {
         // Given: una autoevaluación sin cambio de nivel visible
-        setScreen(practicing(current = item(), badgeChange = null))
+        composeTestRule.setScreen(practicing(current = item(), badgeChange = null))
 
         // When: la pantalla se muestra (estado dado)
 
@@ -874,7 +877,7 @@ class PracticeSessionScreenTest {
     fun givenUpBadgeChange_whenIntermediateTimeElapses_thenIndicatorStaysVisible() {
         // Given: el indicador de cambio de insignia con dirección UP, con el reloj de composición controlado
         composeTestRule.mainClock.autoAdvance = false
-        setScreen(
+        composeTestRule.setScreen(
             practicing(
                 current = item(),
                 busy = true,
@@ -931,7 +934,7 @@ class PracticeSessionScreenTest {
     @Test
     fun givenBadgeChange_whenScreenShown_thenAnsweredPhraseStaysVisibleAndIndicatorIsAtCefrLabelHeight() {
         // Given: una autoevaluación que cambia el nivel de consolidación de la frase respondida, revelada
-        setScreen(
+        composeTestRule.setScreen(
             practicing(
                 current = item(source = "Buenos días", cefrLevel = CefrLevel.B1),
                 revealed = true,
@@ -951,43 +954,6 @@ class PracticeSessionScreenTest {
         assertTrue(abs((indicatorTop - cefrLabelTop).value) <= ROW_ALIGNMENT_TOLERANCE_DP)
     }
 
-    // Scenario: El botón aparece tras autoevaluar (spec: practice-session)
-    @Test
-    fun givenCanRevertLastAnswerTrue_whenScreenShown_thenRevertButtonIsDisplayedAndClickable() {
-        // Given: una tanda activa con una autoevaluación reciente que se puede revertir
-        var receivedAction: PracticeSessionAction? = null
-        composeTestRule.setContent {
-            AppTheme {
-                PracticeSessionScreen(
-                    uiState = practicing(current = item()).copy(canRevertLastAnswer = true),
-                    onAction = { action -> receivedAction = action },
-                )
-            }
-        }
-
-        // When: el usuario pulsa el botón de revertir, en la esquina inferior izquierda
-        composeTestRule.onNodeWithTag(REVERT_LAST_ANSWER_BUTTON_TAG).apply {
-            assertIsDisplayed()
-            performClick()
-        }
-
-        // Then: se despacha RevertLastAnswer
-        assertTrue(receivedAction == PracticeSessionAction.RevertLastAnswer)
-    }
-
-    // Scenario: El botón no aparece antes de la primera autoevaluación / no aparece mientras se registra una
-    // nueva autoevaluación (spec: practice-session)
-    @Test
-    fun givenCanRevertLastAnswerFalse_whenScreenShown_thenRevertButtonDoesNotExist() {
-        // Given: no hay ninguna autoevaluación pendiente de revertir
-        setScreen(practicing(current = item()).copy(canRevertLastAnswer = false))
-
-        // When: la pantalla se muestra (estado dado)
-
-        // Then: el botón de revertir no existe en el árbol semántico
-        composeTestRule.onNodeWithTag(REVERT_LAST_ANSWER_BUTTON_TAG).assertDoesNotExist()
-    }
-
     /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */
     private fun veryLongText(prefix: String = "palabra"): String =
         (1..40).joinToString(separator = " ") { "$prefix$it" }
@@ -1003,46 +969,4 @@ class PracticeSessionScreenTest {
         val pixelMap = composeTestRule.onNodeWithTag(tag).captureToImage().toPixelMap()
         return pixelMap[pixelMap.width / 2, pixelMap.height / 2]
     }
-
-    private fun setScreen(uiState: PracticeSessionUiState) {
-        composeTestRule.setContent {
-            AppTheme {
-                PracticeSessionScreen(uiState = uiState, onAction = {})
-            }
-        }
-    }
-
-    private fun practicing(
-        current: PracticeItem = item(),
-        revealed: Boolean = false,
-        busy: Boolean = false,
-        completed: Boolean = false,
-        badgeChange: BadgeChange? = null,
-    ): PracticeSessionUiState.Practicing = PracticeSessionUiState.Practicing(
-        current = current,
-        revealed = revealed,
-        busy = busy,
-        completed = completed,
-        index = 1,
-        total = 1,
-        remainingHitsForNextLevel = 0,
-        nextLevelBadgeLabel = "Bronce",
-        badgeChange = badgeChange,
-    )
-
-    /** Frase de presentación. */
-    private fun item(
-        source: String = "Buenos días",
-        target: String = "Bom dia",
-        cefrLevel: CefrLevel = CefrLevel.A1,
-        streak: Int = 0,
-    ): PracticeItem = PracticeItem(
-        id = PhraseId("A"),
-        source = source,
-        target = target,
-        targetLocale = LanguageTag("pt-PT"),
-        cefrLevel = cefrLevel,
-        streak = Streak(streak),
-        level = Level(0),
-    )
 }

@@ -99,26 +99,46 @@
 
 ## 8. Practicar: botón de deshacer (punto 7, delta `practice-session`)
 
-- [ ] 8.1 Test (`PracticeSessionViewModelTest`): al revelar la frase actual con
+- [x] 8.1 Test (`PracticeSessionViewModelTest`): al revelar la frase actual con
   `canRevertLastAnswer` en `true`, el estado resultante tiene `canRevertLastAnswer` en `false`
   (spec: `practice-session`, "El botón desaparece al revelar la frase siguiente"). Verificación: el
   test falla porque `reveal()` hoy solo cambia `revealed`.
-- [ ] 8.2 Añadir `canRevertLastAnswer = false` a la copia de estado que produce
+- [x] 8.2 Añadir `canRevertLastAnswer = false` a la copia de estado que produce
   `PracticeSessionViewModel.reveal()`. Verificación: test de 8.1 en verde,
   `./gradlew :feature:session:testDebugUnitTest`.
-- [ ] 8.3 Test (`PracticeSessionScreenTest`, `androidTest`): el botón flotante de deshacer muestra
+- [x] 8.3 Test (`PracticeSessionScreenTest`, `androidTest`): el botón flotante de deshacer muestra
   un icono de recarga/deshacer, no una flecha de "volver atrás" (mismo escenario de spec que 8.1,
   comprobado a nivel de pantalla). Verificación: el test falla con el icono actual.
-- [ ] 8.4 Cambiar el icono de `PracticeSessionRevertButton.kt` de
+
+  Nota de implementación: compara píxel a píxel el icono realmente pintado dentro del
+  `FloatingActionButton` con un icono de referencia (`Icons.AutoMirrored.Filled.Undo`) pintado en el
+  mismo árbol con el mismo tinte y fondo, con una tolerancia del 10 % de píxeles distintos (margen de
+  antialiasing medido empíricamente: ~3 % entre el mismo icono en dos contextos de render, ~21 % entre
+  `Undo` y `ArrowBack`). Falla con el icono actual (`ArrowBack`, ~21 % de diferencia) antes de 8.4.
+- [x] 8.4 Cambiar el icono de `PracticeSessionRevertButton.kt` de
   `Icons.AutoMirrored.Filled.ArrowBack` a `Icons.AutoMirrored.Filled.Undo`. Verificación: test de
   8.3 en verde.
-- [ ] 8.5 Sacar el botón de deshacer del slot `floatingActionButton` del `Scaffold` de
+
+  Nota de implementación: `Icons.AutoMirrored.Filled.Undo` solo existe en `material-icons-extended`
+  (comprobado inspeccionando el aar de `material-icons-core`, que no la incluye), que
+  `:feature:session` no declaraba como dependencia. A diferencia de los grupos 5/6 (que evitaron
+  `material-icons-extended` eligiendo un icono equivalente ya en `material-icons-core`), aquí no hay
+  ninguna alternativa en `material-icons-core` que no sea otra vez una flecha de "volver atrás" (la
+  propia `ArrowBack`), así que se añade `implementation(libs.androidx.compose.material.icons.extended)`
+  a `feature/session/build.gradle.kts`, igual que ya hacen `:core:designsystem` y `:app` (justificado
+  por design D6, que ya nombraba esa dependencia explícitamente para este icono).
+- [x] 8.5 Sacar el botón de deshacer del slot `floatingActionButton` del `Scaffold` de
   `PracticeSessionScreen.kt` y pintarlo dentro de la `Column` de contenido, antes del botón
   principal/los botones de autoevaluación, con su propio espaciado (design D6), añadiendo
   `AnimatedVisibility` (u otra transición equivalente) para no perder la animación de
   aparición/desaparición que tenía como `floatingActionButton`. Verificación de
   dispositivo/emulador (posición relativa y transición, no asertable por test), comparando contra
   el mock.
+
+  Aplicado sin verificación visual propia en este grupo (el agente no tiene forma de comparar contra
+  el mock), igual que la nota de la tarea 6.3; pendiente de la verificación conjunta de
+  dispositivo/emulador de la tarea 11.3, citada explícitamente en esa tarea como uno de los dos
+  puntos que solo se verifican allí.
 
 ## 9. Ajustes: icono del botón "Guardar" y cabecera (punto 1 parte de Ajustes, punto 4 parte)
 

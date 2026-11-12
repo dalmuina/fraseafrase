@@ -147,8 +147,11 @@ private fun CefrLevelPill(cefrLevel: CefrLevel) {
  * muestra (spec: phrase-audio, "Botón de escuchar tras revelar"; design D5, fix-redesign-ui-mismatches).
  *
  * Usa [Icons.Default.PlayArrow] en vez del altavoz (`Icons.Default.VolumeUp`) previsto en el diseño
- * porque ese icono solo está en `material-icons-extended`, que `:feature:session` no declara como
- * dependencia; `PlayArrow` ya está disponible en `material-icons-core` y ya se usaba en este control.
+ * porque, cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no
+ * declaraba esa dependencia; `PlayArrow` ya estaba disponible en `material-icons-core` y ya se usaba en
+ * este control. `:feature:session` sí declara `material-icons-extended` desde el grupo 8 de
+ * `fix-redesign-ui-mismatches` (design D6, icono `Undo` del botón de deshacer), pero revisar esta
+ * elección con esa dependencia ya disponible queda fuera del alcance de esa tarea.
  */
 @Composable
 private fun ListenButton(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
