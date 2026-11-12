@@ -4,11 +4,12 @@
 
 ### Requirement: Botón flotante para revertir la última autoevaluación
 
-Tras autoevaluar una frase y avanzar a la frase siguiente, la pantalla MUST mostrar un botón
-flotante en la esquina inferior izquierda que permite revertir esa autoevaluación. El botón MUST
-NOT mostrarse antes de la primera autoevaluación de la tanda activa, mientras una autoevaluación
-esté en curso (`busy`), durante la transición del indicador de cambio de insignia de la frase
-que se acaba de autoevaluar, ni mientras la frase actual esté revelada.
+Tras autoevaluar una frase y avanzar a la frase siguiente, la pantalla MUST mostrar un botón que
+permite revertir esa autoevaluación, apilado por encima del control principal inferior en vez de
+superpuesto sobre el contenido. El botón MUST NOT mostrarse antes de la primera autoevaluación de
+la tanda activa, mientras una autoevaluación esté en curso (`busy`), durante la transición del
+indicador de cambio de insignia de la frase que se acaba de autoevaluar, ni mientras la frase
+actual esté revelada.
 
 #### Scenario: El botón aparece tras autoevaluar
 
