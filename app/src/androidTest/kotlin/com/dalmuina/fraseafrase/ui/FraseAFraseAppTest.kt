@@ -1,18 +1,26 @@
 package com.dalmuina.fraseafrase.ui
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import com.dalmuina.fraseafrase.MainActivity
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import kotlin.math.abs
 
 /**
  * Tests instrumentados de [FraseAFraseApp] (spec `app-navigation`). Usan el grafo de producción
@@ -104,6 +112,85 @@ class FraseAFraseAppTest {
         waitForPracticeScreen()
     }
 
+    // Scenario: la barra de navegación respeta las medidas del mock (adopt-reference-mock-ui,
+    // design D7, tasks 10.1/10.2): alto 80dp.
+    @Test
+    fun givenAppLaunched_whenLookingAtTheBottomBar_thenItsHeightMatchesTheMock() {
+        waitForPracticeScreen()
+
+        val bounds = composeTestRule.onNodeWithTag(NAV_TAG_BAR).getUnclippedBoundsInRoot()
+        val height = bounds.bottom - bounds.top
+
+        assertTrue(
+            "height=$height, expected ~$NAV_BAR_HEIGHT",
+            abs((height - NAV_BAR_HEIGHT).value) <= SIZE_TOLERANCE_DP.value
+        )
+    }
+
+    // Scenario: la barra de navegación respeta las medidas del mock (adopt-reference-mock-ui,
+    // design D7, tasks 10.1/10.2): indicador del tab activo 64x32dp.
+    @Test
+    fun givenAppLaunched_whenLookingAtTheBottomBar_thenTheActiveIndicatorMatchesMockSize() {
+        waitForPracticeScreen()
+
+        val bounds = composeTestRule
+            .onNodeWithTag(NAV_TAG_PRACTICE_INDICATOR, useUnmergedTree = true)
+            .getUnclippedBoundsInRoot()
+        val width = bounds.right - bounds.left
+        val height = bounds.bottom - bounds.top
+
+        assertTrue(
+            "width=$width, expected ~$NAV_INDICATOR_WIDTH",
+            abs((width - NAV_INDICATOR_WIDTH).value) <= SIZE_TOLERANCE_DP.value
+        )
+        assertTrue(
+            "height=$height, expected ~$NAV_INDICATOR_HEIGHT",
+            abs((height - NAV_INDICATOR_HEIGHT).value) <= SIZE_TOLERANCE_DP.value
+        )
+    }
+
+    // Scenario: la barra de navegación respeta los colores del mock (adopt-reference-mock-ui,
+    // design D7, tasks 10.1/10.2): las 3 etiquetas inactivas usan el mismo color textSecondary.
+    @Test
+    fun givenPracticeScreen_whenLookingAtTheInactiveLabels_thenAllThreeUseTheSameTextSecondaryColor() {
+        waitForPracticeScreen()
+
+        val progressLabelColor = darkestPixelColor(NAV_TAG_PROGRESS_LABEL)
+        val settingsLabelColor = darkestPixelColor(NAV_TAG_SETTINGS_LABEL)
+
+        assertColorCloseTo(AppColors.TextSecondary, progressLabelColor)
+        assertColorCloseTo(AppColors.TextSecondary, settingsLabelColor)
+    }
+
+    /** Color del píxel más oscuro del nodo con [tag]: aproxima el color de tinta del texto sin
+     * verse afectado por el antialiasing de los bordes de los glifos (igual estrategia de
+     * muestreo de píxel que `DsStatTileTest`/`PracticeSessionTranslationRevealedScreenTest`). */
+    private fun darkestPixelColor(tag: String): Color {
+        val pixelMap = composeTestRule.onNodeWithTag(tag, useUnmergedTree = true).captureToImage().toPixelMap()
+        var darkest = Color.White
+        var minLuminance = Float.MAX_VALUE
+        for (x in 0 until pixelMap.width) {
+            for (y in 0 until pixelMap.height) {
+                val pixel = pixelMap[x, y]
+                val luminance = pixel.red + pixel.green + pixel.blue
+                if (luminance < minLuminance) {
+                    minLuminance = luminance
+                    darkest = pixel
+                }
+            }
+        }
+        return darkest
+    }
+
+    private fun assertColorCloseTo(expected: Color, actual: Color) {
+        assertTrue(
+            "expected=$expected, actual=$actual",
+            abs(expected.red - actual.red) <= COLOR_TOLERANCE &&
+                abs(expected.green - actual.green) <= COLOR_TOLERANCE &&
+                abs(expected.blue - actual.blue) <= COLOR_TOLERANCE
+        )
+    }
+
     private fun waitForPracticeScreen() {
         composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) {
             composeTestRule.onAllNodesWithText("Mostrar traducción").fetchSemanticsNodes().isNotEmpty()
@@ -127,6 +214,15 @@ class FraseAFraseAppTest {
         const val NAV_TAG_PRACTICE_ICON = "nav-practice-icon"
         const val NAV_TAG_PROGRESS_ICON = "nav-progress-icon"
         const val NAV_TAG_SETTINGS_ICON = "nav-settings-icon"
+        const val NAV_TAG_BAR = "bottom-nav-bar"
+        const val NAV_TAG_PRACTICE_INDICATOR = "nav-practice-indicator"
+        const val NAV_TAG_PROGRESS_LABEL = "nav-progress-label"
+        const val NAV_TAG_SETTINGS_LABEL = "nav-settings-label"
         const val WAIT_TIMEOUT_MILLIS = 5_000L
+        val NAV_BAR_HEIGHT = 80.dp
+        val NAV_INDICATOR_WIDTH = 64.dp
+        val NAV_INDICATOR_HEIGHT = 32.dp
+        val SIZE_TOLERANCE_DP = 1.dp
+        const val COLOR_TOLERANCE = 0.02f
     }
 }

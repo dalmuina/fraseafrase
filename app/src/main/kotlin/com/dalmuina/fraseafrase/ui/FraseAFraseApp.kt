@@ -1,13 +1,17 @@
 package com.dalmuina.fraseafrase.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoStories
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -19,16 +23,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import com.dalmuina.fraseafrase.R
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.feature.progress.ProgressRoute
 import com.dalmuina.fraseafrase.feature.session.PracticeSessionRoute
 import com.dalmuina.fraseafrase.feature.settings.SettingsRoute
 import com.dalmuina.fraseafrase.ui.navigation.BottomDestination
 import kotlinx.coroutines.launch
+import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Barra de navegación inferior de tres destinos de igual nivel (design.md - Decisions, "Barra de
@@ -83,53 +94,89 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
 
 /**
  * Barra de navegación inferior propiamente dicha, extraída de [FraseAFraseApp] para mantener su
- * longitud dentro del límite de detekt. Cada destino muestra un icono de `material-icons-extended`
- * además de su etiqueta de texto (spec `app-navigation`, design D5).
+ * longitud dentro del límite de detekt. Cada destino muestra uno de los `ic_nav_*` del mock además
+ * de su etiqueta de texto (spec `app-navigation`, design D5; adopt-reference-mock-ui design D7).
  */
 @Composable
 private fun FraseAFraseBottomBar(
     selectedDestination: BottomDestination,
     onDestinationSelected: (BottomDestination) -> Unit,
 ) {
-    NavigationBar {
-        NavigationBarItem(
-            modifier = Modifier.testTag("nav-practice"),
+    NavigationBar(modifier = Modifier.testTag("bottom-nav-bar").height(AppTheme.dimensions.navHeight)) {
+        FraseAFraseBottomBarItem(
+            tag = "nav-practice",
             selected = selectedDestination == BottomDestination.Practice,
             onClick = { onDestinationSelected(BottomDestination.Practice) },
-            icon = {
-                Icon(
-                    modifier = Modifier.testTag("nav-practice-icon"),
-                    imageVector = Icons.Default.AutoStories,
-                    contentDescription = null,
-                )
-            },
-            label = { Text(text = stringResource(R.string.nav_practice)) },
+            iconRes = DesignSystemR.drawable.ic_nav_practicar,
+            label = stringResource(R.string.nav_practice),
         )
-        NavigationBarItem(
-            modifier = Modifier.testTag("nav-progress"),
+        FraseAFraseBottomBarItem(
+            tag = "nav-progress",
             selected = selectedDestination == BottomDestination.Progress,
             onClick = { onDestinationSelected(BottomDestination.Progress) },
-            icon = {
-                Icon(
-                    modifier = Modifier.testTag("nav-progress-icon"),
-                    imageVector = Icons.Default.BarChart,
-                    contentDescription = null,
-                )
-            },
-            label = { Text(text = stringResource(R.string.nav_progress)) },
+            iconRes = DesignSystemR.drawable.ic_nav_progreso,
+            label = stringResource(R.string.nav_progress),
         )
-        NavigationBarItem(
-            modifier = Modifier.testTag("nav-settings"),
+        FraseAFraseBottomBarItem(
+            tag = "nav-settings",
             selected = selectedDestination == BottomDestination.Settings,
             onClick = { onDestinationSelected(BottomDestination.Settings) },
-            icon = {
-                Icon(
-                    modifier = Modifier.testTag("nav-settings-icon"),
-                    imageVector = Icons.Default.Tune,
-                    contentDescription = null,
-                )
-            },
-            label = { Text(text = stringResource(R.string.nav_settings)) },
+            iconRes = DesignSystemR.drawable.ic_nav_ajustes,
+            label = stringResource(R.string.nav_settings),
         )
     }
+}
+
+/**
+ * Un destino de la barra de navegación inferior. El indicador de píldora detrás del icono
+ * seleccionado (64x32dp `accentSoft`) se dibuja a mano porque Material 3 fija internamente su
+ * ancho a `NavigationBarVerticalItemTokens.ActiveIndicatorWidth` (56dp, sin parámetro público para
+ * cambiarlo): el indicador por defecto se desactiva con `indicatorColor = Color.Transparent`
+ * (adopt-reference-mock-ui, design D7).
+ */
+@Composable
+private fun RowScope.FraseAFraseBottomBarItem(
+    tag: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    iconRes: Int,
+    label: String,
+) {
+    NavigationBarItem(
+        modifier = Modifier.testTag(tag),
+        selected = selected,
+        onClick = onClick,
+        icon = {
+            Box(contentAlignment = Alignment.Center) {
+                if (selected) {
+                    Box(
+                        modifier = Modifier
+                            .testTag("$tag-indicator")
+                            .size(
+                                width = AppTheme.dimensions.navIndicatorWidth,
+                                height = AppTheme.dimensions.navIndicatorHeight,
+                            )
+                            .background(color = AppColors.AccentSoft, shape = RoundedCornerShape(percent = 50)),
+                    )
+                }
+                Icon(
+                    modifier = Modifier
+                        .testTag("$tag-icon")
+                        .size(AppTheme.dimensions.navIconSize),
+                    imageVector = ImageVector.vectorResource(id = iconRes),
+                    tint = if (selected) MaterialTheme.colorScheme.primary else AppColors.TextSecondary,
+                    contentDescription = null,
+                )
+            }
+        },
+        label = {
+            Text(
+                modifier = Modifier.testTag("$tag-label"),
+                text = label,
+                color = if (selected) MaterialTheme.colorScheme.onSurface else AppColors.TextSecondary,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+            )
+        },
+        colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
+    )
 }

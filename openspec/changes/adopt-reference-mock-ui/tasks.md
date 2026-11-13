@@ -139,11 +139,11 @@
 
 ## 10. Barra de navegación inferior (`:app`)
 
-- [ ] 10.1 Añadir un test de Compose UI sobre `FraseAFraseApp.kt` que compruebe la altura (80dp), el
+- [x] 10.1 Añadir un test de Compose UI sobre `FraseAFraseApp.kt` que compruebe la altura (80dp), el
   tamaño del indicador de tab activo (64×32dp) y que la etiqueta inactiva usa un único color
   `textSecondary` (`#5A5670`) en las 3 pestañas; verificar que falla con la configuración actual de
   `NavigationBar`/`NavigationBarItem` por defecto.
-- [ ] 10.2 Sobreescribir los colores/formas/alturas de `NavigationBar`/`NavigationBarItem` según
+- [x] 10.2 Sobreescribir los colores/formas/alturas de `NavigationBar`/`NavigationBarItem` según
   design.md decisión 7 y sustituir los iconos por `ic_nav_practicar`/`ic_nav_progreso`/`ic_nav_ajustes`;
   verificar que el test de 10.1 pasa en las 5 pantallas que incluyen la barra.
 
