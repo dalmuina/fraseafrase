@@ -1,5 +1,8 @@
 package com.dalmuina.fraseafrase.feature.settings
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,23 +26,26 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppCornerShapes
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión
@@ -102,7 +109,7 @@ private fun LoadedContent(
             enabled = state.isBatchSizeValid,
         ) {
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_check_save),
                 contentDescription = null,
                 modifier = Modifier
                     .size(ButtonDefaults.IconSize)
@@ -115,11 +122,12 @@ private fun LoadedContent(
 }
 
 /**
- * Tarjeta de selección del nivel CEFR con un selector segmentado de selección única (mock "Ajustes"). Usa
- * [SingleChoiceSegmentedButtonRow]/[SegmentedButton] en vez de `FilterChip` para no perder la semántica
- * accesible de grupo de radio que `FilterChip` ya tenía por defecto (design.md - Risks/Trade-offs de
- * `redesign-app-ui`): el contenedor aplica `Modifier.selectableGroup()` y cada botón expone `role =
- * Role.RadioButton` internamente.
+ * Tarjeta de selección del nivel CEFR con una rejilla de cinco botones propios (mock "Ajustes", 52dp de
+ * alto, radio [AppCornerShapes.Hint]), en vez de `SingleChoiceSegmentedButtonRow`/`SegmentedButton` de
+ * Material 3: su forma de píldora conectada no coincide con la rejilla de botones independientes del mock
+ * (design.md decisión 4, adopt-reference-mock-ui). El contenedor aplica `Modifier.selectableGroup()` y
+ * cada botón expone `role = Role.RadioButton` mediante `Modifier.selectable()`, para no perder la
+ * semántica accesible de grupo de radio que `SegmentedButtonRow` ya daba (design.md - Risks/Trade-offs).
  */
 @Composable
 private fun CefrLevelCard(
@@ -139,29 +147,51 @@ private fun CefrLevelCard(
                 text = stringResource(R.string.settings_cefr_level_label),
                 style = MaterialTheme.typography.titleMedium,
             )
-            val levelCount = CefrLevel.entries.size
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                CefrLevel.entries.forEachIndexed { index, level ->
-                    val selected = level == selectedLevel
-                    SegmentedButton(
-                        selected = selected,
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+            ) {
+                CefrLevel.entries.forEach { level ->
+                    CefrLevelButton(
+                        level = level,
+                        selected = level == selectedLevel,
                         onClick = { onSelectLevel(level) },
-                        shape = SegmentedButtonDefaults.itemShape(index = index, count = levelCount),
-                        colors = SegmentedButtonDefaults.colors(
-                            activeContainerColor = MaterialTheme.colorScheme.primary,
-                            activeContentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                        icon = {},
-                        label = {
-                            Text(
-                                text = level.name,
-                                style = MaterialTheme.typography.labelMedium,
-                            )
-                        },
+                        modifier = Modifier.weight(1f),
                     )
                 }
             }
         }
+    }
+}
+
+/** Un botón de la rejilla de nivel CEFR (mock "Ajustes"): 52dp de alto, borde 2dp, fondo/borde/texto en
+ * `accent`/blanco cuando está seleccionado, y `track`/`textOnLevel` cuando no lo está. */
+@Composable
+private fun CefrLevelButton(
+    level: CefrLevel,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val containerColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+    val borderColor = if (selected) MaterialTheme.colorScheme.primary else AppColors.Track
+    val contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else AppColors.TextOnLevel
+    Box(
+        modifier = modifier
+            .height(AppTheme.dimensions.settingsControlHeight)
+            .clip(AppCornerShapes.Hint)
+            .background(containerColor)
+            .border(BorderStroke(CEFR_LEVEL_BORDER_WIDTH, borderColor), AppCornerShapes.Hint)
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = level.name,
+            style = MaterialTheme.typography.labelMedium,
+            color = contentColor,
+        )
     }
 }
 
@@ -216,40 +246,57 @@ private fun BatchSizeCard(
     }
 }
 
-/** Botón de disminuir N (design D5), con la altura del campo de texto adyacente y deshabilitado en [BatchSize.MIN]. */
+/** Botón de disminuir N (design D5), con el alto de control de Ajustes y deshabilitado en [BatchSize.MIN]. */
 @Composable
 private fun DecreaseBatchSizeButton(enabled: Boolean, onClick: () -> Unit) {
-    val description = stringResource(R.string.settings_batch_size_decrease)
-    OutlinedIconButton(
-        modifier = Modifier
-            .size(TEXT_FIELD_HEIGHT)
-            .semantics { contentDescription = description },
-        onClick = onClick,
+    BatchSizeStepButton(
         enabled = enabled,
-        shape = MaterialTheme.shapes.medium,
+        onClick = onClick,
+        description = stringResource(R.string.settings_batch_size_decrease),
     ) {
         Text(text = MINUS_SIGN, style = MaterialTheme.typography.titleLarge)
     }
 }
 
-/** Botón de aumentar N (design D5), con la altura del campo de texto adyacente y deshabilitado en [BatchSize.MAX]. */
+/** Botón de aumentar N (design D5), con el alto de control de Ajustes y deshabilitado en [BatchSize.MAX]. */
 @Composable
 private fun IncreaseBatchSizeButton(enabled: Boolean, onClick: () -> Unit) {
-    val description = stringResource(R.string.settings_batch_size_increase)
-    FilledIconButton(
-        modifier = Modifier
-            .size(TEXT_FIELD_HEIGHT)
-            .semantics { contentDescription = description },
-        onClick = onClick,
+    BatchSizeStepButton(
         enabled = enabled,
-        shape = MaterialTheme.shapes.medium,
-        colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
+        onClick = onClick,
+        description = stringResource(R.string.settings_batch_size_increase),
     ) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
     }
+}
+
+/**
+ * Botón +/- compartido del stepper de tamaño de tanda (mock "Ajustes", design.md decisión 2,
+ * adopt-reference-mock-ui): 52dp de alto ([AppTheme.dimensions.settingsControlHeight]), sin borde,
+ * fondo/texto `accentSoft`/`accentStrong` cuando está habilitado y `trackSoft`/`disabled` cuando no.
+ */
+@Composable
+private fun BatchSizeStepButton(
+    enabled: Boolean,
+    onClick: () -> Unit,
+    description: String,
+    content: @Composable () -> Unit,
+) {
+    FilledIconButton(
+        modifier = Modifier
+            .size(AppTheme.dimensions.settingsControlHeight)
+            .semantics { contentDescription = description },
+        onClick = onClick,
+        enabled = enabled,
+        shape = AppCornerShapes.Hint,
+        colors = IconButtonDefaults.filledIconButtonColors(
+            containerColor = AppColors.AccentSoft,
+            contentColor = AppColors.AccentStrong,
+            disabledContainerColor = AppColors.TrackSoft,
+            disabledContentColor = AppColors.Disabled,
+        ),
+        content = content,
+    )
 }
 
 /** Resultado de pulsar +/- sobre el texto en edición: solo cambia si ya es un entero; si no, lo deja intacto. */
@@ -260,6 +307,5 @@ private fun steppedBatchSizeText(batchSizeText: String, delta: Int): String =
 // icono de "quitar" en material-icons-core (solo en la versión extended, no disponible en esta feature).
 private const val MINUS_SIGN = "−"
 
-// Altura efectiva por defecto de OutlinedTextField en Material 3 (design D5, fix-style-pass-two): no hay un
-// token compartido de altura entre IconButton y TextField, así que se fija aquí para igualar ambos controles.
-private val TEXT_FIELD_HEIGHT = 56.dp
+// Borde de los botones de nivel CEFR: 2dp, como en `design/mock/screens/05-ajustes.html`.
+private val CEFR_LEVEL_BORDER_WIDTH = 2.dp

@@ -135,6 +135,27 @@ class SettingsScreenTest {
             .assertIsNotSelected()
     }
 
+    // Scenario: Elegir un nivel CEFR de la lista (spec: settings-screen) - botones propios de 52dp en vez de
+    // SegmentedButtonRow (design.md decisión 4, adopt-reference-mock-ui)
+    @Test
+    fun givenCefrLevelSelector_whenShowingTheScreen_thenEachButtonUsesTheSettingsControlHeight() {
+        // Given: se captura la altura de control esperada para los ajustes del tema actual
+        var expectedHeightDp = 0f
+        composeTestRule.setContent {
+            AppTheme {
+                expectedHeightDp = AppTheme.dimensions.settingsControlHeight.value
+                // When: se muestra la pantalla con el nivel B1 seleccionado
+                SettingsScreen(uiState = loaded(cefrLevel = CefrLevel.B1), onAction = {})
+            }
+        }
+
+        // Then: la altura del botón de nivel seleccionado coincide con el control de 52dp del mock, no con la
+        // altura por defecto de SegmentedButtonRow
+        val bounds = composeTestRule.onNodeWithText("B1").getBoundsInRoot()
+        val actualHeightDp = (bounds.bottom - bounds.top).value
+        assertEquals(expectedHeightDp, actualHeightDp, BOUNDS_TOLERANCE)
+    }
+
     // Scenario: estilo de etiqueta pequeña compartido para insignias y nivel CEFR (design D4,
     // fix-style-pass-two)
     @Test

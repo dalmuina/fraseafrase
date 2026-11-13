@@ -120,14 +120,14 @@
 
 ## 9. Ajustes (`:feature:settings`)
 
-- [ ] 9.1 Añadir un test de Compose UI que compruebe que el selector de nivel CEFR expone 5 botones
+- [x] 9.1 Añadir un test de Compose UI que compruebe que el selector de nivel CEFR expone 5 botones
   seleccionables con semántica de grupo de radio (en vez de `SegmentedButtonRow`); verificar que falla
   mientras exista el segmented control.
-- [ ] 9.2 Sustituir `SingleChoiceSegmentedButtonRow`/`SegmentedButton` por una rejilla de botones propios
+- [x] 9.2 Sustituir `SingleChoiceSegmentedButtonRow`/`SegmentedButton` por una rejilla de botones propios
   (52dp alto, radio 14dp, borde 2dp `track`, seleccionado con fondo/borde `accent` y texto blanco, con
   `Modifier.selectableGroup()`/`Role.RadioButton`), manteniendo `onAction(SelectCefrLevel)` sin cambios;
   verificar que el test de 9.1 pasa y que los tests existentes de selección de nivel siguen en verde.
-- [ ] 9.3 Ajustar el stepper +/- a 52dp con los colores exactos (deshabilitado `trackSoft`/`disabled`,
+- [x] 9.3 Ajustar el stepper +/- a 52dp con los colores exactos (deshabilitado `trackSoft`/`disabled`,
   habilitado `accentSoft`/`accentStrong`) y sustituir el icono de "Guardar" (`Icons.Filled.Check`) por
   `ic_check_save`; verificar contra `design/mock/reference-png/05-ajustes.png`. Escenario de referencia:
   "Edición de N con validación y stepper +/- deshabilitado en límites" de `settings-screen`; este ajuste
