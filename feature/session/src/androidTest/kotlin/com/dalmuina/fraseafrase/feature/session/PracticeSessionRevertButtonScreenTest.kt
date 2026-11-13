@@ -58,10 +58,11 @@ class PracticeSessionRevertButtonScreenTest {
         /**
          * Umbral de proporción de píxeles distintos para considerar dos iconos "el mismo" en
          * [givenCanRevertLastAnswerTrue_whenScreenShown_thenRevertButtonShowsAnUndoIcon]: deja margen sobre el
-         * ~3 % de ruido de antialiasing medido con el mismo vector, muy por debajo del ~21 % medido con un
-         * vector distinto (`ArrowBack`).
+         * ~3 % de ruido de antialiasing medido con el mismo vector en el emulador de desarrollo, y hasta
+         * ~12 % medido en el emulador de CI (API 34 sin Google APIs, antialiasing más agresivo), muy por
+         * debajo del ~21 % medido con un vector distinto (`ArrowBack`) en cualquiera de los dos.
          */
-        private const val SAME_ICON_DIFF_RATIO_TOLERANCE = 0.10f
+        private const val SAME_ICON_DIFF_RATIO_TOLERANCE = 0.17f
 
         /**
          * Offsets del FAB respecto a los bordes de la pantalla (`design/mock/design-tokens.md`, "Botón

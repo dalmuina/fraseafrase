@@ -90,6 +90,17 @@ class PracticeSessionScreenTest {
          * "Botón primario, Fallo, Acierto: 16 (no son píldoras)"; adopt-reference-mock-ui, tarea 12.2).
          */
         private const val TARGET_BUTTON_RADIUS_DP = 16f
+
+        /**
+         * Posición del píxel muestreado en [notFullyRoundedCornerColor], como fracción de la distancia
+         * entre el radio objetivo y el de una píldora completa (0 = junto al radio objetivo, 1 = junto a
+         * la píldora completa). Más cerca de la píldora completa deja más margen frente al antialiasing
+         * del borde real, sin dejar de distinguirlo de una píldora completa.
+         */
+        private const val SAMPLE_BIAS_TOWARD_FULL_PILL = 0.75f
+
+        /** Margen por canal de color admitido en [assertSolidColor] frente al antialiasing entre emuladores. */
+        private const val COLOR_CHANNEL_TOLERANCE = 0.08f
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -319,7 +330,7 @@ class PracticeSessionScreenTest {
 
         // Then: a esa distancia de la esquina, el chip ya está coloreado (el radio real es 8dp, menor
         // que el de una píldora completa, así que a esa distancia ya no queda fuera del trazo)
-        assertEquals(expectedPrimary, cornerColor)
+        assertSolidColor(expectedPrimary, cornerColor)
     }
 
     // Scenario: Insignia visible sin revelar (spec: practice-session)
@@ -971,7 +982,7 @@ class PracticeSessionScreenTest {
         val cornerColor = notFullyRoundedCornerColor("practice_reveal_button", TARGET_BUTTON_RADIUS_DP)
 
         // Then: a esa distancia de la esquina, el botón ya está coloreado
-        assertEquals(expectedPrimary, cornerColor)
+        assertSolidColor(expectedPrimary, cornerColor)
     }
 
     /**
@@ -987,11 +998,28 @@ class PracticeSessionScreenTest {
         val cornerFactor = 1f - 1f / sqrt(2f)
         val targetRadiusThresholdDp = targetRadiusDp * cornerFactor
         val fullPillRadiusThresholdDp = halfHeightDp * cornerFactor
-        val sampleDp = (targetRadiusThresholdDp + fullPillRadiusThresholdDp) / 2f
+        // El único borde realmente pintado (con antialiasing) está en targetRadiusThresholdDp; el de la
+        // píldora completa es solo un límite teórico que nunca se dibuja. Muestrear cerca de ese límite
+        // teórico, en vez de en el punto medio exacto, deja más margen frente al antialiasing del borde
+        // real sin perder la distinción frente a una píldora completa.
+        val sampleDp = targetRadiusThresholdDp +
+            (fullPillRadiusThresholdDp - targetRadiusThresholdDp) * SAMPLE_BIAS_TOWARD_FULL_PILL
         val density = composeTestRule.density.density
         val insetPx = (sampleDp * density).toInt()
         val pixelMap = node.captureToImage().toPixelMap()
         return pixelMap[insetPx, insetPx]
+    }
+
+    /**
+     * Compara [actual] con [expected] admitiendo el margen de antialiasing entre emuladores
+     * ([COLOR_CHANNEL_TOLERANCE] por canal), en vez de igualdad exacta: un píxel de borde puede mezclarse
+     * ligeramente con el fondo sin dejar de ser, a efectos del test, "el color sólido esperado".
+     */
+    private fun assertSolidColor(expected: Color, actual: Color) {
+        val close = abs(expected.red - actual.red) <= COLOR_CHANNEL_TOLERANCE &&
+            abs(expected.green - actual.green) <= COLOR_CHANNEL_TOLERANCE &&
+            abs(expected.blue - actual.blue) <= COLOR_CHANNEL_TOLERANCE
+        assertTrue("expected=$expected, actual=$actual", close)
     }
 
     /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */
