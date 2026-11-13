@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -74,23 +75,51 @@ internal fun PracticeSessionScreen(
             }
         },
     ) { innerPadding ->
+        // Caja de pantalla completa, sin más padding que el del `topBar` (`innerPadding`): aloja el
+        // contenido centrado de siempre y, como hermano suyo, el FAB de revertir posicionado con offsets
+        // absolutos desde sus bordes (adopt-reference-mock-ui, tarea 6.1, `design/mock/design-tokens.md`
+        // "Botón flotante de volver": 20dp desde la izquierda, 172dp desde abajo), en vez de contar desde el
+        // padding adicional de la zona de contenido.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(AppTheme.spacing.s),
-            contentAlignment = Alignment.Center,
+                .testTag("practice_session_content_area"),
         ) {
-            when (uiState) {
-                PracticeSessionUiState.Loading -> CircularProgressIndicator()
-                PracticeSessionUiState.NothingToPractice -> EmptyMessage(
-                    text = stringResource(R.string.practice_nothing_to_practice),
-                )
-                PracticeSessionUiState.CatalogError -> EmptyMessage(
-                    text = stringResource(R.string.practice_catalog_error),
-                )
-                is PracticeSessionUiState.Practicing ->
-                    PracticingContent(uiState, onAction, onNavigateToProgress)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(AppTheme.spacing.s),
+                contentAlignment = Alignment.Center,
+            ) {
+                when (uiState) {
+                    PracticeSessionUiState.Loading -> CircularProgressIndicator()
+                    PracticeSessionUiState.NothingToPractice -> EmptyMessage(
+                        text = stringResource(R.string.practice_nothing_to_practice),
+                    )
+                    PracticeSessionUiState.CatalogError -> EmptyMessage(
+                        text = stringResource(R.string.practice_catalog_error),
+                    )
+                    is PracticeSessionUiState.Practicing ->
+                        PracticingContent(uiState, onAction, onNavigateToProgress)
+                }
+            }
+            if (uiState is PracticeSessionUiState.Practicing && !uiState.completed) {
+                // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches):
+                // ya no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio
+                // flotante sobre el contenido en vez de desplazarlo. `AnimatedVisibility` repone la animación
+                // de aparición/desaparición que ese slot daba automáticamente.
+                AnimatedVisibility(
+                    visible = uiState.canRevertLastAnswer,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .offset(
+                            x = AppTheme.dimensions.revertFabHorizontalOffset,
+                            y = -AppTheme.dimensions.revertFabBottomOffset,
+                        ),
+                ) {
+                    RevertLastAnswerButton(onAction = onAction)
+                }
             }
         }
     }
@@ -205,13 +234,9 @@ private fun PracticingContent(
                     TranslateMentallyHint()
                 }
             }
-            // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches): ya
-            // no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio flotante
-            // sobre el contenido en vez de desplazarlo. `AnimatedVisibility` repone la animación de
-            // aparición/desaparición que ese slot daba automáticamente.
-            AnimatedVisibility(visible = state.canRevertLastAnswer) {
-                RevertLastAnswerButton(onAction = onAction)
-            }
+            // El FAB de revertir ya no vive aquí dentro, apilado en esta misma `Column`: vive como hermano de
+            // esta `Column` en [PracticeSessionScreen], posicionado con offsets absolutos desde los bordes de
+            // la pantalla (adopt-reference-mock-ui, tarea 6.1).
             if (state.revealed) {
                 AssessmentButtons(enabled = !state.busy, onAction = onAction)
             } else {

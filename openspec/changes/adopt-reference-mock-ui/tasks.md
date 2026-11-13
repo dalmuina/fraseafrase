@@ -83,7 +83,7 @@
 
 ## 6. Botón flotante de revertir (`:feature:session`)
 
-- [ ] 6.1 Sustituir el icono (`Icons.Filled.Undo`) por `ic_undo_previous`, ajustar el color de contenido
+- [x] 6.1 Sustituir el icono (`Icons.Filled.Undo`) por `ic_undo_previous`, ajustar el color de contenido
   a `fabContent` (`#2B0E02`), la posición (left 20dp, bottom 172dp) y el radio (18dp); verificar contra
   `design/mock/reference-png/01-practicar-oculta.png` (el FAB es visible en esa pantalla tras la primera
   autoevaluación) sin alterar ninguno de los escenarios ya cubiertos por la spec de "Botón flotante para
