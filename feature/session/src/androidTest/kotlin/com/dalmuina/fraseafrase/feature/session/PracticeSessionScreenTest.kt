@@ -4,9 +4,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -29,6 +32,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 /**
  * Tests de UI de [PracticeSessionScreen] (ADR-0007). Verifican lo que ve el usuario: textos, botones habilitados y
@@ -74,6 +78,18 @@ class PracticeSessionScreenTest {
 
         /** Texto del cuadro de ayuda discontinuo, igual al valor de `practice_translate_mentally_hint`. */
         private const val TRANSLATE_MENTALLY_HINT = "Traduce la frase mentalmente y luego comprueba la traducción."
+
+        /**
+         * Radio objetivo del chip de nivel CEFR (`design/mock/design-tokens.md`, "Radios": "Chips de
+         * nivel y rango: 8"; adopt-reference-mock-ui, tarea 12.1).
+         */
+        private const val TARGET_CEFR_PILL_RADIUS_DP = 8f
+
+        /**
+         * Radio objetivo de los botones primarios (`design/mock/design-tokens.md`, "Radios":
+         * "Botón primario, Fallo, Acierto: 16 (no son píldoras)"; adopt-reference-mock-ui, tarea 12.2).
+         */
+        private const val TARGET_BUTTON_RADIUS_DP = 16f
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -277,6 +293,33 @@ class PracticeSessionScreenTest {
 
         // Then: la pantalla muestra "B1" junto a la frase
         composeTestRule.onNodeWithText("B1").assertIsDisplayed()
+    }
+
+    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 2 de la tarea 11.3
+    // (adopt-reference-mock-ui, tarea 12.1): el chip de nivel CEFR debe ser un chip rectangular de
+    // radio 8dp, no un círculo/píldora completa.
+    @Test
+    fun givenPracticingState_whenScreenShown_thenCefrLevelPillIsNotFullyRounded() {
+        // Given: la pantalla muestra una frase de nivel CEFR B1 sin revelar
+        var expectedPrimary: Color = Color.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedPrimary = MaterialTheme.colorScheme.primary
+                PracticeSessionScreen(
+                    uiState = practicing(current = item(cefrLevel = CefrLevel.B1)),
+                    onAction = {},
+                )
+            }
+        }
+
+        // When: se mide la esquina del chip, a mitad de camino entre el punto en el que dejaría de
+        // estar coloreada con el radio objetivo (8dp) y el punto en el que dejaría de estarlo con el
+        // radio que resultaría de una píldora completa (la mitad de la altura medida del propio chip)
+        val cornerColor = notFullyRoundedCornerColor("practice_cefr_level_pill", TARGET_CEFR_PILL_RADIUS_DP)
+
+        // Then: a esa distancia de la esquina, el chip ya está coloreado (el radio real es 8dp, menor
+        // que el de una píldora completa, así que a esa distancia ya no queda fuera del trazo)
+        assertEquals(expectedPrimary, cornerColor)
     }
 
     // Scenario: Insignia visible sin revelar (spec: practice-session)
@@ -905,6 +948,50 @@ class PracticeSessionScreenTest {
         val indicatorTop = composeTestRule.onNodeWithTag("practice_badge_change_indicator")
             .getUnclippedBoundsInRoot().top
         assertTrue(abs((indicatorTop - cefrLabelTop).value) <= ROW_ALIGNMENT_TOLERANCE_DP)
+    }
+
+    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 3 de la tarea 11.3
+    // (adopt-reference-mock-ui, tarea 12.2): el botón primario "Mostrar traducción" debe tener radio
+    // 16dp ("no son píldoras", `design/mock/design-tokens.md`), no la forma de píldora por defecto de
+    // Material 3.
+    @Test
+    fun givenHiddenState_whenShowingTheScreen_thenRevealButtonIsNotFullyRounded() {
+        // Given: la pantalla muestra una frase sin revelar
+        var expectedPrimary: Color = Color.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedPrimary = MaterialTheme.colorScheme.primary
+                PracticeSessionScreen(uiState = practicing(current = item(), revealed = false), onAction = {})
+            }
+        }
+
+        // When: se mide la esquina del botón, a mitad de camino entre el punto en el que dejaría de
+        // estar coloreada con el radio objetivo (16dp) y el punto en el que dejaría de estarlo con el
+        // radio de una píldora completa (la mitad de la altura medida del propio botón)
+        val cornerColor = notFullyRoundedCornerColor("practice_reveal_button", TARGET_BUTTON_RADIUS_DP)
+
+        // Then: a esa distancia de la esquina, el botón ya está coloreado
+        assertEquals(expectedPrimary, cornerColor)
+    }
+
+    /**
+     * Color del píxel diagonal del nodo con [tag], a una distancia de su esquina elegida para
+     * distinguir un radio objetivo [targetRadiusDp] de una píldora completa (radio igual a la mitad
+     * de la altura medida del propio nodo), igual que `givenPracticingState_whenScreenShown_then
+     * CefrLevelPillIsNotFullyRounded`.
+     */
+    private fun notFullyRoundedCornerColor(tag: String, targetRadiusDp: Float): Color {
+        val node = composeTestRule.onNodeWithTag(tag)
+        val bounds = node.getUnclippedBoundsInRoot()
+        val halfHeightDp = (bounds.bottom - bounds.top).value / 2f
+        val cornerFactor = 1f - 1f / sqrt(2f)
+        val targetRadiusThresholdDp = targetRadiusDp * cornerFactor
+        val fullPillRadiusThresholdDp = halfHeightDp * cornerFactor
+        val sampleDp = (targetRadiusThresholdDp + fullPillRadiusThresholdDp) / 2f
+        val density = composeTestRule.density.density
+        val insetPx = (sampleDp * density).toInt()
+        val pixelMap = node.captureToImage().toPixelMap()
+        return pixelMap[insetPx, insetPx]
     }
 
     /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */

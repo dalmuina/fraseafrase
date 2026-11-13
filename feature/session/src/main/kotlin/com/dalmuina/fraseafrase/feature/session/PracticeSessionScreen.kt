@@ -255,9 +255,11 @@ private fun PracticingContent(
 private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {
     Button(
         onClick = { onAction(PracticeSessionAction.Reveal) },
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
-            .height(AppTheme.dimensions.primaryActionHeight),
+            .height(AppTheme.dimensions.primaryActionHeight)
+            .testTag("practice_reveal_button"),
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_eye),
@@ -473,6 +475,7 @@ private fun GenerateSessionButton(enabled: Boolean, onAction: (PracticeSessionAc
     Button(
         onClick = { onAction(PracticeSessionAction.GenerateSession) },
         enabled = enabled,
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
             .height(AppTheme.dimensions.primaryActionHeight),
@@ -510,6 +513,7 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
         OutlinedButton(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.MISS)) },
             enabled = enabled,
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = AppColors.ErrorBg,
                 contentColor = AppColors.ErrorText,
@@ -533,6 +537,7 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
         Button(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.HIT)) },
             enabled = enabled,
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.Success,
                 contentColor = Color.White,

@@ -53,6 +53,9 @@ class PracticeSessionViewModel @Inject constructor(
     fun onAction(action: PracticeSessionAction) {
         when (action) {
             PracticeSessionAction.Reveal -> reveal()
+            PracticeSessionAction.HideTranslation -> updatePracticing {
+                if (busy || completed) this else copy(revealed = false)
+            }
             is PracticeSessionAction.Answer -> answer(action.assessment)
             PracticeSessionAction.PlayAudio -> playAudio()
             PracticeSessionAction.GenerateSession -> requestGenerateSession()

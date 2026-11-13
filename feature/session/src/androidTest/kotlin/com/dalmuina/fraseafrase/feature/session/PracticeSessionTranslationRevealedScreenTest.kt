@@ -1,6 +1,9 @@
 package com.dalmuina.fraseafrase.feature.session
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,6 +12,7 @@ import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
@@ -64,6 +68,36 @@ class PracticeSessionTranslationRevealedScreenTest {
 
         // Then: se muestra la etiqueta "TRADUCCIÓN" en mayúsculas sobre la traducción
         composeTestRule.onNodeWithText("TRADUCCIÓN").assertIsDisplayed()
+    }
+
+    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 4 de la tarea 11.3
+    // (adopt-reference-mock-ui, tarea 12.3): el enlace "Ocultar" vuelve a ocultar la traducción.
+    @Test
+    fun givenRevealedPhraseWhenTappingHideThenTheTranslationIsHiddenAgain() {
+        // Given: la pantalla muestra la frase A revelada; el estado se actualiza con HideTranslation
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item(), revealed = true),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.HideTranslation) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(revealed = false)
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("TRADUCCIÓN").assertIsDisplayed()
+
+        // When: el usuario pulsa el enlace "Ocultar"
+        composeTestRule.onNodeWithText("Ocultar").performClick()
+
+        // Then: la traducción vuelve a ocultarse (mismo estado que sin revelar)
+        composeTestRule.onNodeWithTag(TRANSLATION_CARD_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithText("Mostrar traducción").assertIsDisplayed()
     }
 
     // Scenario: Revelar muestra la traducción en portugués (spec: practice-session); el panel usa

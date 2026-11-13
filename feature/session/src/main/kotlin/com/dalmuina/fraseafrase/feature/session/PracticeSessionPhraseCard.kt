@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -87,11 +89,12 @@ internal fun PhraseCard(
                         DsInfoBannerSegment(text = nextLevelBadgeLabel, emphasized = true),
                     ),
                     modifier = Modifier.fillMaxWidth(),
+                    iconTint = Color.Unspecified,
                 )
             }
         }
         if (revealed) {
-            TranslationCard(target = item.target)
+            TranslationCard(target = item.target, onAction = onAction)
         }
     }
 }
@@ -135,12 +138,17 @@ private fun PhraseCardHeader(
     }
 }
 
-/** Pastilla del nivel CEFR de la frase: fondo `primary`, texto blanco (design `redesign-app-ui`, mock). */
+/**
+ * Chip del nivel CEFR de la frase: fondo `primary`, texto blanco, radio 8dp (chip rectangular, no
+ * círculo/píldora completa, `design/mock/design-tokens.md`, "Radios": "Chips de nivel y rango: 8";
+ * adopt-reference-mock-ui, tarea 12.1).
+ */
 @Composable
 private fun CefrLevelPill(cefrLevel: CefrLevel) {
     Surface(
-        shape = MaterialTheme.shapes.extraLarge,
+        shape = MaterialTheme.shapes.extraSmall,
         color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.testTag("practice_cefr_level_pill"),
     ) {
         Text(
             text = cefrLevel.name,
@@ -203,10 +211,12 @@ private val TranslationLabelLetterSpacing = 0.8.sp
 /**
  * Panel de la traducción revelada (spec: practice-session); el control de escuchar vive en la cabecera.
  * Fondo `accentSoft`, radio `AppCornerShapes.Panel` (20dp) y etiqueta "TRADUCCIÓN" en mayúsculas sobre
- * ella (adopt-reference-mock-ui, design - decisión 2, tarea 5.1).
+ * ella (adopt-reference-mock-ui, design - decisión 2, tarea 5.1), con el enlace "Ocultar" junto a esa
+ * etiqueta, en su esquina superior derecha, que vuelve a ocultar la traducción (adopt-reference-mock-ui,
+ * tarea 12.3: inverso de "Mostrar traducción", mismo efecto que no haber revelado todavía).
  */
 @Composable
-private fun TranslationCard(target: String) {
+private fun TranslationCard(target: String, onAction: (PracticeSessionAction) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -218,11 +228,25 @@ private fun TranslationCard(target: String) {
             modifier = Modifier.padding(AppTheme.spacing.l),
             verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
         ) {
-            Text(
-                text = stringResource(R.string.practice_translation_label).uppercase(),
-                style = MaterialTheme.typography.labelMedium.copy(letterSpacing = TranslationLabelLetterSpacing),
-                color = AppColors.AccentStrong,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.practice_translation_label).uppercase(),
+                    style = MaterialTheme.typography.labelMedium.copy(letterSpacing = TranslationLabelLetterSpacing),
+                    color = AppColors.AccentStrong,
+                )
+                Text(
+                    text = stringResource(R.string.practice_hide_translation),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AppColors.AccentStrong,
+                    modifier = Modifier
+                        .clickable { onAction(PracticeSessionAction.HideTranslation) }
+                        .testTag("practice_hide_translation_link"),
+                )
+            }
             Text(
                 text = target,
                 style = MaterialTheme.typography.titleSmall,
