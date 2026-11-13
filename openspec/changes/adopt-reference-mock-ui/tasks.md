@@ -33,13 +33,13 @@
 
 ## 3. Iconografía (`:core:designsystem`)
 
-- [ ] 3.1 Copiar los `VectorDrawable` de `design/mock/icons/android-drawable/` a
+- [x] 3.1 Copiar los `VectorDrawable` de `design/mock/icons/android-drawable/` a
   `core/designsystem/src/main/res/drawable/` con el mismo nombre de archivo; verificar que el proyecto
   compila y que no hay recursos duplicados.
-- [ ] 3.2 Añadir un test de `DsLevelBadge` que compruebe, para cada uno de los 6 niveles (Sin
+- [x] 3.2 Añadir un test de `DsLevelBadge` que compruebe, para cada uno de los 6 niveles (Sin
   rango…Diamante), el color exterior/interior exacto de `design-tokens.md`; verificar que el test falla
   para cualquier nivel cuyo color actual no coincida antes de corregirlo.
-- [ ] 3.3 Ajustar `DsLevelBadge` para que los 6 niveles usen los colores exactos del mock, implementando
+- [x] 3.3 Ajustar `DsLevelBadge` para que los 6 niveles usen los colores exactos del mock, implementando
   "Sin rango" con un `Canvas`/`Stroke(pathEffect = dashPathEffect(...))` en vez de un `VectorDrawable`
   (no admite trazo discontinuo); verificar que el test de 3.2 pasa.
 

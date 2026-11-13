@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generado desde el mock. Multicolor: usar con tint = Color.Unspecified / Image(). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:pathData="M12 2l8.66 5v10L12 22l-8.66-5V7z" android:fillColor="#D9A21B" />
+    <path android:pathData="M12 7l4.33 2.5v5L12 17l-4.33-2.5v-5z" android:fillColor="#F4CF6B" />
+</vector>
