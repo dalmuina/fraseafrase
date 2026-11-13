@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -63,7 +64,20 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
         modifier = modifier,
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(snackbarData = data, contentColor = AppColors.SuccessStatus)
+                // El mock (05-ajustes.html) pinta la confirmación como texto centrado sin caja ni
+                // fondo oscuro. `Snackbar` no expone un parámetro público para anular su
+                // `shadowElevation` (fijo a `SnackbarTokens.ContainerElevation`, ver
+                // `androidx.compose.material3.Snackbar`), así que con `containerColor =
+                // Color.Transparent` queda sin el fondo oscuro por defecto de Material 3 pero
+                // conserva una sombra tenue bajo la forma del contenedor; `shape = RectangleShape`
+                // evita que esa sombra residual dibuje además una esquina redondeada visible
+                // (adopt-reference-mock-ui, tarea 12.6).
+                Snackbar(
+                    snackbarData = data,
+                    shape = RectangleShape,
+                    containerColor = Color.Transparent,
+                    contentColor = AppColors.SuccessStatus,
+                )
             }
         },
         bottomBar = {

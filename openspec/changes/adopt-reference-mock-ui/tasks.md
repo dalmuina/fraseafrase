@@ -211,7 +211,7 @@
   verás frases de este nivel o inferiores." bajo "Nivel CEFR", y "Mínimo 10 frases por sesión." bajo
   "Tamaño de tanda (N)". Añadir estos literales como recursos de string (es-ES), no hardcodeados.
   Verificar con un test de Compose UI que ambos textos son visibles.
-- [ ] 12.6 Ajustar el estilo del `Snackbar` de confirmación de guardado (`:app`) para que se aproxime más
+- [x] 12.6 Ajustar el estilo del `Snackbar` de confirmación de guardado (`:app`) para que se aproxime más
   al mock (texto en línea sin fondo oscuro ni elevación, por ejemplo con `containerColor =
   Color.Transparent`/`elevation = 0.dp` si la API de `Snackbar` lo permite), sin mover su posición fuera
   del `Scaffold` de `:app` (eso exigiría revisar la decisión de arquitectura de `add-settings-apply-flow`,
