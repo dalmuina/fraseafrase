@@ -9,15 +9,15 @@
 
 ## 2. Tokens de color, forma, dimensión y tipografía (`:core:designsystem`)
 
-- [ ] 2.1 Añadir un test de `AppTheme`/tokens (unitario, sin Robolectric si es posible) que compruebe
+- [x] 2.1 Añadir un test de `AppTheme`/tokens (unitario, sin Robolectric si es posible) que compruebe
   que cada color nuevo listado en `design.md` (decisión 2) existe con el valor hexadecimal exacto de
   `design/mock/design-tokens.md`; verificar que el test falla por los colores ausentes antes de
   implementarlos.
-- [ ] 2.2 Añadir en `Color.kt` los tokens que faltan (`accentStrong`, `accentSoft`, `textSecondary`
+- [x] 2.2 Añadir en `Color.kt` los tokens que faltan (`accentStrong`, `accentSoft`, `textSecondary`
   unificado a `#5A5670`, `textOnLevel`, `track`, `trackSoft`, `dashedBorder`, `disabled`, `hintBg`,
   `hintText`, `rankUpText`, `fabContent`, los 3 tonos de éxito y de error) y corregir `background` a
   `#F7F5FF`; verificar que el test de 2.1 pasa.
-- [ ] 2.3 Añadir en `Shape.kt` los radios que faltan (panel/zona discontinua 20dp, FAB 18dp, 14dp para
+- [x] 2.3 Añadir en `Shape.kt` los radios que faltan (panel/zona discontinua 20dp, FAB 18dp, 14dp para
   mensaje de rango/nivel/stepper/campo) y en `tokens/Dimensions.kt` las dimensiones del mock (nav 80dp,
   indicador 64×32dp, iconos de nav 22dp, icono de botón 22dp + gap 10dp, FAB 56dp + offset 20/172dp +
   icono 24dp, botón Escuchar 44dp + icono 22dp, badge de chip 18dp, icono de mensaje de rango 24/22dp,
@@ -25,7 +25,7 @@
   tokens que cada constante nueva tiene el valor exacto documentado. Sin escenario de spec propio: son
   tokens de forma/dimensión puramente visuales, sin comportamiento observable distinto del ya cubierto
   por las specs de pantalla existentes.
-- [ ] 2.4 Empaquetar las fuentes Space Grotesk e Inter (400/500/600/700) como `.ttf` en
+- [x] 2.4 Empaquetar las fuentes Space Grotesk e Inter (400/500/600/700) como `.ttf` en
   `core/designsystem/src/main/res/font/` y actualizar `Type.kt` con los tamaños/pesos/tracking exactos
   de `design-tokens.md` (ver design.md decisión 1); verificar con una previsualización (`@PreviewLightDark`)
   que el texto de ejemplo usa la fuente correcta. Sin escenario de spec propio: cambio de tipografía

@@ -32,7 +32,8 @@ class AppThemeTest {
         LightColors.onError shouldBe Color(0xFFFFFFFF)
         LightColors.errorContainer shouldBe Color(0xFFFFECEE)
         LightColors.onErrorContainer shouldBe Color(0xFFB4232F)
-        LightColors.background shouldBe Color(0xFFF5F6FA)
+        // background corregido a #F7F5FF por adopt-reference-mock-ui (design - decisión 2)
+        LightColors.background shouldBe Color(0xFFF7F5FF)
         LightColors.surface shouldBe Color(0xFFFFFFFF)
         LightColors.onSurface shouldBe Color(0xFF14171F)
     }
