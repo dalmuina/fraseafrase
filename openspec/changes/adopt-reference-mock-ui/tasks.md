@@ -2,7 +2,7 @@
 
 ## 1. Mock en el repositorio
 
-- [ ] 1.1 Copiar `C:\Users\dalmu\OneDrive\Documentos\mock-ref\mock-ref` a `design/mock/` en el repo
+- [x] 1.1 Copiar `C:\Users\dalmu\OneDrive\Documentos\mock-ref\mock-ref` a `design/mock/` en el repo
   (README, `design-tokens.md`, `screens/`, `reference-png/`, `icons/svg/`, `icons/android-drawable/`,
   `compose/DesignTokens.kt`) sin modificar su contenido, y verificar que los 5 HTML abren igual en un
   navegador desde su nueva ruta.
