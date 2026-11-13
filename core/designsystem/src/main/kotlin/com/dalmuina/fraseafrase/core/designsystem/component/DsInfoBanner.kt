@@ -25,6 +25,10 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
  * Caja destacada con un icono y un texto compuesto por [segments], algunos en negrita, sobre un
  * fondo de color configurable (design D2). Sustituye los `Text` sueltos de aviso como "Te faltan N
  * aciertos para subir a X", con "N aciertos" y "X" como tramos en negrita.
+ *
+ * [iconTint] se aplica al icono con `tint =`; por defecto es [contentColor], igual que antes. Pasa
+ * `Color.Unspecified` cuando [icon] ya es multicolor (p. ej. una insignia de rango,
+ * `design-tokens.md`), para que no se tiña de un solo color (adopt-reference-mock-ui, tasks 12.7).
  */
 @Composable
 fun DsInfoBanner(
@@ -34,6 +38,7 @@ fun DsInfoBanner(
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     contentColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    iconTint: Color = contentColor,
 ) {
     Surface(
         modifier = modifier,
@@ -48,7 +53,7 @@ fun DsInfoBanner(
             Icon(
                 imageVector = icon,
                 contentDescription = iconContentDescription,
-                tint = contentColor,
+                tint = iconTint,
             )
             Text(
                 text = buildAnnotatedString {

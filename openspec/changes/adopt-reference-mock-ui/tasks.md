@@ -200,7 +200,7 @@
   (`:feature:session`), que oculta de nuevo la traducción (mismo efecto que no revelar). Añadir un test
   de Compose UI que compruebe que el enlace existe y que al pulsarlo la pantalla vuelve al estado sin
   revelar.
-- [ ] 12.4 Invertir el orden de `value`/`label` en `DsHeroStat` (`:core:designsystem`) para que coincida
+- [x] 12.4 Invertir el orden de `value`/`label` en `DsHeroStat` (`:core:designsystem`) para que coincida
   con el mock (etiqueta primero, valor grande después, línea secundaria al final). Verificar que el test
   existente de `DsHeroStat` sigue comprobando el contenido correcto tras el cambio de orden, y que la
   pantalla de Progreso (único consumidor) sigue mostrando los datos correctos.
@@ -214,7 +214,7 @@
   del `Scaffold` de `:app` (eso exigiría revisar la decisión de arquitectura de `add-settings-apply-flow`,
   fuera de alcance). Documentar en el commit qué tan cerca queda del mock y qué limitación de la API de
   `Snackbar` impide la fidelidad total, si la hay.
-- [ ] 12.7 Añadir un parámetro opcional a `DsInfoBanner` (`:core:designsystem`) para pintar su icono sin
+- [x] 12.7 Añadir un parámetro opcional a `DsInfoBanner` (`:core:designsystem`) para pintar su icono sin
   tinte (`tint = Color.Unspecified`) cuando el icono ya es multicolor (como las insignias de rango), y
   usarlo desde `:feature:session` en el mensaje "Te faltan N aciertos para X". Verificar con un test que
   el icono de insignia se muestra con sus colores propios en vez de teñido de un solo color.
