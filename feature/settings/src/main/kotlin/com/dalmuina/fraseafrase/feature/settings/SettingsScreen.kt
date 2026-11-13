@@ -103,8 +103,9 @@ private fun LoadedContent(
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(AppTheme.dimensions.primaryActionHeight),
-            shape = MaterialTheme.shapes.large,
+                .height(AppTheme.dimensions.primaryActionHeight)
+                .testTag("settings_save_button"),
+            shape = MaterialTheme.shapes.medium,
             onClick = { onAction(SettingsAction.Save) },
             enabled = state.isBatchSizeValid,
         ) {
@@ -146,6 +147,11 @@ private fun CefrLevelCard(
             Text(
                 text = stringResource(R.string.settings_cefr_level_label),
                 style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(R.string.settings_cefr_level_help),
+                style = MaterialTheme.typography.bodyMedium,
+                color = AppColors.TextSecondary,
             )
             Row(
                 modifier = Modifier
@@ -214,6 +220,11 @@ private fun BatchSizeCard(
             Text(
                 text = stringResource(R.string.settings_batch_size_label),
                 style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(R.string.settings_batch_size_help),
+                style = MaterialTheme.typography.bodyMedium,
+                color = AppColors.TextSecondary,
             )
             val currentBatchSize = batchSizeText.toIntOrNull()
             Row(

@@ -191,14 +191,14 @@
 - [x] 12.1 Sustituir el chip de nivel CEFR circular (`CefrLevelPill`, `:feature:session`) por un chip
   rectangular de radio 8dp (`AppShapes.extraSmall`), como en el mock. Verificar con un test de Compose UI
   que el chip ya no usa forma de círculo/píldora.
-- [ ] 12.2 Fijar explícitamente `shape = MaterialTheme.shapes.medium` (16dp) en los botones primarios que
+- [x] 12.2 Fijar explícitamente `shape = MaterialTheme.shapes.medium` (16dp) en los botones primarios que
   hoy usan la forma de píldora por defecto de Material 3 (botón "Mostrar traducción", Fallo, Acierto,
   "Generar sesión nueva" en `:feature:session`; "Guardar" en `:feature:settings`), sin tocar los botones
   que ya son intencionalmente circulares (Escuchar, FAB de revertir). Verificar con un test de Compose UI
   que al menos uno de estos botones ya no usa la forma de píldora.
-  **Parcial:** la parte de `:feature:session` (botones "Mostrar traducción", Fallo, Acierto, "Generar
-  sesión nueva") ya está hecha, con test de Compose UI en verde. Falta el botón "Guardar" de
-  `:feature:settings`; no marcar `[x]` hasta que también esté hecho.
+  `:feature:session` ya estaba hecho (test de Compose UI en verde) de un lote anterior. Completado ahora
+  el botón "Guardar" de `:feature:settings`: `shape = MaterialTheme.shapes.medium`, con
+  `givenLoadedSettings_whenShowingTheScreen_thenSaveButtonIsNotFullyRounded` en verde.
 - [x] 12.3 Añadir el enlace "Ocultar" junto a la etiqueta "TRADUCCIÓN" en el panel de traducción
   (`:feature:session`), que oculta de nuevo la traducción (mismo efecto que no revelar). Añadir un test
   de Compose UI que compruebe que el enlace existe y que al pulsarlo la pantalla vuelve al estado sin
@@ -207,7 +207,7 @@
   con el mock (etiqueta primero, valor grande después, línea secundaria al final). Verificar que el test
   existente de `DsHeroStat` sigue comprobando el contenido correcto tras el cambio de orden, y que la
   pantalla de Progreso (único consumidor) sigue mostrando los datos correctos.
-- [ ] 12.5 Añadir los textos de ayuda que faltan en Ajustes (`:feature:settings`): "Elige tu nivel. Solo
+- [x] 12.5 Añadir los textos de ayuda que faltan en Ajustes (`:feature:settings`): "Elige tu nivel. Solo
   verás frases de este nivel o inferiores." bajo "Nivel CEFR", y "Mínimo 10 frases por sesión." bajo
   "Tamaño de tanda (N)". Añadir estos literales como recursos de string (es-ES), no hardcodeados.
   Verificar con un test de Compose UI que ambos textos son visibles.
