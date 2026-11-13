@@ -68,15 +68,15 @@
 
 ## 5. Practicar · traducción revelada (`:feature:session`)
 
-- [ ] 5.1 Ajustar el panel de traducción (`TranslationCard`): fondo `accentSoft`, radio 20dp, etiqueta
+- [x] 5.1 Ajustar el panel de traducción (`TranslationCard`): fondo `accentSoft`, radio 20dp, etiqueta
   "TRADUCCIÓN" en mayúsculas (12sp/700/tracking +0.8/`accentStrong`); verificar contra
   `design/mock/reference-png/02-practicar-traduccion.png`. Escenario de referencia: "Revelar muestra la
   traducción en portugués" en `practice-session`; este ajuste no cambia qué texto se muestra, solo su
   presentación.
-- [ ] 5.2 Sustituir los iconos de los botones Fallo/Acierto (`Icons.Filled.Close`/`Check`) por
+- [x] 5.2 Sustituir los iconos de los botones Fallo/Acierto (`Icons.Filled.Close`/`Check`) por
   `ic_close`/`ic_check` y ajustar sus colores (borde 2dp, fondos `errorBg`/`success`) a los valores
   exactos del mock; verificar que el test de colores existente (o uno nuevo) pasa.
-- [ ] 5.3 Verificar que el botón Escuchar ya es circular 44dp con icono único; si no, ajustarlo a
+- [x] 5.3 Verificar que el botón Escuchar ya es circular 44dp con icono único; si no, ajustarlo a
   `ic_volume` con fondo `accent` y sombra, y documentar el resultado en esta tarea. Escenario de
   referencia: los de `phrase-audio` sobre el control icono-solo; este ajuste solo confirma/corrige
   dimensión y color, no la condición de disponibilidad del control.

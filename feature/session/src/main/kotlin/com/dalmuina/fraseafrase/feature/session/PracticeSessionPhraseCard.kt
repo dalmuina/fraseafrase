@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
@@ -19,15 +19,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.sp
 import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBanner
 import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBannerSegment
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadgeChange
 import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppCornerShapes
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
@@ -152,45 +156,79 @@ private fun CefrLevelPill(cefrLevel: CefrLevel) {
  * visible, incluido deshabilitado, con una descripción accesible equivalente al texto que ya no se
  * muestra (spec: phrase-audio, "Botón de escuchar tras revelar"; design D5, fix-redesign-ui-mismatches).
  *
- * Usa [Icons.Default.PlayArrow] en vez del altavoz (`Icons.Default.VolumeUp`) previsto en el diseño
- * porque, cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no
- * declaraba esa dependencia; `PlayArrow` ya estaba disponible en `material-icons-core` y ya se usaba en
- * este control. `:feature:session` sí declara `material-icons-extended` desde el grupo 8 de
- * `fix-redesign-ui-mismatches` (design D6, icono `Undo` del botón de deshacer), pero revisar esta
- * elección con esa dependencia ya disponible queda fuera del alcance de esa tarea.
+ * Círculo de 44dp con el icono `ic_volume` del mock de referencia sobre fondo `accent` (primary), con la
+ * sombra de color del mock (`box-shadow: 0 4px 12px rgba(91,61,245,.3)` en
+ * `design/mock/screens/02-practicar-traduccion.html`), según `design/mock/design-tokens.md`, "Tamaños y
+ * espaciado" (adopt-reference-mock-ui, design - decisión 2 y 3, tarea 5.3). Sustituye a
+ * [Icons.Default.PlayArrow], elegido en su momento como aproximación provisional del altavoz porque
+ * `Icons.Default.VolumeUp` solo estaba en `material-icons-extended`, sin declarar entonces por
+ * `:feature:session`; `ic_volume` ya está empaquetado en `:core:designsystem` sin esa dependencia.
  */
 @Composable
 private fun ListenButton(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
     FilledIconButton(
         onClick = { onAction(PracticeSessionAction.PlayAudio) },
         enabled = enabled,
+        modifier = Modifier
+            .size(AppTheme.dimensions.listenButtonSize)
+            .shadow(
+                elevation = AppTheme.spacing.xs,
+                shape = CircleShape,
+                ambientColor = MaterialTheme.colorScheme.primary,
+                spotColor = MaterialTheme.colorScheme.primary,
+            )
+            .testTag("practice_listen_button"),
         colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
     ) {
         Icon(
-            imageVector = Icons.Default.PlayArrow,
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_volume),
             contentDescription = stringResource(R.string.practice_listen),
-            modifier = Modifier.testTag("listen_icon"),
+            modifier = Modifier
+                .size(AppTheme.dimensions.listenButtonIconSize)
+                .testTag("listen_icon"),
         )
     }
 }
 
-/** Tarjeta de la traducción revelada (spec: practice-session); el control de escuchar vive en la cabecera. */
+/**
+ * Tracking de la etiqueta "TRADUCCIÓN" (`design/mock/design-tokens.md`, "Tipografía": +0.8), aplicado
+ * con `.copy()` sobre `labelMedium` en vez de en el token compartido, igual que documenta `Type.kt` para
+ * este mismo caso (dos usos del mismo slot con valores de tracking distintos).
+ */
+private val TranslationLabelLetterSpacing = 0.8.sp
+
+/**
+ * Panel de la traducción revelada (spec: practice-session); el control de escuchar vive en la cabecera.
+ * Fondo `accentSoft`, radio `AppCornerShapes.Panel` (20dp) y etiqueta "TRADUCCIÓN" en mayúsculas sobre
+ * ella (adopt-reference-mock-ui, design - decisión 2, tarea 5.1).
+ */
 @Composable
 private fun TranslationCard(target: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("practice_translation_card"),
+        shape = AppCornerShapes.Panel,
+        color = AppColors.AccentSoft,
     ) {
-        Text(
-            text = target,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        Column(
             modifier = Modifier.padding(AppTheme.spacing.l),
-        )
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+        ) {
+            Text(
+                text = stringResource(R.string.practice_translation_label).uppercase(),
+                style = MaterialTheme.typography.labelMedium.copy(letterSpacing = TranslationLabelLetterSpacing),
+                color = AppColors.AccentStrong,
+            )
+            Text(
+                text = target,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 

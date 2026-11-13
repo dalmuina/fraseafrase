@@ -18,9 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -414,7 +413,18 @@ private fun GenerateSessionButton(enabled: Boolean, onAction: (PracticeSessionAc
     }
 }
 
-/** Acierto y fallo para la frase revelada (ADR-0012). Se deshabilitan mientras hay una respuesta en curso. */
+/**
+ * Anchura del borde de los botones Fallo/Acierto (`design/mock/design-tokens.md`, "Tamaños y
+ * espaciado": "Botones Fallo/Acierto: ... borde 2").
+ */
+private val AssessmentButtonBorderWidth = 2.dp
+
+/**
+ * Acierto y fallo para la frase revelada (ADR-0012). Se deshabilitan mientras hay una respuesta en
+ * curso. Colores e iconos exactos del mock (adopt-reference-mock-ui, design - decisión 2 y 3, tarea
+ * 5.2): Fallo con borde `error`, fondo `errorBg` y texto `errorText`; Acierto con fondo `success` y
+ * texto blanco. `ic_close`/`ic_check` sustituyen a [Icons.Default.Close]/[Icons.Default.Check].
+ */
 @Composable
 private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
     Row(
@@ -424,17 +434,18 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
         OutlinedButton(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.MISS)) },
             enabled = enabled,
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            border = BorderStroke(
-                width = ButtonDefaults.outlinedButtonBorder(enabled).width,
-                color = MaterialTheme.colorScheme.error,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = AppColors.ErrorBg,
+                contentColor = AppColors.ErrorText,
             ),
+            border = BorderStroke(width = AssessmentButtonBorderWidth, color = AppColors.Error),
             modifier = Modifier
                 .weight(1f)
-                .height(AppTheme.dimensions.primaryActionHeight),
+                .height(AppTheme.dimensions.primaryActionHeight)
+                .testTag("practice_miss_button"),
         ) {
             Icon(
-                imageVector = Icons.Default.Close,
+                imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_close),
                 contentDescription = null,
                 modifier = Modifier
                     .size(ButtonDefaults.IconSize)
@@ -447,15 +458,16 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.HIT)) },
             enabled = enabled,
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary,
+                containerColor = AppColors.Success,
+                contentColor = Color.White,
             ),
             modifier = Modifier
                 .weight(1f)
-                .height(AppTheme.dimensions.primaryActionHeight),
+                .height(AppTheme.dimensions.primaryActionHeight)
+                .testTag("practice_hit_button"),
         ) {
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_check),
                 contentDescription = null,
                 modifier = Modifier
                     .size(ButtonDefaults.IconSize)
