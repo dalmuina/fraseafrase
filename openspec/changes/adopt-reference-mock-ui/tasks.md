@@ -182,6 +182,43 @@
   comparación visual, pendientes de decisión del usuario sobre si se corrigen en este mismo cambio o se
   registran en `docs/deuda-tecnica.md`.
 
+  **Decisión del usuario**: corregir las 8 ahora, en este mismo cambio (grupo 12). El hallazgo 1
+  (fuentes) ya se resolvió con los `.ttf` reales de Inter/Space Grotesk proporcionados por el usuario
+  (commit `8a88a34`). Los 7 restantes se implementan en el grupo 12.
+
+## 12. Correcciones de la comparación visual (hallazgos 2-8 de la tarea 11.3)
+
+- [ ] 12.1 Sustituir el chip de nivel CEFR circular (`CefrLevelPill`, `:feature:session`) por un chip
+  rectangular de radio 8dp (`AppShapes.extraSmall`), como en el mock. Verificar con un test de Compose UI
+  que el chip ya no usa forma de círculo/píldora.
+- [ ] 12.2 Fijar explícitamente `shape = MaterialTheme.shapes.medium` (16dp) en los botones primarios que
+  hoy usan la forma de píldora por defecto de Material 3 (botón "Mostrar traducción", Fallo, Acierto,
+  "Generar sesión nueva" en `:feature:session`; "Guardar" en `:feature:settings`), sin tocar los botones
+  que ya son intencionalmente circulares (Escuchar, FAB de revertir). Verificar con un test de Compose UI
+  que al menos uno de estos botones ya no usa la forma de píldora.
+- [ ] 12.3 Añadir el enlace "Ocultar" junto a la etiqueta "TRADUCCIÓN" en el panel de traducción
+  (`:feature:session`), que oculta de nuevo la traducción (mismo efecto que no revelar). Añadir un test
+  de Compose UI que compruebe que el enlace existe y que al pulsarlo la pantalla vuelve al estado sin
+  revelar.
+- [ ] 12.4 Invertir el orden de `value`/`label` en `DsHeroStat` (`:core:designsystem`) para que coincida
+  con el mock (etiqueta primero, valor grande después, línea secundaria al final). Verificar que el test
+  existente de `DsHeroStat` sigue comprobando el contenido correcto tras el cambio de orden, y que la
+  pantalla de Progreso (único consumidor) sigue mostrando los datos correctos.
+- [ ] 12.5 Añadir los textos de ayuda que faltan en Ajustes (`:feature:settings`): "Elige tu nivel. Solo
+  verás frases de este nivel o inferiores." bajo "Nivel CEFR", y "Mínimo 10 frases por sesión." bajo
+  "Tamaño de tanda (N)". Añadir estos literales como recursos de string (es-ES), no hardcodeados.
+  Verificar con un test de Compose UI que ambos textos son visibles.
+- [ ] 12.6 Ajustar el estilo del `Snackbar` de confirmación de guardado (`:app`) para que se aproxime más
+  al mock (texto en línea sin fondo oscuro ni elevación, por ejemplo con `containerColor =
+  Color.Transparent`/`elevation = 0.dp` si la API de `Snackbar` lo permite), sin mover su posición fuera
+  del `Scaffold` de `:app` (eso exigiría revisar la decisión de arquitectura de `add-settings-apply-flow`,
+  fuera de alcance). Documentar en el commit qué tan cerca queda del mock y qué limitación de la API de
+  `Snackbar` impide la fidelidad total, si la hay.
+- [ ] 12.7 Añadir un parámetro opcional a `DsInfoBanner` (`:core:designsystem`) para pintar su icono sin
+  tinte (`tint = Color.Unspecified`) cuando el icono ya es multicolor (como las insignias de rango), y
+  usarlo desde `:feature:session` en el mensaje "Te faltan N aciertos para X". Verificar con un test que
+  el icono de insignia se muestra con sus colores propios en vez de teñido de un solo color.
+
 ## Workflow follow-up
 
 - Revisar con `android-architect` el diseño antes de implementar (si no se ha hecho ya en esta sesión).
