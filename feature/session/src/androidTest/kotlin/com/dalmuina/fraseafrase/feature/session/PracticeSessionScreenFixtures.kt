@@ -10,10 +10,11 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 
 /**
- * Builders y helper de contenido compartidos entre [PracticeSessionScreenTest] y
- * [PracticeSessionRevertButtonScreenTest] (ADR-0007). Viven en un archivo propio, separado de las clases de
- * test, para que ambas puedan usarlos sin duplicarlos ni exponerlos como miembros `private` de una sola
- * clase (misma razón por la que `PracticeSessionFixtures.kt` separa los builders de los tests unitarios de
+ * Builders y helper de contenido compartidos entre [PracticeSessionScreenTest],
+ * [PracticeSessionRevertButtonScreenTest] y [PracticeSessionCompletedScreenTest] (ADR-0007). Viven en un
+ * archivo propio, separado de las clases de test, para que todas puedan usarlos sin duplicarlos ni
+ * exponerlos como miembros `private` de una sola clase (misma razón por la que
+ * `PracticeSessionFixtures.kt` separa los builders de los tests unitarios de
  * `PracticeSessionViewModelTest`/`PracticeSessionRevertTest`).
  */
 internal fun ComposeContentTestRule.setScreen(uiState: PracticeSessionUiState) {

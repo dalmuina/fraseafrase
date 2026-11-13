@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generado desde el mock. Monocromo, tintable (decorativo). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:pathData="M12 2l8.66 5v10L12 22l-8.66-5V7z" android:fillColor="#FF000000" />
+</vector>

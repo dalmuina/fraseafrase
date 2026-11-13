@@ -27,7 +27,9 @@ internal val LightColors: ColorScheme = lightColorScheme(
     onError = Color(0xFFFFFFFF),
     errorContainer = Color(0xFFFFECEE),
     onErrorContainer = Color(0xFFB4232F),
-    background = Color(0xFFF5F6FA),
+    // background corregido por adopt-reference-mock-ui (design - decisión 2) a #F7F5FF, el fondo
+    // de pantalla y de campo numérico de design/mock/design-tokens.md.
+    background = Color(0xFFF7F5FF),
     surface = Color(0xFFFFFFFF),
     onSurface = Color(0xFF14171F)
 )
@@ -57,3 +59,35 @@ internal val DarkColors: ColorScheme = darkColorScheme(
     surface = Color(0xFF1E2130),
     onSurface = Color(0xFFE6E8F0)
 )
+
+/**
+ * Tokens de color del mock de referencia que no corresponden a ningún rol estándar de
+ * `ColorScheme` de Material 3 (adopt-reference-mock-ui, design - decisión 2). Los valores salen
+ * literalmente de `design/mock/design-tokens.md`; `textSecondary` unifica la inconsistencia del
+ * propio mock entre `#5A5670` y `#5A6070` en el primero. `accent` (`#5B3DF5`) y `fab`
+ * (`#FF7A50`) ya existen como [LightColors.primary]/[LightColors.secondary]: no se duplican aquí.
+ * Sin variante oscura: el mock no define una (design - Non-Goals).
+ */
+object AppColors {
+    val AccentStrong: Color = Color(0xFF3A1FC2)
+    val AccentSoft: Color = Color(0xFFECE7FF)
+    val TextSecondary: Color = Color(0xFF5A5670)
+    val TextOnLevel: Color = Color(0xFF3A404D)
+    val Track: Color = Color(0xFFE4DFF5)
+    val TrackSoft: Color = Color(0xFFEFECF8)
+    val DashedBorder: Color = Color(0xFFD3CCF0)
+    val Disabled: Color = Color(0xFF8A909C)
+    val HintBg: Color = Color(0xFFFFF1EA)
+    val HintText: Color = Color(0xFF5C2A12)
+    val RankUpText: Color = Color(0xFF9A3412)
+    val FabContent: Color = Color(0xFF2B0E02)
+    val Success: Color = Color(0xFF0B8A4A)
+    val SuccessBg: Color = Color(0xFFE3F6EC)
+    val SuccessText: Color = Color(0xFF08693A)
+    val Error: Color = Color(0xFFD92D3F)
+    val ErrorBg: Color = Color(0xFFFFECEE)
+    val ErrorText: Color = Color(0xFFB4232F)
+
+    // `successStatus`: color del mensaje "Ajustes guardados" (adopt-reference-mock-ui, tarea 9.4).
+    val SuccessStatus: Color = Color(0xFF1B6B44)
+}

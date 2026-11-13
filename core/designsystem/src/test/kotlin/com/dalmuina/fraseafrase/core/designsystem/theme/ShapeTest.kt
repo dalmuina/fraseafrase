@@ -39,4 +39,17 @@ class ShapeTest {
 
         appLargeRadiusPx shouldBe with(density) { 24.dp.toPx() }
     }
+
+    // Scenario: los radios adicionales del mock que no caben en los 5 slots de Shapes de
+    // Material 3 (panel/zona discontinua, FAB de volver, controles compactos) coinciden
+    // exactamente con design/mock/design-tokens.md (adopt-reference-mock-ui, design - decisión 2)
+    @Test
+    fun `given app corner shapes when reading extra radii then they match the mock exactly`() {
+        val density = Density(1f)
+        val size = Size(1000f, 1000f)
+
+        AppCornerShapes.Panel.topStart.toPx(size, density) shouldBe with(density) { 20.dp.toPx() }
+        AppCornerShapes.Fab.topStart.toPx(size, density) shouldBe with(density) { 18.dp.toPx() }
+        AppCornerShapes.Hint.topStart.toPx(size, density) shouldBe with(density) { 14.dp.toPx() }
+    }
 }

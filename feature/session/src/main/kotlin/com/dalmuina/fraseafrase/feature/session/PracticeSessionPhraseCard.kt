@@ -1,13 +1,13 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
@@ -20,17 +20,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.sp
 import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBanner
 import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBannerSegment
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadgeChange
 import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppCornerShapes
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import kotlinx.coroutines.delay
+import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Tarjeta con la frase en español, la traducción y el control de escuchar solo si está revelada, y el contador de
@@ -68,8 +77,11 @@ internal fun PhraseCard(
                 )
                 Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
                 DsInfoBanner(
-                    icon = Icons.Default.Star,
-                    iconContentDescription = stringResource(R.string.practice_remaining_hits_icon_description),
+                    icon = nextLevelBadgeIcon(item.level),
+                    iconContentDescription = stringResource(
+                        R.string.practice_remaining_hits_icon_description,
+                        nextLevelBadgeLabel,
+                    ),
                     segments = listOf(
                         DsInfoBannerSegment(text = stringResource(R.string.practice_remaining_hits_prefix)),
                         DsInfoBannerSegment(text = remainingHitsForNextLevel.toString(), emphasized = true),
@@ -77,11 +89,12 @@ internal fun PhraseCard(
                         DsInfoBannerSegment(text = nextLevelBadgeLabel, emphasized = true),
                     ),
                     modifier = Modifier.fillMaxWidth(),
+                    iconTint = Color.Unspecified,
                 )
             }
         }
         if (revealed) {
-            TranslationCard(target = item.target)
+            TranslationCard(target = item.target, onAction = onAction)
         }
     }
 }
@@ -125,12 +138,17 @@ private fun PhraseCardHeader(
     }
 }
 
-/** Pastilla del nivel CEFR de la frase: fondo `primary`, texto blanco (design `redesign-app-ui`, mock). */
+/**
+ * Chip del nivel CEFR de la frase: fondo `primary`, texto blanco, radio 8dp (chip rectangular, no
+ * círculo/píldora completa, `design/mock/design-tokens.md`, "Radios": "Chips de nivel y rango: 8";
+ * adopt-reference-mock-ui, tarea 12.1).
+ */
 @Composable
 private fun CefrLevelPill(cefrLevel: CefrLevel) {
     Surface(
-        shape = MaterialTheme.shapes.extraLarge,
+        shape = MaterialTheme.shapes.extraSmall,
         color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.testTag("practice_cefr_level_pill"),
     ) {
         Text(
             text = cefrLevel.name,
@@ -146,45 +164,95 @@ private fun CefrLevelPill(cefrLevel: CefrLevel) {
  * visible, incluido deshabilitado, con una descripción accesible equivalente al texto que ya no se
  * muestra (spec: phrase-audio, "Botón de escuchar tras revelar"; design D5, fix-redesign-ui-mismatches).
  *
- * Usa [Icons.Default.PlayArrow] en vez del altavoz (`Icons.Default.VolumeUp`) previsto en el diseño
- * porque, cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no
- * declaraba esa dependencia; `PlayArrow` ya estaba disponible en `material-icons-core` y ya se usaba en
- * este control. `:feature:session` sí declara `material-icons-extended` desde el grupo 8 de
- * `fix-redesign-ui-mismatches` (design D6, icono `Undo` del botón de deshacer), pero revisar esta
- * elección con esa dependencia ya disponible queda fuera del alcance de esa tarea.
+ * Círculo de 44dp con el icono `ic_volume` del mock de referencia sobre fondo `accent` (primary), con la
+ * sombra de color del mock (`box-shadow: 0 4px 12px rgba(91,61,245,.3)` en
+ * `design/mock/screens/02-practicar-traduccion.html`), según `design/mock/design-tokens.md`, "Tamaños y
+ * espaciado" (adopt-reference-mock-ui, design - decisión 2 y 3, tarea 5.3). Sustituye a
+ * [Icons.Default.PlayArrow], elegido en su momento como aproximación provisional del altavoz porque
+ * `Icons.Default.VolumeUp` solo estaba en `material-icons-extended`, sin declarar entonces por
+ * `:feature:session`; `ic_volume` ya está empaquetado en `:core:designsystem` sin esa dependencia.
  */
 @Composable
 private fun ListenButton(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
     FilledIconButton(
         onClick = { onAction(PracticeSessionAction.PlayAudio) },
         enabled = enabled,
+        modifier = Modifier
+            .size(AppTheme.dimensions.listenButtonSize)
+            .shadow(
+                elevation = AppTheme.spacing.xs,
+                shape = CircleShape,
+                ambientColor = MaterialTheme.colorScheme.primary,
+                spotColor = MaterialTheme.colorScheme.primary,
+            )
+            .testTag("practice_listen_button"),
         colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
     ) {
         Icon(
-            imageVector = Icons.Default.PlayArrow,
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_volume),
             contentDescription = stringResource(R.string.practice_listen),
-            modifier = Modifier.testTag("listen_icon"),
+            modifier = Modifier
+                .size(AppTheme.dimensions.listenButtonIconSize)
+                .testTag("listen_icon"),
         )
     }
 }
 
-/** Tarjeta de la traducción revelada (spec: practice-session); el control de escuchar vive en la cabecera. */
+/**
+ * Tracking de la etiqueta "TRADUCCIÓN" (`design/mock/design-tokens.md`, "Tipografía": +0.8), aplicado
+ * con `.copy()` sobre `labelMedium` en vez de en el token compartido, igual que documenta `Type.kt` para
+ * este mismo caso (dos usos del mismo slot con valores de tracking distintos).
+ */
+private val TranslationLabelLetterSpacing = 0.8.sp
+
+/**
+ * Panel de la traducción revelada (spec: practice-session); el control de escuchar vive en la cabecera.
+ * Fondo `accentSoft`, radio `AppCornerShapes.Panel` (20dp) y etiqueta "TRADUCCIÓN" en mayúsculas sobre
+ * ella (adopt-reference-mock-ui, design - decisión 2, tarea 5.1), con el enlace "Ocultar" junto a esa
+ * etiqueta, en su esquina superior derecha, que vuelve a ocultar la traducción (adopt-reference-mock-ui,
+ * tarea 12.3: inverso de "Mostrar traducción", mismo efecto que no haber revelado todavía).
+ */
 @Composable
-private fun TranslationCard(target: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+private fun TranslationCard(target: String, onAction: (PracticeSessionAction) -> Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("practice_translation_card"),
+        shape = AppCornerShapes.Panel,
+        color = AppColors.AccentSoft,
     ) {
-        Text(
-            text = target,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        Column(
             modifier = Modifier.padding(AppTheme.spacing.l),
-        )
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.practice_translation_label).uppercase(),
+                    style = MaterialTheme.typography.labelMedium.copy(letterSpacing = TranslationLabelLetterSpacing),
+                    color = AppColors.AccentStrong,
+                )
+                Text(
+                    text = stringResource(R.string.practice_hide_translation),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AppColors.AccentStrong,
+                    modifier = Modifier
+                        .clickable { onAction(PracticeSessionAction.HideTranslation) }
+                        .testTag("practice_hide_translation_link"),
+                )
+            }
+            Text(
+                text = target,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 
@@ -224,4 +292,30 @@ private fun BadgeChange.Direction.visibleDurationMillis(motion: Motion): Long = 
         (motion.durationShortMillis + motion.durationLongMillis + motion.durationMediumMillis).toLong()
     BadgeChange.Direction.DOWN ->
         (motion.durationMediumMillis + motion.durationShortMillis + motion.durationMediumMillis).toLong()
+}
+
+/**
+ * Insignia del icono del mensaje "Te faltan N aciertos para X" (spec: practice-session, "Aciertos para
+ * el próximo nivel visibles"; design.md decisión 8, adopt-reference-mock-ui): la del nivel SIGUIENTE a
+ * [level], nunca un icono genérico ni la del nivel actual (`design/mock/design-tokens.md`, "El icono...
+ * es la insignia del rango X, el siguiente, no una estrella ni el rango actual").
+ */
+@Composable
+private fun nextLevelBadgeIcon(level: Level): ImageVector {
+    val nextLevel = (level.value + 1).coerceAtMost(Level.MAX_LEVEL)
+    return ImageVector.vectorResource(id = nextLevelBadgeIconRes(nextLevel))
+}
+
+private const val LEVEL_BRONCE = 1
+private const val LEVEL_PLATA = 2
+private const val LEVEL_ORO = 3
+private const val LEVEL_PLATINO = 4
+
+/** Icono multicolor de la insignia de rango de 1 (Bronce) a 5 (Diamante), sin tinte (ADR-0010). */
+private fun nextLevelBadgeIconRes(nextLevel: Int): Int = when (nextLevel) {
+    LEVEL_BRONCE -> DesignSystemR.drawable.ic_rank_bronce
+    LEVEL_PLATA -> DesignSystemR.drawable.ic_rank_plata
+    LEVEL_ORO -> DesignSystemR.drawable.ic_rank_oro
+    LEVEL_PLATINO -> DesignSystemR.drawable.ic_rank_platino
+    else -> DesignSystemR.drawable.ic_rank_diamante
 }

@@ -8,6 +8,12 @@ sealed interface PracticeSessionAction {
     /** Muestra la traducción en portugués de la frase actual. */
     data object Reveal : PracticeSessionAction
 
+    /**
+     * Vuelve a ocultar la traducción ya revelada (adopt-reference-mock-ui, tarea 12.3): inverso de
+     * [Reveal], mismo efecto visual que no haber revelado todavía.
+     */
+    data object HideTranslation : PracticeSessionAction
+
     /** Autoevalúa la frase revelada como acierto o fallo (ADR-0012). */
     data class Answer(val assessment: SelfAssessment) : PracticeSessionAction
 

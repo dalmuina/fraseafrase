@@ -4,12 +4,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -63,4 +68,54 @@ class DsInfoBannerTest {
         val backgroundColor = pixelMap[pixelMap.width / 2, 2]
         assertEquals(expectedColor, backgroundColor)
     }
+
+    // Scenario: dado un icono multicolor (como una insignia de rango) y `iconTint =
+    // Color.Unspecified`, el componente no lo tiñe con `contentColor` y conserva sus propios
+    // colores (tasks 12.7, design-tokens.md: "Insignias de rango... nunca con el tint por defecto
+    // de Icon()")
+    @Test
+    fun givenUnspecifiedIconTintWhenPaintingThenIconKeepsItsOwnColor() {
+        // Given: un icono sólido de un color fijo distinto del contentColor del tema y
+        // `iconTint = Color.Unspecified`
+        val iconOwnColor = Color(0xFF123456)
+        composeTestRule.setContent {
+            AppTheme {
+                DsInfoBanner(
+                    icon = solidColorIcon(iconOwnColor),
+                    iconContentDescription = "Insignia de rango",
+                    segments = listOf(DsInfoBannerSegment(text = "Texto")),
+                    iconTint = Color.Unspecified,
+                )
+            }
+        }
+
+        // When: se captura el píxel central del icono (las coordenadas de los nodos están en dp;
+        // `toPixelMap()` indexa en píxeles físicos, así que hay que escalar por la densidad)
+        val iconBounds = composeTestRule.onNodeWithContentDescription("Insignia de rango")
+            .getUnclippedBoundsInRoot()
+        val density = composeTestRule.density.density
+        val pixelMap = composeTestRule.onRoot().captureToImage().toPixelMap()
+        val centerX = (((iconBounds.left + iconBounds.right) / 2).value * density).toInt()
+        val centerY = (((iconBounds.top + iconBounds.bottom) / 2).value * density).toInt()
+        val iconPixelColor = pixelMap[centerX, centerY]
+
+        // Then: el píxel conserva el color propio del icono, no el `contentColor` del banner
+        assertEquals(iconOwnColor, iconPixelColor)
+    }
 }
+
+/** Icono de prueba totalmente relleno de [color], para verificar que no se tiñe. */
+private fun solidColorIcon(color: Color): ImageVector =
+    ImageVector.Builder(
+        name = "SolidColorTestIcon",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f,
+    ).path(fill = SolidColor(color)) {
+        moveTo(0f, 0f)
+        lineTo(24f, 0f)
+        lineTo(24f, 24f)
+        lineTo(0f, 24f)
+        close()
+    }.build()

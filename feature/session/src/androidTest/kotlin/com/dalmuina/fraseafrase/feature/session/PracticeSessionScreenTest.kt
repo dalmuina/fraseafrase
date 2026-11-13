@@ -32,6 +32,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 /**
  * Tests de UI de [PracticeSessionScreen] (ADR-0007). Verifican lo que ve el usuario: textos, botones habilitados y
@@ -66,17 +67,40 @@ class PracticeSessionScreenTest {
          */
         private const val ROW_ALIGNMENT_TOLERANCE_DP = 24f
 
-        /** Tags de las tres tarjetas de resultado de [CompletedMessage] (design D4, fix-redesign-ui-mismatches). */
-        private const val HITS_TILE_TAG = "practice_outcome_hits_tile"
-        private const val MISSES_TILE_TAG = "practice_outcome_misses_tile"
-        private const val LEVEL_UPS_TILE_TAG = "practice_outcome_level_ups_tile"
-
         /**
          * Descripción accesible del icono de insignia de la caja de aciertos para el siguiente nivel
-         * (design D2, fix-redesign-ui-mismatches), igual al valor de
-         * `practice_remaining_hits_icon_description`.
+         * (design D2, fix-redesign-ui-mismatches; texto actualizado por adopt-reference-mock-ui, design
+         * - decisión 8, para incluir la insignia concreta: "Insignia de Bronce" en vez del genérico
+         * "Insignia del siguiente nivel"), igual al valor de `practice_remaining_hits_icon_description`
+         * con el nombre de insignia de la fixture por defecto.
          */
-        private const val REMAINING_HITS_BADGE_ICON_DESCRIPTION = "Insignia del siguiente nivel"
+        private const val REMAINING_HITS_BADGE_ICON_DESCRIPTION = "Insignia de Bronce"
+
+        /** Texto del cuadro de ayuda discontinuo, igual al valor de `practice_translate_mentally_hint`. */
+        private const val TRANSLATE_MENTALLY_HINT = "Traduce la frase mentalmente y luego comprueba la traducción."
+
+        /**
+         * Radio objetivo del chip de nivel CEFR (`design/mock/design-tokens.md`, "Radios": "Chips de
+         * nivel y rango: 8"; adopt-reference-mock-ui, tarea 12.1).
+         */
+        private const val TARGET_CEFR_PILL_RADIUS_DP = 8f
+
+        /**
+         * Radio objetivo de los botones primarios (`design/mock/design-tokens.md`, "Radios":
+         * "Botón primario, Fallo, Acierto: 16 (no son píldoras)"; adopt-reference-mock-ui, tarea 12.2).
+         */
+        private const val TARGET_BUTTON_RADIUS_DP = 16f
+
+        /**
+         * Posición del píxel muestreado en [notFullyRoundedCornerColor], como fracción de la distancia
+         * entre el radio objetivo y el de una píldora completa (0 = junto al radio objetivo, 1 = junto a
+         * la píldora completa). Más cerca de la píldora completa deja más margen frente al antialiasing
+         * del borde real, sin dejar de distinguirlo de una píldora completa.
+         */
+        private const val SAMPLE_BIAS_TOWARD_FULL_PILL = 0.75f
+
+        /** Margen por canal de color admitido en [assertSolidColor] frente al antialiasing entre emuladores. */
+        private const val COLOR_CHANNEL_TOLERANCE = 0.08f
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -92,6 +116,78 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Bom dia").assertDoesNotExist()
         composeTestRule.onNodeWithText("Acierto").assertDoesNotExist()
         composeTestRule.onNodeWithText("Fallo").assertDoesNotExist()
+    }
+
+    // Scenario: El mensaje de ayuda se muestra sin revelar (spec: practice-session,
+    // adopt-reference-mock-ui)
+    @Test
+    fun givenHiddenPhraseWhenShowingTheScreenThenTranslateMentallyHintIsDisplayed() {
+        // Given: la frase A sin revelar
+        composeTestRule.setScreen(practicing(current = item(source = "Buenos días", target = "Bom dia")))
+
+        // When: la pantalla se muestra sin revelar (no hay acción que cambie el estado)
+
+        // Then: se muestra el mensaje de ayuda para traducir la frase mentalmente
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertIsDisplayed()
+    }
+
+    // Scenario: El mensaje de ayuda desaparece al revelar (spec: practice-session,
+    // adopt-reference-mock-ui)
+    @Test
+    fun givenTranslateMentallyHintShownWhenRevealingThenTheHintDisappears() {
+        // Given: la pantalla muestra el mensaje de ayuda junto a la frase A sin revelar; el estado
+        // se actualiza con la acción Reveal
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item(source = "Buenos días", target = "Bom dia")),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.Reveal) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(revealed = true)
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertIsDisplayed()
+
+        // When: el usuario revela la frase
+        composeTestRule.onNodeWithText("Mostrar traducción").performClick()
+
+        // Then: la pantalla deja de mostrar el mensaje de ayuda
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertDoesNotExist()
+    }
+
+    // Scenario: El mensaje de ayuda vuelve a mostrarse con la frase siguiente (spec:
+    // practice-session, adopt-reference-mock-ui)
+    @Test
+    fun givenPhraseARevealedWhenAssessingAndMovingToPhraseBThenTheHintIsShownAgain() {
+        // Given: una tanda con las frases A y B en ese orden, con A revelada
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item(source = "Buenos días", target = "Bom dia"), revealed = true),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action is PracticeSessionAction.Answer) {
+                            uiState = practicing(current = item(source = "Buenas noches", target = "Boa noite"))
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertDoesNotExist()
+
+        // When: el usuario se autoevalúa A y la pantalla pasa a mostrar B sin revelar
+        composeTestRule.onNodeWithText("Acierto").performClick()
+
+        // Then: la pantalla muestra de nuevo el mensaje de ayuda para traducir la frase mentalmente
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertIsDisplayed()
     }
 
     // Scenario: Revelar muestra la traducción en portugués (spec: practice-session)
@@ -208,6 +304,33 @@ class PracticeSessionScreenTest {
 
         // Then: la pantalla muestra "B1" junto a la frase
         composeTestRule.onNodeWithText("B1").assertIsDisplayed()
+    }
+
+    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 2 de la tarea 11.3
+    // (adopt-reference-mock-ui, tarea 12.1): el chip de nivel CEFR debe ser un chip rectangular de
+    // radio 8dp, no un círculo/píldora completa.
+    @Test
+    fun givenPracticingState_whenScreenShown_thenCefrLevelPillIsNotFullyRounded() {
+        // Given: la pantalla muestra una frase de nivel CEFR B1 sin revelar
+        var expectedPrimary: Color = Color.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedPrimary = MaterialTheme.colorScheme.primary
+                PracticeSessionScreen(
+                    uiState = practicing(current = item(cefrLevel = CefrLevel.B1)),
+                    onAction = {},
+                )
+            }
+        }
+
+        // When: se mide la esquina del chip, a mitad de camino entre el punto en el que dejaría de
+        // estar coloreada con el radio objetivo (8dp) y el punto en el que dejaría de estarlo con el
+        // radio que resultaría de una píldora completa (la mitad de la altura medida del propio chip)
+        val cornerColor = notFullyRoundedCornerColor("practice_cefr_level_pill", TARGET_CEFR_PILL_RADIUS_DP)
+
+        // Then: a esa distancia de la esquina, el chip ya está coloreado (el radio real es 8dp, menor
+        // que el de una píldora completa, así que a esa distancia ya no queda fuera del trazo)
+        assertSolidColor(expectedPrimary, cornerColor)
     }
 
     // Scenario: Insignia visible sin revelar (spec: practice-session)
@@ -382,6 +505,26 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithContentDescription(REMAINING_HITS_BADGE_ICON_DESCRIPTION).assertIsDisplayed()
     }
 
+    // Scenario: Aciertos para el próximo nivel visibles (spec: practice-session), con la insignia
+    // del nivel SIGUIENTE como icono, no la del nivel actual ni un icono genérico (design.md
+    // decisión 8, adopt-reference-mock-ui)
+    @Test
+    fun givenPhraseWithConsolidationLevel2_whenShowingIt_thenRemainingHitsIconIsTheNextLevelBadgeNotTheCurrentOne() {
+        // Given: una frase de nivel de consolidación 2 (Plata), a la que le falta 1 acierto para subir
+        // al nivel 3 (Oro)
+        composeTestRule.setScreen(
+            practicing(current = item().copy(level = Level(2)))
+                .copy(remainingHitsForNextLevel = 1, nextLevelBadgeLabel = "Oro"),
+        )
+
+        // When: la pantalla la muestra (estado dado)
+
+        // Then: el icono mostrado es la insignia del nivel siguiente, "Oro", no la del nivel actual
+        // "Plata" ni el icono genérico anterior
+        composeTestRule.onNodeWithContentDescription("Insignia de Oro").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Insignia de Plata").assertDoesNotExist()
+    }
+
     // Scenario: Fallo reinicia el contador (spec: practice-session)
     @Test
     fun givenPhraseWithLevel2WhenMissedAndShownAgainThenTheCounterShowsThreeForSilver() {
@@ -443,116 +586,6 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Te faltan 0 aciertos para la insignia Diamante").assertIsDisplayed()
     }
 
-    // Scenario: Tanda completa muestra el mensaje positivo (spec: practice-session)
-    @Test
-    fun givenCompletedBatchWhenShowingTheScreenThenThePositiveMessageIsDisplayedInsteadOfAPhrase() {
-        // Given: la tanda activa está completa
-        composeTestRule.setScreen(practicing(current = item(), completed = true))
-
-        // When: la pantalla se muestra (estado dado)
-
-        // Then: se muestra el mensaje positivo con la opción de generar sesión, no la frase
-        composeTestRule.onNodeWithText("¡Has completado la sesión!").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Generar sesión nueva").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Buenos días").assertDoesNotExist()
-    }
-
-    // Scenario: Generar sesión muestra la tanda siguiente con sus arrastradas primero (spec: practice-session)
-    @Test
-    fun givenCompletedBatchWhenGeneratingSessionThenOnActionReceivesGenerateSession() {
-        // Given: la tanda activa está completa, con el mensaje positivo visible
-        var receivedAction: PracticeSessionAction? = null
-        composeTestRule.setContent {
-            AppTheme {
-                PracticeSessionScreen(
-                    uiState = practicing(current = item(), completed = true),
-                    onAction = { action -> receivedAction = action },
-                )
-            }
-        }
-
-        // When: el usuario pide generar sesión
-        composeTestRule.onNodeWithText("Generar sesión nueva").performClick()
-
-        // Then: se despacha GenerateSession
-        assertTrue(receivedAction == PracticeSessionAction.GenerateSession)
-    }
-
-    // Scenario: El mensaje muestra el desglose de aciertos, fallos y subidas de nivel (spec: practice-session)
-    @Test
-    fun givenCompletedBatchWithOutcome_whenShowingTheScreen_thenTheBreakdownStatTilesAndSuccessIconAreDisplayed() {
-        // Given: la tanda completada con 3 aciertos, 2 fallos y 1 subida de nivel
-        composeTestRule.setScreen(
-            practicing(current = item(), completed = true).copy(hits = 3, misses = 2, levelUps = 1),
-        )
-
-        // When: la pantalla se muestra (estado dado)
-
-        // Then: se muestran el icono de éxito y las tres tarjetas de estadística con sus valores y etiquetas
-        composeTestRule.onNodeWithTag("practice_completed_success_icon").assertIsDisplayed()
-        composeTestRule.onNodeWithText("3").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Aciertos").assertIsDisplayed()
-        composeTestRule.onNodeWithText("2").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Fallos").assertIsDisplayed()
-        composeTestRule.onNodeWithText("1").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Suben de rango").assertIsDisplayed()
-    }
-
-    // Scenario: El mensaje muestra el desglose de aciertos, fallos y subidas de nivel (spec:
-    // practice-session), con colores diferenciados y la misma altura entre las tres tarjetas,
-    // aunque una etiqueta ocupe más líneas que otra (design D4, fix-redesign-ui-mismatches)
-    @Test
-    fun givenCompletedBatchWithOutcome_whenShowingTheScreen_thenOutcomeTilesHaveDistinctColorsAndEqualHeight() {
-        // Given: la tanda completada; se capturan los colores de contenedor esperados del tema
-        // actual para aciertos, fallos y subidas de rango, en ese orden
-        var expectedColors = emptyList<Color>()
-        composeTestRule.setContent {
-            AppTheme {
-                val scheme = MaterialTheme.colorScheme
-                expectedColors = listOf(scheme.tertiaryContainer, scheme.errorContainer, scheme.secondaryContainer)
-                PracticeSessionScreen(
-                    uiState = practicing(current = item(), completed = true).copy(hits = 3, misses = 2, levelUps = 1),
-                    onAction = {},
-                )
-            }
-        }
-        val tags = listOf(HITS_TILE_TAG, MISSES_TILE_TAG, LEVEL_UPS_TILE_TAG)
-
-        // When: la pantalla se muestra (estado dado)
-
-        // Then: cada tarjeta usa el color de fondo esperado para su rol, distinto del de las otras
-        // dos, y las tres miden lo mismo aunque "Suben de rango" ocupe más líneas que las otras
-        val actualColors = tags.map { outcomeTileBackgroundColor(it) }
-        val heights = tags.map { composeTestRule.onNodeWithTag(it).getUnclippedBoundsInRoot().heightValue() }
-        assertEquals(expectedColors, actualColors)
-        assertEquals(actualColors.size, actualColors.toSet().size)
-        assertTrue(heights.all { it == heights.first() })
-    }
-
-    // Scenario: El mensaje ofrece ir a Progreso sin generar sesión (spec: practice-session)
-    @Test
-    fun givenCompletedBatchWhenActivatingViewProgressLinkThenOnNavigateToProgressIsInvokedWithoutGeneratingSession() {
-        // Given: la pantalla muestra el mensaje de tanda completada
-        var receivedAction: PracticeSessionAction? = null
-        var navigatedToProgress = false
-        composeTestRule.setContent {
-            AppTheme {
-                PracticeSessionScreen(
-                    uiState = practicing(current = item(), completed = true),
-                    onAction = { action -> receivedAction = action },
-                    onNavigateToProgress = { navigatedToProgress = true },
-                )
-            }
-        }
-
-        // When: el usuario activa el enlace a Progreso
-        composeTestRule.onNodeWithText("Ver mi progreso").performClick()
-
-        // Then: se navega a Progreso sin despachar ninguna acción de generar sesión ni cambiar la tanda activa
-        assertTrue(navigatedToProgress)
-        assertTrue(receivedAction == null)
-    }
-
     // Scenario: Estado vacío sin frases disponibles (spec: practice-session)
     @Test
     fun givenNoPhrasesAvailableWhenShowingTheScreenThenItSaysThereIsNothingToPractice() {
@@ -564,18 +597,6 @@ class PracticeSessionScreenTest {
         // Then: la pantalla indica que no hay frases para practicar y no muestra ninguna frase
         composeTestRule.onNodeWithText("No hay frases para practicar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Mostrar traducción").assertDoesNotExist()
-    }
-
-    // Scenario: Mientras hay una respuesta en curso pedir generar sesión no tiene efecto (spec: practice-session)
-    @Test
-    fun givenAnswerInProgressWhenShowingTheScreenThenTheGenerateSessionButtonIsDisabled() {
-        // Given: la tanda está completa y, además, una autoevaluación se está registrando (busy = true)
-        composeTestRule.setScreen(practicing(current = item(), busy = true, completed = true))
-
-        // When: la pantalla muestra el estado con la respuesta en curso (estado dado)
-
-        // Then: el botón de generar sesión está deshabilitado
-        composeTestRule.onNodeWithText("Generar sesión nueva").assertIsNotEnabled()
     }
 
     // Scenario: Posición en la tanda visible (spec: practice-session), cabecera fija (design D1,
@@ -710,20 +731,6 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Fallo").assertIsDisplayed()
         composeTestRule.onNodeWithTag("practice_hit_icon", useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithText("Acierto").assertIsDisplayed()
-    }
-
-    // Scenario: Mensaje de tanda completada (spec: practice-session), con icono junto al texto del
-    // botón de generar sesión (design D8, fix-redesign-ui-mismatches)
-    @Test
-    fun givenCompletedBatch_whenShowingTheScreen_thenGenerateSessionButtonShowsIconNextToText() {
-        // Given: la tanda activa está completa
-        composeTestRule.setScreen(practicing(current = item(), completed = true))
-
-        // When: la pantalla se muestra (estado dado)
-
-        // Then: el botón "Generar sesión nueva" muestra un icono junto al texto
-        composeTestRule.onNodeWithTag("practice_generate_session_icon", useUnmergedTree = true).assertIsDisplayed()
-        composeTestRule.onNodeWithText("Generar sesión nueva").assertIsDisplayed()
     }
 
     // Scenario: El control de revelar es visible con una frase muy larga (spec: practice-session)
@@ -954,19 +961,71 @@ class PracticeSessionScreenTest {
         assertTrue(abs((indicatorTop - cefrLabelTop).value) <= ROW_ALIGNMENT_TOLERANCE_DP)
     }
 
+    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 3 de la tarea 11.3
+    // (adopt-reference-mock-ui, tarea 12.2): el botón primario "Mostrar traducción" debe tener radio
+    // 16dp ("no son píldoras", `design/mock/design-tokens.md`), no la forma de píldora por defecto de
+    // Material 3.
+    @Test
+    fun givenHiddenState_whenShowingTheScreen_thenRevealButtonIsNotFullyRounded() {
+        // Given: la pantalla muestra una frase sin revelar
+        var expectedPrimary: Color = Color.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedPrimary = MaterialTheme.colorScheme.primary
+                PracticeSessionScreen(uiState = practicing(current = item(), revealed = false), onAction = {})
+            }
+        }
+
+        // When: se mide la esquina del botón, a mitad de camino entre el punto en el que dejaría de
+        // estar coloreada con el radio objetivo (16dp) y el punto en el que dejaría de estarlo con el
+        // radio de una píldora completa (la mitad de la altura medida del propio botón)
+        val cornerColor = notFullyRoundedCornerColor("practice_reveal_button", TARGET_BUTTON_RADIUS_DP)
+
+        // Then: a esa distancia de la esquina, el botón ya está coloreado
+        assertSolidColor(expectedPrimary, cornerColor)
+    }
+
+    /**
+     * Color del píxel diagonal del nodo con [tag], a una distancia de su esquina elegida para
+     * distinguir un radio objetivo [targetRadiusDp] de una píldora completa (radio igual a la mitad
+     * de la altura medida del propio nodo), igual que `givenPracticingState_whenScreenShown_then
+     * CefrLevelPillIsNotFullyRounded`.
+     */
+    private fun notFullyRoundedCornerColor(tag: String, targetRadiusDp: Float): Color {
+        val node = composeTestRule.onNodeWithTag(tag)
+        val bounds = node.getUnclippedBoundsInRoot()
+        val halfHeightDp = (bounds.bottom - bounds.top).value / 2f
+        val cornerFactor = 1f - 1f / sqrt(2f)
+        val targetRadiusThresholdDp = targetRadiusDp * cornerFactor
+        val fullPillRadiusThresholdDp = halfHeightDp * cornerFactor
+        // El único borde realmente pintado (con antialiasing) está en targetRadiusThresholdDp; el de la
+        // píldora completa es solo un límite teórico que nunca se dibuja. Muestrear cerca de ese límite
+        // teórico, en vez de en el punto medio exacto, deja más margen frente al antialiasing del borde
+        // real sin perder la distinción frente a una píldora completa.
+        val sampleDp = targetRadiusThresholdDp +
+            (fullPillRadiusThresholdDp - targetRadiusThresholdDp) * SAMPLE_BIAS_TOWARD_FULL_PILL
+        val density = composeTestRule.density.density
+        val insetPx = (sampleDp * density).toInt()
+        val pixelMap = node.captureToImage().toPixelMap()
+        return pixelMap[insetPx, insetPx]
+    }
+
+    /**
+     * Compara [actual] con [expected] admitiendo el margen de antialiasing entre emuladores
+     * ([COLOR_CHANNEL_TOLERANCE] por canal), en vez de igualdad exacta: un píxel de borde puede mezclarse
+     * ligeramente con el fondo sin dejar de ser, a efectos del test, "el color sólido esperado".
+     */
+    private fun assertSolidColor(expected: Color, actual: Color) {
+        val close = abs(expected.red - actual.red) <= COLOR_CHANNEL_TOLERANCE &&
+            abs(expected.green - actual.green) <= COLOR_CHANNEL_TOLERANCE &&
+            abs(expected.blue - actual.blue) <= COLOR_CHANNEL_TOLERANCE
+        assertTrue("expected=$expected, actual=$actual", close)
+    }
+
     /** Texto lo bastante largo para desbordar la pantalla del test en cualquiera de sus tamaños de letra. */
     private fun veryLongText(prefix: String = "palabra"): String =
         (1..40).joinToString(separator = " ") { "$prefix$it" }
 
     /** Ancho de un [DpRect], no expuesto como propiedad por la API de Compose UI. */
     private fun DpRect.widthValue(): Dp = right - left
-
-    /** Alto de un [DpRect], no expuesto como propiedad por la API de Compose UI. */
-    private fun DpRect.heightValue(): Dp = bottom - top
-
-    /** Color del píxel central del nodo con [tag], igual que `DsStatTileTest` en `:core:designsystem`. */
-    private fun outcomeTileBackgroundColor(tag: String): Color {
-        val pixelMap = composeTestRule.onNodeWithTag(tag).captureToImage().toPixelMap()
-        return pixelMap[pixelMap.width / 2, pixelMap.height / 2]
-    }
 }

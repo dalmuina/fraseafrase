@@ -13,3 +13,16 @@ internal val AppShapes: Shapes = Shapes(
     large = RoundedCornerShape(24.dp),
     extraLarge = RoundedCornerShape(32.dp)
 )
+
+/**
+ * Radios del mock de referencia que no caben en los 5 slots de [Shapes] de Material 3
+ * (adopt-reference-mock-ui, design - decisión 2): panel de traducción y zona discontinua
+ * ([Panel]), botón flotante de volver ([Fab]), y controles compactos -- mensaje de rango, botones
+ * de nivel, stepper +/- y campo numérico ([Hint]). Valores exactos de
+ * `design/mock/design-tokens.md`, sección "Radios".
+ */
+object AppCornerShapes {
+    val Panel: RoundedCornerShape = RoundedCornerShape(20.dp)
+    val Fab: RoundedCornerShape = RoundedCornerShape(18.dp)
+    val Hint: RoundedCornerShape = RoundedCornerShape(14.dp)
+}

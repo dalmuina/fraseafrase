@@ -6,22 +6,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,14 +32,25 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.dalmuina.fraseafrase.core.designsystem.component.DsProgressBar
 import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTile
 import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTileSize
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppCornerShapes
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Pantalla de práctica sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión con el
@@ -65,23 +72,51 @@ internal fun PracticeSessionScreen(
             }
         },
     ) { innerPadding ->
+        // Caja de pantalla completa, sin más padding que el del `topBar` (`innerPadding`): aloja el
+        // contenido centrado de siempre y, como hermano suyo, el FAB de revertir posicionado con offsets
+        // absolutos desde sus bordes (adopt-reference-mock-ui, tarea 6.1, `design/mock/design-tokens.md`
+        // "Botón flotante de volver": 20dp desde la izquierda, 172dp desde abajo), en vez de contar desde el
+        // padding adicional de la zona de contenido.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(AppTheme.spacing.s),
-            contentAlignment = Alignment.Center,
+                .testTag("practice_session_content_area"),
         ) {
-            when (uiState) {
-                PracticeSessionUiState.Loading -> CircularProgressIndicator()
-                PracticeSessionUiState.NothingToPractice -> EmptyMessage(
-                    text = stringResource(R.string.practice_nothing_to_practice),
-                )
-                PracticeSessionUiState.CatalogError -> EmptyMessage(
-                    text = stringResource(R.string.practice_catalog_error),
-                )
-                is PracticeSessionUiState.Practicing ->
-                    PracticingContent(uiState, onAction, onNavigateToProgress)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(AppTheme.spacing.s),
+                contentAlignment = Alignment.Center,
+            ) {
+                when (uiState) {
+                    PracticeSessionUiState.Loading -> CircularProgressIndicator()
+                    PracticeSessionUiState.NothingToPractice -> EmptyMessage(
+                        text = stringResource(R.string.practice_nothing_to_practice),
+                    )
+                    PracticeSessionUiState.CatalogError -> EmptyMessage(
+                        text = stringResource(R.string.practice_catalog_error),
+                    )
+                    is PracticeSessionUiState.Practicing ->
+                        PracticingContent(uiState, onAction, onNavigateToProgress)
+                }
+            }
+            if (uiState is PracticeSessionUiState.Practicing && !uiState.completed) {
+                // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches):
+                // ya no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio
+                // flotante sobre el contenido en vez de desplazarlo. `AnimatedVisibility` repone la animación
+                // de aparición/desaparición que ese slot daba automáticamente.
+                AnimatedVisibility(
+                    visible = uiState.canRevertLastAnswer,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .offset(
+                            x = AppTheme.dimensions.revertFabHorizontalOffset,
+                            y = -AppTheme.dimensions.revertFabBottomOffset,
+                        ),
+                ) {
+                    RevertLastAnswerButton(onAction = onAction)
+                }
             }
         }
     }
@@ -89,15 +124,26 @@ internal fun PracticeSessionScreen(
 
 /**
  * Cabecera fija de Practicar: título, píldora de posición en la tanda y barra de progreso (spec:
- * practice-session, "Posición en la tanda visible"; design D1 de `fix-style-pass-two`).
+ * practice-session, "Posición en la tanda visible"; design D1 de `fix-style-pass-two`). Paddings, gap y
+ * alto de barra ajustados a los valores exactos del mock (adopt-reference-mock-ui, design - decisión 2,
+ * `design/mock/design-tokens.md` "Cabecera": 24 arriba, 20 lados, 12 abajo, 14 entre título y barra, barra
+ * de 8 de alto; se aproximan con la escala de [AppTheme.spacing] ya existente, sin introducir `dp`
+ * literales nuevos, igual que ya hace [PhraseCard] con el padding de 20 de la tarjeta de frase).
  */
 @Composable
 private fun PracticeHeader(index: Int, total: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(AppTheme.spacing.m),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+            .padding(
+                PaddingValues(
+                    start = AppTheme.spacing.l,
+                    end = AppTheme.spacing.l,
+                    top = AppTheme.spacing.l,
+                    bottom = AppTheme.spacing.s,
+                ),
+            ),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.m),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -110,19 +156,21 @@ private fun PracticeHeader(index: Int, total: Int) {
             )
             Surface(
                 shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = AppColors.AccentSoft,
             ) {
                 Text(
                     text = stringResource(R.string.practice_position, index, total),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = AppColors.AccentStrong,
                     modifier = Modifier.padding(horizontal = AppTheme.spacing.m, vertical = AppTheme.spacing.s),
                 )
             }
         }
         DsProgressBar(
             progress = index / total.toFloat(),
-            modifier = Modifier.testTag("practice_progress_indicator"),
+            modifier = Modifier
+                .height(AppTheme.spacing.s)
+                .testTag("practice_progress_indicator"),
         )
     }
 }
@@ -179,14 +227,13 @@ private fun PracticingContent(
                     badgeChange = state.badgeChange,
                     onAction = onAction,
                 )
+                if (!state.revealed) {
+                    TranslateMentallyHint()
+                }
             }
-            // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches): ya
-            // no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio flotante
-            // sobre el contenido en vez de desplazarlo. `AnimatedVisibility` repone la animación de
-            // aparición/desaparición que ese slot daba automáticamente.
-            AnimatedVisibility(visible = state.canRevertLastAnswer) {
-                RevertLastAnswerButton(onAction = onAction)
-            }
+            // El FAB de revertir ya no vive aquí dentro, apilado en esta misma `Column`: vive como hermano de
+            // esta `Column` en [PracticeSessionScreen], posicionado con offsets absolutos desde los bordes de
+            // la pantalla (adopt-reference-mock-ui, tarea 6.1).
             if (state.revealed) {
                 AssessmentButtons(enabled = !state.busy, onAction = onAction)
             } else {
@@ -199,23 +246,23 @@ private fun PracticingContent(
 /**
  * Botón para revelar la traducción, con icono y 56dp de alto (design D8, fix-redesign-ui-mismatches).
  *
- * Usa [Icons.Default.Search] en vez del ojo (`Icons.Default.Visibility`) previsto en el diseño porque,
- * cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no declaraba
- * esa dependencia (igual que `ListenButton` en `PracticeSessionPhraseCard.kt` sustituyó `VolumeUp` por
- * `PlayArrow`; ver su kdoc sobre `material-icons-extended` desde el grupo 8). `Search` ya está disponible
- * en `material-icons-core` y es la metáfora más cercana a "revelar/ver
- * contenido oculto" sin depender de `material-icons-extended` solo por este icono.
+ * Usa el `VectorDrawable` `ic_eye` del mock de referencia (adopt-reference-mock-ui, design - decisión 3)
+ * en vez de [Icons.Default.Search], que se eligió en su momento como sustituto provisional del ojo
+ * (`Icons.Default.Visibility`, solo disponible entonces en `material-icons-extended`, no declarada por
+ * `:feature:session`); `ic_eye` ya está empaquetado en `:core:designsystem` sin esa dependencia.
  */
 @Composable
 private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {
     Button(
         onClick = { onAction(PracticeSessionAction.Reveal) },
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
-            .height(AppTheme.dimensions.primaryActionHeight),
+            .height(AppTheme.dimensions.primaryActionHeight)
+            .testTag("practice_reveal_button"),
     ) {
         Icon(
-            imageVector = Icons.Default.Search,
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_eye),
             contentDescription = null,
             modifier = Modifier
                 .size(ButtonDefaults.IconSize)
@@ -223,6 +270,117 @@ private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {
         )
         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
         Text(text = stringResource(R.string.practice_reveal))
+    }
+}
+
+/**
+ * Anchura del trazo discontinuo de [TranslateMentallyHint] (`design/mock/design-tokens.md`, "Radios":
+ * borde 2 de la zona discontinua).
+ */
+private val TranslateMentallyHintBorderWidth = 2.dp
+
+/** Longitud de cada guion y hueco del trazo discontinuo de [TranslateMentallyHint]. */
+private val TranslateMentallyHintDashLength = 6.dp
+
+/**
+ * Cuadro de ayuda con borde discontinuo que invita a traducir la frase mentalmente antes de comprobar la
+ * traducción (spec: practice-session, "Mensaje de ayuda para traducir mentalmente";
+ * adopt-reference-mock-ui, design - decisión 5): visible solo mientras la frase actual no está revelada.
+ * Nace como composable privado de esta pantalla porque ninguna otra feature lo necesita todavía (regla de
+ * promoción del proyecto a `:core:designsystem`).
+ */
+@Composable
+private fun TranslateMentallyHint() {
+    val borderColor = AppColors.DashedBorder
+    val shape = AppCornerShapes.Panel
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .drawBehind {
+                drawRoundRect(
+                    color = borderColor,
+                    cornerRadius = CornerRadius(shape.topStart.toPx(size, this)),
+                    style = Stroke(
+                        width = TranslateMentallyHintBorderWidth.toPx(),
+                        pathEffect = PathEffect.dashPathEffect(
+                            floatArrayOf(
+                                TranslateMentallyHintDashLength.toPx(),
+                                TranslateMentallyHintDashLength.toPx(),
+                            ),
+                        ),
+                    ),
+                )
+            }
+            .padding(AppTheme.spacing.l),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.practice_translate_mentally_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = AppColors.TextSecondary,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+/**
+ * Insignia compuesta de felicitación de [CompletedMessage] (`design/mock/design-tokens.md`, "Sesión
+ * completada"; adopt-reference-mock-ui, design - decisión 6): hexágono exterior en `accentSoft`,
+ * hexágono interior en `accent` centrado dentro de él, check blanco centrado sobre ambos
+ * (`ic_check_complete`) y un mini-hexágono decorativo en la esquina superior derecha con el color del
+ * FAB (`ic_hex_solid`, también usado para los dos hexágonos: el mismo vector monocromo tintable,
+ * variando solo tamaño, color y posición).
+ *
+ * Los tamaños y el desplazamiento viven como variables locales, en vez de constantes de nivel de
+ * archivo, para que Kover los excluya junto con el resto del cuerpo de este composable (ADR-0007: la
+ * UI se verifica con tests de UI, no con cobertura de líneas); una constante de nivel de archivo
+ * acaba en el inicializador estático de la clase, que no está anotado con `@Composable` y sí cuenta
+ * para la cobertura de líneas de `:feature:session`.
+ */
+@Composable
+private fun CompletedBadge() {
+    val outerHexSize = 128.dp
+    val innerHexSize = 92.dp
+    val checkSize = 44.dp
+    val miniHexSize = 28.dp
+    // Desplazamiento del mini-hexágono decorativo desde la esquina superior derecha del hexágono
+    // exterior (mock: `right: -6px; top: 4px`), hacia fuera y hacia abajo.
+    val miniHexOffsetX = 6.dp
+    val miniHexOffsetY = 4.dp
+    Box(
+        modifier = Modifier.size(outerHexSize),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_hex_solid),
+            contentDescription = null,
+            tint = AppColors.AccentSoft,
+            modifier = Modifier.size(outerHexSize),
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_hex_solid),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(innerHexSize),
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_check_complete),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier
+                .size(checkSize)
+                .testTag("practice_completed_success_icon"),
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_hex_solid),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier
+                .size(miniHexSize)
+                .align(Alignment.TopEnd)
+                .offset(x = miniHexOffsetX, y = miniHexOffsetY)
+                .testTag("practice_completed_badge_mini_hex"),
+        )
     }
 }
 
@@ -240,14 +398,7 @@ private fun CompletedMessage(
     onAction: (PracticeSessionAction) -> Unit,
     onNavigateToProgress: () -> Unit,
 ) {
-    Icon(
-        imageVector = Icons.Default.CheckCircle,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .size(AppTheme.spacing.xl + AppTheme.spacing.xl)
-            .testTag("practice_completed_success_icon"),
-    )
+    CompletedBadge()
     Text(
         text = stringResource(R.string.practice_batch_completed),
         style = MaterialTheme.typography.titleMedium,
@@ -324,12 +475,13 @@ private fun GenerateSessionButton(enabled: Boolean, onAction: (PracticeSessionAc
     Button(
         onClick = { onAction(PracticeSessionAction.GenerateSession) },
         enabled = enabled,
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
             .height(AppTheme.dimensions.primaryActionHeight),
     ) {
         Icon(
-            imageVector = Icons.Default.Refresh,
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_new_session),
             contentDescription = null,
             modifier = Modifier
                 .size(ButtonDefaults.IconSize)
@@ -340,7 +492,18 @@ private fun GenerateSessionButton(enabled: Boolean, onAction: (PracticeSessionAc
     }
 }
 
-/** Acierto y fallo para la frase revelada (ADR-0012). Se deshabilitan mientras hay una respuesta en curso. */
+/**
+ * Anchura del borde de los botones Fallo/Acierto (`design/mock/design-tokens.md`, "Tamaños y
+ * espaciado": "Botones Fallo/Acierto: ... borde 2").
+ */
+private val AssessmentButtonBorderWidth = 2.dp
+
+/**
+ * Acierto y fallo para la frase revelada (ADR-0012). Se deshabilitan mientras hay una respuesta en
+ * curso. Colores e iconos exactos del mock (adopt-reference-mock-ui, design - decisión 2 y 3, tarea
+ * 5.2): Fallo con borde `error`, fondo `errorBg` y texto `errorText`; Acierto con fondo `success` y
+ * texto blanco. `ic_close`/`ic_check` sustituyen a [Icons.Default.Close]/[Icons.Default.Check].
+ */
 @Composable
 private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction) -> Unit) {
     Row(
@@ -350,17 +513,19 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
         OutlinedButton(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.MISS)) },
             enabled = enabled,
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            border = BorderStroke(
-                width = ButtonDefaults.outlinedButtonBorder(enabled).width,
-                color = MaterialTheme.colorScheme.error,
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = AppColors.ErrorBg,
+                contentColor = AppColors.ErrorText,
             ),
+            border = BorderStroke(width = AssessmentButtonBorderWidth, color = AppColors.Error),
             modifier = Modifier
                 .weight(1f)
-                .height(AppTheme.dimensions.primaryActionHeight),
+                .height(AppTheme.dimensions.primaryActionHeight)
+                .testTag("practice_miss_button"),
         ) {
             Icon(
-                imageVector = Icons.Default.Close,
+                imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_close),
                 contentDescription = null,
                 modifier = Modifier
                     .size(ButtonDefaults.IconSize)
@@ -372,16 +537,18 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
         Button(
             onClick = { onAction(PracticeSessionAction.Answer(SelfAssessment.HIT)) },
             enabled = enabled,
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary,
+                containerColor = AppColors.Success,
+                contentColor = Color.White,
             ),
             modifier = Modifier
                 .weight(1f)
-                .height(AppTheme.dimensions.primaryActionHeight),
+                .height(AppTheme.dimensions.primaryActionHeight)
+                .testTag("practice_hit_button"),
         ) {
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_check),
                 contentDescription = null,
                 modifier = Modifier
                     .size(ButtonDefaults.IconSize)
@@ -391,13 +558,4 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
             Text(text = stringResource(R.string.practice_hit))
         }
     }
-}
-
-@Composable
-private fun EmptyMessage(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        textAlign = TextAlign.Center,
-    )
 }

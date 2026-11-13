@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.core.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,10 +17,17 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 
 /**
- * Tarjeta destacada de ancho completo con fondo de color, un valor grande ([value]), una etiqueta
- * ([label]) y una línea secundaria ([secondaryLine]), todos alineados a la izquierda, con espacio
+ * Tarjeta destacada de ancho completo con fondo de color, una etiqueta ([label]), un valor grande
+ * ([value]) y una línea secundaria ([secondaryLine]), todos alineados a la izquierda, con espacio
  * para una composición decorativa opcional ([decoration]) que se pinta detrás del contenido
- * (design D3). Sustituye el `DsStatTile`(Large) + `Text` suelto de la cabecera de Progreso.
+ * (design D3). Sustituye el `DsStatTile`(Large) + `Text` suelto de la cabecera de Progreso. El
+ * orden visual de arriba a abajo es etiqueta, valor y línea secundaria, como en el mock, aunque la
+ * firma mantiene el orden `value`, `label`, `secondaryLine` para no romper a quien ya la invoca con
+ * parámetros nombrados (adopt-reference-mock-ui, tasks 12.4).
+ * [decoration] recibe [BoxScope] para que quien lo use pueda alinear sus elementos
+ * (`Modifier.align`) y, con `Modifier.matchParentSize()`, evitar que su propio tamaño (p. ej. una
+ * decoración mayor que la tarjeta, pensada para desbordar y recortarse) agrande la tarjeta
+ * (adopt-reference-mock-ui, tasks 8.1).
  */
 @Composable
 fun DsHeroStat(
@@ -29,7 +37,7 @@ fun DsHeroStat(
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
-    decoration: @Composable () -> Unit = {},
+    decoration: @Composable BoxScope.() -> Unit = {},
 ) {
     Surface(
         modifier = modifier,
@@ -46,13 +54,13 @@ fun DsHeroStat(
                 verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.xs),
             ) {
                 Text(
-                    text = value,
-                    style = MaterialTheme.typography.displayLarge,
+                    text = label,
+                    style = MaterialTheme.typography.titleMedium,
                     color = contentColor,
                 )
                 Text(
-                    text = label,
-                    style = MaterialTheme.typography.titleMedium,
+                    text = value,
+                    style = MaterialTheme.typography.displayLarge,
                     color = contentColor,
                 )
                 Text(

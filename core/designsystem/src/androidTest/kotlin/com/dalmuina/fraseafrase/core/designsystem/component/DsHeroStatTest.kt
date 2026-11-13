@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -58,6 +59,17 @@ class DsHeroStatTest {
             .getUnclippedBoundsInRoot().left
         assertEquals(valueLeft, labelLeft)
         assertEquals(valueLeft, secondaryLeft)
+
+        // Then: el orden visual de arriba a abajo es etiqueta, valor y línea secundaria (el mock
+        // muestra la etiqueta primero), aunque la firma siga recibiendo value/label/secondaryLine
+        // en ese orden (tasks 12.4)
+        val valueTop = composeTestRule.onNodeWithText("128").getUnclippedBoundsInRoot().top
+        val labelTop = composeTestRule.onNodeWithText("Frases disponibles")
+            .getUnclippedBoundsInRoot().top
+        val secondaryTop = composeTestRule.onNodeWithText("Nivel actual: B1")
+            .getUnclippedBoundsInRoot().top
+        assertTrue(labelTop < valueTop)
+        assertTrue(valueTop < secondaryTop)
 
         // Then: el fondo pintado coincide con el color de contenedor indicado (se muestrea el
         // borde izquierdo a media altura, lejos de las esquinas redondeadas)

@@ -4,6 +4,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -14,7 +16,9 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -25,8 +29,11 @@ import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 /**
  * Tests de UI de [SettingsScreen] (ADR-0007). La pantalla es sin estado, así que cada test construye el estado a
@@ -135,6 +142,27 @@ class SettingsScreenTest {
             .assertIsNotSelected()
     }
 
+    // Scenario: Elegir un nivel CEFR de la lista (spec: settings-screen) - botones propios de 52dp en vez de
+    // SegmentedButtonRow (design.md decisión 4, adopt-reference-mock-ui)
+    @Test
+    fun givenCefrLevelSelector_whenShowingTheScreen_thenEachButtonUsesTheSettingsControlHeight() {
+        // Given: se captura la altura de control esperada para los ajustes del tema actual
+        var expectedHeightDp = 0f
+        composeTestRule.setContent {
+            AppTheme {
+                expectedHeightDp = AppTheme.dimensions.settingsControlHeight.value
+                // When: se muestra la pantalla con el nivel B1 seleccionado
+                SettingsScreen(uiState = loaded(cefrLevel = CefrLevel.B1), onAction = {})
+            }
+        }
+
+        // Then: la altura del botón de nivel seleccionado coincide con el control de 52dp del mock, no con la
+        // altura por defecto de SegmentedButtonRow
+        val bounds = composeTestRule.onNodeWithText("B1").getBoundsInRoot()
+        val actualHeightDp = (bounds.bottom - bounds.top).value
+        assertEquals(expectedHeightDp, actualHeightDp, BOUNDS_TOLERANCE)
+    }
+
     // Scenario: estilo de etiqueta pequeña compartido para insignias y nivel CEFR (design D4,
     // fix-style-pass-two)
     @Test
@@ -208,6 +236,43 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithTag("settings_save_icon", useUnmergedTree = true).assertIsDisplayed()
     }
 
+    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 3 de la tarea 11.3
+    // (adopt-reference-mock-ui, tarea 12.2): el botón "Guardar" debe tener radio 16dp ("no son
+    // píldoras", `design/mock/design-tokens.md`), no la forma de píldora por defecto de Material 3.
+    @Test
+    fun givenLoadedSettings_whenShowingTheScreen_thenSaveButtonIsNotFullyRounded() {
+        // Given: la pantalla muestra el botón de guardar habilitado
+        var expectedPrimary: Color = Color.Unspecified
+        composeTestRule.setContent {
+            AppTheme {
+                expectedPrimary = MaterialTheme.colorScheme.primary
+                SettingsScreen(uiState = loaded(), onAction = {})
+            }
+        }
+
+        // When: se mide la esquina del botón, a mitad de camino entre el punto en el que dejaría de
+        // estar coloreada con el radio objetivo (16dp) y el punto en el que dejaría de estarlo con el
+        // radio de una píldora completa (la mitad de la altura medida del propio botón)
+        val cornerColor = notFullyRoundedCornerColor("settings_save_button", TARGET_SAVE_BUTTON_RADIUS_DP)
+
+        // Then: a esa distancia de la esquina, el botón ya está coloreado
+        assertSolidColor(expectedPrimary, cornerColor)
+    }
+
+    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 6 de la tarea 11.3
+    // (adopt-reference-mock-ui, tarea 12.5): faltan los textos de ayuda bajo "Nivel CEFR" y "Tamaño
+    // de tanda" que sí aparecen en el mock.
+    @Test
+    fun givenLoadedSettings_whenShowingTheScreen_thenHelpTextsAreDisplayed() {
+        // Given/When: la pantalla muestra los ajustes cargados
+        setScreen(loaded())
+
+        // Then: se muestran los textos de ayuda del nivel CEFR y del tamaño de tanda
+        composeTestRule.onNodeWithText("Elige tu nivel. Solo verás frases de este nivel o inferiores.")
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText("Mínimo 10 frases por sesión.").assertIsDisplayed()
+    }
+
     // Scenario: la cabecera usa el mismo patrón de título grande que Practicar, sin TopAppBar
     // (design D7, fix-redesign-ui-mismatches)
     @Test
@@ -252,9 +317,56 @@ class SettingsScreenTest {
         isBatchSizeValid = isBatchSizeValid,
     )
 
+    /**
+     * Color del píxel diagonal del nodo con [tag], a una distancia de su esquina elegida para
+     * distinguir un radio objetivo [targetRadiusDp] de una píldora completa (radio igual a la mitad
+     * de la altura medida del propio nodo). Misma técnica que
+     * `PracticeSessionScreenTest.notFullyRoundedCornerColor` (`:feature:session`).
+     */
+    private fun notFullyRoundedCornerColor(tag: String, targetRadiusDp: Float): Color {
+        val node = composeTestRule.onNodeWithTag(tag)
+        val bounds = node.getUnclippedBoundsInRoot()
+        val halfHeightDp = (bounds.bottom - bounds.top).value / 2f
+        val cornerFactor = 1f - 1f / sqrt(2f)
+        val targetRadiusThresholdDp = targetRadiusDp * cornerFactor
+        val fullPillRadiusThresholdDp = halfHeightDp * cornerFactor
+        // El único borde realmente pintado (con antialiasing) está en targetRadiusThresholdDp; el de la
+        // píldora completa es solo un límite teórico que nunca se dibuja. Muestrear cerca de ese límite
+        // teórico, en vez de en el punto medio exacto, deja más margen frente al antialiasing del borde
+        // real sin perder la distinción frente a una píldora completa.
+        val sampleDp = targetRadiusThresholdDp +
+            (fullPillRadiusThresholdDp - targetRadiusThresholdDp) * SAMPLE_BIAS_TOWARD_FULL_PILL
+        val density = composeTestRule.density.density
+        val insetPx = (sampleDp * density).toInt()
+        val pixelMap = node.captureToImage().toPixelMap()
+        return pixelMap[insetPx, insetPx]
+    }
+
+    /**
+     * Compara [actual] con [expected] admitiendo el margen de antialiasing entre emuladores
+     * ([COLOR_CHANNEL_TOLERANCE] por canal), en vez de igualdad exacta. Misma técnica que
+     * `PracticeSessionScreenTest.assertSolidColor` (`:feature:session`).
+     */
+    private fun assertSolidColor(expected: Color, actual: Color) {
+        val close = abs(expected.red - actual.red) <= COLOR_CHANNEL_TOLERANCE &&
+            abs(expected.green - actual.green) <= COLOR_CHANNEL_TOLERANCE &&
+            abs(expected.blue - actual.blue) <= COLOR_CHANNEL_TOLERANCE
+        assertTrue("expected=$expected, actual=$actual", close)
+    }
+
     private companion object {
         // Margen para redondeos de píxeles al comparar límites de layout entre nodos (design D1,
         // fix-ui-pass-three).
         const val BOUNDS_TOLERANCE = 0.5f
+
+        // Radio objetivo del botón "Guardar" (16dp, "no son píldoras", design-tokens.md), igual que
+        // `PracticeSessionScreenTest.TARGET_BUTTON_RADIUS_DP`.
+        const val TARGET_SAVE_BUTTON_RADIUS_DP = 16f
+
+        // Igual que `PracticeSessionScreenTest.SAMPLE_BIAS_TOWARD_FULL_PILL` (`:feature:session`).
+        const val SAMPLE_BIAS_TOWARD_FULL_PILL = 0.75f
+
+        // Igual que `PracticeSessionScreenTest.COLOR_CHANNEL_TOLERANCE` (`:feature:session`).
+        const val COLOR_CHANNEL_TOLERANCE = 0.08f
     }
 }

@@ -8,9 +8,12 @@
     <string name="practice_nothing_to_practice">No hay frases para practicar</string>
     <string name="practice_catalog_error">No se puede practicar: el catálogo no se pudo cargar</string>
     <string name="practice_listen">Escuchar</string>
+    <string name="practice_translation_label">Traducción</string>
+    <string name="practice_hide_translation">Ocultar</string>
     <string name="practice_remaining_hits_prefix">"Te faltan "</string>
     <string name="practice_remaining_hits_middle">" aciertos para la insignia "</string>
-    <string name="practice_remaining_hits_icon_description">Insignia del siguiente nivel</string>
+    <string name="practice_remaining_hits_icon_description">Insignia de %1$s</string>
+    <string name="practice_translate_mentally_hint">Traduce la frase mentalmente y luego comprueba la traducción.</string>
     <string name="practice_batch_completed">¡Has completado la sesión!</string>
     <string name="practice_batch_completed_subtitle">Revisa tu progreso o sigue practicando con una sesión nueva.</string>
     <string name="practice_outcome_hits">Aciertos</string>
