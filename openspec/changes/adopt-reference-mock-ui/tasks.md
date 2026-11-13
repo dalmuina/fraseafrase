@@ -149,12 +149,38 @@
 
 ## 11. Verificación final
 
-- [ ] 11.1 Ejecutar `./gradlew check` (tests + detekt + lint) en verde.
-- [ ] 11.2 Ejecutar `./gradlew koverVerify` y confirmar que se mantienen los mínimos de cobertura
+- [x] 11.1 Ejecutar `./gradlew check` (tests + detekt + lint) en verde.
+- [x] 11.2 Ejecutar `./gradlew koverVerify` y confirmar que se mantienen los mínimos de cobertura
   (dominio 90 %, presentación 80 %, global 70 %).
-- [ ] 11.3 Comparar manualmente cada una de las 5 pantallas contra su PNG de referencia en
+- [x] 11.3 Comparar manualmente cada una de las 5 pantallas contra su PNG de referencia en
   `design/mock/reference-png/` (no hay infraestructura de tests de captura en el proyecto; ver design.md
-  - Non-Goals) y anotar en esta tarea cualquier discrepancia residual encontrada.
+  - Non-Goals). Comparadas en vivo (app instalada en emulador) 4 de 5 pantallas: Practicar oculta,
+  Practicar revelada, Progreso y Ajustes (con confirmación de guardado). "Sesión completada" no se pudo
+  capturar en vivo sin completar una tanda de 20 frases; queda verificada solo por los tests automáticos
+  del grupo 7. Discrepancias residuales encontradas (ninguna es un escenario de spec roto; todas de
+  estilo):
+  1. Las fuentes siguen siendo los `.ttf` placeholder copiados en el grupo 2 (Plus Jakarta Sans/Baloo 2
+     reetiquetados como Space Grotesk/Inter), no las fuentes reales de Google Fonts — ya señalado como
+     pendiente en ese grupo.
+  2. El chip de nivel CEFR en la tarjeta de frase (`CefrLevelPill`) se renderiza como círculo completo,
+     no como el chip rectangular de radio 8dp que pide el mock.
+  3. Los botones primarios y Fallo/Acierto usan forma de píldora completa en vez del radio 16dp "sin
+     píldora" que el mock exige explícitamente (`design-tokens.md`: "Botones primarios... radio 16dp,
+     no forma de píldora").
+  4. El panel de traducción no muestra el enlace "Ocultar" que tiene el mock junto a la etiqueta
+     "TRADUCCIÓN".
+  5. `DsHeroStat` muestra valor→etiqeta→línea secundaria; el mock muestra etiqueta→valor→línea
+     secundaria (orden invertido entre valor y etiqueta).
+  6. Faltan los textos de ayuda bajo "Nivel CEFR" ("Elige tu nivel...") y "Tamaño de tanda"
+     ("Mínimo 10 frases...") que sí aparecen en el mock.
+  7. La confirmación de guardado se muestra como un `Snackbar` flotante oscuro (color de texto correcto,
+     `successStatus`, tras la tarea 9.4) en vez de un texto en línea sobre el botón Guardar como en el
+     mock — es una decisión de arquitectura previa (`add-settings-apply-flow`), no de este cambio.
+  8. El icono de insignia dentro de `DsInfoBanner` sigue teñido de un solo color en vez de multicolor
+     (ya señalado como deuda conocida en el grupo 4).
+  Ninguna de estas discrepancias afecta a un escenario de spec; se documentan aquí como hallazgo de la
+  comparación visual, pendientes de decisión del usuario sobre si se corrigen en este mismo cambio o se
+  registran en `docs/deuda-tecnica.md`.
 
 ## Workflow follow-up
 
