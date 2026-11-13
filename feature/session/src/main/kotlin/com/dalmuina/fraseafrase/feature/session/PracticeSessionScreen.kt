@@ -18,9 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -325,6 +322,67 @@ private fun TranslateMentallyHint() {
 }
 
 /**
+ * Insignia compuesta de felicitación de [CompletedMessage] (`design/mock/design-tokens.md`, "Sesión
+ * completada"; adopt-reference-mock-ui, design - decisión 6): hexágono exterior en `accentSoft`,
+ * hexágono interior en `accent` centrado dentro de él, check blanco centrado sobre ambos
+ * (`ic_check_complete`) y un mini-hexágono decorativo en la esquina superior derecha con el color del
+ * FAB (`ic_hex_solid`, también usado para los dos hexágonos: el mismo vector monocromo tintable,
+ * variando solo tamaño, color y posición).
+ *
+ * Los tamaños y el desplazamiento viven como variables locales, en vez de constantes de nivel de
+ * archivo, para que Kover los excluya junto con el resto del cuerpo de este composable (ADR-0007: la
+ * UI se verifica con tests de UI, no con cobertura de líneas); una constante de nivel de archivo
+ * acaba en el inicializador estático de la clase, que no está anotado con `@Composable` y sí cuenta
+ * para la cobertura de líneas de `:feature:session`.
+ */
+@Composable
+private fun CompletedBadge() {
+    val outerHexSize = 128.dp
+    val innerHexSize = 92.dp
+    val checkSize = 44.dp
+    val miniHexSize = 28.dp
+    // Desplazamiento del mini-hexágono decorativo desde la esquina superior derecha del hexágono
+    // exterior (mock: `right: -6px; top: 4px`), hacia fuera y hacia abajo.
+    val miniHexOffsetX = 6.dp
+    val miniHexOffsetY = 4.dp
+    Box(
+        modifier = Modifier.size(outerHexSize),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_hex_solid),
+            contentDescription = null,
+            tint = AppColors.AccentSoft,
+            modifier = Modifier.size(outerHexSize),
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_hex_solid),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(innerHexSize),
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_check_complete),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier
+                .size(checkSize)
+                .testTag("practice_completed_success_icon"),
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_hex_solid),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier
+                .size(miniHexSize)
+                .align(Alignment.TopEnd)
+                .offset(x = miniHexOffsetX, y = miniHexOffsetY)
+                .testTag("practice_completed_badge_mini_hex"),
+        )
+    }
+}
+
+/**
  * Mensaje positivo al completar una vuelta a la tanda (D7), con el desglose de aciertos, fallos y subidas
  * de nivel de esa misma tanda (spec: practice-session, "El mensaje muestra el desglose de aciertos,
  * fallos y subidas de nivel"), el botón para generar la siguiente sesión y un enlace a Progreso.
@@ -338,14 +396,7 @@ private fun CompletedMessage(
     onAction: (PracticeSessionAction) -> Unit,
     onNavigateToProgress: () -> Unit,
 ) {
-    Icon(
-        imageVector = Icons.Default.CheckCircle,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .size(AppTheme.spacing.xl + AppTheme.spacing.xl)
-            .testTag("practice_completed_success_icon"),
-    )
+    CompletedBadge()
     Text(
         text = stringResource(R.string.practice_batch_completed),
         style = MaterialTheme.typography.titleMedium,
@@ -427,7 +478,7 @@ private fun GenerateSessionButton(enabled: Boolean, onAction: (PracticeSessionAc
             .height(AppTheme.dimensions.primaryActionHeight),
     ) {
         Icon(
-            imageVector = Icons.Default.Refresh,
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_new_session),
             contentDescription = null,
             modifier = Modifier
                 .size(ButtonDefaults.IconSize)
@@ -502,13 +553,4 @@ private fun AssessmentButtons(enabled: Boolean, onAction: (PracticeSessionAction
             Text(text = stringResource(R.string.practice_hit))
         }
     }
-}
-
-@Composable
-private fun EmptyMessage(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        textAlign = TextAlign.Center,
-    )
 }

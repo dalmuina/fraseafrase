@@ -93,15 +93,15 @@
 
 ## 7. Sesión completada (`:feature:session`)
 
-- [ ] 7.1 Añadir un test de Compose UI (o snapshot si existiera infraestructura; en su defecto, un test
+- [x] 7.1 Añadir un test de Compose UI (o snapshot si existiera infraestructura; en su defecto, un test
   de presencia del composable) que compruebe que la insignia compuesta de 4 capas se muestra en el
   mensaje de tanda completada; verificar que falla porque hoy solo hay un icono simple.
-- [ ] 7.2 Implementar la insignia compuesta (hexágono exterior 128dp `accentSoft`, hexágono interior
+- [x] 7.2 Implementar la insignia compuesta (hexágono exterior 128dp `accentSoft`, hexágono interior
   92dp `accent`, check blanco 44dp con `ic_check_complete`, mini-hexágono decorativo 28dp `fab` con
   `ic_hex_solid`) como composable privado de `PracticeSessionScreen.kt`, sustituyendo el icono
   `CheckCircle`; verificar que el test de 7.1 pasa y que el desglose de `DsStatTile` sigue mostrando los
   colores correctos (`successBg`/`errorBg`/`hintBg`+`rankUpText`).
-- [ ] 7.3 Sustituir el icono de "Generar sesión nueva" (`Icons.Filled.Refresh`) por `ic_new_session`;
+- [x] 7.3 Sustituir el icono de "Generar sesión nueva" (`Icons.Filled.Refresh`) por `ic_new_session`;
   verificar que no queda ningún import de Material Icons en este archivo. Sin escenario de spec propio:
   cambio puramente de icono sobre el botón de "Mensaje de tanda completada y generación de sesión".
 
