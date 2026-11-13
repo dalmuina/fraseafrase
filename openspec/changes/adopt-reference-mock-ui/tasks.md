@@ -186,6 +186,14 @@
   (fuentes) ya se resolvió con los `.ttf` reales de Inter/Space Grotesk proporcionados por el usuario
   (commit `8a88a34`). Los 7 restantes se implementan en el grupo 12.
 
+  **Re-verificación tras el grupo 12**: `./gradlew check` y `koverVerify` globales en verde; reinstalada
+  la app en el emulador y recomparadas en vivo Practicar oculta, Progreso y Ajustes contra sus PNG de
+  referencia. Confirmados corregidos: chip de nivel CEFR ya rectangular (8dp), botones "Mostrar
+  traducción"/"Guardar" ya sin forma de píldora, textos de ayuda de Ajustes visibles, orden de
+  `DsHeroStat` (etiqueta antes del número) correcto. No se recapturó "Practicar revelada" ni "Sesión
+  completada" en esta segunda pasada; quedan verificadas por los tests automáticos de sus respectivos
+  lotes del grupo 12.
+
 ## 12. Correcciones de la comparación visual (hallazgos 2-8 de la tarea 11.3)
 
 - [x] 12.1 Sustituir el chip de nivel CEFR circular (`CefrLevelPill`, `:feature:session`) por un chip
