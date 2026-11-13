@@ -73,10 +73,15 @@ class PracticeSessionScreenTest {
 
         /**
          * Descripción accesible del icono de insignia de la caja de aciertos para el siguiente nivel
-         * (design D2, fix-redesign-ui-mismatches), igual al valor de
-         * `practice_remaining_hits_icon_description`.
+         * (design D2, fix-redesign-ui-mismatches; texto actualizado por adopt-reference-mock-ui, design
+         * - decisión 8, para incluir la insignia concreta: "Insignia de Bronce" en vez del genérico
+         * "Insignia del siguiente nivel"), igual al valor de `practice_remaining_hits_icon_description`
+         * con el nombre de insignia de la fixture por defecto.
          */
-        private const val REMAINING_HITS_BADGE_ICON_DESCRIPTION = "Insignia del siguiente nivel"
+        private const val REMAINING_HITS_BADGE_ICON_DESCRIPTION = "Insignia de Bronce"
+
+        /** Texto del cuadro de ayuda discontinuo, igual al valor de `practice_translate_mentally_hint`. */
+        private const val TRANSLATE_MENTALLY_HINT = "Traduce la frase mentalmente y luego comprueba la traducción."
     }
 
     // Scenario: Sin revelar no hay autoevaluación (spec: practice-session)
@@ -92,6 +97,78 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithText("Bom dia").assertDoesNotExist()
         composeTestRule.onNodeWithText("Acierto").assertDoesNotExist()
         composeTestRule.onNodeWithText("Fallo").assertDoesNotExist()
+    }
+
+    // Scenario: El mensaje de ayuda se muestra sin revelar (spec: practice-session,
+    // adopt-reference-mock-ui)
+    @Test
+    fun givenHiddenPhraseWhenShowingTheScreenThenTranslateMentallyHintIsDisplayed() {
+        // Given: la frase A sin revelar
+        composeTestRule.setScreen(practicing(current = item(source = "Buenos días", target = "Bom dia")))
+
+        // When: la pantalla se muestra sin revelar (no hay acción que cambie el estado)
+
+        // Then: se muestra el mensaje de ayuda para traducir la frase mentalmente
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertIsDisplayed()
+    }
+
+    // Scenario: El mensaje de ayuda desaparece al revelar (spec: practice-session,
+    // adopt-reference-mock-ui)
+    @Test
+    fun givenTranslateMentallyHintShownWhenRevealingThenTheHintDisappears() {
+        // Given: la pantalla muestra el mensaje de ayuda junto a la frase A sin revelar; el estado
+        // se actualiza con la acción Reveal
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item(source = "Buenos días", target = "Bom dia")),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action == PracticeSessionAction.Reveal) {
+                            uiState = (uiState as PracticeSessionUiState.Practicing).copy(revealed = true)
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertIsDisplayed()
+
+        // When: el usuario revela la frase
+        composeTestRule.onNodeWithText("Mostrar traducción").performClick()
+
+        // Then: la pantalla deja de mostrar el mensaje de ayuda
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertDoesNotExist()
+    }
+
+    // Scenario: El mensaje de ayuda vuelve a mostrarse con la frase siguiente (spec:
+    // practice-session, adopt-reference-mock-ui)
+    @Test
+    fun givenPhraseARevealedWhenAssessingAndMovingToPhraseBThenTheHintIsShownAgain() {
+        // Given: una tanda con las frases A y B en ese orden, con A revelada
+        var uiState: PracticeSessionUiState by mutableStateOf(
+            practicing(current = item(source = "Buenos días", target = "Bom dia"), revealed = true),
+        )
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = uiState,
+                    onAction = { action ->
+                        if (action is PracticeSessionAction.Answer) {
+                            uiState = practicing(current = item(source = "Buenas noches", target = "Boa noite"))
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertDoesNotExist()
+
+        // When: el usuario se autoevalúa A y la pantalla pasa a mostrar B sin revelar
+        composeTestRule.onNodeWithText("Acierto").performClick()
+
+        // Then: la pantalla muestra de nuevo el mensaje de ayuda para traducir la frase mentalmente
+        composeTestRule.onNodeWithText(TRANSLATE_MENTALLY_HINT).assertIsDisplayed()
     }
 
     // Scenario: Revelar muestra la traducción en portugués (spec: practice-session)
@@ -380,6 +457,26 @@ class PracticeSessionScreenTest {
         // Then: el mensaje se muestra junto a un icono de insignia visible
         composeTestRule.onNodeWithText("Te faltan 2 aciertos para la insignia Bronce").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(REMAINING_HITS_BADGE_ICON_DESCRIPTION).assertIsDisplayed()
+    }
+
+    // Scenario: Aciertos para el próximo nivel visibles (spec: practice-session), con la insignia
+    // del nivel SIGUIENTE como icono, no la del nivel actual ni un icono genérico (design.md
+    // decisión 8, adopt-reference-mock-ui)
+    @Test
+    fun givenPhraseWithConsolidationLevel2_whenShowingIt_thenRemainingHitsIconIsTheNextLevelBadgeNotTheCurrentOne() {
+        // Given: una frase de nivel de consolidación 2 (Plata), a la que le falta 1 acierto para subir
+        // al nivel 3 (Oro)
+        composeTestRule.setScreen(
+            practicing(current = item().copy(level = Level(2)))
+                .copy(remainingHitsForNextLevel = 1, nextLevelBadgeLabel = "Oro"),
+        )
+
+        // When: la pantalla la muestra (estado dado)
+
+        // Then: el icono mostrado es la insignia del nivel siguiente, "Oro", no la del nivel actual
+        // "Plata" ni el icono genérico anterior
+        composeTestRule.onNodeWithContentDescription("Insignia de Oro").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Insignia de Plata").assertDoesNotExist()
     }
 
     // Scenario: Fallo reinicia el contador (spec: practice-session)

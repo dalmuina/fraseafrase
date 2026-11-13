@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
@@ -20,8 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBanner
 import com.dalmuina.fraseafrase.core.designsystem.component.DsInfoBannerSegment
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
@@ -30,7 +31,9 @@ import com.dalmuina.fraseafrase.core.designsystem.motion.Motion
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import kotlinx.coroutines.delay
+import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Tarjeta con la frase en español, la traducción y el control de escuchar solo si está revelada, y el contador de
@@ -68,8 +71,11 @@ internal fun PhraseCard(
                 )
                 Text(text = item.source, style = MaterialTheme.typography.headlineSmall)
                 DsInfoBanner(
-                    icon = Icons.Default.Star,
-                    iconContentDescription = stringResource(R.string.practice_remaining_hits_icon_description),
+                    icon = nextLevelBadgeIcon(item.level),
+                    iconContentDescription = stringResource(
+                        R.string.practice_remaining_hits_icon_description,
+                        nextLevelBadgeLabel,
+                    ),
                     segments = listOf(
                         DsInfoBannerSegment(text = stringResource(R.string.practice_remaining_hits_prefix)),
                         DsInfoBannerSegment(text = remainingHitsForNextLevel.toString(), emphasized = true),
@@ -224,4 +230,30 @@ private fun BadgeChange.Direction.visibleDurationMillis(motion: Motion): Long = 
         (motion.durationShortMillis + motion.durationLongMillis + motion.durationMediumMillis).toLong()
     BadgeChange.Direction.DOWN ->
         (motion.durationMediumMillis + motion.durationShortMillis + motion.durationMediumMillis).toLong()
+}
+
+/**
+ * Insignia del icono del mensaje "Te faltan N aciertos para X" (spec: practice-session, "Aciertos para
+ * el próximo nivel visibles"; design.md decisión 8, adopt-reference-mock-ui): la del nivel SIGUIENTE a
+ * [level], nunca un icono genérico ni la del nivel actual (`design/mock/design-tokens.md`, "El icono...
+ * es la insignia del rango X, el siguiente, no una estrella ni el rango actual").
+ */
+@Composable
+private fun nextLevelBadgeIcon(level: Level): ImageVector {
+    val nextLevel = (level.value + 1).coerceAtMost(Level.MAX_LEVEL)
+    return ImageVector.vectorResource(id = nextLevelBadgeIconRes(nextLevel))
+}
+
+private const val LEVEL_BRONCE = 1
+private const val LEVEL_PLATA = 2
+private const val LEVEL_ORO = 3
+private const val LEVEL_PLATINO = 4
+
+/** Icono multicolor de la insignia de rango de 1 (Bronce) a 5 (Diamante), sin tinte (ADR-0010). */
+private fun nextLevelBadgeIconRes(nextLevel: Int): Int = when (nextLevel) {
+    LEVEL_BRONCE -> DesignSystemR.drawable.ic_rank_bronce
+    LEVEL_PLATA -> DesignSystemR.drawable.ic_rank_plata
+    LEVEL_ORO -> DesignSystemR.drawable.ic_rank_oro
+    LEVEL_PLATINO -> DesignSystemR.drawable.ic_rank_platino
+    else -> DesignSystemR.drawable.ic_rank_diamante
 }

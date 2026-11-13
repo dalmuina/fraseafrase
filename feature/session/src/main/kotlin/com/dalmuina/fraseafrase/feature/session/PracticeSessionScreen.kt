@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,7 +22,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,14 +36,24 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.dalmuina.fraseafrase.core.designsystem.component.DsProgressBar
 import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTile
 import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTileSize
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppCornerShapes
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
+import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Pantalla de práctica sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión con el
@@ -89,15 +99,26 @@ internal fun PracticeSessionScreen(
 
 /**
  * Cabecera fija de Practicar: título, píldora de posición en la tanda y barra de progreso (spec:
- * practice-session, "Posición en la tanda visible"; design D1 de `fix-style-pass-two`).
+ * practice-session, "Posición en la tanda visible"; design D1 de `fix-style-pass-two`). Paddings, gap y
+ * alto de barra ajustados a los valores exactos del mock (adopt-reference-mock-ui, design - decisión 2,
+ * `design/mock/design-tokens.md` "Cabecera": 24 arriba, 20 lados, 12 abajo, 14 entre título y barra, barra
+ * de 8 de alto; se aproximan con la escala de [AppTheme.spacing] ya existente, sin introducir `dp`
+ * literales nuevos, igual que ya hace [PhraseCard] con el padding de 20 de la tarjeta de frase).
  */
 @Composable
 private fun PracticeHeader(index: Int, total: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(AppTheme.spacing.m),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+            .padding(
+                PaddingValues(
+                    start = AppTheme.spacing.l,
+                    end = AppTheme.spacing.l,
+                    top = AppTheme.spacing.l,
+                    bottom = AppTheme.spacing.s,
+                ),
+            ),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.m),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -110,19 +131,21 @@ private fun PracticeHeader(index: Int, total: Int) {
             )
             Surface(
                 shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = AppColors.AccentSoft,
             ) {
                 Text(
                     text = stringResource(R.string.practice_position, index, total),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = AppColors.AccentStrong,
                     modifier = Modifier.padding(horizontal = AppTheme.spacing.m, vertical = AppTheme.spacing.s),
                 )
             }
         }
         DsProgressBar(
             progress = index / total.toFloat(),
-            modifier = Modifier.testTag("practice_progress_indicator"),
+            modifier = Modifier
+                .height(AppTheme.spacing.s)
+                .testTag("practice_progress_indicator"),
         )
     }
 }
@@ -179,6 +202,9 @@ private fun PracticingContent(
                     badgeChange = state.badgeChange,
                     onAction = onAction,
                 )
+                if (!state.revealed) {
+                    TranslateMentallyHint()
+                }
             }
             // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches): ya
             // no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio flotante
@@ -199,12 +225,10 @@ private fun PracticingContent(
 /**
  * Botón para revelar la traducción, con icono y 56dp de alto (design D8, fix-redesign-ui-mismatches).
  *
- * Usa [Icons.Default.Search] en vez del ojo (`Icons.Default.Visibility`) previsto en el diseño porque,
- * cuando se eligió, ese icono solo estaba en `material-icons-extended` y `:feature:session` no declaraba
- * esa dependencia (igual que `ListenButton` en `PracticeSessionPhraseCard.kt` sustituyó `VolumeUp` por
- * `PlayArrow`; ver su kdoc sobre `material-icons-extended` desde el grupo 8). `Search` ya está disponible
- * en `material-icons-core` y es la metáfora más cercana a "revelar/ver
- * contenido oculto" sin depender de `material-icons-extended` solo por este icono.
+ * Usa el `VectorDrawable` `ic_eye` del mock de referencia (adopt-reference-mock-ui, design - decisión 3)
+ * en vez de [Icons.Default.Search], que se eligió en su momento como sustituto provisional del ojo
+ * (`Icons.Default.Visibility`, solo disponible entonces en `material-icons-extended`, no declarada por
+ * `:feature:session`); `ic_eye` ya está empaquetado en `:core:designsystem` sin esa dependencia.
  */
 @Composable
 private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {
@@ -215,7 +239,7 @@ private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {
             .height(AppTheme.dimensions.primaryActionHeight),
     ) {
         Icon(
-            imageVector = Icons.Default.Search,
+            imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_eye),
             contentDescription = null,
             modifier = Modifier
                 .size(ButtonDefaults.IconSize)
@@ -223,6 +247,56 @@ private fun RevealButton(onAction: (PracticeSessionAction) -> Unit) {
         )
         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
         Text(text = stringResource(R.string.practice_reveal))
+    }
+}
+
+/**
+ * Anchura del trazo discontinuo de [TranslateMentallyHint] (`design/mock/design-tokens.md`, "Radios":
+ * borde 2 de la zona discontinua).
+ */
+private val TranslateMentallyHintBorderWidth = 2.dp
+
+/** Longitud de cada guion y hueco del trazo discontinuo de [TranslateMentallyHint]. */
+private val TranslateMentallyHintDashLength = 6.dp
+
+/**
+ * Cuadro de ayuda con borde discontinuo que invita a traducir la frase mentalmente antes de comprobar la
+ * traducción (spec: practice-session, "Mensaje de ayuda para traducir mentalmente";
+ * adopt-reference-mock-ui, design - decisión 5): visible solo mientras la frase actual no está revelada.
+ * Nace como composable privado de esta pantalla porque ninguna otra feature lo necesita todavía (regla de
+ * promoción del proyecto a `:core:designsystem`).
+ */
+@Composable
+private fun TranslateMentallyHint() {
+    val borderColor = AppColors.DashedBorder
+    val shape = AppCornerShapes.Panel
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .drawBehind {
+                drawRoundRect(
+                    color = borderColor,
+                    cornerRadius = CornerRadius(shape.topStart.toPx(size, this)),
+                    style = Stroke(
+                        width = TranslateMentallyHintBorderWidth.toPx(),
+                        pathEffect = PathEffect.dashPathEffect(
+                            floatArrayOf(
+                                TranslateMentallyHintDashLength.toPx(),
+                                TranslateMentallyHintDashLength.toPx(),
+                            ),
+                        ),
+                    ),
+                )
+            }
+            .padding(AppTheme.spacing.l),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.practice_translate_mentally_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = AppColors.TextSecondary,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

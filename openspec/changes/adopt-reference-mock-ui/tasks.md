@@ -45,23 +45,23 @@
 
 ## 4. Practicar · traducción oculta (`:feature:session`)
 
-- [ ] 4.1 Añadir un escenario de test (Compose UI Test o de `PracticeSessionUiState`, según dónde viva
+- [x] 4.1 Añadir un escenario de test (Compose UI Test o de `PracticeSessionUiState`, según dónde viva
   la lógica de visibilidad) que compruebe que el mensaje de ayuda "Traduce la frase mentalmente y luego
   comprueba la traducción" se muestra cuando la frase no está revelada y desaparece al revelarla
   (escenarios de `openspec/changes/adopt-reference-mock-ui/specs/practice-session/spec.md`); verificar
   que el test falla porque el mensaje no existe todavía.
-- [ ] 4.2 Implementar el cuadro de borde discontinuo con ese mensaje como composable privado de
+- [x] 4.2 Implementar el cuadro de borde discontinuo con ese mensaje como composable privado de
   `PracticeSessionScreen.kt` (`AppColors.DashedBorder`, radio `AppShapes.Panel` de 20dp, ver design.md
   decisión 5); verificar que el test de 4.1 pasa.
-- [ ] 4.3 Ajustar la cabecera de práctica (paddings 24/20/12, gap 14, barra 8dp, píldora del contador en
+- [x] 4.3 Ajustar la cabecera de práctica (paddings 24/20/12, gap 14, barra 8dp, píldora del contador en
   `accentSoft`/`accentStrong`) y verificar visualmente contra `design/mock/reference-png/01-practicar-oculta.png`.
   Sin escenario de spec propio: el contador "X de Y" y la barra ya están cubiertos por "Posición en la
   tanda visible" en `practice-session`; este ajuste es solo de color/espaciado.
-- [ ] 4.4 Corregir el icono del `DsInfoBanner` de "Te faltan N aciertos para X" para que muestre la
+- [x] 4.4 Corregir el icono del `DsInfoBanner` de "Te faltan N aciertos para X" para que muestre la
   insignia del nivel siguiente (ver design.md decisión 8); añadir o ajustar el test que verifica qué
   insignia se pasa como icono, comprobando que falla antes de la corrección. Escenario de referencia:
   "Aciertos para el próximo nivel visibles" en `practice-session`.
-- [ ] 4.5 Sustituir el icono del botón "Mostrar traducción" (`Icons.Filled.Search`) por `ic_eye`;
+- [x] 4.5 Sustituir el icono del botón "Mostrar traducción" (`Icons.Filled.Search`) por `ic_eye`;
   verificar que no queda ningún import de Material Icons en este archivo tras el cambio. Sin escenario de
   spec propio: cambio puramente de icono, sin alterar el comportamiento de "Revelar muestra la traducción
   en portugués".
