@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.dalmuina.fraseafrase.R
+import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
 import com.dalmuina.fraseafrase.feature.progress.ProgressRoute
 import com.dalmuina.fraseafrase.feature.session.PracticeSessionRoute
 import com.dalmuina.fraseafrase.feature.settings.SettingsRoute
@@ -34,7 +36,10 @@ import kotlinx.coroutines.launch
  * `Route` se compone, sin pila de navegación (ADR-0010: solo `:app` conoce las tres features). Este
  * `Scaffold` también aloja el `snackbarHost` de la confirmación de guardado de Ajustes (design D6
  * revisada de `add-settings-apply-flow`): como nunca se desmonta al cambiar de pestaña, la corrutina que
- * muestra el snackbar sobrevive aunque la navegación ya haya cambiado de pantalla.
+ * muestra el snackbar sobrevive aunque la navegación ya haya cambiado de pantalla. Este es el único
+ * uso de `SnackbarHost` de la app y es exclusivamente la confirmación de guardado de Ajustes: por
+ * eso su texto usa directamente el token `successStatus` (adopt-reference-mock-ui, tarea 9.4), sin
+ * necesidad de distinguir el mensaje de ningún otro uso futuro.
  */
 @Composable
 fun FraseAFraseApp(modifier: Modifier = Modifier) {
@@ -45,7 +50,11 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(snackbarData = data, contentColor = AppColors.SuccessStatus)
+            }
+        },
         bottomBar = {
             FraseAFraseBottomBar(
                 selectedDestination = selectedDestination,

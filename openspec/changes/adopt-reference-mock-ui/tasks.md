@@ -132,7 +132,7 @@
   `ic_check_save`; verificar contra `design/mock/reference-png/05-ajustes.png`. Escenario de referencia:
   "Edición de N con validación y stepper +/- deshabilitado en límites" de `settings-screen`; este ajuste
   no cambia los límites ni la validación, solo color/tamaño/icono.
-- [ ] 9.4 Verificar el color exacto (`successStatus` `#1B6B44`) del mensaje "Ajustes guardados" con el
+- [x] 9.4 Verificar el color exacto (`successStatus` `#1B6B44`) del mensaje "Ajustes guardados" con el
   test existente de confirmación de guardado, ajustándolo si no coincide. Escenario de referencia:
   "confirmación visual al guardar" de `settings-screen`; el test existente ya prueba que el mensaje se
   muestra, aquí solo se verifica/corrige su color exacto.

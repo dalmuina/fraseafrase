@@ -35,4 +35,11 @@ class AppColorsTest {
         AppColors.ErrorBg shouldBe Color(0xFFFFECEE)
         AppColors.ErrorText shouldBe Color(0xFFB4232F)
     }
+
+    // Scenario: el token successStatus del mensaje "Ajustes guardados" existe con el valor
+    // hexadecimal exacto de design-tokens.md (adopt-reference-mock-ui, tarea 9.4)
+    @Test
+    fun `given app colors when reading the success status token then it matches the mock hex value`() {
+        AppColors.SuccessStatus shouldBe Color(0xFF1B6B44)
+    }
 }

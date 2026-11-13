@@ -87,4 +87,7 @@ object AppColors {
     val Error: Color = Color(0xFFD92D3F)
     val ErrorBg: Color = Color(0xFFFFECEE)
     val ErrorText: Color = Color(0xFFB4232F)
+
+    // `successStatus`: color del mensaje "Ajustes guardados" (adopt-reference-mock-ui, tarea 9.4).
+    val SuccessStatus: Color = Color(0xFF1B6B44)
 }
