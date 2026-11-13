@@ -94,4 +94,18 @@ class DimensionsTest {
         dimensions.rankRowIconSize shouldBe 40.dp
         dimensions.rankBarHeight shouldBe 6.dp
     }
+
+    // Scenario: hexágonos decorativos de la tarjeta destacada de Progreso coinciden con el mock
+    // `design/mock/screens/04-progreso.html` (adopt-reference-mock-ui, tasks 8.1)
+    @Test
+    fun `given default dimensions when reading hero decoration then it matches the mock`() {
+        val dimensions = Dimensions()
+
+        dimensions.heroDecorationLargeHexSize shouldBe 150.dp
+        dimensions.heroDecorationLargeHexOverflowX shouldBe 28.dp
+        dimensions.heroDecorationLargeHexOverflowY shouldBe 18.dp
+        dimensions.heroDecorationSmallHexSize shouldBe 64.dp
+        dimensions.heroDecorationSmallHexInsetX shouldBe 70.dp
+        dimensions.heroDecorationSmallHexOverflowY shouldBe 20.dp
+    }
 }

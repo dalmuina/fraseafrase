@@ -107,12 +107,12 @@
 
 ## 8. Progreso
 
-- [ ] 8.1 Localizar el composable de la pantalla de Progreso y verificar que `DsHeroStat` usa su slot
+- [x] 8.1 Localizar el composable de la pantalla de Progreso y verificar que `DsHeroStat` usa su slot
   `decoration` para los hexágonos de fondo con opacidad del mock; si no, implementarlo, y verificar
   contra `design/mock/reference-png/04-progreso.png`. Escenario de referencia: la tarjeta destacada con
   total disponible y nivel CEFR de `progress-overview`; este ajuste no cambia qué dato se muestra
   (`value`/`label`/`secondaryLine`), solo su decoración.
-- [ ] 8.2 Ajustar cada fila de rango (icono 40dp, barra `DsProgressBar` 6dp con el color exacto del
+- [x] 8.2 Ajustar cada fila de rango (icono 40dp, barra `DsProgressBar` 6dp con el color exacto del
   rango, cifra alineada a la derecha 18sp/700) a los valores del mock; verificar con un test existente
   de la pantalla de Progreso que las filas siguen mostrando el recuento correcto tras el cambio visual.
   Escenario de referencia: recuento por nivel de `progress-overview` y "insignias visualmente

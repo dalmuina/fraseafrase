@@ -39,7 +39,16 @@ data class Dimensions(
     val settingsControlHeight: Dp = 52.dp,
     // Fila de rango de Progreso: icono y barra de progreso.
     val rankRowIconSize: Dp = 40.dp,
-    val rankBarHeight: Dp = 6.dp
+    val rankBarHeight: Dp = 6.dp,
+    // Tarjeta destacada de Progreso: hexágonos decorativos de fondo (grande, semitransparente,
+    // desborda arriba a la derecha; pequeño, acento, desborda abajo a la derecha). Signo del
+    // desborde aplicado en el composable que los posiciona.
+    val heroDecorationLargeHexSize: Dp = 150.dp,
+    val heroDecorationLargeHexOverflowX: Dp = 28.dp,
+    val heroDecorationLargeHexOverflowY: Dp = 18.dp,
+    val heroDecorationSmallHexSize: Dp = 64.dp,
+    val heroDecorationSmallHexInsetX: Dp = 70.dp,
+    val heroDecorationSmallHexOverflowY: Dp = 20.dp
 )
 
 val LocalDimensions = staticCompositionLocalOf { Dimensions() }

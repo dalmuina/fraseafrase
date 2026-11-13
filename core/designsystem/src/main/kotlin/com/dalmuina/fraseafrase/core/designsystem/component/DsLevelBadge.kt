@@ -100,6 +100,13 @@ private const val LEVEL_ORO = 3
 private const val LEVEL_PLATINO = 4
 private const val LEVEL_DIAMANTE = 5
 
+/**
+ * Color exterior exacto de la insignia de un nivel de consolidación de 0 a 5, o `null` fuera de
+ * rango (design - decisión 2). Lo usa la fila de rango de Progreso para pintar su
+ * [DsProgressBar] con el color exacto de ese rango (adopt-reference-mock-ui, tasks 8.2).
+ */
+fun levelBadgeAccentColor(level: Int): Color? = levelBadgeColors(level)?.exterior
+
 /** Nombre de insignia de un nivel de consolidación de 0 a 5, o `null` fuera de rango (design D3). */
 fun levelBadgeLabel(level: Int): String? = when (level) {
     LEVEL_SIN_RANGO -> "Sin rango"

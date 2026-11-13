@@ -17,7 +17,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
@@ -272,6 +274,77 @@ class ProgressScreenTest {
         // Then: la fila del nivel 2 muestra una barra de progreso proporcional (3 de 10)
         composeTestRule.onNodeWithTag("progress_level_bar_2")
             .assertRangeInfoEquals(ProgressBarRangeInfo(current = 0.3f, range = 0f..1f))
+    }
+
+    // Scenario: recuento por nivel con insignias visualmente distinguibles (spec:
+    // progress-overview, level-badges; design/mock/screens/04-progreso.html; adopt-reference-mock-ui
+    // tasks 8.2): la barra de la fila de un rango usa su color exacto (Oro `#D9A21B`), no el color
+    // primario genérico
+    @Test
+    fun givenACatalogWithPhrasesInLevelThree_whenShowingTheScreen_thenTheGoldRowBarUsesTheGoldExactColor() {
+        // Given/When: el nivel 3 (Oro) tiene todas las frases disponibles (proporción 1.0)
+        setScreen(
+            ProgressUiState.Content(
+                totalAvailable = 3,
+                cefrLevel = CefrLevel.A1,
+                byLevel = (0..Level.MAX_LEVEL).associate { value ->
+                    Level(value) to if (value == 3) 3 else 0
+                },
+            ),
+        )
+
+        // Then: el color pintado de la barra del nivel 3 coincide con el color exacto de Oro
+        val barPixelMap = composeTestRule.onNodeWithTag("progress_level_bar_3")
+            .captureToImage()
+            .toPixelMap()
+        val barColor = barPixelMap[barPixelMap.width / 2, barPixelMap.height / 2]
+        assertEquals(Color(0xFFD9A21B), barColor)
+    }
+
+    // Scenario: recuento por nivel (spec: progress-overview; design/mock/screens/04-progreso.html;
+    // adopt-reference-mock-ui tasks 8.2): la cifra de cada fila de rango usa 18sp/700
+    @Test
+    fun givenACatalogWithPhrasesInLevelThree_whenShowingTheScreen_thenTheCountUsesBoldEighteenSp() {
+        // Given/When: el nivel 3 tiene 3 frases
+        setScreen(
+            ProgressUiState.Content(
+                totalAvailable = 3,
+                cefrLevel = CefrLevel.A1,
+                byLevel = (0..Level.MAX_LEVEL).associate { value ->
+                    Level(value) to if (value == 3) 3 else 0
+                },
+            ),
+        )
+
+        // Then: el tamaño y el peso de fuente de la cifra "3 frases" son 18sp y 700 (bold)
+        val layoutResults = mutableListOf<TextLayoutResult>()
+        composeTestRule.onNodeWithText("3 frases")
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(layoutResults)
+
+        assertEquals(TextUnit(18f, TextUnitType.Sp), layoutResults.first().layoutInput.style.fontSize)
+        assertEquals(FontWeight.Bold, layoutResults.first().layoutInput.style.fontWeight)
+    }
+
+    // Scenario: tarjeta destacada reestilizada con DsHeroStat, hexágonos decorativos de fondo
+    // (design/mock/screens/04-progreso.html; adopt-reference-mock-ui tasks 8.1): se pintan los dos
+    // hexágonos decorativos de la tarjeta, sin que cambien el valor/etiqueta/nivel CEFR mostrados
+    @Test
+    fun givenACatalogWithPhrasesAvailable_whenShowingTheScreen_thenTheFeaturedCardShowsTheDecorativeHexagons() {
+        // Given/When: la tarjeta destacada muestra 10 frases disponibles y el nivel CEFR B1
+        setScreen(
+            ProgressUiState.Content(
+                totalAvailable = 10,
+                cefrLevel = CefrLevel.B1,
+                byLevel = allLevels(levelZero = 10),
+            ),
+        )
+
+        // Then: ambos hexágonos decorativos se pintan dentro de la tarjeta destacada
+        composeTestRule.onNodeWithTag("progress_hero_decoration_large_hex").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("progress_hero_decoration_small_hex").assertIsDisplayed()
     }
 
     private fun setScreen(uiState: ProgressUiState) {
