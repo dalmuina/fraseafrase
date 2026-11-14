@@ -52,12 +52,12 @@
 
 ## 3. Offset del FAB de deshacer en `:feature:session`
 
-- [ ] 3.1 Actualizar `PracticeSessionRevertButtonScreenTest`
+- [x] 3.1 Actualizar `PracticeSessionRevertButtonScreenTest`
       (`feature/session/src/androidTest/.../PracticeSessionRevertButtonScreenTest.kt`,
       `givenCanRevertLastAnswerTrue_whenScreenShown_thenRevertButtonIsOffsetFromScreenEdgesPerMock`)
       para esperar el nuevo `REVERT_FAB_BOTTOM_OFFSET` (igual a `AppTheme.dimensions.navFloatingMargin`,
       design D3) en vez de 172dp, y ejecutar el test, comprobando que falla contra el offset antiguo.
-- [ ] 3.2 Verificar que `PracticeSessionScreen` ya usa `AppTheme.dimensions.revertFabBottomOffset` (sin
+- [x] 3.2 Verificar que `PracticeSessionScreen` ya usa `AppTheme.dimensions.revertFabBottomOffset` (sin
       cambios de código, solo del valor del token cambiado en la tarea 1.4) y que el test de 3.1 pasa.
 
 ## 4. Verificación final
