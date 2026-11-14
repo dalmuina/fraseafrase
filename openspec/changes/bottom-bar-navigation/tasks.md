@@ -62,5 +62,5 @@
 
 ## 4. Verificación final
 
-- [ ] 4.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) y `./gradlew koverVerify`, y confirmar que
+- [x] 4.1 Ejecutar `./gradlew check` (tests, ktlint, detekt) y `./gradlew koverVerify`, y confirmar que
       ambos terminan en verde.
