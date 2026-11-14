@@ -58,16 +58,6 @@ class DimensionsTest {
         Dimensions().navFloatingMargin shouldBe 16.dp
     }
 
-    // Scenario: el offset del FAB de deshacer respecto a la barra flotante es igual al
-    // margen flotante de la barra, en vez del offset fijo desde el borde de pantalla de la
-    // barra a sangre anterior (bottom-bar-navigation, design D3)
-    @Test
-    fun `given default dimensions when reading revert fab bottom offset then it equals the nav floating margin`() {
-        val dimensions = Dimensions()
-
-        dimensions.revertFabBottomOffset shouldBe dimensions.navFloatingMargin
-    }
-
     // Scenario: la elevación de la barra de navegación flotante es un token de Dimensions, no un
     // literal en :app (bottom-bar-navigation, design D1; misma elevación que
     // FloatingActionButtonDefaults.elevation() en reposo, ya usada por RevertLastAnswerButton)

@@ -8,14 +8,42 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
 
 ## Reglas de oro
 
-1. **Spec first.** Ningún código de producción sin una tarea en un `tasks.md` aprobado de `openspec/changes/`.
-   Si te piden algo que no está en una tarea, propón primero un cambio con `/opsx:propose`.
-2. **TDD siempre.** Rojo → verde → refactor. Escribe el test, ejecútalo y comprueba que **falla por el motivo esperado**
-   antes de escribir el código. Nunca escribas test y código de producción en el mismo paso.
+0. **Clasifica antes de actuar.** Decide primero si la petición va por la **vía rápida** o por el **flujo OpenSpec**
+   (ver "Vía rápida"). Las reglas 1 y 2 aplican al flujo OpenSpec; la vía rápida tiene sus propias reglas.
+1. **Spec first.** Ningún código de producción sin una tarea en un `tasks.md` aprobado de `openspec/changes/`,
+   salvo en la vía rápida. Si te piden algo que no está en una tarea y no cumple los criterios de la vía rápida,
+   propón primero un cambio con `/opsx:propose`.
+2. **TDD siempre que haya comportamiento.** Rojo → verde → refactor. Escribe el test, ejecútalo y comprueba que
+   **falla por el motivo esperado** antes de escribir el código. Nunca escribas test y código de producción en el
+   mismo paso. Excepción: los cambios puramente visuales de Compose (tamaño, forma, posición, color, espaciado)
+   no exigen un test rojo previo; se verifican con `@PreviewLightDark` o un test de captura cuando aporte valor.
 3. **Los ADR mandan.** Lee `docs/adr/` antes de proponer o diseñar. Si algo contradice un ADR aceptado,
    para y propón un ADR nuevo que lo sustituya; no lo ignores ni lo edites.
 4. **Método y alcance del MVP: ADR-0012.** Usa su terminología (tanda, nivel, racha, certificada, pendiente, arrastrada). Lo que esté fuera es un cambio posterior, no una mejora "de paso".
 5. **No amplíes el alcance.** Implementa exactamente lo que dice la tarea. Si ves algo mejorable, anótalo y avisa.
+
+## Vía rápida (sin OpenSpec ni subagentes)
+
+**Cuándo.** Se cumplen todas estas condiciones:
+- Cambio solo visual o de layout (tamaño, forma, posición, estilo, tokens de diseño), de textos o un refactor
+  sin cambio de comportamiento.
+- Toca un único módulo (o una feature más `:core:designsystem`).
+- No añade ni cambia lógica de dominio, casos de uso, puertos, persistencia, navegación ni escenarios de
+  `openspec/specs/`.
+- No contradice ningún ADR ni añade librerías.
+
+Si dudas, pregunta al usuario antes de abrir un cambio de OpenSpec. Si durante el trabajo aparece lógica nueva,
+para y pasa al flujo OpenSpec.
+
+**Cómo.**
+1. Implementa directamente en la sesión principal, sin delegar en `tdd-implementer` ni `android-architect`.
+2. Respeta igualmente la arquitectura, el design system y las convenciones de este fichero.
+3. Si cambia algún test existente (semántica, `testTag`), actualízalo; si el cambio tiene comportamiento
+   observable (p. ej. un botón que deja de mostrarse), cúbrelo con un test.
+4. Verifica con `./gradlew :<módulo>:check` de los módulos tocados.
+5. Opcional: una sola ronda de `code-reviewer` si el diff no es trivial.
+6. Un commit con Conventional Commits en la rama que haya creado el usuario (el hook ejecuta `./gradlew check`).
+   No hay archive, así que el hook de PR no se dispara: para y deja el push y la PR al usuario.
 
 ## Flujo de trabajo (OpenSpec)
 
@@ -32,6 +60,14 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
 
 Normalmente se invoca `/next`, que diagnostica en qué paso de esta tabla está el cambio y lo ejecuta;
 usa los comandos `/opsx:*` sueltos solo cuando ya sabes exactamente en qué paso estás.
+
+**Delegación en `tdd-implementer`:**
+- Los grupos de tareas se ejecutan **de uno en uno**, nunca en paralelo: comparten `build/`, el daemon de Gradle
+  y la caché de KSP.
+- En el prompt de cada invocación pasa el nombre del cambio, los números de tarea, los módulos afectados y las
+  rutas de los escenarios de `specs/**` que satisfacen esas tareas, para que el subagente no tenga que explorar.
+- El subagente verifica solo los módulos tocados (`./gradlew :<módulo>:check`). El `./gradlew check` global lo
+  ejecuta el hook al hacer el commit del grupo; no lo repitas a mano.
 
 Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas de los artefactos: `openspec/config.yaml`.
 
@@ -125,16 +161,24 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 ./gradlew assembleDebug             # APK de depuración
 ```
 
-Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerrar un cambio: también `./gradlew koverVerify`.
+Antes de dar una tarea por terminada: `./gradlew :<módulo>:check` en verde en los módulos tocados; el
+`./gradlew check` global lo ejecuta el hook en cada commit. Antes de cerrar un cambio: también `./gradlew koverVerify`.
+
+Para no llenar el contexto con logs, ejecuta Gradle con `-q --console=plain` y recorta la salida
+(`2>&1 | tail -n 40`). En tests instrumentados filtra siempre por clase
+(`-Pandroid.testInstrumentationRunnerArguments.class=<clase>`); no lances `connectedAndroidTest` completo.
 
 ## Presupuesto de revisión
 
 - **Niveles de hallazgo:**
-  - **Bloqueante:** solo comportamiento incorrecto; escenario de spec sin test; contradicción entre artefactos que haría implementar algo mal; riesgo de pérdida de datos, cierre de la app o seguridad. Detiene el avance.
-  - **Corregir:** errores reales sin impacto en el funcionamiento (redacción, formato, evidencias, comentarios). Se corrigen en una sola pasada, sin nueva revisión.
-  - **Descartar:** lo que no encaja en los anteriores. No se hace y no va a `docs/deuda-tecnica.md`, salvo que tenga un valor claro.
+    - **Bloqueante:** solo comportamiento incorrecto; escenario de spec sin test; contradicción entre artefactos que haría implementar algo mal; riesgo de pérdida de datos, cierre de la app o seguridad. Detiene el avance.
+    - **Corregir:** errores reales sin impacto en el funcionamiento (redacción, formato, evidencias, comentarios). Se corrigen en una sola pasada, sin nueva revisión.
+    - **Descartar:** lo que no encaja en los anteriores. No se hace y no va a `docs/deuda-tecnica.md`, salvo que tenga un valor claro.
 - **Máximo dos rondas por fase.** La segunda verifica solo los bloqueantes de la primera, recibe el texto de las observaciones anteriores y no admite hallazgos nuevos, salvo pérdida de datos, cierre de la app o seguridad.
-- **Rigor proporcional.** Cambio ligero (configuración o infraestructura, sin lógica de dominio, diff pequeño): una ronda de `android-architect` y una de `code-reviewer`. Cambio normal: flujo completo con el límite de dos rondas.
+- **Rigor proporcional.**
+    - Vía rápida (ver su sección): sin `android-architect`; como mucho una ronda de `code-reviewer`.
+    - Cambio ligero (configuración o infraestructura, sin lógica de dominio, diff pequeño): una ronda de `android-architect` y una de `code-reviewer`.
+    - Cambio normal: flujo completo con el límite de dos rondas.
 - **Evidencias en `tasks.md`** solo cuando son la única prueba de un escenario (por ejemplo, una mutación). En lo demás, el commit y la build en verde son la evidencia.
 - **Subagentes:** cada subagente de revisión recibe este presupuesto en su prompt.
 
@@ -155,15 +199,15 @@ Antes de dar una tarea por terminada: `./gradlew check` en verde. Antes de cerra
 - Las decisiones del usuario se escriben en el artefacto que corresponda (spec delta, `design.md` o `tasks.md`) antes de continuar con cualquier otra tarea.
 - `.claude/handoff.md` (en `.gitignore`, nunca se commitea) se actualiza en cada parada con: cambio y rama, grupo y tarea actual, siguiente paso exacto, decisiones pendientes y notas de entorno. Tras un `/clear` o al empezar sesión, es lo primero que se lee, junto con `tasks.md` y `git log`.
 - `handoff.md` lleva siempre dos campos de estado:
-  - **Fase:** `explore` | `propose` | `architect` | `apply grupo N` | `review` | `verify` | `archive` | `pr`.
-  - **Veredicto android-architect:** `pendiente` | `APROBADO` + fecha.
+    - **Fase:** `vía rápida` | `explore` | `propose` | `architect` | `apply grupo N` | `review` | `verify` | `archive` | `pr`.
+    - **Veredicto android-architect:** `pendiente` | `APROBADO` + fecha.
 - Cuando un cambio llega a **Fase: `pr`** con la PR ya abierta por el hook y nada pendiente salvo que
   el usuario mergee, `handoff.md` se resetea a una plantilla mínima (cambio y rama: ninguno activo, con
   una referencia de una línea al último cambio cerrado; fase: ninguna; veredicto: pendiente; siguiente
   paso: el usuario decide el próximo cambio; decisiones pendientes: ninguna). No se acumula el histórico
   de cambios cerrados: ya lo cuentan `git log`, las PRs y `openspec/changes/archive/`.
 - Cada parada termina con una línea de estado de contexto:
-  - ✅ Seguro para `/clear`: todo commiteado, `tasks.md` y `handoff.md` al día, nada solo en la conversación.
-  - ⚠️ Mejor `/compact`: trabajo a medias o decisión todavía no escrita.
-  - ⛔ No limpies: cambios sin commitear o comando en curso.
+    - ✅ Seguro para `/clear`: todo commiteado, `tasks.md` y `handoff.md` al día, nada solo en la conversación.
+    - ⚠️ Mejor `/compact`: trabajo a medias o decisión todavía no escrita.
+    - ⛔ No limpies: cambios sin commitear o comando en curso.
 - Regla práctica: `/clear` tras el commit de un grupo; `/compact` a mitad de grupo.

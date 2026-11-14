@@ -45,15 +45,8 @@ class PracticeSessionRevertButtonScreenTest {
         /** Tag del icono dentro de [REVERT_LAST_ANSWER_BUTTON_TAG] (design D6, fix-redesign-ui-mismatches). */
         private const val REVERT_LAST_ANSWER_ICON_TAG = "practice_revert_last_answer_icon"
 
-        /**
-         * Tag de la caja de pantalla completa de [PracticeSessionScreen] (bajo el `topBar`, sin el padding
-         * adicional de la zona de contenido), usada como referencia de los bordes de "la pantalla" en
-         * [givenCanRevertLastAnswerTrue_whenScreenShown_thenRevertButtonIsOffsetFromScreenEdgesPerMock] en vez
-         * de la raíz de la composición: la raíz incluye los insets del sistema (barra de gestos) que
-         * `Scaffold` ya descuenta de su contenido, y que desplazarían la medida sin relación con los tokens
-         * de posición del FAB.
-         */
-        private const val CONTENT_AREA_TAG = "practice_session_content_area"
+        /** Tag del botón principal (revelar) usado como referencia vertical del FAB (reposition-button). */
+        private const val PRIMARY_ACTION_BUTTON_TAG = "practice_reveal_button"
 
         /**
          * Umbral de proporción de píxeles distintos para considerar dos iconos "el mismo" en
@@ -67,9 +60,9 @@ class PracticeSessionRevertButtonScreenTest {
         /**
          * Offset horizontal del FAB respecto al borde izquierdo de la pantalla (`design/mock/design-tokens.md`,
          * "Botón flotante de volver": 20dp desde la izquierda; adopt-reference-mock-ui, tarea 6.1). El offset
-         * inferior ya no es un valor fijo del mock: pasa a ser `AppTheme.dimensions.navFloatingMargin`, la
-         * distancia al borde superior de la barra de navegación flotante (bottom-bar-navigation, design D3),
-         * leído dentro de [AppTheme] en el propio test en vez de duplicarse aquí como literal.
+         * vertical ya no es un valor fijo del mock: pasa a ser `AppTheme.dimensions.navFloatingMargin`, la
+         * distancia al borde superior del botón principal (reposition-button), leído dentro de [AppTheme] en
+         * el propio test en vez de duplicarse aquí como literal.
          */
         private val REVERT_FAB_LEFT_OFFSET = 20.dp
 
@@ -174,18 +167,18 @@ class PracticeSessionRevertButtonScreenTest {
         composeTestRule.onNodeWithTag(REVERT_LAST_ANSWER_BUTTON_TAG).assertDoesNotExist()
     }
 
-    // Sin escenario de spec propio (adopt-reference-mock-ui, tarea 6.1; offset inferior redefinido por
-    // bottom-bar-navigation, design D3): verifica la posición exacta del FAB — 20dp desde el borde
-    // izquierdo de la pantalla (`design/mock/design-tokens.md`) y `AppTheme.dimensions.navFloatingMargin`
-    // desde el borde superior de la barra de navegación flotante —, no ninguna condición de visibilidad
-    // ya cubierta por los tests anteriores.
+    // Sin escenario de spec propio (adopt-reference-mock-ui, tarea 6.1; offset vertical redefinido por
+    // reposition-button): verifica la posición exacta del FAB — 20dp desde el borde izquierdo de la
+    // pantalla (`design/mock/design-tokens.md`) y `AppTheme.dimensions.navFloatingMargin` por encima del
+    // borde superior del botón principal, sin tocarlo —, no ninguna condición de visibilidad ya cubierta
+    // por los tests anteriores.
     @Test
     fun givenCanRevertLastAnswerTrue_whenScreenShown_thenRevertButtonIsOffsetFromScreenEdgesPerMock() {
         // Given: el botón de revertir visible
-        var expectedBottomOffset = 0.dp
+        var expectedGapAbovePrimaryAction = 0.dp
         composeTestRule.setContent {
             AppTheme {
-                expectedBottomOffset = AppTheme.dimensions.navFloatingMargin
+                expectedGapAbovePrimaryAction = AppTheme.dimensions.navFloatingMargin
                 PracticeSessionScreen(
                     uiState = practicing(current = item()).copy(canRevertLastAnswer = true),
                     onAction = {},
@@ -193,19 +186,20 @@ class PracticeSessionRevertButtonScreenTest {
             }
         }
 
-        // When: se miden los límites del botón y los de la caja de pantalla completa (ver [CONTENT_AREA_TAG])
+        // When: se miden los límites del FAB y los del botón principal (ver [PRIMARY_ACTION_BUTTON_TAG])
         val buttonBounds = composeTestRule.onNodeWithTag(REVERT_LAST_ANSWER_BUTTON_TAG).getUnclippedBoundsInRoot()
-        val contentAreaBounds = composeTestRule.onNodeWithTag(CONTENT_AREA_TAG).getUnclippedBoundsInRoot()
+        val primaryActionBounds = composeTestRule.onNodeWithTag(PRIMARY_ACTION_BUTTON_TAG).getUnclippedBoundsInRoot()
 
-        // Then: está a 20dp del borde izquierdo y a `navFloatingMargin` del borde inferior de la pantalla
+        // Then: está a 20dp del borde izquierdo y a `navFloatingMargin` por encima del botón principal,
+        // sin solaparse con él
         assertTrue(
             "left=${buttonBounds.left}, expected ~$REVERT_FAB_LEFT_OFFSET",
             abs((buttonBounds.left - REVERT_FAB_LEFT_OFFSET).value) <= OFFSET_TOLERANCE_DP.value,
         )
-        val bottomOffset = contentAreaBounds.bottom - buttonBounds.bottom
+        val gapAbovePrimaryAction = primaryActionBounds.top - buttonBounds.bottom
         assertTrue(
-            "bottomOffset=$bottomOffset, expected ~$expectedBottomOffset",
-            abs((bottomOffset - expectedBottomOffset).value) <= OFFSET_TOLERANCE_DP.value,
+            "gapAbovePrimaryAction=$gapAbovePrimaryAction, expected ~$expectedGapAbovePrimaryAction",
+            abs((gapAbovePrimaryAction - expectedGapAbovePrimaryAction).value) <= OFFSET_TOLERANCE_DP.value,
         )
     }
 }

@@ -30,10 +30,12 @@ data class Dimensions(
     // que usa por defecto FloatingActionButtonDefaults.elevation() en reposo para el resto de
     // controles flotantes de la app (RevertLastAnswerButton).
     val navFloatingElevation: Dp = 6.dp,
-    // Botón flotante de volver a la frase anterior: tamaño, offsets e icono.
+    // Botón flotante de volver a la frase anterior: tamaño, offset horizontal e icono. El offset
+    // vertical no es un token propio (reposition-button): se calcula en `PracticeSessionScreen` a
+    // partir de `primaryActionHeight` y `navFloatingMargin`, porque depende también del padding de
+    // la zona de contenido, un token de `Spacing` que `Dimensions` no referencia.
     val revertFabSize: Dp = 56.dp,
     val revertFabHorizontalOffset: Dp = 20.dp,
-    val revertFabBottomOffset: Dp = navFloatingMargin,
     val revertFabIconSize: Dp = 24.dp,
     // Botón Escuchar: tamaño circular e icono.
     val listenButtonSize: Dp = 44.dp,
