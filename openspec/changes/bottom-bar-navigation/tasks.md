@@ -2,16 +2,16 @@
 
 ## 1. Tokens de design system
 
-- [ ] 1.1 Actualizar `DimensionsTest` (`core/designsystem/src/test/.../tokens/DimensionsTest.kt`) para
+- [x] 1.1 Actualizar `DimensionsTest` (`core/designsystem/src/test/.../tokens/DimensionsTest.kt`) para
       esperar el token nuevo `navFloatingMargin` (16dp, design D1/D3) y ejecutar el test, comprobando
       que falla porque el token todavía no existe.
-- [ ] 1.2 Añadir `navFloatingMargin` a `Dimensions` (`core/designsystem/.../tokens/Dimensions.kt`) y
+- [x] 1.2 Añadir `navFloatingMargin` a `Dimensions` (`core/designsystem/.../tokens/Dimensions.kt`) y
       `FloatingNav` (`RoundedCornerShape(percent = 50)`, cápsula completa, design D1) a
       `AppCornerShapes` (`core/designsystem/.../theme/Shape.kt`); verificar que `DimensionsTest` pasa.
-- [ ] 1.3 Actualizar `DimensionsTest` para esperar el nuevo valor de `revertFabBottomOffset` (design
+- [x] 1.3 Actualizar `DimensionsTest` para esperar el nuevo valor de `revertFabBottomOffset` (design
       D3: distancia = `navFloatingMargin` en vez de 172dp) y ejecutar el test, comprobando que falla
       por el valor antiguo.
-- [ ] 1.4 Cambiar el valor de `revertFabBottomOffset` en `Dimensions` al nuevo token de margen; verificar
+- [x] 1.4 Cambiar el valor de `revertFabBottomOffset` en `Dimensions` al nuevo token de margen; verificar
       que `DimensionsTest` pasa.
 
 ## 2. Barra de navegación flotante en `:app`
