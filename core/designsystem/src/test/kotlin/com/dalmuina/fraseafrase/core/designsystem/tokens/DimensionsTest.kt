@@ -68,6 +68,14 @@ class DimensionsTest {
         dimensions.revertFabBottomOffset shouldBe dimensions.navFloatingMargin
     }
 
+    // Scenario: la elevación de la barra de navegación flotante es un token de Dimensions, no un
+    // literal en :app (bottom-bar-navigation, design D1; misma elevación que
+    // FloatingActionButtonDefaults.elevation() en reposo, ya usada por RevertLastAnswerButton)
+    @Test
+    fun `given default dimensions when reading nav floating elevation then it is 6dp`() {
+        Dimensions().navFloatingElevation shouldBe 6.dp
+    }
+
     // Scenario: tamaño e icono del botón Escuchar coinciden con design-tokens.md
     // (adopt-reference-mock-ui, design - decisión 2)
     @Test

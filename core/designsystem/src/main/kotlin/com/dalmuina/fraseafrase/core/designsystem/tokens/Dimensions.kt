@@ -26,6 +26,10 @@ data class Dimensions(
     // pantalla, y separación entre esa barra y el FAB de deshacer (bottom-bar-navigation,
     // design D1/D3/D4).
     val navFloatingMargin: Dp = 16.dp,
+    // Elevación de la barra de navegación flotante (bottom-bar-navigation, design D1): mismo valor
+    // que usa por defecto FloatingActionButtonDefaults.elevation() en reposo para el resto de
+    // controles flotantes de la app (RevertLastAnswerButton).
+    val navFloatingElevation: Dp = 6.dp,
     // Botón flotante de volver a la frase anterior: tamaño, offsets e icono.
     val revertFabSize: Dp = 56.dp,
     val revertFabHorizontalOffset: Dp = 20.dp,

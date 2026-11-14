@@ -16,7 +16,7 @@
 
 ## 2. Barra de navegación flotante en `:app`
 
-- [ ] 2.1 Actualizar `FraseAFraseAppTest` (`app/src/androidTest/.../ui/FraseAFraseAppTest.kt`):
+- [x] 2.1 Actualizar `FraseAFraseAppTest` (`app/src/androidTest/.../ui/FraseAFraseAppTest.kt`):
       (a) reescribir `givenAppLaunched_whenLookingAtTheBottomBar_thenItsHeightMatchesTheMock` para medir,
       en vez del alto fijo de 80dp del `Surface`, que la barra queda separada de los tres bordes
       inferiores de la pantalla por `navFloatingMargin` (más el inset de `WindowInsets.navigationBars`
@@ -29,7 +29,7 @@
       deja constancia explícita de que este único test cubre los dos GIVEN de la spec (barra de gestos y
       barra de 3 botones). Ejecutar ambos tests y comprobar que fallan contra la barra a sangre actual
       (altura fija, sin margen, contenido recortado por el inset).
-- [ ] 2.2 Reescribir `FraseAFraseBottomBar` (`app/src/main/.../ui/FraseAFraseApp.kt`) como `Surface` con
+- [x] 2.2 Reescribir `FraseAFraseBottomBar` (`app/src/main/.../ui/FraseAFraseApp.kt`) como `Surface` con
       forma `AppCornerShapes.FloatingNav` (cápsula completa) y elevación en vez de `NavigationBar`,
       conteniendo la `Row` existente de `FraseAFraseBottomBarItem` sin cambios en su contenido interno
       (icono, indicador de píldora, etiqueta); aplicar `AppTheme.dimensions.navHeight` como alto de esa
@@ -39,13 +39,13 @@
       del indicador de pestaña seleccionada en `FraseAFraseBottomBarItem` por el mismo token
       `AppCornerShapes.FloatingNav`, ya que ambos coinciden en valor y el token ya existe; verificar que
       los dos tests de 2.1 pasan.
-- [ ] 2.3 Actualizar `FraseAFraseApp` para dejar de pasar `FraseAFraseBottomBar` como `bottomBar` del
+- [x] 2.3 Actualizar `FraseAFraseApp` para dejar de pasar `FraseAFraseBottomBar` como `bottomBar` del
       `Scaffold` raíz y colocarla como overlay (`Box` con `Modifier.align(Alignment.BottomCenter)`)
       sobre el contenido (design D2); cada pantalla (Practicar, Progreso, Ajustes) recibe el padding
       inferior necesario para reservar el hueco de la barra flotante en vez del `innerPadding`
       automático del `Scaffold`; verificar manualmente (o con el test existente de selección de pestaña)
       que ningún contenido de las tres pantallas queda oculto tras la barra.
-- [ ] 2.4 Verificar que el resto de tests de `FraseAFraseAppTest` (tres destinos visibles, cambio de
+- [x] 2.4 Verificar que el resto de tests de `FraseAFraseAppTest` (tres destinos visibles, cambio de
       pestaña, pestaña de inicio, indicador del tab activo, color de etiquetas inactivas) sigue pasando
       con la barra flotante; ajustar únicamente las aserciones de geometría que dependan de la forma
       anterior (a sangre) sin cambiar su intención.
