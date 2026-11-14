@@ -22,10 +22,18 @@ data class Dimensions(
     val navIndicatorWidth: Dp = 64.dp,
     val navIndicatorHeight: Dp = 32.dp,
     val navIconSize: Dp = 22.dp,
+    // Margen de la barra de navegación flotante respecto a los tres bordes inferiores de la
+    // pantalla, y separación entre esa barra y el FAB de deshacer (bottom-bar-navigation,
+    // design D1/D3/D4).
+    val navFloatingMargin: Dp = 16.dp,
+    // Elevación de la barra de navegación flotante (bottom-bar-navigation, design D1): mismo valor
+    // que usa por defecto FloatingActionButtonDefaults.elevation() en reposo para el resto de
+    // controles flotantes de la app (RevertLastAnswerButton).
+    val navFloatingElevation: Dp = 6.dp,
     // Botón flotante de volver a la frase anterior: tamaño, offsets e icono.
     val revertFabSize: Dp = 56.dp,
     val revertFabHorizontalOffset: Dp = 20.dp,
-    val revertFabBottomOffset: Dp = 172.dp,
+    val revertFabBottomOffset: Dp = navFloatingMargin,
     val revertFabIconSize: Dp = 24.dp,
     // Botón Escuchar: tamaño circular e icono.
     val listenButtonSize: Dp = 44.dp,

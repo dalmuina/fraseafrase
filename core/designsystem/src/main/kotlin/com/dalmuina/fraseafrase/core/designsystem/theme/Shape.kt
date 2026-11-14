@@ -25,4 +25,8 @@ object AppCornerShapes {
     val Panel: RoundedCornerShape = RoundedCornerShape(20.dp)
     val Fab: RoundedCornerShape = RoundedCornerShape(18.dp)
     val Hint: RoundedCornerShape = RoundedCornerShape(14.dp)
+
+    // Cápsula completa de la barra de navegación flotante (bottom-bar-navigation, design D1),
+    // reutilizada también por el indicador de la pestaña seleccionada.
+    val FloatingNav: RoundedCornerShape = RoundedCornerShape(percent = 50)
 }

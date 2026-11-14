@@ -11,8 +11,13 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.dalmuina.fraseafrase.MainActivity
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -112,18 +117,69 @@ class FraseAFraseAppTest {
         waitForPracticeScreen()
     }
 
-    // Scenario: la barra de navegación respeta las medidas del mock (adopt-reference-mock-ui,
-    // design D7, tasks 10.1/10.2): alto 80dp.
+    // Scenario: la barra de navegación respeta las medidas del mock (bottom-bar-navigation,
+    // design D1/D3/D4): queda separada de los tres bordes inferiores de la pantalla por
+    // `navFloatingMargin` (más el inset de `WindowInsets.navigationBars` en el borde inferior), en
+    // vez de un alto fijo a sangre.
     @Test
     fun givenAppLaunched_whenLookingAtTheBottomBar_thenItsHeightMatchesTheMock() {
         waitForPracticeScreen()
 
-        val bounds = composeTestRule.onNodeWithTag(NAV_TAG_BAR).getUnclippedBoundsInRoot()
-        val height = bounds.bottom - bounds.top
+        val rootBounds = composeTestRule.onRoot().getUnclippedBoundsInRoot()
+        val barBounds = composeTestRule.onNodeWithTag(NAV_TAG_BAR).getUnclippedBoundsInRoot()
+        val navigationBarInset = systemNavigationBarInsetDp()
 
+        val leftMargin = barBounds.left - rootBounds.left
+        val rightMargin = rootBounds.right - barBounds.right
+        val bottomMargin = rootBounds.bottom - barBounds.bottom
+
+        assertCloseTo("leftMargin", leftMargin, NAV_FLOATING_MARGIN)
+        assertCloseTo("rightMargin", rightMargin, NAV_FLOATING_MARGIN)
+        assertCloseTo("bottomMargin", bottomMargin, NAV_FLOATING_MARGIN + navigationBarInset)
+    }
+
+    // Scenario: La barra no se recorta con barra de gestos del sistema (spec: app-navigation)
+    // Scenario: La barra no se recorta con barra de navegación de 3 botones (spec: app-navigation)
+    // El mecanismo bajo prueba -- leer el inset real de `WindowInsets.navigationBars` y comprobar que
+    // el icono y la etiqueta de cada destino quedan íntegramente por encima de él -- no distingue el
+    // tipo de barra del sistema, así que este único test cubre los dos GIVEN de la especificación
+    // (design.md, Riesgos): el emulador reporta un inset real y distinto de cero, igual en desarrollo
+    // y en CI. Se comprueban los nodos hoja (icono/etiqueta, árbol sin fusionar) porque el nodo
+    // fusionado del destino no refleja el posible desbordamiento de su contenido interno.
+    @Test
+    fun givenAppLaunched_whenLookingAtTheBottomBar_thenAllDestinationsAreAboveTheSystemNavigationBar() {
+        waitForPracticeScreen()
+
+        val rootBounds = composeTestRule.onRoot().getUnclippedBoundsInRoot()
+        val systemNavigationBarTop = rootBounds.bottom - systemNavigationBarInsetDp()
+
+        listOf(
+            NAV_TAG_PRACTICE_ICON,
+            "nav-practice-label",
+            NAV_TAG_PROGRESS_ICON,
+            NAV_TAG_PROGRESS_LABEL,
+            NAV_TAG_SETTINGS_ICON,
+            NAV_TAG_SETTINGS_LABEL,
+        ).forEach { tag ->
+            val bounds = composeTestRule.onNodeWithTag(tag, useUnmergedTree = true).getUnclippedBoundsInRoot()
+            assertTrue(
+                "tag=$tag bottom=${bounds.bottom}, expected <= $systemNavigationBarTop",
+                bounds.bottom <= systemNavigationBarTop,
+            )
+        }
+    }
+
+    private fun systemNavigationBarInsetDp(): Dp {
+        val activity = composeTestRule.activity
+        val rootInsets = ViewCompat.getRootWindowInsets(activity.window.decorView)
+        val insetPx = rootInsets?.getInsets(WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
+        return with(Density(activity)) { insetPx.toDp() }
+    }
+
+    private fun assertCloseTo(label: String, actual: Dp, expected: Dp) {
         assertTrue(
-            "height=$height, expected ~$NAV_BAR_HEIGHT",
-            abs((height - NAV_BAR_HEIGHT).value) <= SIZE_TOLERANCE_DP.value
+            "$label=$actual, expected ~$expected",
+            abs((actual - expected).value) <= SIZE_TOLERANCE_DP.value
         )
     }
 
@@ -219,7 +275,7 @@ class FraseAFraseAppTest {
         const val NAV_TAG_PROGRESS_LABEL = "nav-progress-label"
         const val NAV_TAG_SETTINGS_LABEL = "nav-settings-label"
         const val WAIT_TIMEOUT_MILLIS = 5_000L
-        val NAV_BAR_HEIGHT = 80.dp
+        val NAV_FLOATING_MARGIN = 16.dp
         val NAV_INDICATOR_WIDTH = 64.dp
         val NAV_INDICATOR_HEIGHT = 32.dp
         val SIZE_TOLERANCE_DP = 1.dp
