@@ -74,9 +74,9 @@ internal fun PracticeSessionScreen(
     ) { innerPadding ->
         // Caja de pantalla completa, sin más padding que el del `topBar` (`innerPadding`): aloja el
         // contenido centrado de siempre y, como hermano suyo, el FAB de revertir posicionado con offsets
-        // absolutos desde sus bordes (adopt-reference-mock-ui, tarea 6.1, `design/mock/design-tokens.md`
-        // "Botón flotante de volver": 20dp desde la izquierda, 172dp desde abajo), en vez de contar desde el
-        // padding adicional de la zona de contenido.
+        // absolutos desde sus bordes (adopt-reference-mock-ui, tarea 6.1; offset vertical redefinido por
+        // reposition-button, ver el comentario junto al `AnimatedVisibility` más abajo), en vez de contar
+        // desde el padding adicional de la zona de contenido.
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -102,17 +102,26 @@ internal fun PracticeSessionScreen(
                 }
             }
             if (uiState is PracticeSessionUiState.Practicing && !uiState.completed) {
-                // Apilado encima del botón principal, no superpuesto (design D6, fix-redesign-ui-mismatches):
-                // ya no vive en el slot `floatingActionButton` del `Scaffold`, que reservaba su propio espacio
-                // flotante sobre el contenido en vez de desplazarlo. `AnimatedVisibility` repone la animación
-                // de aparición/desaparición que ese slot daba automáticamente.
+                // Flota justo encima del botón principal, nunca sobre él (reposition-button): la pila
+                // vertical de abajo arriba es barra de navegación -> botón principal -> FAB, cada uno
+                // separado por `navFloatingMargin` para el mismo ritmo visual que usa la barra flotante
+                // respecto a sus propios bordes. El botón principal queda `AppTheme.spacing.s` (el padding
+                // de la zona de contenido) más su propio alto por encima del borde inferior de esa zona, así
+                // que el FAB sube esa misma distancia más un `navFloatingMargin` de hueco. `PracticingContent`
+                // ensancha a juego el hueco que deja encima del botón mientras el FAB está visible, para que
+                // nunca se superponga con la frase o la traducción. `AnimatedVisibility` repone la animación
+                // de aparición/desaparición que daba el slot `floatingActionButton` del `Scaffold` antes de
+                // `fix-redesign-ui-mismatches` (design D6), que ya no se usa.
+                val revertFabBottomOffset = AppTheme.spacing.s +
+                    AppTheme.dimensions.primaryActionHeight +
+                    AppTheme.dimensions.navFloatingMargin
                 AnimatedVisibility(
                     visible = uiState.canRevertLastAnswer,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .offset(
                             x = AppTheme.dimensions.revertFabHorizontalOffset,
-                            y = -AppTheme.dimensions.revertFabBottomOffset,
+                            y = -revertFabBottomOffset,
                         ),
                 ) {
                     RevertLastAnswerButton(onAction = onAction)
@@ -205,11 +214,20 @@ private fun PracticingContent(
             )
         }
     } else {
+        // Hueco entre el contenido desplazable y el botón principal: el normal (`spacing.l`) salvo
+        // mientras el FAB de deshacer está visible, que crece justo lo que ese FAB necesita para flotar
+        // encima del botón sin tocar ni el botón ni la frase (reposition-button; ver el comentario del
+        // offset del FAB en [PracticeSessionScreen]).
+        val contentToPrimaryActionGap = if (state.canRevertLastAnswer) {
+            AppTheme.dimensions.navFloatingMargin + AppTheme.dimensions.revertFabSize
+        } else {
+            AppTheme.spacing.l
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(),
-            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
+            verticalArrangement = Arrangement.spacedBy(contentToPrimaryActionGap),
         ) {
             Column(
                 modifier = Modifier
