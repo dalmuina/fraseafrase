@@ -1,10 +1,17 @@
 package com.dalmuina.fraseafrase
 
+import com.dalmuina.fraseafrase.core.data.catalog.CatalogDatabase
 import com.dalmuina.fraseafrase.core.data.practice.PracticeDatabase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
+import com.dalmuina.fraseafrase.core.domain.settings.SelectActiveLanguage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Rule
@@ -34,6 +41,27 @@ class PersistenceWiringTest {
     @Inject
     lateinit var secondDatabase: PracticeDatabase
 
+    @Inject
+    lateinit var firstCatalogDatabase: CatalogDatabase
+
+    @Inject
+    lateinit var secondCatalogDatabase: CatalogDatabase
+
+    @Inject
+    lateinit var deviceLocaleProvider: DeviceLocaleProvider
+
+    @Inject
+    lateinit var obtainCatalogPhrasesForActiveLanguage: ObtainCatalogPhrasesForActiveLanguage
+
+    @Inject
+    lateinit var obtainAvailableLanguages: ObtainAvailableLanguages
+
+    @Inject
+    lateinit var obtainActiveLanguage: ObtainActiveLanguage
+
+    @Inject
+    lateinit var selectActiveLanguage: SelectActiveLanguage
+
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -46,6 +74,8 @@ class PersistenceWiringTest {
     fun tearDown() {
         firstDatabase.close()
         secondDatabase.close()
+        firstCatalogDatabase.close()
+        secondCatalogDatabase.close()
     }
 
     // Escenario: Dos obtenciones del catálogo desde el grafo de producción devuelven la misma instancia
@@ -61,5 +91,24 @@ class PersistenceWiringTest {
     @Test
     fun givenProductionGraph_whenObtainingDatabaseTwice_thenBothReferencesAreTheSameInstance() {
         assertSame(firstDatabase, secondDatabase)
+    }
+
+    // Escenario: Dos obtenciones de `CatalogDatabase` desde el grafo de producción devuelven la
+    // misma instancia (requisito "Existe una única instancia de `CatalogRepository`" extendido a
+    // `RoomCatalogDataSource`, phrase-catalog).
+    @Test
+    fun givenProductionGraph_whenObtainingCatalogDatabaseTwice_thenBothReferencesAreTheSameInstance() {
+        assertSame(firstCatalogDatabase, secondCatalogDatabase)
+    }
+
+    // Escenario: el grafo de producción resuelve `DeviceLocaleProvider` y los casos de uso nuevos
+    // sin ciclos (phrase-catalog, design "Nuevo puerto DeviceLocaleProvider...").
+    @Test
+    fun givenProductionGraph_whenInjectingNewLanguagePorts_thenAllAreResolved() {
+        assertNotNull(deviceLocaleProvider)
+        assertNotNull(obtainCatalogPhrasesForActiveLanguage)
+        assertNotNull(obtainAvailableLanguages)
+        assertNotNull(obtainActiveLanguage)
+        assertNotNull(selectActiveLanguage)
     }
 }

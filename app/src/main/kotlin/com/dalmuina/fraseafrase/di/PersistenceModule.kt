@@ -1,7 +1,9 @@
 package com.dalmuina.fraseafrase.di
 
 import android.content.Context
-import com.dalmuina.fraseafrase.core.data.catalog.AssetsCatalogDataSource
+import com.dalmuina.fraseafrase.core.data.catalog.CatalogDatabase
+import com.dalmuina.fraseafrase.core.data.catalog.RoomCatalogDataSource
+import com.dalmuina.fraseafrase.core.data.catalog.createCatalogDatabase
 import com.dalmuina.fraseafrase.core.data.di.IoDispatcher
 import com.dalmuina.fraseafrase.core.data.practice.PracticeDatabase
 import com.dalmuina.fraseafrase.core.data.practice.RoomPracticeDataSource
@@ -9,8 +11,10 @@ import com.dalmuina.fraseafrase.core.data.practice.createPracticeDatabase
 import com.dalmuina.fraseafrase.core.data.settings.DataStoreSettingsDataSource
 import com.dalmuina.fraseafrase.core.domain.audio.PhrasePlayer
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
+import com.dalmuina.fraseafrase.core.platform.AndroidDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.platform.TextToSpeechPlayer
 import dagger.Binds
 import dagger.Module
@@ -31,7 +35,7 @@ import javax.inject.Singleton
 abstract class PersistenceModule {
 
     @Binds
-    abstract fun bindCatalogRepository(source: AssetsCatalogDataSource): CatalogRepository
+    abstract fun bindCatalogRepository(source: RoomCatalogDataSource): CatalogRepository
 
     @Binds
     abstract fun bindSettingsRepository(source: DataStoreSettingsDataSource): SettingsRepository
@@ -42,12 +46,20 @@ abstract class PersistenceModule {
     @Binds
     abstract fun bindPhrasePlayer(player: TextToSpeechPlayer): PhrasePlayer
 
+    @Binds
+    abstract fun bindDeviceLocaleProvider(provider: AndroidDeviceLocaleProvider): DeviceLocaleProvider
+
     companion object {
 
         @Provides
         @Singleton
         fun providePracticeDatabase(@ApplicationContext context: Context): PracticeDatabase =
             createPracticeDatabase(context)
+
+        @Provides
+        @Singleton
+        fun provideCatalogDatabase(@ApplicationContext context: Context): CatalogDatabase =
+            createCatalogDatabase(context)
 
         @Provides
         @IoDispatcher

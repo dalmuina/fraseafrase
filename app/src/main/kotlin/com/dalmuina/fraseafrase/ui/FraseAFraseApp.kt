@@ -108,8 +108,12 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
                 BottomDestination.Practice -> PracticeSessionRoute(
                     modifier = contentModifier,
                     onNavigateToProgress = { selectedDestination = BottomDestination.Progress },
+                    onNavigateToSettings = { selectedDestination = BottomDestination.Settings },
                 )
-                BottomDestination.Progress -> ProgressRoute(modifier = contentModifier)
+                BottomDestination.Progress -> ProgressRoute(
+                    modifier = contentModifier,
+                    onNavigateToSettings = { selectedDestination = BottomDestination.Settings },
+                )
                 BottomDestination.Settings ->
                     SettingsRoute(
                         modifier = contentModifier,
