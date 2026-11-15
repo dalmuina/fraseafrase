@@ -59,6 +59,21 @@ class PracticeSessionViewModelTest {
             }
         }
 
+    // Scenario: El icono muestra el idioma activo en Practicar (spec: language-indicator)
+    @Test
+    fun `given pt-BR as the active target locale when opening the screen then the ui state exposes it`() = runTest {
+        // Given: pt-BR como idioma destino activo, con una tanda activa de la frase A en pt-BR
+        val practice = FakePracticeRepository()
+        practice.transact(LanguageTag("pt-BR")) { PracticeChange(activeBatchSnapshot(order = listOf("A")), Unit) }
+        val viewModel = sessionViewModel(practice, catalogOf("A"), activeTargetLocale = LanguageTag("pt-BR"))
+
+        // When
+        advanceUntilIdle()
+
+        // Then
+        viewModel.practicing().activeTargetLocale shouldBe LanguageTag("pt-BR")
+    }
+
     // Scenario: Frases con repaso futuro sin tanda (spec: practice-session, "Estado vacío sin frases disponibles")
     @Test
     fun `given only future reviews and no batch when opening the screen then the state is NothingToPractice`() =

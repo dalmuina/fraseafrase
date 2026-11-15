@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import org.junit.Assert.assertEquals
@@ -597,6 +598,38 @@ class PracticeSessionScreenTest {
         // Then: la pantalla indica que no hay frases para practicar y no muestra ninguna frase
         composeTestRule.onNodeWithText("No hay frases para practicar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Mostrar traducción").assertDoesNotExist()
+    }
+
+    // Scenario: El icono muestra el idioma activo en Practicar (spec: language-indicator)
+    @Test
+    fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
+        // Given/When: la cabecera muestra el idioma destino activo pt-BR
+        composeTestRule.setScreen(practicing().copy(activeTargetLocale = LanguageTag("pt-BR")))
+
+        // Then: la cabecera muestra el icono circular correspondiente a pt-BR
+        composeTestRule.onNodeWithContentDescription("pt-BR").assertIsDisplayed()
+    }
+
+    // Scenario: Tocar el icono desde Practicar navega a Ajustes (spec: language-indicator)
+    @Test
+    fun givenPracticingState_whenTappingTheLanguageBadge_thenOnNavigateToSettingsIsInvoked() {
+        // Given: la pantalla de Practicar abierta, con un callback de navegación a Ajustes
+        var navigatedToSettings = false
+        composeTestRule.setContent {
+            AppTheme {
+                PracticeSessionScreen(
+                    uiState = practicing(),
+                    onAction = {},
+                    onNavigateToSettings = { navigatedToSettings = true },
+                )
+            }
+        }
+
+        // When: el usuario toca el icono circular del idioma activo
+        composeTestRule.onNodeWithContentDescription("pt-PT").performClick()
+
+        // Then: la aplicación muestra la pantalla de Ajustes
+        assertTrue(navigatedToSettings)
     }
 
     // Scenario: Posición en la tanda visible (spec: practice-session), cabecera fija (design D1,

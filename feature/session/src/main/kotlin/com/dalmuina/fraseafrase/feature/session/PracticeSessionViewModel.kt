@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuina.fraseafrase.core.designsystem.component.levelBadgeLabel
 import com.dalmuina.fraseafrase.core.domain.audio.PlayPhraseAudio
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
 import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
@@ -11,6 +12,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSessionResult
 import com.dalmuina.fraseafrase.core.domain.practice.RevertLastAnswer
 import com.dalmuina.fraseafrase.core.domain.practice.UndoableAnswer
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
@@ -32,6 +34,7 @@ class PracticeSessionViewModel @Inject constructor(
     private val generateSession: GenerateSession,
     private val playPhraseAudio: PlayPhraseAudio,
     private val revertLastAnswer: RevertLastAnswer,
+    private val obtainActiveLanguage: ObtainActiveLanguage,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PracticeSessionUiState>(PracticeSessionUiState.Loading)
@@ -45,6 +48,10 @@ class PracticeSessionViewModel @Inject constructor(
     // nunca se acumula, y se limpia a `null` al revertir, al generar sesión y en cualquier recarga que no sea
     // continuación directa de una autoevaluación (`reload()` sin `previous`).
     private var pendingUndo: PendingUndo? = null
+
+    // Idioma destino activo, releído en cada `reload()` (spec: language-indicator, "El icono se actualiza tras
+    // cambiar de idioma"): refleja el idioma elegido en Ajustes la próxima vez que se muestra esta pantalla.
+    private var activeTargetLocale: LanguageTag = LanguageTag("pt-PT")
 
     init {
         viewModelScope.launch { reload() }
@@ -81,7 +88,7 @@ class PracticeSessionViewModel @Inject constructor(
         pendingUndo = null
         _uiState.value = state.copy(busy = true, canRevertLastAnswer = false)
         viewModelScope.launch {
-            generateSession()
+            generateSession(activeTargetLocale)
             reload()
         }
     }
@@ -110,7 +117,7 @@ class PracticeSessionViewModel @Inject constructor(
             val levelBefore = state.current.level
             val indexBefore = state.index
             viewModelScope.launch {
-                val outcome = answerPhrase(state.current.id, assessment)
+                val outcome = answerPhrase(activeTargetLocale, state.current.id, assessment)
                 val levelAfter = outcome.resultingLevel
                 pendingUndo = PendingUndo(outcome.undo, indexBefore)
                 val badgeChange = badgeChangeFor(levelBefore, levelAfter)
@@ -164,7 +171,8 @@ class PracticeSessionViewModel @Inject constructor(
      * D4 de `add-settings-apply-flow`).
      */
     private suspend fun reload(previous: PracticeSessionUiState.Practicing? = null, onlyIfChanged: Boolean = false) {
-        val session = obtainPracticeSession()
+        activeTargetLocale = obtainActiveLanguage()
+        val session = obtainPracticeSession(activeTargetLocale)
         if (onlyIfChanged && session.hasSameBatchAs(loadedBatchIds)) return
         if (session is PracticeSessionResult.Ready) loadedBatchIds = session.items.map { it.id }
         // Sin `previous` no hay ninguna autoevaluación de la que `pendingUndo` sea reflejo (carga inicial, Resume
@@ -187,6 +195,7 @@ class PracticeSessionViewModel @Inject constructor(
                     hits = session.batchOutcome.hits,
                     misses = session.batchOutcome.misses,
                     levelUps = session.batchOutcome.levelUps,
+                    activeTargetLocale = activeTargetLocale,
                 )
             }
             PracticeSessionResult.NothingToPractice -> PracticeSessionUiState.NothingToPractice
@@ -210,8 +219,8 @@ class PracticeSessionViewModel @Inject constructor(
         _uiState.value = state.copy(busy = true, canRevertLastAnswer = false)
         pendingUndo = null
         viewModelScope.launch {
-            revertLastAnswer(undo.answer)
-            val session = obtainPracticeSession()
+            revertLastAnswer(activeTargetLocale, undo.answer)
+            val session = obtainPracticeSession(activeTargetLocale)
             if (session is PracticeSessionResult.Ready) {
                 val current = session.items.first()
                 _uiState.value = PracticeSessionUiState.Practicing(
@@ -228,6 +237,7 @@ class PracticeSessionViewModel @Inject constructor(
                     hits = session.batchOutcome.hits,
                     misses = session.batchOutcome.misses,
                     levelUps = session.batchOutcome.levelUps,
+                    activeTargetLocale = activeTargetLocale,
                 )
             }
         }

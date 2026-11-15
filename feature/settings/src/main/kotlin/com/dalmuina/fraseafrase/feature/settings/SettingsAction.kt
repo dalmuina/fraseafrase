@@ -1,9 +1,13 @@
 package com.dalmuina.fraseafrase.feature.settings
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 
 /** Acciones del usuario sobre la pantalla de ajustes. Llegan por un único `onAction()` (ADR-0006). */
 sealed interface SettingsAction {
+
+    /** Elige un idioma destino del desplegable: solo cambia lo mostrado, no se persiste hasta [Save]. */
+    data class SelectLanguage(val targetLocale: LanguageTag) : SettingsAction
 
     /** Elige un nivel CEFR de la lista cerrada del enum: siempre un valor válido. */
     data class SelectCefrLevel(val level: CefrLevel) : SettingsAction

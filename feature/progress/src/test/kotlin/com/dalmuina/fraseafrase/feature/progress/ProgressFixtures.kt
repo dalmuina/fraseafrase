@@ -1,25 +1,42 @@
 package com.dalmuina.fraseafrase.feature.progress
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.progress.ObtainProgressOverview
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 
 /**
  * ViewModel con los casos de uso reales sobre los fakes de `:core:testing`. Ningún caso de uso se mockea.
+ * [activeTargetLocale] es el idioma destino activo según los ajustes (por defecto
+ * [FakeSettingsRepository.DEFAULT_LOCALE]), usado también como clave del catálogo (group 8,
+ * `add-multi-language-catalog`).
  */
 internal fun progressViewModel(
     catalog: CatalogLoadResult,
     practice: FakePracticeRepository = FakePracticeRepository(),
     settings: UserSettings = UserSettings.DEFAULT,
-): ProgressViewModel = ProgressViewModel(
-    obtainProgressOverview = ObtainProgressOverview(
-        catalogRepository = FakeCatalogRepository(catalog),
-        practiceRepository = practice,
-        obtainUserSettings = ObtainUserSettings(FakeSettingsRepository(settings)),
-    ),
-    obtainUserSettings = ObtainUserSettings(FakeSettingsRepository(settings)),
-)
+    activeTargetLocale: LanguageTag = FakeSettingsRepository.DEFAULT_LOCALE,
+): ProgressViewModel {
+    val settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale)
+    val catalogRepository = FakeCatalogRepository(catalog, targetLocale = activeTargetLocale)
+    val obtainUserSettings = ObtainUserSettings(settingsRepository)
+    return ProgressViewModel(
+        obtainProgressOverview = ObtainProgressOverview(
+            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+                catalogRepository = catalogRepository,
+            ),
+            practiceRepository = practice,
+            obtainUserSettings = obtainUserSettings,
+        ),
+        obtainUserSettings = obtainUserSettings,
+        obtainActiveLanguage = ObtainActiveLanguage(settingsRepository),
+    )
+}

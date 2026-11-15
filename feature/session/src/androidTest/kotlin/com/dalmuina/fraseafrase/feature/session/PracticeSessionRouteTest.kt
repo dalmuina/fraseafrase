@@ -15,7 +15,9 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.catalog.Topic
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
@@ -26,6 +28,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.practice.RevertLastAnswer
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
@@ -192,52 +195,77 @@ class PracticeSessionRouteTest {
     ): PracticeSessionViewModel {
         val catalogRepository = TestCatalogRepository(catalog)
         val settingsRepository = TestSettingsRepository()
+        val obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+            deviceLocaleProvider = TestDeviceLocaleProvider,
+            catalogRepository = catalogRepository,
+        )
         val composeNextBatch = ComposeNextBatch()
         val obtainActiveBatch = ObtainActiveBatch(
             composeNextBatch = composeNextBatch,
-            catalogRepository = catalogRepository,
+            obtainCatalogPhrases = obtainCatalogPhrases,
             settingsRepository = settingsRepository,
             practiceRepository = practice,
         )
         return PracticeSessionViewModel(
-            obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, catalogRepository, practice),
+            obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, obtainCatalogPhrases, practice),
             answerPhrase = AnswerPhrase(practice),
             generateSession = GenerateSession(
                 practiceRepository = practice,
                 composeNextBatch = composeNextBatch,
-                catalogRepository = catalogRepository,
+                obtainCatalogPhrases = obtainCatalogPhrases,
                 settingsRepository = settingsRepository,
             ),
             playPhraseAudio = PlayPhraseAudio(TestPhrasePlayer()),
             revertLastAnswer = RevertLastAnswer(practice),
+            obtainActiveLanguage = ObtainActiveLanguage(settingsRepository),
         )
     }
 
-    /** Fake local de [PracticeRepository], en memoria, serializado con un [Mutex] como [FakePracticeRepository]. */
+    /**
+     * Fake local de [PracticeRepository], en memoria, serializado con un [Mutex] como [FakePracticeRepository].
+     * Un único estado, sin distinguir por `targetLocale`: este test solo ejercita un idioma destino.
+     */
     private class TestPracticeRepository(initial: PracticeSnapshot) : PracticeRepository {
 
         private val mutex = Mutex()
         private var state: PracticeSnapshot = initial
 
-        override suspend fun read(): PracticeSnapshot = mutex.withLock { state }
+        override suspend fun read(targetLocale: LanguageTag): PracticeSnapshot = mutex.withLock { state }
 
-        override suspend fun <T> transact(change: (PracticeSnapshot) -> PracticeChange<T>): T = mutex.withLock {
+        override suspend fun <T> transact(
+            targetLocale: LanguageTag,
+            change: (PracticeSnapshot) -> PracticeChange<T>,
+        ): T = mutex.withLock {
             val outcome = change(state)
             state = outcome.next
             outcome.result
         }
+
+        suspend fun read(): PracticeSnapshot = read(LanguageTag("pt-PT"))
+
+        suspend fun <T> transact(change: (PracticeSnapshot) -> PracticeChange<T>): T =
+            transact(LanguageTag("pt-PT"), change)
     }
 
     private class TestCatalogRepository(private val result: CatalogLoadResult) : CatalogRepository {
-        override suspend fun phrases(): CatalogLoadResult = result
+        override suspend fun availableTargetLocales(): List<LanguageTag> = listOf(LanguageTag("pt-PT"))
+        override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> =
+            listOf(LanguageTag("es-ES"))
+        override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult = result
+    }
+
+    private object TestDeviceLocaleProvider : DeviceLocaleProvider {
+        override fun current(): LanguageTag = LanguageTag("es-ES")
     }
 
     private class TestSettingsRepository(initial: UserSettings = UserSettings.DEFAULT) : SettingsRepository {
         private var settings: UserSettings = initial
-        override suspend fun settings(): UserSettings = settings
-        override suspend fun save(settings: UserSettings) {
+        override suspend fun settings(targetLocale: LanguageTag): UserSettings = settings
+        override suspend fun save(targetLocale: LanguageTag, settings: UserSettings) {
             this.settings = settings
         }
+        override suspend fun activeTargetLocale(): LanguageTag = LanguageTag("pt-PT")
+        override suspend fun setActiveTargetLocale(targetLocale: LanguageTag) = Unit
     }
 
     private class TestPhrasePlayer : PhrasePlayer {

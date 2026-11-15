@@ -13,18 +13,22 @@ import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -345,6 +349,48 @@ class ProgressScreenTest {
         // Then: ambos hexágonos decorativos se pintan dentro de la tarjeta destacada
         composeTestRule.onNodeWithTag("progress_hero_decoration_large_hex").assertIsDisplayed()
         composeTestRule.onNodeWithTag("progress_hero_decoration_small_hex").assertIsDisplayed()
+    }
+
+    // Scenario: El icono muestra el idioma activo en Progreso (spec: language-indicator)
+    @Test
+    fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
+        // Given/When: la cabecera muestra el idioma destino activo pt-BR
+        setScreen(
+            ProgressUiState.Content(
+                totalAvailable = 6,
+                cefrLevel = CefrLevel.A1,
+                byLevel = allLevels(levelZero = 6),
+                activeTargetLocale = LanguageTag("pt-BR"),
+            ),
+        )
+
+        // Then: la cabecera muestra el icono circular correspondiente a pt-BR
+        composeTestRule.onNodeWithContentDescription("pt-BR").assertIsDisplayed()
+    }
+
+    // Scenario: Tocar el icono desde Progreso navega a Ajustes (spec: language-indicator)
+    @Test
+    fun givenProgressContentState_whenTappingTheLanguageBadge_thenOnNavigateToSettingsIsInvoked() {
+        // Given: la pantalla de Progreso abierta, con un callback de navegación a Ajustes
+        var navigatedToSettings = false
+        composeTestRule.setContent {
+            AppTheme {
+                ProgressScreen(
+                    uiState = ProgressUiState.Content(
+                        totalAvailable = 6,
+                        cefrLevel = CefrLevel.A1,
+                        byLevel = allLevels(levelZero = 6),
+                    ),
+                    onNavigateToSettings = { navigatedToSettings = true },
+                )
+            }
+        }
+
+        // When: el usuario toca el icono circular del idioma activo
+        composeTestRule.onNodeWithContentDescription("pt-PT").performClick()
+
+        // Then: la aplicación muestra la pantalla de Ajustes
+        assertTrue(navigatedToSettings)
     }
 
     private fun setScreen(uiState: ProgressUiState) {

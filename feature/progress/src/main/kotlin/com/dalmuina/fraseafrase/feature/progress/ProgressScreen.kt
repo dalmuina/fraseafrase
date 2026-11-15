@@ -1,6 +1,7 @@
 package com.dalmuina.fraseafrase.feature.progress
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.dalmuina.fraseafrase.core.designsystem.component.DsHeroStat
+import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLevelBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsProgressBar
 import com.dalmuina.fraseafrase.core.designsystem.component.levelBadgeAccentColor
@@ -44,6 +46,7 @@ import com.dalmuina.fraseafrase.core.designsystem.R as DsR
 internal fun ProgressScreen(
     uiState: ProgressUiState,
     modifier: Modifier = Modifier,
+    onNavigateToSettings: () -> Unit = {},
 ) {
     when (uiState) {
         ProgressUiState.Loading -> Box(
@@ -52,7 +55,11 @@ internal fun ProgressScreen(
         ) {
             CircularProgressIndicator()
         }
-        is ProgressUiState.Content -> ContentState(state = uiState, modifier = modifier)
+        is ProgressUiState.Content -> ContentState(
+            state = uiState,
+            modifier = modifier,
+            onNavigateToSettings = onNavigateToSettings,
+        )
         ProgressUiState.CatalogError -> Box(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -63,17 +70,18 @@ internal fun ProgressScreen(
 }
 
 @Composable
-private fun ContentState(state: ProgressUiState.Content, modifier: Modifier = Modifier) {
+private fun ContentState(
+    state: ProgressUiState.Content,
+    modifier: Modifier = Modifier,
+    onNavigateToSettings: () -> Unit = {},
+) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(AppTheme.spacing.m),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        Text(
-            text = stringResource(R.string.progress_title),
-            style = MaterialTheme.typography.headlineLarge,
-        )
+        ProgressHeader(languageCode = state.activeTargetLocale.value, onNavigateToSettings = onNavigateToSettings)
         DsHeroStat(
             value = state.totalAvailable.toString(),
             label = stringResource(R.string.progress_available_label),
@@ -119,6 +127,31 @@ private fun ContentState(state: ProgressUiState.Content, modifier: Modifier = Mo
                 }
             }
         }
+    }
+}
+
+/**
+ * Título "Progreso" junto al icono circular del idioma destino activo (spec: language-indicator, "Icono del
+ * idioma activo en la cabecera"); tocarlo navega a Ajustes (spec: language-indicator, "Tocar el icono navega
+ * a Ajustes"), igual que `PracticeHeader` en `PracticeSessionScreen.kt` (`:feature:session`).
+ */
+@Composable
+private fun ProgressHeader(languageCode: String, onNavigateToSettings: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.progress_title),
+            style = MaterialTheme.typography.headlineLarge,
+        )
+        DsLanguageBadge(
+            languageCode = languageCode,
+            modifier = Modifier
+                .clickable(onClick = onNavigateToSettings)
+                .testTag("progress_language_badge"),
+        )
     }
 }
 

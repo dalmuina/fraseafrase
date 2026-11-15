@@ -16,7 +16,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
  * dos callbacks tiene efecto por defecto: `:app` decide cómo mostrar la confirmación (un `Snackbar` que sobreviva al
  * cambio de pestaña) y a dónde navegar, para que esta feature no conozca otras (design D5). El envío de las
  * acciones de consumo no espera a que termine ningún callback, para que la cancelación de esta composición al
- * navegar no se lleve por delante la confirmación (design D6 revisada).
+ * navegar no se lleve por delante la confirmación (design D6 revisada). [onNavigateToSettings] reenvía la
+ * navegación al tocar el icono de idioma de la propia cabecera (spec: language-indicator, "Tocar el icono
+ * estando ya en Ajustes no hace nada"); no tiene efecto por defecto.
  */
 @Composable
 fun SettingsRoute(
@@ -24,6 +26,7 @@ fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel(),
     onNavigateToPractice: () -> Unit = {},
     onShowSaveConfirmation: (String) -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val saveConfirmationText = stringResource(R.string.settings_save_confirmation)
@@ -46,5 +49,6 @@ fun SettingsRoute(
         uiState = uiState,
         onAction = viewModel::onAction,
         modifier = modifier,
+        onNavigateToSettings = onNavigateToSettings,
     )
 }

@@ -23,11 +23,13 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.TextUnit
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -299,6 +301,53 @@ class SettingsScreenTest {
         assertEquals(expectedFontSize, layoutResults.first().layoutInput.style.fontSize)
     }
 
+    // Scenario: Elegir un idioma destino de la lista (spec: settings-screen)
+    @Test
+    fun givenActiveLanguage_whenShowingTheScreen_thenTheLanguageDropdownShowsItPreselected() {
+        // Given/When: la pantalla muestra pt-PT como idioma activo entre pt-PT y pt-BR disponibles
+        setScreen(
+            loaded(
+                activeTargetLocale = LanguageTag("pt-PT"),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+            ),
+        )
+
+        // Then: el desplegable de idioma muestra el nombre de pt-PT preseleccionado
+        composeTestRule.onNodeWithText("Português (Portugal)").assertIsDisplayed()
+    }
+
+    // Scenario: El icono muestra el idioma activo en Ajustes (spec: language-indicator)
+    @Test
+    fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
+        // Given/When: la cabecera muestra el idioma destino activo pt-BR
+        setScreen(loaded(activeTargetLocale = LanguageTag("pt-BR")))
+
+        // Then: la cabecera muestra el icono circular correspondiente a pt-BR
+        composeTestRule.onNodeWithContentDescription("pt-BR").assertIsDisplayed()
+    }
+
+    // Scenario: Tocar el icono estando ya en Ajustes no hace nada (spec: language-indicator)
+    @Test
+    fun givenSettingsLoaded_whenTappingTheLanguageBadge_thenOnNavigateToSettingsIsInvoked() {
+        // Given: la pantalla de Ajustes abierta, con un callback de navegación a Ajustes
+        var navigatedToSettings = false
+        composeTestRule.setContent {
+            AppTheme {
+                SettingsScreen(
+                    uiState = loaded(),
+                    onAction = {},
+                    onNavigateToSettings = { navigatedToSettings = true },
+                )
+            }
+        }
+
+        // When: el usuario toca el icono circular del idioma activo
+        composeTestRule.onNodeWithContentDescription("pt-PT").performClick()
+
+        // Then: la aplicación sigue mostrando la pantalla de Ajustes (no hace nada más)
+        assertTrue(navigatedToSettings)
+    }
+
     private fun setScreen(uiState: SettingsUiState) {
         composeTestRule.setContent {
             AppTheme {
@@ -308,10 +357,14 @@ class SettingsScreenTest {
     }
 
     private fun loaded(
+        activeTargetLocale: LanguageTag = LanguageTag("pt-PT"),
+        availableTargetLocales: List<LanguageTag> = listOf(LanguageTag("pt-PT")),
         cefrLevel: CefrLevel = CefrLevel.A1,
         batchSizeText: String = "20",
         isBatchSizeValid: Boolean = true,
     ): SettingsUiState.Loaded = SettingsUiState.Loaded(
+        activeTargetLocale = activeTargetLocale,
+        availableTargetLocales = availableTargetLocales,
         cefrLevel = cefrLevel,
         batchSizeText = batchSizeText,
         isBatchSizeValid = isBatchSizeValid,

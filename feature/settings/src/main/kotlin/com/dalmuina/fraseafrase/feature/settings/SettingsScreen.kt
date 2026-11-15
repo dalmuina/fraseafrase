@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.feature.settings
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,10 +41,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageBadge
+import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageOption
+import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageOptions
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppCornerShapes
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
@@ -59,6 +64,7 @@ internal fun SettingsScreen(
     uiState: SettingsUiState,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
+    onNavigateToSettings: () -> Unit = {},
 ) {
     when (uiState) {
         SettingsUiState.Loading -> Box(
@@ -71,6 +77,7 @@ internal fun SettingsScreen(
             state = uiState,
             onAction = onAction,
             modifier = modifier,
+            onNavigateToSettings = onNavigateToSettings,
         )
     }
 }
@@ -80,6 +87,7 @@ private fun LoadedContent(
     state: SettingsUiState.Loaded,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
+    onNavigateToSettings: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -87,9 +95,27 @@ private fun LoadedContent(
             .padding(AppTheme.spacing.m),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        Text(
-            text = stringResource(R.string.settings_title),
-            style = MaterialTheme.typography.headlineLarge,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.settings_title),
+                style = MaterialTheme.typography.headlineLarge,
+            )
+            DsLanguageBadge(
+                languageCode = state.activeTargetLocale.value,
+                modifier = Modifier
+                    .clickable(onClick = onNavigateToSettings)
+                    .testTag("settings_language_badge"),
+            )
+        }
+        DsLanguageOptions(
+            options = state.availableTargetLocales.map { it.toDsLanguageOption() },
+            selectedCode = state.activeTargetLocale.value,
+            onSelect = { code -> onAction(SettingsAction.SelectLanguage(LanguageTag(code))) },
+            modifier = Modifier.fillMaxWidth(),
         )
         CefrLevelCard(
             selectedLevel = state.cefrLevel,
@@ -313,6 +339,21 @@ private fun BatchSizeStepButton(
 /** Resultado de pulsar +/- sobre el texto en edición: solo cambia si ya es un entero; si no, lo deja intacto. */
 private fun steppedBatchSizeText(batchSizeText: String, delta: Int): String =
     batchSizeText.toIntOrNull()?.let { (it + delta).toString() } ?: batchSizeText
+
+/**
+ * Mapea un [LanguageTag] del dominio a una [DsLanguageOption] del design system (ADR-0010: `DsLanguageOptions`
+ * no conoce `LanguageTag`). El nombre a mostrar no está fijado en ninguna spec ni mock: se elige el nombre
+ * nativo del idioma con su variante entre paréntesis, igual que lo haría cualquier selector de idioma/región.
+ * Un código no reconocido usa el propio valor de [LanguageTag] como nombre, para no perder la opción.
+ */
+private fun LanguageTag.toDsLanguageOption(): DsLanguageOption = DsLanguageOption(
+    code = value,
+    displayName = when (value) {
+        "pt-PT" -> "Português (Portugal)"
+        "pt-BR" -> "Português (Brasil)"
+        else -> value
+    },
+)
 
 // Signo menos tipográfico (no el guion ASCII) para el botón de decremento, como en el mock "Ajustes"; no hay
 // icono de "quitar" en material-icons-core (solo en la versión extended, no disponible en esta feature).

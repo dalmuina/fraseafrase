@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.feature.settings
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
@@ -43,6 +44,50 @@ class SettingsViewModelTest {
         state.batchSizeText shouldBe "25"
         state.isBatchSizeValid shouldBe true
     }
+
+    // Scenario: Se muestran los ajustes guardados, con el idioma destino (spec: settings-screen)
+    @Test
+    fun `given an active target locale and available languages when the screen opens then the ui state shows them`() =
+        runTest {
+            // Given: pt-PT como idioma destino activo con pt-BR también disponible
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(25)))
+
+            // When: el usuario abre la pantalla de ajustes
+            val viewModel = settingsViewModel(
+                repository,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+            )
+            advanceUntilIdle()
+
+            // Then: la pantalla muestra pt-PT como idioma destino activo y ambos idiomas como disponibles
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.activeTargetLocale shouldBe LanguageTag("pt-PT")
+            state.availableTargetLocales shouldBe listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR"))
+        }
+
+    // Scenario: Cambiar de idioma destino muestra sus propios ajustes (spec: settings-screen)
+    @Test
+    fun `given settings per locale when a different language is selected then the shown cefr and batch size update`() =
+        runTest {
+            // Given: pt-PT activo con CEFR B1/N=25, y pt-BR con CEFR A2/N=10
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(25)))
+            repository.save(LanguageTag("pt-BR"), UserSettings(CefrLevel.A2, BatchSize(10)))
+            val viewModel = settingsViewModel(
+                repository,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+            )
+            advanceUntilIdle()
+
+            // When: el usuario elige pt-BR en el desplegable
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            advanceUntilIdle()
+
+            // Then: la pantalla muestra el nivel CEFR A2 y N igual a 10
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.activeTargetLocale shouldBe LanguageTag("pt-BR")
+            state.cefrLevel shouldBe CefrLevel.A2
+            state.batchSizeText shouldBe "10"
+        }
 
     // Scenario: Elegir un nivel CEFR de la lista (spec: settings-screen)
     @Test
@@ -120,6 +165,113 @@ class SettingsViewModelTest {
 
             // Then: una lectura posterior de los ajustes devuelve el nivel CEFR B2 y N igual a 15
             repository.settings() shouldBe UserSettings(CefrLevel.B2, BatchSize(15))
+        }
+
+    // Scenario: Guardar tras cambiar de idioma destino persiste en el idioma destino elegido (spec: settings-screen)
+    @Test
+    fun `given a different target locale selected when Save is dispatched then it persists for that locale only`() =
+        runTest {
+            // Given: pt-PT activo con A1/20 por defecto, y pt-BR disponible
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val viewModel = settingsViewModel(
+                repository,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+            )
+            advanceUntilIdle()
+
+            // When: el usuario elige pt-BR, el nivel B2, escribe 15 como tamaño de tanda y confirma el guardado
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            advanceUntilIdle()
+            viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B2))
+            viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: una lectura posterior de pt-BR devuelve B2/15, pt-PT no cambia y pt-BR pasa a ser el activo
+            repository.settings(LanguageTag("pt-BR")) shouldBe UserSettings(CefrLevel.B2, BatchSize(15))
+            repository.settings(LanguageTag("pt-PT")) shouldBe UserSettings(CefrLevel.A1, BatchSize(20))
+            repository.activeTargetLocale() shouldBe LanguageTag("pt-BR")
+        }
+
+    // Scenario: Salir sin guardar no cambia el idioma destino activo (spec: settings-screen)
+    @Test
+    fun `given a language selected without saving when the screen is discarded then the active language stays`() =
+        runTest {
+            // Given: pt-PT activo, y el usuario elige pt-BR en el desplegable sin confirmar el guardado
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val viewModel = settingsViewModel(
+                repository,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+            )
+            advanceUntilIdle()
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            advanceUntilIdle()
+
+            // When: el usuario sale de la pantalla de ajustes sin confirmar el guardado (el ViewModel se descarta,
+            // nunca llamó a SelectActiveLanguage)
+
+            // Then: una lectura posterior del idioma destino activo devuelve pt-PT
+            repository.activeTargetLocale() shouldBe LanguageTag("pt-PT")
+        }
+
+    // Scenario: Cambiar solo de idioma destino, sin cambiar CEFR ni N, no recompone la tanda del idioma anterior
+    // (spec: settings-screen)
+    @Test
+    fun `given only the target locale changed when Save is dispatched then the previous locale is not regenerated`() =
+        runTest {
+            // Given: pt-PT activo con una tanda activa guardada, y pt-BR disponible con los mismos ajustes
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10)))
+            repository.save(LanguageTag("pt-BR"), UserSettings(CefrLevel.A1, BatchSize(10)))
+            val practice = FakePracticeRepository(activeBatchSnapshot(id = "phrase-1"))
+            val catalog = CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "phrase-1", level = CefrLevel.A1)))
+            val viewModel = settingsViewModel(
+                repository,
+                practice,
+                catalog = catalog,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+            )
+            advanceUntilIdle()
+            val originalPtPtBatch = practice.read(LanguageTag("pt-PT")).activeBatch
+
+            // When: el usuario cambia el idioma destino a pt-BR, sin cambiar su CEFR ni su N, y confirma el guardado
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            advanceUntilIdle()
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: la tanda activa de pt-PT no se recompone
+            practice.read(LanguageTag("pt-PT")).activeBatch shouldBe originalPtPtBatch
+        }
+
+    // Scenario: sí recompone la del idioma activo si su CEFR/N cambió (spec: settings-screen, "Regeneración sin
+    // tocar el progreso al cambiar los ajustes")
+    @Test
+    fun `given a locale and its cefr level changed when Save is dispatched then the new locale is regenerated`() =
+        runTest {
+            // Given: pt-PT activo, y pt-BR disponible con nivel A1 persistido y sin tanda activa propia
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10)))
+            repository.save(LanguageTag("pt-BR"), UserSettings(CefrLevel.A1, BatchSize(10)))
+            val practice = FakePracticeRepository(activeBatchSnapshot(id = "phrase-1"))
+            val catalog = CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "phrase-1", level = CefrLevel.B1)))
+            val viewModel = settingsViewModel(
+                repository,
+                practice,
+                catalog = catalog,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+            )
+            advanceUntilIdle()
+
+            // When: el usuario elige pt-BR, cambia su nivel CEFR a B1 y confirma el guardado
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            advanceUntilIdle()
+            viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
+            viewModel.onAction(SettingsAction.Save)
+            advanceUntilIdle()
+
+            // Then: se pide navegar a práctica y pt-BR tiene una tanda activa nueva
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.navigateToPracticePending shouldBe true
+            practice.read(LanguageTag("pt-BR")).activeBatch shouldNotBe null
         }
 
     // Scenario: Salir sin guardar no persiste la edición (spec: settings-screen)
