@@ -2,6 +2,8 @@ package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
@@ -9,6 +11,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
@@ -20,10 +23,15 @@ import org.junit.jupiter.api.Test
 // Spec: practice-batch, "Regeneración de la tanda activa por cambio de nivel CEFR sin resolución"
 class RegenerateActiveBatchForLevelTest {
 
+    private val targetLocale = LanguageTag("pt-PT")
+
     private fun useCase(practice: FakePracticeRepository, catalog: CatalogLoadResult) = RegenerateActiveBatchForLevel(
         practiceRepository = practice,
         composeNextBatch = ComposeNextBatch(),
-        catalogRepository = FakeCatalogRepository(catalog),
+        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+            deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+            catalogRepository = FakeCatalogRepository(catalog),
+        ),
     )
 
     private fun snapshot(order: List<String>, progress: List<PhraseProgress>, sessionCount: Int = 9) =
@@ -48,7 +56,7 @@ class RegenerateActiveBatchForLevelTest {
             )
 
             // When
-            val result = useCase(practice, catalog).invoke(CefrLevel.B1, BatchSize(10))
+            val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10))
             result.shouldBeInstanceOf<ActiveBatchResult.Created>()
 
             // Then
@@ -71,7 +79,7 @@ class RegenerateActiveBatchForLevelTest {
         val catalog = CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "A", level = CefrLevel.B1)))
 
         // When
-        useCase(practice, catalog).invoke(CefrLevel.B1, BatchSize(10))
+        useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10))
 
         // Then
         practice.read().sessionCount shouldBe 9
@@ -102,7 +110,7 @@ class RegenerateActiveBatchForLevelTest {
             )
 
             // When
-            val result = useCase(practice, catalog).invoke(CefrLevel.B1, BatchSize(20))
+            val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(20))
 
             // Then: mismas cuotas que una generación de sesión con N=20: 4 nuevas, 11 a reforzar, 5 dominadas
             val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
@@ -125,7 +133,7 @@ class RegenerateActiveBatchForLevelTest {
             val catalog = CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "A", level = CefrLevel.B1)))
 
             // When
-            useCase(practice, catalog).invoke(CefrLevel.B1, BatchSize(10))
+            useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10))
 
             // Then: el desglose de la tanda anterior no se arrastra a la nueva composición
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)

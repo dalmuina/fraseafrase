@@ -16,9 +16,10 @@ internal fun PhraseProgressEntity.toDomain(): PhraseProgress = PhraseProgress(
     dueAtSession = dueAtSession,
 )
 
-internal fun PhraseProgress.toEntity(batchPosition: Int?): PhraseProgressEntity =
+internal fun PhraseProgress.toEntity(targetLocale: String, batchPosition: Int?): PhraseProgressEntity =
     PhraseProgressEntity(
         phraseId = id.value,
+        targetLocale = targetLocale,
         level = level.value,
         streak = streak.value,
         answeredInBatch = answeredInBatch,

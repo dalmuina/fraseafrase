@@ -14,8 +14,8 @@ interface PhraseProgressDao {
     @Update
     suspend fun update(entity: PhraseProgressEntity)
 
-    @Query("SELECT * FROM phrase_progress")
-    suspend fun all(): List<PhraseProgressEntity>
+    @Query("SELECT * FROM phrase_progress WHERE target_locale = :targetLocale")
+    suspend fun all(targetLocale: String): List<PhraseProgressEntity>
 }
 
 @Dao
@@ -27,11 +27,11 @@ interface ActiveBatchDao {
     @Update
     suspend fun update(entity: ActiveBatchEntity)
 
-    @Query("SELECT * FROM active_batch")
-    suspend fun all(): List<ActiveBatchEntity>
+    @Query("SELECT * FROM active_batch WHERE target_locale = :targetLocale")
+    suspend fun byLocale(targetLocale: String): ActiveBatchEntity?
 
-    @Query("DELETE FROM active_batch")
-    suspend fun clear()
+    @Query("DELETE FROM active_batch WHERE target_locale = :targetLocale")
+    suspend fun clear(targetLocale: String)
 }
 
 @Dao
@@ -43,6 +43,6 @@ interface SessionCounterDao {
     @Update
     suspend fun update(entity: SessionCounterEntity)
 
-    @Query("SELECT * FROM session_counter")
-    suspend fun all(): List<SessionCounterEntity>
+    @Query("SELECT * FROM session_counter WHERE target_locale = :targetLocale")
+    suspend fun byLocale(targetLocale: String): SessionCounterEntity?
 }

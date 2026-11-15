@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
@@ -29,10 +30,10 @@ class RevertLastAnswerTest {
                     sessionCount = 10,
                 ),
             )
-            val outcome = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+            val outcome = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
             // When
-            RevertLastAnswer(practice).invoke(outcome.undo)
+            RevertLastAnswer(practice).invoke(LanguageTag("pt-PT"), outcome.undo)
 
             // Then
             val snapshot = practice.read()
@@ -51,10 +52,10 @@ class RevertLastAnswerTest {
                 sessionCount = 10,
             ),
         )
-        val outcome = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+        val outcome = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
         // When: se revierte esa autoevaluación
-        RevertLastAnswer(practice).invoke(outcome.undo)
+        RevertLastAnswer(practice).invoke(LanguageTag("pt-PT"), outcome.undo)
 
         // Then: el desglose no cuenta la autoevaluación revertida
         practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
@@ -76,12 +77,12 @@ class RevertLastAnswerTest {
                 ),
             )
             val answerPhrase = AnswerPhrase(practice)
-            val firstOutcome = answerPhrase.invoke(PhraseId("A"), SelfAssessment.HIT)
-            RevertLastAnswer(practice).invoke(firstOutcome.undo)
-            answerPhrase.invoke(PhraseId("B"), SelfAssessment.MISS)
+            val firstOutcome = answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
+            RevertLastAnswer(practice).invoke(LanguageTag("pt-PT"), firstOutcome.undo)
+            answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("B"), SelfAssessment.MISS)
 
             // When: se responde A de nuevo con acierto
-            answerPhrase.invoke(PhraseId("A"), SelfAssessment.HIT)
+            answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
             // Then: el desglose no cuenta la autoevaluación revertida de A
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 1, misses = 1, levelUps = 0)
@@ -99,10 +100,10 @@ class RevertLastAnswerTest {
                 sessionCount = 10,
             ),
         )
-        val outcome = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+        val outcome = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
         // When
-        RevertLastAnswer(practice).invoke(outcome.undo)
+        RevertLastAnswer(practice).invoke(LanguageTag("pt-PT"), outcome.undo)
 
         // Then: la subida de nivel también se deshace
         practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
@@ -120,12 +121,12 @@ class RevertLastAnswerTest {
             ),
         )
         val answerPhrase = AnswerPhrase(practice)
-        val outcomeA = answerPhrase.invoke(PhraseId("A"), SelfAssessment.HIT)
-        answerPhrase.invoke(PhraseId("B"), SelfAssessment.HIT)
+        val outcomeA = answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
+        answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("B"), SelfAssessment.HIT)
 
         // When / Then
         shouldThrow<IllegalArgumentException> {
-            RevertLastAnswer(practice).invoke(outcomeA.undo)
+            RevertLastAnswer(practice).invoke(LanguageTag("pt-PT"), outcomeA.undo)
         }
     }
 }

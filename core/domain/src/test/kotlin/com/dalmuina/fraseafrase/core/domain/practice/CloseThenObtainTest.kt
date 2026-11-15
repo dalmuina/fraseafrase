@@ -2,6 +2,8 @@ package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
@@ -9,6 +11,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
@@ -23,6 +26,8 @@ import org.junit.jupiter.api.Test
 // tanda activa"; ADR-0017). Persistencia en fake; la persistencia real en Room va en :core:data.
 class CloseThenObtainTest {
 
+    private val targetLocale = LanguageTag("pt-PT")
+
     private val catalog = CatalogLoadResult.Loaded(
         listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.A1) },
     )
@@ -30,7 +35,10 @@ class CloseThenObtainTest {
     private fun obtain(practice: FakePracticeRepository, catalogResult: CatalogLoadResult = catalog) =
         ObtainActiveBatch(
             composeNextBatch = ComposeNextBatch(),
-            catalogRepository = FakeCatalogRepository(catalogResult),
+            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+                catalogRepository = FakeCatalogRepository(catalogResult),
+            ),
             settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
             practiceRepository = practice,
         )
@@ -58,7 +66,7 @@ class CloseThenObtainTest {
         close(practice)
 
         // When
-        val result = obtain(practice, onlyAB).invoke()
+        val result = obtain(practice, onlyAB).invoke(targetLocale)
 
         // Then
         result shouldBe ActiveBatchResult.NothingAvailable
@@ -79,9 +87,9 @@ class CloseThenObtainTest {
         close(practice)
 
         // When
-        val first = obtain(practice).invoke()
+        val first = obtain(practice).invoke(targetLocale)
         val stateAfterFirst = practice.read()
-        val second = obtain(practice).invoke()
+        val second = obtain(practice).invoke(targetLocale)
 
         // Then
         first.shouldBeInstanceOf<ActiveBatchResult.Created>()

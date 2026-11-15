@@ -1,12 +1,15 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
@@ -22,11 +25,16 @@ import org.junit.jupiter.api.Test
 // ADR-0017).
 class GenerateSessionTest {
 
+    private val targetLocale = LanguageTag("pt-PT")
+
     private fun generateSession(practice: FakePracticeRepository, catalogIds: List<String>) = GenerateSession(
         practiceRepository = practice,
         composeNextBatch = ComposeNextBatch(),
-        catalogRepository = FakeCatalogRepository(
-            CatalogLoadResult.Loaded(catalogIds.map { aCatalogPhrase(id = it) }),
+        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+            deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+            catalogRepository = FakeCatalogRepository(
+                CatalogLoadResult.Loaded(catalogIds.map { aCatalogPhrase(id = it) }),
+            ),
         ),
         settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
     )
@@ -49,7 +57,7 @@ class GenerateSessionTest {
             )
 
             // When
-            val result = generateSession(practice, catalogIds = listOf("A", "P")).invoke()
+            val result = generateSession(practice, catalogIds = listOf("A", "P")).invoke(targetLocale)
 
             // Then: el contador pasa a 10, disponible sin otra lectura adicional
             practice.read().sessionCount shouldBe 10
@@ -77,7 +85,7 @@ class GenerateSessionTest {
             )
 
             // When
-            generateSession(practice, catalogIds = listOf("A")).invoke()
+            generateSession(practice, catalogIds = listOf("A")).invoke(targetLocale)
 
             // Then: el desglose de la tanda anterior no se arrastra a la siguiente
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)

@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
@@ -17,8 +18,8 @@ class AnswerPhrase @Inject constructor(
     private val practiceRepository: PracticeRepository,
 ) {
 
-    suspend operator fun invoke(id: PhraseId, assessment: SelfAssessment): AnswerOutcome {
-        return practiceRepository.transact { snapshot ->
+    suspend operator fun invoke(targetLocale: LanguageTag, id: PhraseId, assessment: SelfAssessment): AnswerOutcome {
+        return practiceRepository.transact(targetLocale) { snapshot ->
             val batch = requireNotNull(snapshot.batch()) { "There is no active batch to answer" }
             val answeredBatch = batch.answer(id, assessment, snapshot.sessionCount)
             val progressBefore = batch.entries.first { it.id == id }

@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.core.data.practice
 
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +29,7 @@ class PracticeRestartTest {
         first.phraseProgressDao().insert(
             PhraseProgressEntity(
                 phraseId = "A",
+                targetLocale = "pt-PT",
                 level = 1,
                 streak = 0,
                 answeredInBatch = false,
@@ -39,7 +41,9 @@ class PracticeRestartTest {
 
         // When: se reabre la base y se lee el estado
         val reopened = fileDatabase(path)
-        val progress = RoomPracticeDataSource(reopened, UnconfinedTestDispatcher()).read().progress
+        val progress = RoomPracticeDataSource(reopened, UnconfinedTestDispatcher())
+            .read(LanguageTag("pt-PT"))
+            .progress
         reopened.close()
 
         // Then
@@ -54,12 +58,14 @@ class PracticeRestartTest {
         // Given: un contador de sesiones generadas igual a 7 guardado en la base en disco
         val path = directory.resolve("practice.db").toString()
         val first = fileDatabase(path)
-        first.sessionCounterDao().insert(SessionCounterEntity(id = 1, sessionCount = 7))
+        first.sessionCounterDao().insert(SessionCounterEntity(targetLocale = "pt-PT", sessionCount = 7))
         first.close()
 
         // When: se reabre la base y se lee el estado
         val reopened = fileDatabase(path)
-        val sessionCount = RoomPracticeDataSource(reopened, UnconfinedTestDispatcher()).read().sessionCount
+        val sessionCount = RoomPracticeDataSource(reopened, UnconfinedTestDispatcher())
+            .read(LanguageTag("pt-PT"))
+            .sessionCount
         reopened.close()
 
         // Then

@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PracticeBatch
 import javax.inject.Inject
 
@@ -14,8 +15,8 @@ class RevertLastAnswer @Inject constructor(
     private val practiceRepository: PracticeRepository,
 ) {
 
-    suspend operator fun invoke(undo: UndoableAnswer) {
-        practiceRepository.transact { snapshot ->
+    suspend operator fun invoke(targetLocale: LanguageTag, undo: UndoableAnswer) {
+        practiceRepository.transact(targetLocale) { snapshot ->
             val batch = requireNotNull(snapshot.batch()) { "There is no active batch to revert" }
             val revertedBatch = batch.revertLastAnswer(undo.phraseId, undo.progressBefore)
             val updatedSnapshot = snapshot.storing(revertedBatch)

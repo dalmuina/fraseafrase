@@ -1,6 +1,7 @@
 package com.dalmuina.fraseafrase.core.domain.settings
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import io.kotest.matchers.shouldBe
@@ -18,7 +19,7 @@ class SaveUserSettingsTest {
         val newSettings = UserSettings(CefrLevel.B2, BatchSize(15))
 
         // When
-        saveUserSettings(newSettings)
+        saveUserSettings(LanguageTag("pt-PT"), newSettings)
 
         // Then
         repository.settings() shouldBe newSettings

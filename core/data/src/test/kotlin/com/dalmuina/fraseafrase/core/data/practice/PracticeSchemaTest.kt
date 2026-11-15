@@ -5,6 +5,7 @@ import androidx.room3.useWriterConnection
 import androidx.sqlite.SQLiteException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldNotBeNull
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -37,24 +38,57 @@ class PracticeSchemaTest {
         shouldThrow<SQLiteException> { dao.insert(progress(id = "B", level = 0, batchPosition = 0)) }
     }
 
+    // Scenario: La misma posición es válida en idiomas destino distintos (spec: practice-persistence)
+    @Test
+    fun `given a phrase at position 0 for pt-PT when saving a phrase at position 0 for pt-BR then is accepted`() =
+        runTest {
+            // Given
+            val dao = database.phraseProgressDao()
+            dao.insert(progress(id = "A", level = 0, batchPosition = 0, targetLocale = "pt-PT"))
+
+            // When
+            dao.insert(progress(id = "A", level = 0, batchPosition = 0, targetLocale = "pt-BR"))
+
+            // Then
+            dao.all(targetLocale = "pt-BR").map { it.phraseId } shouldContainExactly listOf("A")
+        }
+
     // Scenario: Capacidad fuera de rango se rechaza (spec: practice-persistence)
     @Test
     fun `given a batch capacity of 31 when saving then throws SQLiteException`() = runTest {
         // Given
-        val capacity31 = ActiveBatchEntity(id = 1, capacity = 31)
+        val capacity31 = ActiveBatchEntity(targetLocale = "pt-PT", capacity = 31)
 
         // When / Then
         shouldThrow<SQLiteException> { database.activeBatchDao().insert(capacity31) }
     }
 
-    // Scenario: Sin tanda activa / tanda activa única (spec: practice-persistence)
+    // Scenario: Tanda activa única (spec: practice-persistence) - la PK target_locale impide una segunda fila para
+    // el mismo idioma destino
     @Test
-    fun `given an active batch row with id 2 when saving then throws SQLiteException`() = runTest {
-        // Given
-        val secondRow = ActiveBatchEntity(id = 2, capacity = 20)
+    fun `given an active batch row for pt-PT when saving another row for pt-PT then throws SQLiteException`() =
+        runTest {
+            // Given
+            database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
 
-        // When / Then
-        shouldThrow<SQLiteException> { database.activeBatchDao().insert(secondRow) }
+            // When / Then
+            shouldThrow<SQLiteException> {
+                database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 20))
+            }
+        }
+
+    // Scenario: La tanda activa de un idioma destino no afecta a la de otro (spec: practice-persistence)
+    @Test
+    fun `given an active batch row for pt-PT when saving a row for pt-BR then both are accepted`() = runTest {
+        // Given
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
+
+        // When
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-BR", capacity = 20))
+
+        // Then
+        database.activeBatchDao().byLocale("pt-PT").shouldNotBeNull()
+        database.activeBatchDao().byLocale("pt-BR").shouldNotBeNull()
     }
 
     // Caracterización del esquema (tarea 8.6): estados válidos que deben aceptarse
@@ -67,7 +101,7 @@ class PracticeSchemaTest {
         database.phraseProgressDao().insert(newPhrase)
 
         // Then
-        database.phraseProgressDao().all().map { it.phraseId } shouldContainExactly listOf("A")
+        database.phraseProgressDao().all(targetLocale = "pt-PT").map { it.phraseId } shouldContainExactly listOf("A")
     }
 
     @Test
@@ -79,7 +113,7 @@ class PracticeSchemaTest {
         database.phraseProgressDao().insert(dormant)
 
         // Then
-        database.phraseProgressDao().all().map { it.phraseId } shouldContainExactly listOf("A")
+        database.phraseProgressDao().all(targetLocale = "pt-PT").map { it.phraseId } shouldContainExactly listOf("A")
     }
 
     // Cada guarda también se dispara en UPDATE (design D5, revisión de triggers). Se inserta una fila válida y se
@@ -96,21 +130,14 @@ class PracticeSchemaTest {
     }
 
     @Test
-    fun `given an active batch when changing its id to 2 then throws SQLiteException`() = runTest {
-        // Given
-        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
-
-        // When / Then
-        shouldThrow<SQLiteException> { executeSql("UPDATE active_batch SET id = 2") }
-    }
-
-    @Test
     fun `given an active batch when raising its capacity to 31 then throws SQLiteException`() = runTest {
         // Given
-        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
 
         // When / Then
-        shouldThrow<SQLiteException> { executeSql("UPDATE active_batch SET capacity = 31") }
+        shouldThrow<SQLiteException> {
+            executeSql("UPDATE active_batch SET capacity = 31 WHERE target_locale = 'pt-PT'")
+        }
     }
 
     private suspend fun executeSql(sql: String) {
@@ -122,8 +149,10 @@ class PracticeSchemaTest {
         level: Int,
         batchPosition: Int? = null,
         dueAtSession: Int = 0,
+        targetLocale: String = "pt-PT",
     ) = PhraseProgressEntity(
         phraseId = id,
+        targetLocale = targetLocale,
         level = level,
         streak = 0,
         answeredInBatch = false,

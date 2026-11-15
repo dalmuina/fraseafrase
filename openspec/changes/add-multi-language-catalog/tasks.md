@@ -2,35 +2,35 @@
 
 ## 1. Dominio: puertos y entidades de idioma
 
-- [ ] 1.1 Test: `ResolveSourceLocale` devuelve el locale del dispositivo cuando está entre los
+- [x] 1.1 Test: `ResolveSourceLocale` devuelve el locale del dispositivo cuando está entre los
   disponibles, y `es-ES` en caso contrario (escenarios de "Resolución del idioma de origen por
   defecto", `phrase-catalog`). Falla porque `ResolveSourceLocale` no existe.
-- [ ] 1.2 Implementar `ResolveSourceLocale` y el puerto `DeviceLocaleProvider` en `:core:domain`.
+- [x] 1.2 Implementar `ResolveSourceLocale` y el puerto `DeviceLocaleProvider` en `:core:domain`.
   Verificar `./gradlew :core:domain:test`.
-- [ ] 1.3 Test: `CatalogRepository.availableTargetLocales()`/`availableSourceLocales(targetLocale)`
+- [x] 1.3 Test: `CatalogRepository.availableTargetLocales()`/`availableSourceLocales(targetLocale)`
   con fakes, cubriendo "Idiomas destino disponibles" (`phrase-catalog`). Falla porque la interfaz no
   tiene esos métodos.
-- [ ] 1.4 Ampliar `CatalogRepository` con `availableTargetLocales()`, `availableSourceLocales(...)` y
+- [x] 1.4 Ampliar `CatalogRepository` con `availableTargetLocales()`, `availableSourceLocales(...)` y
   `phrases(targetLocale, sourceLocale)`; actualizar fakes de `:core:testing`. Verificar
   `./gradlew :core:domain:test :core:testing:test`.
-- [ ] 1.5 Test: `ObtainCatalogPhrasesForActiveLanguage` compone `DeviceLocaleProvider` +
+- [x] 1.5 Test: `ObtainCatalogPhrasesForActiveLanguage` compone `DeviceLocaleProvider` +
   `ResolveSourceLocale` + `CatalogRepository` y devuelve las frases del origen resuelto. Falla porque
   el caso de uso no existe.
-- [ ] 1.6 Implementar `ObtainCatalogPhrasesForActiveLanguage`; adaptar `ComposeNextBatch`/
+- [x] 1.6 Implementar `ObtainCatalogPhrasesForActiveLanguage`; adaptar `ComposeNextBatch`/
   `GenerateSession`/`ObtainActiveBatch`/`RegenerateActiveBatchForLevel`/`ObtainPracticeSession`/
   `ObtainProgressOverview` para usarlo en vez de un locale fijo. Verificar
   `./gradlew :core:domain:test`.
-- [ ] 1.7 Test: `PracticeRepository.read(targetLocale)`/`transact(targetLocale, ...)` con el fake de
+- [x] 1.7 Test: `PracticeRepository.read(targetLocale)`/`transact(targetLocale, ...)` con el fake de
   `:core:testing`, cubriendo que dos idiomas destino no comparten estado. Falla porque la interfaz no
   tiene `targetLocale`.
-- [ ] 1.8 Añadir `targetLocale` a `PracticeRepository`; actualizar `AnswerPhrase`,
+- [x] 1.8 Añadir `targetLocale` a `PracticeRepository`; actualizar `AnswerPhrase`,
   `RevertLastAnswer`, `GenerateSession`, `ObtainActiveBatch`, `RegenerateActiveBatchForLevel`,
   `ObtainPracticeSession`, `ObtainProgressOverview` y el fake de `:core:testing`. Verificar
   `./gradlew :core:domain:test`.
-- [ ] 1.9 Test: `SettingsRepository` con `targetLocale` en `settings`/`save`, y
+- [x] 1.9 Test: `SettingsRepository` con `targetLocale` en `settings`/`save`, y
   `activeTargetLocale`/`setActiveTargetLocale`, cubriendo "Idioma destino activo" y "Cambio del
   idioma destino activo" (`user-settings`). Falla porque la interfaz no tiene esos métodos.
-- [ ] 1.10 Ampliar `SettingsRepository`; implementar `ObtainUserSettings`/`SaveUserSettings` con
+- [x] 1.10 Ampliar `SettingsRepository`; implementar `ObtainUserSettings`/`SaveUserSettings` con
   `targetLocale`, y los casos de uso nuevos `ObtainAvailableLanguages`, `ObtainActiveLanguage`,
   `SelectActiveLanguage` (valida que el idioma elegido esté disponible). Verificar
   `./gradlew :core:domain:test`.

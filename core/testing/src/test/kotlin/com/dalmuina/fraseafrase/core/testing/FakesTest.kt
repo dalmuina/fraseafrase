@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.core.testing
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
@@ -47,7 +48,7 @@ class FakesTest {
         val fake = FakeCatalogRepository(CatalogLoadResult.Loaded(phrases))
 
         // When
-        val loaded = fake.phrases()
+        val loaded = fake.phrases(LanguageTag("pt-PT"), LanguageTag("es-ES"))
 
         // Then
         loaded shouldBe CatalogLoadResult.Loaded(phrases)
