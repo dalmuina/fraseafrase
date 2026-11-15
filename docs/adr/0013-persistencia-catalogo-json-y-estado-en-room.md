@@ -1,6 +1,6 @@
 # ADR-0013: Persistencia con catálogo JSON en assets y estado del usuario en Room 3
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por 0019
 - **Fecha:** 2026-10-31
 - **Sustituye a:** ADR-0004
 
