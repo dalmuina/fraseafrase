@@ -3,7 +3,6 @@ package com.dalmuina.fraseafrase.feature.settings
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -41,7 +42,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageOption
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageOptions
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
@@ -92,25 +92,14 @@ private fun LoadedContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
             .padding(AppTheme.spacing.m),
         verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.l),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.settings_title),
-                style = MaterialTheme.typography.headlineLarge,
-            )
-            DsLanguageBadge(
-                languageCode = state.activeTargetLocale.value,
-                modifier = Modifier
-                    .clickable(onClick = onNavigateToSettings)
-                    .testTag("settings_language_badge"),
-            )
-        }
+        SettingsHeader(
+            activeLanguageCode = state.activeTargetLocale.value,
+            onNavigateToSettings = onNavigateToSettings,
+        )
         DsLanguageOptions(
             options = state.availableTargetLocales.map { it.toDsLanguageOption() },
             selectedCode = state.activeTargetLocale.value,
