@@ -24,6 +24,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.TextUnit
@@ -235,7 +236,9 @@ class SettingsScreenTest {
         setScreen(loaded())
 
         // Then: el botón de guardar incluye un icono de check junto al texto
-        composeTestRule.onNodeWithTag("settings_save_icon", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("settings_save_icon", useUnmergedTree = true)
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 3 de la tarea 11.3
@@ -377,7 +380,7 @@ class SettingsScreenTest {
      * `PracticeSessionScreenTest.notFullyRoundedCornerColor` (`:feature:session`).
      */
     private fun notFullyRoundedCornerColor(tag: String, targetRadiusDp: Float): Color {
-        val node = composeTestRule.onNodeWithTag(tag)
+        val node = composeTestRule.onNodeWithTag(tag).performScrollTo()
         val bounds = node.getUnclippedBoundsInRoot()
         val halfHeightDp = (bounds.bottom - bounds.top).value / 2f
         val cornerFactor = 1f - 1f / sqrt(2f)

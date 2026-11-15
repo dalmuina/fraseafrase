@@ -26,7 +26,11 @@ object CatalogJson {
      * `parse` completo.
      */
     fun headerOf(text: String): CatalogHeader? {
-        val document = runCatching { json.decodeFromString<CatalogDocument>(text) }.getOrNull()
+        // Decodifica solo la cabecera (sin `phrases`): con `ignoreUnknownKeys` ya activo en [json], el
+        // array de frases se salta durante el parseo en vez de materializarse en memoria, para no pagar
+        // el coste de las ~1000 frases dos veces por idioma destino en cada arranque (una vez aquí, otra
+        // en `parse`, cuando el sembrado sí hace falta).
+        val document = runCatching { json.decodeFromString<CatalogHeaderDocument>(text) }.getOrNull()
         val schemaVersion = document?.schemaVersion
         val targetLocale = document?.targetLocale?.takeIf { isValidLocale(it) }
         return if (schemaVersion != null && targetLocale != null) {
@@ -102,6 +106,12 @@ object CatalogJson {
 
 /** Cabecera mínima de un documento de catálogo, usada por el sembrado antes de validarlo por completo. */
 data class CatalogHeader(val schemaVersion: Int, val targetLocale: String)
+
+@Serializable
+private data class CatalogHeaderDocument(
+    val schemaVersion: Int? = null,
+    val targetLocale: String? = null,
+)
 
 @Serializable
 private data class CatalogDocument(
