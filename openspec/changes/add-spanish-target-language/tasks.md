@@ -56,13 +56,13 @@
 
 ## 5. Ajustes: nombre visible de `es-ES`
 
-- [ ] 5.1 Test: si `SettingsScreenTest`/`SettingsViewModelTest` ya tienen un escenario genérico sobre
+- [x] 5.1 Test: si `SettingsScreenTest`/`SettingsViewModelTest` ya tienen un escenario genérico sobre
   la lista de idiomas disponibles con un fake de más de un idioma, extenderlo con `es-ES` esperando el
   texto "Español (España)"; si no existe tal escenario, añadir uno equivalente al de `pt-BR` (spec
   `settings-screen`, "Elegir un idioma destino de la lista"). Verificar
   `./gradlew :feature:settings:test` (y el `androidTest` correspondiente) en rojo por el texto
   ausente.
-- [ ] 5.2 Añadir la rama `"es-ES" -> "Español (España)"` en `LanguageTag.toDsLanguageOption()`
+- [x] 5.2 Añadir la rama `"es-ES" -> "Español (España)"` en `LanguageTag.toDsLanguageOption()`
   (`SettingsScreen.kt`). Verificar `./gradlew :feature:settings:check` en verde.
 
 ## 6. Verificación final

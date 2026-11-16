@@ -327,6 +327,7 @@ private fun LanguageTag.toDsLanguageOption(): DsLanguageOption = DsLanguageOptio
     displayName = when (value) {
         "pt-PT" -> "Português (Portugal)"
         "pt-BR" -> "Português (Brasil)"
+        "es-ES" -> "Español (España)"
         else -> value
     },
 )
