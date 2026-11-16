@@ -24,15 +24,15 @@
 
 ## 3. Contenido: catálogo `es-ES`
 
-- [ ] 3.1 Generar `catalog/phrases-es-ES.json` (`schemaVersion: 1`, `targetLocale: es-ES`,
+- [x] 3.1 Generar `catalog/phrases-es-ES.json` (`schemaVersion: 1`, `targetLocale: es-ES`,
   `sourceLocale: pt-PT`) invirtiendo `target`/`source` de `catalog/phrases-pt-PT.json`, conservando
   `id`/`level`/`topic` (design.md - Decisions). Verificar que `CatalogJson.parse` lo acepta
   (`./gradlew :core:data:test` con un test de fixture añadido para `es-ES`, mismo patrón que el de
   `pt-BR`).
-- [ ] 3.2 Revisar por muestreo una selección representativa (al menos una frase por nivel CEFR y
+- [x] 3.2 Revisar por muestreo una selección representativa (al menos una frase por nivel CEFR y
   tema) buscando frases cuyo sentido no se sostenga al invertir la dirección (design.md). Documentar
   la revisión en este fichero. Aplicar los cambios que la revisión señale antes de seguir.
-- [ ] 3.3 Crear `core/data/src/test/resources/catalog/released-ids-es-ES.txt` vacío y añadir `"es-ES"`
+- [x] 3.3 Crear `core/data/src/test/resources/catalog/released-ids-es-ES.txt` vacío y añadir `"es-ES"`
   al `@ValueSource` de `RealCatalogContractTest` ("se carga") y al test de "idioma destino nuevo sin
   ids publicados" (spec `phrase-catalog`, escenario "Un idioma destino nuevo sin ids publicados no
   bloquea su primera carga"). Verificar `./gradlew :core:data:test`.
@@ -64,6 +64,24 @@
 - [ ] 6.1 Ejecutar `./gradlew check` completo (tests, ktlint, detekt) y corregir cualquier fallo.
 - [ ] 6.2 Ejecutar `./gradlew koverVerify` y ajustar cobertura si algún módulo queda por debajo de su
   mínimo (dominio 90 %, presentación 80 %, `:core:data` 80 % según ADR-0013, global 70 %).
+
+## Revisión por muestreo de la tarea 3.2
+
+- **Criterio**: muestreo estratificado por nivel CEFR (A1-C1) y, dentro de cada nivel, por `topic`
+  (hasta 4 topics distintos por nivel elegidos al azar con semilla fija). Además, búsqueda dirigida por
+  palabras clave (`portugu*`, `espan*`, `castelh*`, `traduz`/`traduc`, `se dice`/`se diz`, `idioma`,
+  `língua`/`lengua`) sobre las 1000 frases para localizar cualquier frase que mencione explícitamente un
+  idioma o nacionalidad y pudiera depender de la dirección original (p. ej. una frase pensada como
+  pregunta de un hispanohablante a un lusohablante o viceversa).
+- **Frases revisadas**: 20 por el muestreo estratificado (4 por nivel x 5 niveles) más 13 encontradas
+  por palabras clave (2 de la búsqueda de país/idioma + 11 de la búsqueda de lengua/traducción), 33 en
+  total, sin solapamiento.
+- **Resultado**: ninguna frase problemática. Las que mencionan España/Portugal lo hacen como
+  referencia geográfica neutra (p. ej. `a2-correos-001`, "Envié una carta a España" / "Enviei uma carta
+  para Espanha"), y las que mencionan lengua/traducción son observaciones generales (lingüística,
+  crítica literaria, IA) sin alusión a la dirección es-ES/pt-PT del propio catálogo. No se encontró
+  ninguna frase formulada como pregunta de un hablante de un idioma hacia el otro. No fue necesario
+  corregir ninguna frase.
 
 ## Workflow follow-up
 
