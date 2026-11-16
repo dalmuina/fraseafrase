@@ -153,6 +153,67 @@ idioma destino MUST devolver la tanda ya compuesta sin componer otra.
 - **THEN** la primera llamada devuelve `Created` con la tanda compuesta, la segunda devuelve
   `Existing` con la misma tanda, y no se compone otra
 
+### Requirement: Recomposición de la tanda activa al detectar ajustes aplicados distintos
+
+Al obtener la tanda activa de un idioma destino que ya tiene una, el sistema MUST compararla contra
+sus ajustes aplicados registrados (`user-settings`) y recomponerla de inmediato si difieren de los
+ajustes guardados vigentes, sin tocar progreso ni el contador de sesiones. Esta comparación MUST
+repetirse en cada obtención, sobreviva o no la app de por medio.
+
+#### Scenario: Ajustes aplicados distintos recomponen sin tocar el progreso
+
+- **GIVEN** una tanda activa de un idioma destino compuesta con el nivel CEFR A1 y N igual a 20,
+  registrados como sus ajustes aplicados, y una frase de esa tanda con racha 2
+- **WHEN** los ajustes guardados de ese idioma destino pasan a tener el nivel CEFR B1 y se obtiene su
+  tanda activa
+- **THEN** la tanda activa se recompone con frases del nivel CEFR B1, sin incrementar el contador de
+  sesiones generadas y conservando la racha, el nivel de consolidación y el `dueAtSession` de la frase
+  de racha 2 sin cambios
+
+#### Scenario: Ajustes aplicados iguales no recomponen
+
+- **GIVEN** una tanda activa de un idioma destino compuesta con el nivel CEFR B1 y N igual a 20,
+  registrados como sus ajustes aplicados, que siguen siendo los ajustes guardados vigentes de ese
+  idioma destino
+- **WHEN** se obtiene la tanda activa de ese idioma destino
+- **THEN** se devuelve la misma tanda activa, sin recomponerla
+
+#### Scenario: Sin ajustes aplicados registrados todavía no se recompone
+
+- **GIVEN** una tanda activa de un idioma destino sin ningún ajuste aplicado registrado para ese
+  idioma destino
+- **WHEN** se obtiene la tanda activa de ese idioma destino
+- **THEN** se devuelve la tanda activa existente tal cual, sin recomponerla
+
+#### Scenario: El cambio sobrevive al reinicio de la app
+
+- **GIVEN** una tanda activa de un idioma destino compuesta con el nivel CEFR A1, registrado como su
+  ajuste aplicado, y un cambio posterior de los ajustes guardados de ese idioma destino al nivel CEFR
+  B1 hecho sin volver a obtener su tanda activa
+- **WHEN** la app se reinicia y se obtiene la tanda activa de ese idioma destino
+- **THEN** la tanda activa se recompone con frases del nivel CEFR B1
+
+### Requirement: Registro de los ajustes aplicados al componer
+
+Toda composición de la tanda activa de un idioma destino (su primer uso, generar sesión, o la
+recomposición al detectar ajustes aplicados distintos) MUST registrar sus ajustes guardados vigentes
+como los ajustes aplicados de ese idioma destino, en la misma operación.
+
+#### Scenario: El primer uso registra sus ajustes aplicados
+
+- **GIVEN** un idioma destino sin tanda activa ni ajustes aplicados registrados, con el nivel CEFR A1
+  y N igual a 20 guardados
+- **WHEN** se obtiene la tanda activa de ese idioma destino
+- **THEN** los ajustes aplicados registrados de ese idioma destino quedan en el nivel CEFR A1 y N
+  igual a 20
+
+#### Scenario: Generar sesión registra sus ajustes aplicados
+
+- **GIVEN** un idioma destino con el nivel CEFR B1 y N igual a 15 guardados
+- **WHEN** se genera sesión para ese idioma destino
+- **THEN** los ajustes aplicados registrados de ese idioma destino quedan en el nivel CEFR B1 y N
+  igual a 15
+
 ### Requirement: Lectura coherente del estado
 
 La lectura del estado de un idioma destino MUST devolver un único estado consistente: el progreso,
