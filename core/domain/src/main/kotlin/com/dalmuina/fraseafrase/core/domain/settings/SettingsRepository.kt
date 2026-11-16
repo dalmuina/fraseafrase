@@ -19,4 +19,14 @@ interface SettingsRepository {
 
     /** Cambia el idioma destino activo, sin modificar los ajustes de ningún idioma destino. */
     suspend fun setActiveTargetLocale(targetLocale: LanguageTag)
+
+    /**
+     * Los ajustes con los que se compuso la tanda activa vigente de [targetLocale] (spec
+     * `practice-persistence`, "Registro de los ajustes aplicados al componer"). `null` significa que no hay
+     * ninguno registrado todavía.
+     */
+    suspend fun appliedSettings(targetLocale: LanguageTag): UserSettings?
+
+    /** Registra [settings] como los ajustes aplicados de [targetLocale] (spec `practice-persistence`). */
+    suspend fun recordAppliedSettings(targetLocale: LanguageTag, settings: UserSettings)
 }

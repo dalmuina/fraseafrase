@@ -12,15 +12,12 @@ sealed interface SettingsUiState {
     data object Loading : SettingsUiState
 
     /**
-     * Ajustes mostrados y en edición. [activeTargetLocale] es el idioma destino elegido en el desplegable, que
-     * no tiene por qué coincidir con el idioma destino activo persistido hasta que se confirma el guardado
-     * (design `add-multi-language-catalog`: mismo patrón que [cefrLevel]/[batchSizeText], en edición hasta
-     * [SettingsAction.Save]). [availableTargetLocales] son los idiomas destino que se pueden elegir.
-     * [batchSizeText] es el texto en edición (no un `BatchSize`), porque mientras no sea válido no hay un
-     * `BatchSize` que lo represente. [isBatchSizeValid] es la única condición para guardar.
-     * [saveConfirmationPending] y [navigateToPracticePending] son señales de un solo uso (design D1 de
-     * `add-settings-apply-flow`): la UI las consume con `ConsumeSaveConfirmation`/`ConsumeNavigateToPractice`
-     * para que vuelvan a `false` y no se repitan en una recomposición o rotación.
+     * Ajustes mostrados, ya autoguardados según se eligen (design D3 de `remove-settings-save-button`).
+     * [activeTargetLocale] es el idioma destino elegido en el desplegable, que coincide con el idioma destino
+     * activo persistido: elegirlo lo activa de inmediato. [availableTargetLocales] son los idiomas destino que
+     * se pueden elegir. [batchSizeText] es el texto en edición (no un `BatchSize`), porque mientras no sea
+     * válido no hay un `BatchSize` que lo represente. [isBatchSizeValid] indica si el texto actual es un N
+     * autoguardable.
      */
     data class Loaded(
         val activeTargetLocale: LanguageTag,
@@ -28,7 +25,5 @@ sealed interface SettingsUiState {
         val cefrLevel: CefrLevel,
         val batchSizeText: String,
         val isBatchSizeValid: Boolean,
-        val saveConfirmationPending: Boolean = false,
-        val navigateToPracticePending: Boolean = false,
     ) : SettingsUiState
 }

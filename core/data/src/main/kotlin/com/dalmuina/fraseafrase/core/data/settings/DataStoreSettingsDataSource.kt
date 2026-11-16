@@ -49,7 +49,10 @@ class DataStoreSettingsDataSource internal constructor(
     override suspend fun settings(targetLocale: LanguageTag): UserSettings = withContext(dispatcher) {
         try {
             val preferences = dataStore.data.first()
-            UserSettings(cefrLevelOf(preferences, targetLocale), batchSizeOf(preferences, targetLocale))
+            UserSettings(
+                cefrLevelOf(preferences, keyFor(CEFR_LEVEL, targetLocale)) ?: CefrLevel.A1,
+                batchSizeOf(preferences, keyFor(BATCH_SIZE, targetLocale)) ?: BatchSize.DEFAULT,
+            )
         } catch (ignored: IOException) {
             UserSettings.DEFAULT
         }
@@ -57,8 +60,8 @@ class DataStoreSettingsDataSource internal constructor(
 
     override suspend fun save(targetLocale: LanguageTag, settings: UserSettings) = withContext(dispatcher) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(cefrLevelKey(targetLocale))] = settings.cefrLevel.name
-            preferences[intPreferencesKey(batchSizeKey(targetLocale))] = settings.batchSize.value
+            preferences[stringPreferencesKey(keyFor(CEFR_LEVEL, targetLocale))] = settings.cefrLevel.name
+            preferences[intPreferencesKey(keyFor(BATCH_SIZE, targetLocale))] = settings.batchSize.value
         }
         Unit
     }
@@ -81,30 +84,45 @@ class DataStoreSettingsDataSource internal constructor(
         Unit
     }
 
-    private fun cefrLevelOf(preferences: Preferences, targetLocale: LanguageTag): CefrLevel {
-        val key = cefrLevelKey(targetLocale)
+    override suspend fun appliedSettings(targetLocale: LanguageTag): UserSettings? = withContext(dispatcher) {
+        try {
+            val preferences = dataStore.data.first()
+            val cefrLevel = cefrLevelOf(preferences, keyFor(APPLIED_CEFR_LEVEL, targetLocale))
+            val batchSize = batchSizeOf(preferences, keyFor(APPLIED_BATCH_SIZE, targetLocale))
+            if (cefrLevel != null && batchSize != null) UserSettings(cefrLevel, batchSize) else null
+        } catch (ignored: IOException) {
+            null
+        }
+    }
+
+    override suspend fun recordAppliedSettings(targetLocale: LanguageTag, settings: UserSettings) =
+        withContext(dispatcher) {
+            dataStore.edit { preferences ->
+                preferences[stringPreferencesKey(keyFor(APPLIED_CEFR_LEVEL, targetLocale))] = settings.cefrLevel.name
+                preferences[intPreferencesKey(keyFor(APPLIED_BATCH_SIZE, targetLocale))] = settings.batchSize.value
+            }
+            Unit
+        }
+
+    /** Nivel CEFR guardado bajo [key], o `null` si está ausente, es de otro tipo o no es un nivel válido. */
+    private fun cefrLevelOf(preferences: Preferences, key: String): CefrLevel? {
         val stored = preferences.asMap().entries.firstOrNull { it.key.name == key }?.value as? String
-        return stored
-            ?.let { name -> CefrLevel.entries.firstOrNull { it.name == name } }
-            ?: CefrLevel.A1
+        return stored?.let { name -> CefrLevel.entries.firstOrNull { it.name == name } }
     }
 
-    private fun batchSizeOf(preferences: Preferences, targetLocale: LanguageTag): BatchSize {
-        val key = batchSizeKey(targetLocale)
+    /** N guardada bajo [key], o `null` si está ausente, es de otro tipo o está fuera de rango. */
+    private fun batchSizeOf(preferences: Preferences, key: String): BatchSize? {
         val stored = preferences.asMap().entries.firstOrNull { it.key.name == key }?.value as? Int
-        return stored
-            ?.takeIf { it in BatchSize.MIN..BatchSize.MAX }
-            ?.let(::BatchSize)
-            ?: BatchSize.DEFAULT
+        return stored?.takeIf { it in BatchSize.MIN..BatchSize.MAX }?.let(::BatchSize)
     }
 
-    private fun cefrLevelKey(targetLocale: LanguageTag): String = "${CEFR_LEVEL}_${targetLocale.value}"
-
-    private fun batchSizeKey(targetLocale: LanguageTag): String = "${BATCH_SIZE}_${targetLocale.value}"
+    private fun keyFor(prefix: String, targetLocale: LanguageTag): String = "${prefix}_${targetLocale.value}"
 
     private companion object {
         const val CEFR_LEVEL = "cefr_level"
         const val BATCH_SIZE = "batch_size"
         const val ACTIVE_TARGET_LOCALE = "active_target_locale"
+        const val APPLIED_CEFR_LEVEL = "applied_cefr_level"
+        const val APPLIED_BATCH_SIZE = "applied_batch_size"
     }
 }

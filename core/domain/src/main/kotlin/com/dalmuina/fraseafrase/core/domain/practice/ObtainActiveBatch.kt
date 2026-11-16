@@ -1,42 +1,32 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
-import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
-import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
-import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import javax.inject.Inject
 
 /**
- * Devuelve la tanda activa o compone y guarda la siguiente (ADR-0012, ADR-0013). El catálogo y los ajustes se leen
- * antes de la transacción, porque son inmutables en esta app; la composición y su escritura van en una sola
- * transacción con el estado del usuario.
+ * Devuelve la tanda activa de [targetLocale], recomponiéndola de inmediato si sus ajustes aplicados
+ * (`SettingsRepository`) difieren de los ajustes guardados vigentes, o componiendo la primera si no hay
+ * ninguna (ADR-0012, ADR-0013, spec `practice-persistence`, design D2 de `remove-settings-save-button`). La
+ * comparación se repite en cada obtención para que sobreviva al cierre de la app.
  */
 class ObtainActiveBatch @Inject constructor(
-    private val composeNextBatch: ComposeNextBatch,
-    private val obtainCatalogPhrases: ObtainCatalogPhrasesForActiveLanguage,
     private val settingsRepository: SettingsRepository,
     private val practiceRepository: PracticeRepository,
+    private val regenerateActiveBatchForLevel: RegenerateActiveBatchForLevel,
 ) {
 
     suspend operator fun invoke(targetLocale: LanguageTag): ActiveBatchResult {
-        val catalog = when (val loaded = obtainCatalogPhrases(targetLocale)) {
-            is CatalogLoadResult.Loaded -> loaded.phrases
-            is CatalogLoadResult.Failed -> return ActiveBatchResult.CatalogUnavailable(loaded.error)
-        }
         val settings = settingsRepository.settings(targetLocale)
-        return practiceRepository.transact(targetLocale) { snapshot ->
-            snapshot.batch()?.let { PracticeChange(snapshot, ActiveBatchResult.Existing(it)) }
-                ?: compose(snapshot, catalog, settings)
+        val existing = practiceRepository.read(targetLocale).batch()
+        if (existing != null) {
+            val applied = settingsRepository.appliedSettings(targetLocale)
+            if (applied == null || applied == settings) return ActiveBatchResult.Existing(existing)
         }
+        val result = regenerateActiveBatchForLevel(targetLocale, settings.cefrLevel, settings.batchSize)
+        if (result is ActiveBatchResult.Created) {
+            settingsRepository.recordAppliedSettings(targetLocale, settings)
+        }
+        return result
     }
-
-    private fun compose(
-        snapshot: PracticeSnapshot,
-        catalog: List<CatalogPhrase>,
-        settings: UserSettings,
-    ): PracticeChange<ActiveBatchResult> =
-        composeNextBatchInto(composeNextBatch, snapshot, catalog, settings, snapshot.sessionCount)
 }

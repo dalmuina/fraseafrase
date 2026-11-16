@@ -27,6 +27,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
 import com.dalmuina.fraseafrase.core.domain.practice.RevertLastAnswer
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
@@ -200,11 +201,15 @@ class PracticeSessionRouteTest {
             catalogRepository = catalogRepository,
         )
         val composeNextBatch = ComposeNextBatch()
-        val obtainActiveBatch = ObtainActiveBatch(
+        val regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+            practiceRepository = practice,
             composeNextBatch = composeNextBatch,
             obtainCatalogPhrases = obtainCatalogPhrases,
+        )
+        val obtainActiveBatch = ObtainActiveBatch(
             settingsRepository = settingsRepository,
             practiceRepository = practice,
+            regenerateActiveBatchForLevel = regenerateActiveBatchForLevel,
         )
         return PracticeSessionViewModel(
             obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, obtainCatalogPhrases, practice),
@@ -260,12 +265,17 @@ class PracticeSessionRouteTest {
 
     private class TestSettingsRepository(initial: UserSettings = UserSettings.DEFAULT) : SettingsRepository {
         private var settings: UserSettings = initial
+        private var applied: UserSettings? = null
         override suspend fun settings(targetLocale: LanguageTag): UserSettings = settings
         override suspend fun save(targetLocale: LanguageTag, settings: UserSettings) {
             this.settings = settings
         }
         override suspend fun activeTargetLocale(): LanguageTag = LanguageTag("pt-PT")
         override suspend fun setActiveTargetLocale(targetLocale: LanguageTag) = Unit
+        override suspend fun appliedSettings(targetLocale: LanguageTag): UserSettings? = applied
+        override suspend fun recordAppliedSettings(targetLocale: LanguageTag, settings: UserSettings) {
+            applied = settings
+        }
     }
 
     private class TestPhrasePlayer : PhrasePlayer {

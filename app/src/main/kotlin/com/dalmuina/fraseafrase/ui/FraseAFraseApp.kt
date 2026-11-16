@@ -18,21 +18,16 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -46,62 +41,32 @@ import com.dalmuina.fraseafrase.feature.progress.ProgressRoute
 import com.dalmuina.fraseafrase.feature.session.PracticeSessionRoute
 import com.dalmuina.fraseafrase.feature.settings.SettingsRoute
 import com.dalmuina.fraseafrase.ui.navigation.BottomDestination
-import kotlinx.coroutines.launch
 import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Barra de navegación inferior de tres destinos de igual nivel (design.md - Decisions, "Barra de
  * navegación inferior en `:app`"): práctica, progreso y ajustes. Cambiar de pestaña selecciona qué
- * `Route` se compone, sin pila de navegación (ADR-0010: solo `:app` conoce las tres features). Este
- * `Scaffold` también aloja el `snackbarHost` de la confirmación de guardado de Ajustes (design D6
- * revisada de `add-settings-apply-flow`): como nunca se desmonta al cambiar de pestaña, la corrutina que
- * muestra el snackbar sobrevive aunque la navegación ya haya cambiado de pantalla. Este es el único
- * uso de `SnackbarHost` de la app y es exclusivamente la confirmación de guardado de Ajustes: por
- * eso su texto usa directamente el token `successStatus` (adopt-reference-mock-ui, tarea 9.4), sin
- * necesidad de distinguir el mensaje de ningún otro uso futuro.
+ * `Route` se compone, sin pila de navegación (ADR-0010: solo `:app` conoce las tres features).
  */
 @Composable
 fun FraseAFraseApp(modifier: Modifier = Modifier) {
     var selectedDestination by remember {
         mutableStateOf<BottomDestination>(BottomDestination.Practice)
     }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
     // La barra flotante ya no es el `bottomBar` del `Scaffold` (design D2, bottom-bar-navigation):
     // vive como overlay hermano del contenido, igual que `RevertLastAnswerButton` en
     // `:feature:session`, para poder controlar ella misma su `windowInsetsPadding` sin el recorte de
-    // altura fija que causaba el defecto original. El `SnackbarHost` sigue en el mismo slot del
-    // `Scaffold` raíz (no cambia de posición en el árbol de dibujado).
+    // altura fija que causaba el defecto original.
     // Hueco reservado para la barra flotante: su alto de contenido más el margen flotante a ambos
     // lados (arriba y abajo de la `Row`, design D1/D4). Se suma a los insets por defecto del
-    // `Scaffold` (en vez de pasarse como `bottomBar`, que ya no existe) para que tanto el contenido
-    // de cada pantalla como el `SnackbarHost` -- ambos posicionados por el propio `Scaffold` a partir
-    // de `contentWindowInsets` -- queden igualmente por encima de la barra flotante (design.md,
-    // Riesgos: la confirmación de guardado no debe quedar tapada por ella).
+    // `Scaffold` (en vez de pasarse como `bottomBar`, que ya no existe) para que el contenido de cada
+    // pantalla quede igualmente por encima de la barra flotante.
     val bottomBarReservedHeight = AppTheme.dimensions.navHeight + AppTheme.dimensions.navFloatingMargin * 2
     Box(modifier = modifier) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets
                 .add(WindowInsets(bottom = bottomBarReservedHeight)),
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState) { data ->
-                    // El mock (05-ajustes.html) pinta la confirmación como texto centrado sin caja ni
-                    // fondo oscuro. `Snackbar` no expone un parámetro público para anular su
-                    // `shadowElevation` (fijo a `SnackbarTokens.ContainerElevation`, ver
-                    // `androidx.compose.material3.Snackbar`), así que con `containerColor =
-                    // Color.Transparent` queda sin el fondo oscuro por defecto de Material 3 pero
-                    // conserva una sombra tenue bajo la forma del contenedor; `shape = RectangleShape`
-                    // evita que esa sombra residual dibuje además una esquina redondeada visible
-                    // (adopt-reference-mock-ui, tarea 12.6).
-                    Snackbar(
-                        snackbarData = data,
-                        shape = RectangleShape,
-                        containerColor = Color.Transparent,
-                        contentColor = AppColors.SuccessStatus,
-                    )
-                }
-            },
         ) { innerPadding ->
             val contentModifier = Modifier.padding(innerPadding)
             when (selectedDestination) {
@@ -114,14 +79,7 @@ fun FraseAFraseApp(modifier: Modifier = Modifier) {
                     modifier = contentModifier,
                     onNavigateToSettings = { selectedDestination = BottomDestination.Settings },
                 )
-                BottomDestination.Settings ->
-                    SettingsRoute(
-                        modifier = contentModifier,
-                        onNavigateToPractice = { selectedDestination = BottomDestination.Practice },
-                        onShowSaveConfirmation = { message ->
-                            coroutineScope.launch { snackbarHostState.showSnackbar(message) }
-                        },
-                    )
+                BottomDestination.Settings -> SettingsRoute(modifier = contentModifier)
             }
         }
         FraseAFraseBottomBar(

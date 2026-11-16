@@ -11,6 +11,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -20,6 +21,8 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -36,7 +39,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import kotlin.math.abs
-import kotlin.math.sqrt
 
 /**
  * Tests de UI de [SettingsScreen] (ADR-0007). La pantalla es sin estado, así que cada test construye el estado a
@@ -58,24 +60,17 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithText("25").assertIsDisplayed()
     }
 
-    // Scenario: N fuera de rango impide guardar (spec: settings-screen)
+    // Scenario: no hay escenario de spec propio; cubre las tareas 4.1/4.2 (remove-settings-save-button):
+    // ya no existe ningún botón "Guardar" ni su icono, porque cada edición se autoguarda (grupo 3).
     @Test
-    fun givenInvalidBatchSize_whenShowingTheScreen_thenSaveIsDisabled() {
-        // Given/When: la pantalla muestra un tamaño de tanda no válido
-        setScreen(loaded(isBatchSizeValid = false))
+    fun givenLoadedSettings_whenShowingTheScreen_thenThereIsNoSaveButton() {
+        // Given/When: la pantalla muestra los ajustes cargados
+        setScreen(loaded())
 
-        // Then: la acción de guardar no está disponible
-        composeTestRule.onNodeWithText("Guardar").assertIsNotEnabled()
-    }
-
-    // Scenario: N dentro de rango permite guardar (spec: settings-screen)
-    @Test
-    fun givenValidBatchSize_whenShowingTheScreen_thenSaveIsEnabled() {
-        // Given/When: la pantalla muestra un tamaño de tanda válido
-        setScreen(loaded(isBatchSizeValid = true))
-
-        // Then: la acción de guardar está disponible
-        composeTestRule.onNodeWithText("Guardar").assertIsEnabled()
+        // Then: no hay ningún texto, testTag de botón ni testTag de icono de "Guardar"
+        composeTestRule.onAllNodesWithText("Guardar").assertCountEquals(0)
+        composeTestRule.onAllNodesWithTag("settings_save_button").assertCountEquals(0)
+        composeTestRule.onAllNodesWithTag("settings_save_icon", useUnmergedTree = true).assertCountEquals(0)
     }
 
     // Scenario: El control de disminuir se deshabilita en el mínimo (spec: settings-screen)
@@ -228,40 +223,29 @@ class SettingsScreenTest {
         assertEquals(textFieldTop.value, increaseTop.value, BOUNDS_TOLERANCE)
     }
 
-    // Scenario: Confirmación visual al guardar (spec: settings-screen; el icono es un detalle de
-    // presentación del mock, fix-redesign-ui-mismatches)
+    // Scenario: Estilo de tarjeta del selector de idioma destino (spec: settings-screen) - cubre las
+    // tareas 4.3/4.4 (remove-settings-save-button): el selector de idioma destino tiene el mismo fondo
+    // que las tarjetas de nivel CEFR y de tamaño de tanda, en vez de quedar suelto sobre el fondo de la
+    // pantalla.
     @Test
-    fun givenLoadedSettings_whenShowingTheScreen_thenSaveButtonShowsACheckIcon() {
-        // Given/When: la pantalla muestra el botón de guardar
-        setScreen(loaded())
-
-        // Then: el botón de guardar incluye un icono de check junto al texto
-        composeTestRule.onNodeWithTag("settings_save_icon", useUnmergedTree = true)
-            .performScrollTo()
-            .assertIsDisplayed()
-    }
-
-    // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 3 de la tarea 11.3
-    // (adopt-reference-mock-ui, tarea 12.2): el botón "Guardar" debe tener radio 16dp ("no son
-    // píldoras", `design/mock/design-tokens.md`), no la forma de píldora por defecto de Material 3.
-    @Test
-    fun givenLoadedSettings_whenShowingTheScreen_thenSaveButtonIsNotFullyRounded() {
-        // Given: la pantalla muestra el botón de guardar habilitado
-        var expectedPrimary: Color = Color.Unspecified
+    fun givenLoadedSettings_whenShowingTheScreen_thenLanguageSelectorHasTheSameCardBackgroundAsCefrCard() {
+        // Given: la pantalla muestra los ajustes cargados, con el fondo de tarjeta del tema actual
+        var expectedCardColor: Color = Color.Unspecified
         composeTestRule.setContent {
             AppTheme {
-                expectedPrimary = MaterialTheme.colorScheme.primary
+                expectedCardColor = MaterialTheme.colorScheme.surface
+                // When: se muestra la pantalla
                 SettingsScreen(uiState = loaded(), onAction = {})
             }
         }
 
-        // When: se mide la esquina del botón, a mitad de camino entre el punto en el que dejaría de
-        // estar coloreada con el radio objetivo (16dp) y el punto en el que dejaría de estarlo con el
-        // radio de una píldora completa (la mitad de la altura medida del propio botón)
-        val cornerColor = notFullyRoundedCornerColor("settings_save_button", TARGET_SAVE_BUTTON_RADIUS_DP)
+        // Then: el fondo pintado de la tarjeta del selector de idioma coincide con el de la tarjeta de
+        // nivel CEFR, ambos con el mismo color de fondo de tarjeta
+        val languageCardBackground = cardBackgroundColor("settings_language_card")
+        val cefrCardBackground = cardBackgroundColor("settings_cefr_card")
 
-        // Then: a esa distancia de la esquina, el botón ya está coloreado
-        assertSolidColor(expectedPrimary, cornerColor)
+        assertSolidColor(expectedCardColor, languageCardBackground)
+        assertSolidColor(expectedCardColor, cefrCardBackground)
     }
 
     // Scenario: no hay escenario de spec propio; corrección visual del hallazgo 6 de la tarea 11.3
@@ -374,28 +358,17 @@ class SettingsScreenTest {
     )
 
     /**
-     * Color del píxel diagonal del nodo con [tag], a una distancia de su esquina elegida para
-     * distinguir un radio objetivo [targetRadiusDp] de una píldora completa (radio igual a la mitad
-     * de la altura medida del propio nodo). Misma técnica que
-     * `PracticeSessionScreenTest.notFullyRoundedCornerColor` (`:feature:session`).
+     * Color de fondo pintado de la tarjeta con [tag]: muestrea un píxel centrado horizontalmente y
+     * cerca del borde superior (4dp), por encima del `Modifier.padding(AppTheme.spacing.l)` de su
+     * contenido, para no caer sobre ningún hijo ni sobre la curva de la esquina redondeada.
      */
-    private fun notFullyRoundedCornerColor(tag: String, targetRadiusDp: Float): Color {
+    private fun cardBackgroundColor(tag: String): Color {
         val node = composeTestRule.onNodeWithTag(tag).performScrollTo()
         val bounds = node.getUnclippedBoundsInRoot()
-        val halfHeightDp = (bounds.bottom - bounds.top).value / 2f
-        val cornerFactor = 1f - 1f / sqrt(2f)
-        val targetRadiusThresholdDp = targetRadiusDp * cornerFactor
-        val fullPillRadiusThresholdDp = halfHeightDp * cornerFactor
-        // El único borde realmente pintado (con antialiasing) está en targetRadiusThresholdDp; el de la
-        // píldora completa es solo un límite teórico que nunca se dibuja. Muestrear cerca de ese límite
-        // teórico, en vez de en el punto medio exacto, deja más margen frente al antialiasing del borde
-        // real sin perder la distinción frente a una píldora completa.
-        val sampleDp = targetRadiusThresholdDp +
-            (fullPillRadiusThresholdDp - targetRadiusThresholdDp) * SAMPLE_BIAS_TOWARD_FULL_PILL
-        val density = composeTestRule.density.density
-        val insetPx = (sampleDp * density).toInt()
+        val widthPx = ((bounds.right - bounds.left).value * composeTestRule.density.density).toInt()
+        val insetPx = (CARD_BACKGROUND_SAMPLE_INSET_DP * composeTestRule.density.density).toInt()
         val pixelMap = node.captureToImage().toPixelMap()
-        return pixelMap[insetPx, insetPx]
+        return pixelMap[widthPx / 2, insetPx]
     }
 
     /**
@@ -415,14 +388,11 @@ class SettingsScreenTest {
         // fix-ui-pass-three).
         const val BOUNDS_TOLERANCE = 0.5f
 
-        // Radio objetivo del botón "Guardar" (16dp, "no son píldoras", design-tokens.md), igual que
-        // `PracticeSessionScreenTest.TARGET_BUTTON_RADIUS_DP`.
-        const val TARGET_SAVE_BUTTON_RADIUS_DP = 16f
-
-        // Igual que `PracticeSessionScreenTest.SAMPLE_BIAS_TOWARD_FULL_PILL` (`:feature:session`).
-        const val SAMPLE_BIAS_TOWARD_FULL_PILL = 0.75f
-
         // Igual que `PracticeSessionScreenTest.COLOR_CHANNEL_TOLERANCE` (`:feature:session`).
         const val COLOR_CHANNEL_TOLERANCE = 0.08f
+
+        // Distancia desde el borde superior de una tarjeta usada para muestrear su fondo, por debajo
+        // del `Modifier.padding(AppTheme.spacing.l)` (24dp) de su contenido.
+        const val CARD_BACKGROUND_SAMPLE_INSET_DP = 4f
     }
 }

@@ -12,6 +12,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainPracticeSession
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
 import com.dalmuina.fraseafrase.core.domain.practice.RevertLastAnswer
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
@@ -131,11 +132,15 @@ internal fun sessionViewModelWith(
         catalogRepository = catalogRepository,
     )
     val composeNextBatch = ComposeNextBatch()
-    val obtainActiveBatch = ObtainActiveBatch(
+    val regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+        practiceRepository = practice,
         composeNextBatch = composeNextBatch,
         obtainCatalogPhrases = obtainCatalogPhrases,
+    )
+    val obtainActiveBatch = ObtainActiveBatch(
         settingsRepository = settingsRepository,
         practiceRepository = practice,
+        regenerateActiveBatchForLevel = regenerateActiveBatchForLevel,
     )
     return PracticeSessionViewModel(
         obtainPracticeSession = ObtainPracticeSession(obtainActiveBatch, obtainCatalogPhrases, practice),

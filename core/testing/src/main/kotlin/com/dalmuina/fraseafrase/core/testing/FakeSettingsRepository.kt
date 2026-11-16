@@ -16,6 +16,7 @@ class FakeSettingsRepository(
 ) : SettingsRepository {
 
     private val settingsByLocale = mutableMapOf(DEFAULT_LOCALE to initialSettings)
+    private val appliedSettingsByLocale = mutableMapOf<LanguageTag, UserSettings>()
     private var activeLocale: LanguageTag? = null
 
     override suspend fun settings(targetLocale: LanguageTag): UserSettings =
@@ -29,6 +30,13 @@ class FakeSettingsRepository(
 
     override suspend fun setActiveTargetLocale(targetLocale: LanguageTag) {
         activeLocale = targetLocale
+    }
+
+    override suspend fun appliedSettings(targetLocale: LanguageTag): UserSettings? =
+        appliedSettingsByLocale[targetLocale]
+
+    override suspend fun recordAppliedSettings(targetLocale: LanguageTag, settings: UserSettings) {
+        appliedSettingsByLocale[targetLocale] = settings
     }
 
     /** Atajo para los tests que solo ejercitan [DEFAULT_LOCALE]. */

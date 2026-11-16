@@ -9,6 +9,7 @@ import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatchResult
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
+import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
@@ -55,13 +56,16 @@ class RoomPracticeCycleTest {
     }
 
     private suspend fun obtain() = ObtainActiveBatch(
-        composeNextBatch = ComposeNextBatch(),
-        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-            deviceLocaleProvider = FakeDeviceLocaleProvider(ptPt),
-            catalogRepository = FakeCatalogRepository(catalog, targetLocale = ptPt),
-        ),
         settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10))),
         practiceRepository = source,
+        regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+            practiceRepository = source,
+            composeNextBatch = ComposeNextBatch(),
+            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                deviceLocaleProvider = FakeDeviceLocaleProvider(ptPt),
+                catalogRepository = FakeCatalogRepository(catalog, targetLocale = ptPt),
+            ),
+        ),
     ).invoke(ptPt)
 
     // Scenario: Vaciar la tanda activa no compone la tanda siguiente por sí solo
@@ -118,13 +122,16 @@ class RoomPracticeCycleTest {
         val ptBr = LanguageTag("pt-BR")
         val source2 = RoomPracticeDataSource(database, UnconfinedTestDispatcher())
         val obtainPtBr = ObtainActiveBatch(
-            composeNextBatch = ComposeNextBatch(),
-            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-                deviceLocaleProvider = FakeDeviceLocaleProvider(ptBr),
-                catalogRepository = FakeCatalogRepository(catalog, targetLocale = ptBr),
-            ),
             settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10))),
             practiceRepository = source2,
+            regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+                practiceRepository = source2,
+                composeNextBatch = ComposeNextBatch(),
+                obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                    deviceLocaleProvider = FakeDeviceLocaleProvider(ptBr),
+                    catalogRepository = FakeCatalogRepository(catalog, targetLocale = ptBr),
+                ),
+            ),
         )
 
         // When: se obtiene la tanda activa de pt-BR por primera vez

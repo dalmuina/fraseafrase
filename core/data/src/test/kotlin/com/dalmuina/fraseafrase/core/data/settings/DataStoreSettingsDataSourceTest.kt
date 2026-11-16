@@ -328,4 +328,84 @@ class DataStoreSettingsDataSourceTest {
         // Then
         source.activeTargetLocale() shouldBe ptBr
     }
+
+    // Scenario: Sin ajustes aplicados registrados (spec: user-settings, "Ajustes aplicados a la tanda activa")
+    @Test
+    fun `given no applied settings recorded when reading them then returns null`() = runTest {
+        // Given
+        val store = newStore(freshFile(), backgroundScope)
+        val source = newSource(store)
+
+        // When
+        val applied = source.appliedSettings(ptPt)
+
+        // Then
+        applied shouldBe null
+    }
+
+    // Scenario: Registrar y leer los ajustes aplicados (spec: user-settings, "Ajustes aplicados a la tanda activa")
+    @Test
+    fun `given applied settings recorded when reading them then returns the same values`() = runTest {
+        // Given
+        val store = newStore(freshFile(), backgroundScope)
+        val source = newSource(store)
+
+        // When
+        source.recordAppliedSettings(ptPt, UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25)))
+
+        // Then
+        source.appliedSettings(ptPt) shouldBe UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25))
+    }
+
+    // Scenario: Los ajustes aplicados sobreviven al reinicio
+    // (spec: user-settings, "Ajustes aplicados a la tanda activa")
+    @Test
+    fun `given applied settings recorded when a new store reads the same file then returns the same values`() =
+        runTest {
+            // Given
+            val file = freshFile()
+            val writerScope = CoroutineScope(UnconfinedTestDispatcher(testScheduler) + Job())
+            newSource(newStore(file, writerScope))
+                .recordAppliedSettings(ptPt, UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25)))
+            writerScope.cancel()
+
+            // When
+            val applied = newSource(newStore(file, backgroundScope)).appliedSettings(ptPt)
+
+            // Then
+            applied shouldBe UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25))
+        }
+
+    // Scenario: Los ajustes aplicados de un idioma destino no se mezclan con los de otro
+    // (spec: user-settings, "Ajustes aplicados a la tanda activa")
+    @Test
+    fun `given applied settings for pt-PT when recording different applied settings for pt-BR then they do not mix`() =
+        runTest {
+            // Given
+            val source = newSource(inMemoryStore())
+            source.recordAppliedSettings(ptPt, UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25)))
+
+            // When
+            source.recordAppliedSettings(ptBr, UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10)))
+
+            // Then
+            source.appliedSettings(ptPt) shouldBe UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25))
+            source.appliedSettings(ptBr) shouldBe UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10))
+        }
+
+    // Scenario: Los ajustes aplicados son independientes de los ajustes editables
+    // (spec: user-settings, "Ajustes aplicados a la tanda activa")
+    @Test
+    fun `given applied settings when editable settings change then they stay unchanged`() =
+        runTest {
+            // Given
+            val source = newSource(inMemoryStore())
+            source.recordAppliedSettings(ptPt, UserSettings(cefrLevel = CefrLevel.A1, batchSize = BatchSize(20)))
+
+            // When
+            source.save(ptPt, UserSettings(cefrLevel = CefrLevel.B2, batchSize = BatchSize(15)))
+
+            // Then
+            source.appliedSettings(ptPt) shouldBe UserSettings(cefrLevel = CefrLevel.A1, batchSize = BatchSize(20))
+        }
 }

@@ -1,6 +1,7 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
+import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
@@ -27,7 +28,11 @@ class GenerateSessionTest {
 
     private val targetLocale = LanguageTag("pt-PT")
 
-    private fun generateSession(practice: FakePracticeRepository, catalogIds: List<String>) = GenerateSession(
+    private fun generateSession(
+        practice: FakePracticeRepository,
+        catalogIds: List<String>,
+        settingsRepository: FakeSettingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
+    ) = GenerateSession(
         practiceRepository = practice,
         composeNextBatch = ComposeNextBatch(),
         obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
@@ -36,7 +41,7 @@ class GenerateSessionTest {
                 CatalogLoadResult.Loaded(catalogIds.map { aCatalogPhrase(id = it) }),
             ),
         ),
-        settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
+        settingsRepository = settingsRepository,
     )
 
     // Scenario: Generar sesión incrementa el contador y compone en un paso (spec: practice-batch)
@@ -90,4 +95,36 @@ class GenerateSessionTest {
             // Then: el desglose de la tanda anterior no se arrastra a la siguiente
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
         }
+
+    // Scenario: Generar sesión registra sus ajustes aplicados (spec: practice-persistence, "Registro de los
+    // ajustes aplicados al componer")
+    @Test
+    fun `given saved settings when generating a session then it records them as applied`() = runTest {
+        // Given: B1/N15 guardados para el idioma destino, con material B1 pendiente disponible
+        val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(15)))
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(aPhraseProgress(id = "A", level = Level(1), dueAtSession = 0)),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(15)),
+                sessionCount = 0,
+            ),
+        )
+        val useCase = GenerateSession(
+            practiceRepository = practice,
+            composeNextBatch = ComposeNextBatch(),
+            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+                catalogRepository = FakeCatalogRepository(
+                    CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "A", level = CefrLevel.B1))),
+                ),
+            ),
+            settingsRepository = settingsRepository,
+        )
+
+        // When
+        useCase.invoke(targetLocale)
+
+        // Then
+        settingsRepository.appliedSettings(targetLocale) shouldBe UserSettings(CefrLevel.B1, BatchSize(15))
+    }
 }

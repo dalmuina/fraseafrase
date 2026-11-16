@@ -4,13 +4,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
-import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
-import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
-import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
-import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
-import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
@@ -19,76 +13,72 @@ import com.dalmuina.fraseafrase.core.domain.settings.SelectActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
 /**
- * Tests instrumentados de [SettingsRoute] (ADR-0007, design D5 de `add-settings-apply-flow`). Construye un
- * [SettingsViewModel] real sobre fakes locales de los puertos del dominio, sin Hilt: el `Route` admite sustituir
- * su `viewModel` por defecto, así que no hace falta el grafo de producción para comprobar la navegación a
- * práctica. No usa `:core:testing` porque es un módulo JVM puro (JUnit 5) que no se declara como dependencia de
- * `androidTest` (JUnit 4 instrumentado, ADR-0007/ADR-0014).
+ * Tests instrumentados de [SettingsRoute] (ADR-0007). Construye un [SettingsViewModel] real sobre fakes locales
+ * de los puertos del dominio, sin Hilt: el `Route` admite sustituir su `viewModel` por defecto, así que no hace
+ * falta el grafo de producción. No usa `:core:testing` porque es un módulo JVM puro (JUnit 5) que no se declara
+ * como dependencia de `androidTest` (JUnit 4 instrumentado, ADR-0007/ADR-0014). Desde `remove-settings-save-button`
+ * (design D3), no hay ninguna señal de un solo uso que observar: el autoguardado se comprueba leyendo el propio
+ * repositorio de ajustes tras una acción, sin ninguna acción de salida adicional.
  */
 class SettingsRouteTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    // Scenario: Guardar con el nivel CEFR cambiado navega a práctica (spec: settings-screen)
+    // Scenario: Guardar persiste el nuevo nivel CEFR y N (spec: settings-screen, "Guardado de los ajustes editados")
     @Test
-    fun givenCefrLevelChanged_whenSaving_thenOnNavigateToPracticeIsCalled() {
-        // Given: ajustes con nivel CEFR A1 persistido, y la pantalla montada con un callback de navegación
+    fun givenCefrLevelChosen_whenDispatched_thenALaterReadReflectsItWithoutAnyExitAction() {
+        // Given: ajustes con nivel CEFR A1 persistido, y la pantalla montada
         val repository = TestSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
         val viewModel = settingsViewModel(repository)
-        var navigated = false
         composeTestRule.setContent {
-            SettingsRoute(viewModel = viewModel, onNavigateToPractice = { navigated = true })
+            SettingsRoute(viewModel = viewModel)
         }
         composeTestRule.waitForIdle()
 
-        // When: el usuario elige el nivel B1 y confirma el guardado
+        // When: el usuario elige el nivel B1, sin ninguna acción adicional
         viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
-        viewModel.onAction(SettingsAction.Save)
 
-        // Then: se llama a onNavigateToPractice
-        composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) { navigated }
-        assertTrue(navigated)
+        // Then: una lectura posterior de los ajustes devuelve el nivel CEFR B1 de inmediato
+        composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) {
+            runBlocking { repository.settings(LOCALE) }.cefrLevel == CefrLevel.B1
+        }
+        assertEquals(CefrLevel.B1, runBlocking { repository.settings(LOCALE) }.cefrLevel)
     }
 
-    // Scenario: Confirmación tras guardar, combinado con "Guardar con el nivel CEFR cambiado navega a práctica"
-    // (spec: settings-screen) — design D6 (revisada): la confirmación no depende de que ningún showSnackbar
-    // termine, así que no se pierde aunque la navegación saque a SettingsRoute de composición en el mismo frame.
+    // Scenario: Elegir un idioma destino lo activa sin salir de ajustes (spec: settings-screen, "Elegir un
+    // idioma destino lo activa de inmediato")
     @Test
-    fun givenCefrLevelChanged_whenSaving_thenOnShowSaveConfirmationIsCalledWithTheConfirmationText() {
-        // Given: ajustes con nivel CEFR A1 persistido, y la pantalla montada con un callback de confirmación
+    fun givenAvailableLanguages_whenSelectingAnotherOne_thenItIsActivatedImmediately() {
+        // Given: pt-PT activo con pt-BR también disponible, y la pantalla montada
         val repository = TestSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
-        val viewModel = settingsViewModel(repository)
-        var confirmationMessage: String? = null
+        val viewModel = settingsViewModel(repository, availableTargetLocales = listOf(LOCALE, OTHER_LOCALE))
         composeTestRule.setContent {
-            SettingsRoute(
-                viewModel = viewModel,
-                onShowSaveConfirmation = { message -> confirmationMessage = message },
-            )
+            SettingsRoute(viewModel = viewModel)
         }
         composeTestRule.waitForIdle()
 
-        // When: el usuario elige el nivel B1 y confirma el guardado
-        viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B1))
-        viewModel.onAction(SettingsAction.Save)
+        // When: el usuario elige pt-BR en el desplegable, sin salir de la pantalla de ajustes
+        viewModel.onAction(SettingsAction.SelectLanguage(OTHER_LOCALE))
 
-        // Then: se llama a onShowSaveConfirmation con el texto de confirmación, sin esperar a ningún snackbar
-        composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) { confirmationMessage != null }
-        assertEquals("Ajustes guardados", confirmationMessage)
+        // Then: una lectura posterior del idioma destino activo devuelve pt-BR
+        composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) {
+            runBlocking { repository.activeTargetLocale() } == OTHER_LOCALE
+        }
+        assertEquals(OTHER_LOCALE, runBlocking { repository.activeTargetLocale() })
     }
 
-    private fun settingsViewModel(repository: SettingsRepository): SettingsViewModel {
-        val practice = TestPracticeRepository()
-        val catalogRepository = TestCatalogRepository()
+    private fun settingsViewModel(
+        repository: SettingsRepository,
+        availableTargetLocales: List<LanguageTag> = listOf(LOCALE),
+    ): SettingsViewModel {
+        val catalogRepository = TestCatalogRepository(availableTargetLocales)
         val obtainAvailableLanguages = ObtainAvailableLanguages(catalogRepository)
         return SettingsViewModel(
             obtainUserSettings = ObtainUserSettings(repository),
@@ -96,26 +86,23 @@ class SettingsRouteTest {
             obtainActiveLanguage = ObtainActiveLanguage(repository),
             obtainAvailableLanguages = obtainAvailableLanguages,
             selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, repository),
-            regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
-                practiceRepository = practice,
-                composeNextBatch = ComposeNextBatch(),
-                obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-                    deviceLocaleProvider = TestDeviceLocaleProvider(),
-                    catalogRepository = catalogRepository,
-                ),
-            ),
         )
     }
 
-    /** Fake local de [SettingsRepository]: devuelve los ajustes configurados y recuerda el último guardado. */
+    /**
+     * Fake local de [SettingsRepository]: devuelve los ajustes configurados por idioma destino y recuerda el
+     * idioma destino activo y los últimos guardados. [appliedSettings]/[recordAppliedSettings] no se ejercitan
+     * en este test (no entra en práctica), así que devuelven/ignoran sin más.
+     */
     private class TestSettingsRepository(initial: UserSettings) : SettingsRepository {
-        private var settings: UserSettings = initial
+        private val settingsByLocale = mutableMapOf(LOCALE to initial)
         private var activeTargetLocale: LanguageTag = LOCALE
 
-        override suspend fun settings(targetLocale: LanguageTag): UserSettings = settings
+        override suspend fun settings(targetLocale: LanguageTag): UserSettings =
+            settingsByLocale[targetLocale] ?: UserSettings.DEFAULT
 
         override suspend fun save(targetLocale: LanguageTag, settings: UserSettings) {
-            this.settings = settings
+            settingsByLocale[targetLocale] = settings
         }
 
         override suspend fun activeTargetLocale(): LanguageTag = activeTargetLocale
@@ -123,32 +110,15 @@ class SettingsRouteTest {
         override suspend fun setActiveTargetLocale(targetLocale: LanguageTag) {
             activeTargetLocale = targetLocale
         }
+
+        override suspend fun appliedSettings(targetLocale: LanguageTag): UserSettings? = null
+
+        override suspend fun recordAppliedSettings(targetLocale: LanguageTag, settings: UserSettings) = Unit
     }
 
-    /** Fake local de [PracticeRepository], sin tanda activa: basta para que recomponer no haga nada. */
-    private class TestPracticeRepository : PracticeRepository {
-        private val mutex = Mutex()
-        private var state = PracticeSnapshot(
-            progress = emptyList(),
-            activeBatch = null,
-            sessionCount = 0,
-        )
-
-        override suspend fun read(targetLocale: LanguageTag): PracticeSnapshot = mutex.withLock { state }
-
-        override suspend fun <T> transact(
-            targetLocale: LanguageTag,
-            change: (PracticeSnapshot) -> PracticeChange<T>,
-        ): T = mutex.withLock {
-            val outcome = change(state)
-            state = outcome.next
-            outcome.result
-        }
-    }
-
-    /** Fake local de [CatalogRepository], sin frases: basta para que [RegenerateActiveBatchForLevel] no falle. */
-    private class TestCatalogRepository : CatalogRepository {
-        override suspend fun availableTargetLocales(): List<LanguageTag> = listOf(LOCALE)
+    /** Fake local de [CatalogRepository]: solo expone los idiomas destino disponibles configurados, sin frases. */
+    private class TestCatalogRepository(private val targetLocales: List<LanguageTag>) : CatalogRepository {
+        override suspend fun availableTargetLocales(): List<LanguageTag> = targetLocales
 
         override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> = emptyList()
 
@@ -156,13 +126,9 @@ class SettingsRouteTest {
             CatalogLoadResult.Loaded(emptyList())
     }
 
-    /** Fake local de [DeviceLocaleProvider]: el locale del dispositivo no importa en este test. */
-    private class TestDeviceLocaleProvider : DeviceLocaleProvider {
-        override fun current(): LanguageTag = LOCALE
-    }
-
     private companion object {
         const val WAIT_TIMEOUT_MILLIS = 5_000L
         val LOCALE = LanguageTag("pt-PT")
+        val OTHER_LOCALE = LanguageTag("pt-BR")
     }
 }
