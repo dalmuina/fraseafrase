@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.feature.progress
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
@@ -45,6 +46,21 @@ class ProgressViewModelTest {
             state.cefrLevel shouldBe CefrLevel.B1
             state.byLevel.values.sum() shouldBe state.totalAvailable
         }
+
+    // Scenario: El icono muestra el idioma activo en Progreso (spec: language-indicator)
+    @Test
+    fun `given pt-BR as the active target locale when opening progress then the ui state exposes it`() = runTest {
+        // Given: pt-BR como idioma destino activo, con un catálogo de seis frases
+        val catalog = loaded("A", "B", "C", "D", "E", "F")
+
+        // When: el usuario abre la pantalla de progreso
+        val viewModel = progressViewModel(catalog, activeTargetLocale = LanguageTag("pt-BR"))
+        advanceUntilIdle()
+
+        // Then: el estado expone pt-BR como idioma destino activo
+        val state = viewModel.uiState.value.shouldBeInstanceOf<ProgressUiState.Content>()
+        state.activeTargetLocale shouldBe LanguageTag("pt-BR")
+    }
 
     // Scenario: El total se actualiza si cambia el catálogo disponible (spec: progress-overview)
     @Test

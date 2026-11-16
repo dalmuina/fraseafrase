@@ -3,6 +3,8 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
@@ -10,6 +12,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
@@ -23,13 +26,18 @@ import org.junit.jupiter.api.Test
 
 class ObtainActiveBatchTest {
 
+    private val targetLocale = LanguageTag("pt-PT")
+
     private fun useCase(
         practice: FakePracticeRepository,
         catalog: CatalogLoadResult,
         settings: UserSettings = UserSettings.DEFAULT,
     ) = ObtainActiveBatch(
         composeNextBatch = ComposeNextBatch(),
-        catalogRepository = FakeCatalogRepository(catalog),
+        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+            deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+            catalogRepository = FakeCatalogRepository(catalog),
+        ),
         settingsRepository = FakeSettingsRepository(settings),
         practiceRepository = practice,
     )
@@ -54,7 +62,7 @@ class ObtainActiveBatchTest {
         val practice = FakePracticeRepository(active)
 
         // When
-        val result = useCase(practice, a1Catalog(3)).invoke()
+        val result = useCase(practice, a1Catalog(3)).invoke(targetLocale)
 
         // Then
         result.shouldBeInstanceOf<ActiveBatchResult.Existing>()
@@ -68,7 +76,7 @@ class ObtainActiveBatchTest {
         val practice = FakePracticeRepository()
 
         // When
-        val result = useCase(practice, a1Catalog(15)).invoke()
+        val result = useCase(practice, a1Catalog(15)).invoke(targetLocale)
 
         // Then
         result.shouldBeInstanceOf<ActiveBatchResult.Created>()
@@ -83,7 +91,7 @@ class ObtainActiveBatchTest {
         val practice = FakePracticeRepository()
 
         // When
-        val result = useCase(practice, CatalogLoadResult.Loaded(emptyList())).invoke()
+        val result = useCase(practice, CatalogLoadResult.Loaded(emptyList())).invoke(targetLocale)
 
         // Then
         result shouldBe ActiveBatchResult.NothingAvailable
@@ -97,7 +105,7 @@ class ObtainActiveBatchTest {
         val practice = FakePracticeRepository()
 
         // When
-        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)).invoke()
+        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)).invoke(targetLocale)
 
         // Then
         result shouldBe ActiveBatchResult.CatalogUnavailable(CatalogLoadError.AssetUnreadable)
@@ -128,7 +136,7 @@ class ObtainActiveBatchTest {
             val catalog = CatalogLoadResult.Loaded(
                 (batchPhrases + "P").map { aCatalogPhrase(id = it, level = CefrLevel.A1) },
             )
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             result.shouldBeInstanceOf<ActiveBatchResult.Created>()
@@ -151,7 +159,7 @@ class ObtainActiveBatchTest {
             )
 
             // When
-            useCase(practice, a1Catalog(15)).invoke()
+            useCase(practice, a1Catalog(15)).invoke(targetLocale)
 
             // Then
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)

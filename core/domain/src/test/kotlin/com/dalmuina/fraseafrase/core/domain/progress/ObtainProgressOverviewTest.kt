@@ -4,6 +4,8 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadError
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
@@ -14,6 +16,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
@@ -26,12 +29,17 @@ import org.junit.jupiter.api.Test
 
 class ObtainProgressOverviewTest {
 
+    private val targetLocale = LanguageTag("pt-PT")
+
     private fun useCase(
         practice: FakePracticeRepository,
         catalog: CatalogLoadResult,
         settings: UserSettings = UserSettings.DEFAULT,
     ) = ObtainProgressOverview(
-        catalogRepository = FakeCatalogRepository(catalog),
+        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+            deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+            catalogRepository = FakeCatalogRepository(catalog),
+        ),
         practiceRepository = practice,
         obtainUserSettings = ObtainUserSettings(FakeSettingsRepository(settings)),
     )
@@ -64,7 +72,7 @@ class ObtainProgressOverviewTest {
         )
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
@@ -89,7 +97,7 @@ class ObtainProgressOverviewTest {
             )
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
@@ -121,7 +129,7 @@ class ObtainProgressOverviewTest {
         )
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
@@ -141,7 +149,7 @@ class ObtainProgressOverviewTest {
             val settings = UserSettings.DEFAULT.copy(cefrLevel = CefrLevel.B1)
 
             // When
-            val result = useCase(practice, catalog, settings).invoke()
+            val result = useCase(practice, catalog, settings).invoke(targetLocale)
 
             // Then
             val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
@@ -157,7 +165,7 @@ class ObtainProgressOverviewTest {
         val practice = FakePracticeRepository()
 
         // When
-        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)).invoke()
+        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)).invoke(targetLocale)
 
         // Then
         result shouldBe ProgressOverviewResult.CatalogUnavailable(CatalogLoadError.AssetUnreadable)
@@ -179,7 +187,7 @@ class ObtainProgressOverviewTest {
         val settings = UserSettings.DEFAULT.copy(cefrLevel = CefrLevel.B1)
 
         // When
-        val result = useCase(practice, catalog, settings).invoke()
+        val result = useCase(practice, catalog, settings).invoke(targetLocale)
 
         // Then
         val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()
@@ -202,7 +210,7 @@ class ObtainProgressOverviewTest {
         val settings = UserSettings.DEFAULT.copy(cefrLevel = CefrLevel.B1)
 
         // When
-        val result = useCase(practice, catalog, settings).invoke()
+        val result = useCase(practice, catalog, settings).invoke(targetLocale)
 
         // Then
         val available = result.shouldBeInstanceOf<ProgressOverviewResult.Available>()

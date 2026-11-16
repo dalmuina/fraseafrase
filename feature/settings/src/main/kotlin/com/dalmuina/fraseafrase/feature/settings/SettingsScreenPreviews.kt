@@ -4,6 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+
+private val PtPt = LanguageTag("pt-PT")
+private val PtBr = LanguageTag("pt-BR")
 
 @PreviewLightDark
 @Composable
@@ -19,6 +23,8 @@ private fun SettingsScreenValidPreview() {
     AppTheme {
         SettingsScreen(
             uiState = SettingsUiState.Loaded(
+                activeTargetLocale = PtPt,
+                availableTargetLocales = listOf(PtPt, PtBr),
                 cefrLevel = CefrLevel.B1,
                 batchSizeText = "25",
                 isBatchSizeValid = true,
@@ -34,6 +40,8 @@ private fun SettingsScreenInvalidBatchSizePreview() {
     AppTheme {
         SettingsScreen(
             uiState = SettingsUiState.Loaded(
+                activeTargetLocale = PtPt,
+                availableTargetLocales = listOf(PtPt, PtBr),
                 cefrLevel = CefrLevel.A1,
                 batchSizeText = "31",
                 isBatchSizeValid = false,

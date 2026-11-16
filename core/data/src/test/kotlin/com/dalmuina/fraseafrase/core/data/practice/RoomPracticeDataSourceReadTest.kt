@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.data.practice
 
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.BatchOutcome
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import io.kotest.matchers.collections.shouldContainExactly
@@ -18,6 +19,8 @@ class RoomPracticeDataSourceReadTest {
 
     private lateinit var database: PracticeDatabase
     private lateinit var source: RoomPracticeDataSource
+    private val ptPt = LanguageTag("pt-PT")
+    private val ptBr = LanguageTag("pt-BR")
 
     @BeforeEach
     fun openDatabase() {
@@ -34,19 +37,10 @@ class RoomPracticeDataSourceReadTest {
     @Test
     fun `given a saved phrase progress when reading then the phrase keeps its level and due session`() = runTest {
         // Given
-        database.phraseProgressDao().insert(
-            PhraseProgressEntity(
-                phraseId = "A",
-                level = 2,
-                streak = 0,
-                answeredInBatch = false,
-                dueAtSession = 13,
-                batchPosition = null,
-            ),
-        )
+        database.phraseProgressDao().insert(entry(id = "A", level = 2, dueAtSession = 13))
 
         // When
-        val snapshot = source.read()
+        val snapshot = source.read(ptPt)
 
         // Then
         val phrase = snapshot.progress.single()
@@ -55,11 +49,28 @@ class RoomPracticeDataSourceReadTest {
         phrase.dueAtSession shouldBe 13
     }
 
+    // Scenario: El progreso de dos idiomas destino para la misma frase no se mezcla (spec: practice-persistence)
+    @Test
+    fun `given the same phrase with different levels per locale when reading each locale then levels do not mix`() =
+        runTest {
+            // Given
+            database.phraseProgressDao().insert(entry(id = "a1-saludos-001", level = 3, targetLocale = "pt-PT"))
+            database.phraseProgressDao().insert(entry(id = "a1-saludos-001", level = 0, targetLocale = "pt-BR"))
+
+            // When
+            val ptPtLevel = source.read(ptPt).progress.single().level.value
+            val ptBrLevel = source.read(ptBr).progress.single().level.value
+
+            // Then
+            ptPtLevel shouldBe 3
+            ptBrLevel shouldBe 0
+        }
+
     // Scenario: Sin contador guardado el valor por defecto es 0 (spec: practice-persistence)
     @Test
     fun `given no session counter row when reading then the session count is 0`() = runTest {
         // When
-        val snapshot = source.read()
+        val snapshot = source.read(ptPt)
 
         // Then
         snapshot.sessionCount shouldBe 0
@@ -73,15 +84,30 @@ class RoomPracticeDataSourceReadTest {
         dao.insert(entry(id = "B", batchPosition = 1))
         dao.insert(entry(id = "A", batchPosition = 0))
         dao.insert(entry(id = "C", batchPosition = 2))
-        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
 
         // When
-        val batch = source.read().batch()
+        val batch = source.read(ptPt).batch()
 
         // Then
         batch.shouldNotBeNull()
         batch.entries.map { it.id.value } shouldContainExactly listOf("A", "B", "C")
         batch.capacity shouldBe BatchSize(10)
+    }
+
+    // Scenario: La tanda activa de un idioma destino no afecta a la de otro (spec: practice-persistence)
+    @Test
+    fun `given an active batch for pt-PT when reading pt-BR then it reports no active batch`() = runTest {
+        // Given
+        val dao = database.phraseProgressDao()
+        dao.insert(entry(id = "A", batchPosition = 0, targetLocale = "pt-PT"))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
+
+        // When
+        val snapshot = source.read(ptBr)
+
+        // Then
+        snapshot.activeBatch.shouldBeNull()
     }
 
     // Scenario: Sin tanda activa (spec: practice-persistence)
@@ -91,7 +117,7 @@ class RoomPracticeDataSourceReadTest {
         database.phraseProgressDao().insert(entry(id = "A", level = 1, dueAtSession = 1))
 
         // When
-        val snapshot = source.read()
+        val snapshot = source.read(ptPt)
 
         // Then
         snapshot.activeBatch.shouldBeNull()
@@ -102,10 +128,12 @@ class RoomPracticeDataSourceReadTest {
     @Test
     fun `given a freshly created active batch when reading then the batch outcome is zero`() = runTest {
         // Given
-        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10, hits = 0, misses = 0, levelUps = 0))
+        database.activeBatchDao().insert(
+            ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10, hits = 0, misses = 0, levelUps = 0),
+        )
 
         // When
-        val snapshot = source.read()
+        val snapshot = source.read(ptPt)
 
         // Then
         snapshot.batchOutcome shouldBe BatchOutcome()
@@ -119,12 +147,12 @@ class RoomPracticeDataSourceReadTest {
         val dao = database.phraseProgressDao()
         dao.insert(entry(id = "A"))
         dao.insert(entry(id = "B"))
-        val before = source.read()
+        val before = source.read(ptPt)
 
         // When
         dao.update(entry(id = "A", level = 1, dueAtSession = 1))
-        val after = source.read()
-        val observed = (1..20).map { source.read() }
+        val after = source.read(ptPt)
+        val observed = (1..20).map { source.read(ptPt) }
 
         // Then
         observed.forEach { snapshot -> (snapshot == before || snapshot == after) shouldBe true }
@@ -135,8 +163,10 @@ class RoomPracticeDataSourceReadTest {
         level: Int = 0,
         batchPosition: Int? = null,
         dueAtSession: Int = 0,
+        targetLocale: String = "pt-PT",
     ) = PhraseProgressEntity(
         phraseId = id,
+        targetLocale = targetLocale,
         level = level,
         streak = 0,
         answeredInBatch = false,

@@ -2,7 +2,8 @@ package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
-import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PracticeBatch
 import javax.inject.Inject
 
@@ -12,19 +13,20 @@ import javax.inject.Inject
  */
 class ObtainPracticeSession @Inject constructor(
     private val obtainActiveBatch: ObtainActiveBatch,
-    private val catalogRepository: CatalogRepository,
+    private val obtainCatalogPhrases: ObtainCatalogPhrasesForActiveLanguage,
     private val practiceRepository: PracticeRepository,
 ) {
 
-    suspend operator fun invoke(): PracticeSessionResult = when (val active = obtainActiveBatch()) {
-        is ActiveBatchResult.Existing -> withText(active.batch)
-        is ActiveBatchResult.Created -> withText(active.batch)
-        ActiveBatchResult.NothingAvailable -> PracticeSessionResult.NothingToPractice
-        is ActiveBatchResult.CatalogUnavailable -> PracticeSessionResult.CatalogFailed(active.error)
-    }
+    suspend operator fun invoke(targetLocale: LanguageTag): PracticeSessionResult =
+        when (val active = obtainActiveBatch(targetLocale)) {
+            is ActiveBatchResult.Existing -> withText(targetLocale, active.batch)
+            is ActiveBatchResult.Created -> withText(targetLocale, active.batch)
+            ActiveBatchResult.NothingAvailable -> PracticeSessionResult.NothingToPractice
+            is ActiveBatchResult.CatalogUnavailable -> PracticeSessionResult.CatalogFailed(active.error)
+        }
 
-    private suspend fun withText(batch: PracticeBatch): PracticeSessionResult =
-        when (val loaded = catalogRepository.phrases()) {
+    private suspend fun withText(targetLocale: LanguageTag, batch: PracticeBatch): PracticeSessionResult =
+        when (val loaded = obtainCatalogPhrases(targetLocale)) {
             is CatalogLoadResult.Loaded -> {
                 val practiceItems = items(batch, loaded.phrases)
                 if (practiceItems.isEmpty()) {
@@ -33,7 +35,7 @@ class ObtainPracticeSession @Inject constructor(
                     PracticeSessionResult.Ready(
                         items = practiceItems,
                         isComplete = batch.entries.all { it.answeredInBatch },
-                        batchOutcome = practiceRepository.read().batchOutcome,
+                        batchOutcome = practiceRepository.read(targetLocale).batchOutcome,
                     )
                 }
             }

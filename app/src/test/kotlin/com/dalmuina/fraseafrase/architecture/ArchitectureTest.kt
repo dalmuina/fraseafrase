@@ -43,7 +43,7 @@ class ArchitectureTest {
     fun `given data sources with in-memory state when checking their scope then they are annotated as Singleton`() {
         // Given: audited by hand (design.md, Decision 3) - data sources with a mutable field or in-memory cache of
         // their own. Constructor properties do not count.
-        val statefulDataSourceNames = setOf("AssetsCatalogDataSource")
+        val statefulDataSourceNames = setOf("RoomCatalogDataSource")
 
         // When
         val dataSourceClasses = Konsist

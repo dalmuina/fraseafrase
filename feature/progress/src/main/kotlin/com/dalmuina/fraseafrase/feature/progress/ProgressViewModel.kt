@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuina.fraseafrase.core.domain.progress.ObtainProgressOverview
 import com.dalmuina.fraseafrase.core.domain.progress.ProgressOverviewResult
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class ProgressViewModel @Inject constructor(
     private val obtainProgressOverview: ObtainProgressOverview,
     private val obtainUserSettings: ObtainUserSettings,
+    private val obtainActiveLanguage: ObtainActiveLanguage,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ProgressUiState>(ProgressUiState.Loading)
@@ -33,11 +35,13 @@ class ProgressViewModel @Inject constructor(
     fun onAction(action: ProgressAction) = Unit
 
     private suspend fun reload() {
-        _uiState.value = when (val result = obtainProgressOverview()) {
+        val targetLocale = obtainActiveLanguage()
+        _uiState.value = when (val result = obtainProgressOverview(targetLocale)) {
             is ProgressOverviewResult.Available -> ProgressUiState.Content(
                 totalAvailable = result.byLevel.values.sum(),
-                cefrLevel = obtainUserSettings().cefrLevel,
+                cefrLevel = obtainUserSettings(targetLocale).cefrLevel,
                 byLevel = result.byLevel,
+                activeTargetLocale = targetLocale,
             )
             is ProgressOverviewResult.CatalogUnavailable -> ProgressUiState.CatalogError
         }

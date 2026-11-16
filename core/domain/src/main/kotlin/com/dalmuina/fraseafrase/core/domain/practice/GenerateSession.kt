@@ -1,7 +1,8 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
-import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import javax.inject.Inject
@@ -16,17 +17,17 @@ import javax.inject.Inject
 class GenerateSession @Inject constructor(
     private val practiceRepository: PracticeRepository,
     private val composeNextBatch: ComposeNextBatch,
-    private val catalogRepository: CatalogRepository,
+    private val obtainCatalogPhrases: ObtainCatalogPhrasesForActiveLanguage,
     private val settingsRepository: SettingsRepository,
 ) {
 
-    suspend operator fun invoke(): ActiveBatchResult {
-        val catalog = when (val loaded = catalogRepository.phrases()) {
+    suspend operator fun invoke(targetLocale: LanguageTag): ActiveBatchResult {
+        val catalog = when (val loaded = obtainCatalogPhrases(targetLocale)) {
             is CatalogLoadResult.Loaded -> loaded.phrases
             is CatalogLoadResult.Failed -> return ActiveBatchResult.CatalogUnavailable(loaded.error)
         }
-        val settings = settingsRepository.settings()
-        return practiceRepository.transact { snapshot ->
+        val settings = settingsRepository.settings(targetLocale)
+        return practiceRepository.transact(targetLocale) { snapshot ->
             val nextSessionCount = snapshot.sessionCount + 1
             val cleared = snapshot.copy(activeBatch = null, sessionCount = nextSessionCount)
             composeNextBatchInto(composeNextBatch, cleared, catalog, settings, nextSessionCount)

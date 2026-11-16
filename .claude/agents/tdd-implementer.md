@@ -1,3 +1,4 @@
+---
 name: tdd-implementer
 description: Implementa tareas de un tasks.md aprobado de OpenSpec siguiendo TDD estricto (rojo, verde, refactor). Úsalo durante /opsx:apply, delegando un grupo pequeño de tareas relacionadas por invocación e indicando el nombre del cambio, los números de tarea, los módulos afectados y las rutas de los escenarios. No lo uses para cambios de la vía rápida.
 tools: Read, Edit, Write, Bash, Grep, Glob

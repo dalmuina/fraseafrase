@@ -1,17 +1,23 @@
 package com.dalmuina.fraseafrase.feature.settings
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SaveUserSettings
+import com.dalmuina.fraseafrase.core.domain.settings.SelectActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
@@ -45,18 +51,32 @@ internal fun activeBatchSnapshotWithProgress(
 /**
  * ViewModel con los casos de uso reales sobre los fakes de `:core:testing`. Ningún caso de uso se mockea: son
  * clases concretas y su lógica forma parte de lo que se verifica. [practice] por defecto no tiene tanda activa.
+ * [availableTargetLocales] configura los idiomas destino disponibles (por defecto, solo
+ * [FakeSettingsRepository.DEFAULT_LOCALE]), cada uno con el mismo [catalog].
  */
 internal fun settingsViewModel(
     repository: FakeSettingsRepository,
     practice: FakePracticeRepository = FakePracticeRepository(),
     catalog: CatalogLoadResult = CatalogLoadResult.Loaded(emptyList()),
-): SettingsViewModel =
-    SettingsViewModel(
+    availableTargetLocales: List<LanguageTag> = listOf(FakeSettingsRepository.DEFAULT_LOCALE),
+): SettingsViewModel {
+    val catalogRepository = FakeCatalogRepository.withCatalogs(
+        availableTargetLocales.associateWith { catalog },
+    )
+    val obtainAvailableLanguages = ObtainAvailableLanguages(catalogRepository)
+    return SettingsViewModel(
         obtainUserSettings = ObtainUserSettings(repository),
         saveUserSettings = SaveUserSettings(repository),
+        obtainActiveLanguage = ObtainActiveLanguage(repository),
+        obtainAvailableLanguages = obtainAvailableLanguages,
+        selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, repository),
         regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
             practiceRepository = practice,
             composeNextBatch = ComposeNextBatch(),
-            catalogRepository = FakeCatalogRepository(catalog),
+            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+                catalogRepository = catalogRepository,
+            ),
         ),
     )
+}

@@ -5,6 +5,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
@@ -13,6 +14,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
@@ -26,6 +28,13 @@ import org.junit.jupiter.api.Test
 
 class ObtainPracticeSessionTest {
 
+    private val targetLocale = LanguageTag("pt-PT")
+
+    private fun obtainCatalogPhrases(catalog: CatalogLoadResult) = ObtainCatalogPhrasesForActiveLanguage(
+        deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+        catalogRepository = FakeCatalogRepository(catalog),
+    )
+
     private fun useCase(
         practice: FakePracticeRepository,
         catalog: CatalogLoadResult,
@@ -33,11 +42,11 @@ class ObtainPracticeSessionTest {
     ) = ObtainPracticeSession(
         obtainActiveBatch = ObtainActiveBatch(
             composeNextBatch = ComposeNextBatch(),
-            catalogRepository = FakeCatalogRepository(catalog),
+            obtainCatalogPhrases = obtainCatalogPhrases(catalog),
             settingsRepository = FakeSettingsRepository(settings),
             practiceRepository = practice,
         ),
-        catalogRepository = FakeCatalogRepository(catalog),
+        obtainCatalogPhrases = obtainCatalogPhrases(catalog),
         practiceRepository = practice,
     )
 
@@ -75,7 +84,7 @@ class ObtainPracticeSessionTest {
             )
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -95,7 +104,7 @@ class ObtainPracticeSessionTest {
             val catalog = loaded(aCatalogPhrase(id = "A", level = CefrLevel.B1))
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -116,7 +125,7 @@ class ObtainPracticeSessionTest {
             val catalog = loaded(aCatalogPhrase(id = "A"))
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -134,7 +143,7 @@ class ObtainPracticeSessionTest {
             val catalog = loaded(aCatalogPhrase(id = "A"))
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -158,7 +167,7 @@ class ObtainPracticeSessionTest {
         val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"), aCatalogPhrase(id = "C"))
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -175,7 +184,7 @@ class ObtainPracticeSessionTest {
             val catalog = loaded(*(1..15).map { aCatalogPhrase(id = "a1-%02d".format(it)) }.toTypedArray())
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -199,7 +208,7 @@ class ObtainPracticeSessionTest {
             val catalog = loaded(*(batchPhrases + "P").map { aCatalogPhrase(id = it) }.toTypedArray())
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -222,7 +231,7 @@ class ObtainPracticeSessionTest {
         clearActiveBatch(practice)
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         result shouldBe PracticeSessionResult.NothingToPractice
@@ -242,7 +251,7 @@ class ObtainPracticeSessionTest {
         val catalog = loaded(aCatalogPhrase(id = "P"))
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         result shouldBe PracticeSessionResult.NothingToPractice
@@ -261,7 +270,7 @@ class ObtainPracticeSessionTest {
         val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"), aCatalogPhrase(id = "C"))
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         result.shouldBeInstanceOf<PracticeSessionResult.Ready>().isComplete shouldBe true
@@ -284,7 +293,7 @@ class ObtainPracticeSessionTest {
         val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"), aCatalogPhrase(id = "C"))
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         result.shouldBeInstanceOf<PracticeSessionResult.Ready>().isComplete shouldBe false
@@ -302,7 +311,7 @@ class ObtainPracticeSessionTest {
             val catalog = loaded(aCatalogPhrase(id = "A"))
 
             // When
-            val result = useCase(practice, catalog).invoke()
+            val result = useCase(practice, catalog).invoke(targetLocale)
 
             // Then
             val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
@@ -316,7 +325,7 @@ class ObtainPracticeSessionTest {
         val practice = FakePracticeRepository()
 
         // When
-        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)).invoke()
+        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)).invoke(targetLocale)
 
         // Then
         result shouldBe PracticeSessionResult.CatalogFailed(CatalogLoadError.AssetUnreadable)
@@ -329,7 +338,8 @@ class ObtainPracticeSessionTest {
         val practice = FakePracticeRepository()
 
         // When
-        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.MalformedDocument)).invoke()
+        val result = useCase(practice, CatalogLoadResult.Failed(CatalogLoadError.MalformedDocument))
+            .invoke(targetLocale)
 
         // Then
         result shouldBe PracticeSessionResult.CatalogFailed(CatalogLoadError.MalformedDocument)
@@ -343,7 +353,7 @@ class ObtainPracticeSessionTest {
         val catalog = loaded(aCatalogPhrase(id = "A"))
 
         // When
-        val result = useCase(practice, catalog).invoke()
+        val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
         result shouldBe PracticeSessionResult.NothingToPractice
@@ -361,7 +371,7 @@ class ObtainPracticeSessionTest {
             val catalog = loaded(aCatalogPhrase(id = "A"))
 
             // When
-            val error = shouldThrow<IllegalArgumentException> { useCase(practice, catalog).invoke() }
+            val error = shouldThrow<IllegalArgumentException> { useCase(practice, catalog).invoke(targetLocale) }
 
             // Then
             error.message shouldContain "ghost-phrase"

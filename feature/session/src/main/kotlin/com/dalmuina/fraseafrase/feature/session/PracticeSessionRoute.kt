@@ -15,12 +15,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
  * Progreso que ya existe en `:app` desde el enlace del mensaje de tanda completada (spec: practice-session, "El
  * mensaje ofrece ir a Progreso sin generar sesión"); no tiene efecto por defecto, igual que los callbacks de
  * navegación de otras `Route` (design D5 de `add-settings-apply-flow`), para que esta feature no conozca otras.
+ * [onNavigateToSettings] reenvía la navegación a Ajustes al tocar el icono de idioma de la cabecera (spec:
+ * language-indicator, "Tocar el icono navega a Ajustes"); tampoco tiene efecto por defecto.
  */
 @Composable
 fun PracticeSessionRoute(
     modifier: Modifier = Modifier,
     viewModel: PracticeSessionViewModel = hiltViewModel(),
     onNavigateToProgress: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
 ) {
     LaunchedEffect(Unit) { viewModel.onAction(PracticeSessionAction.Resume) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -29,5 +32,6 @@ fun PracticeSessionRoute(
         onAction = viewModel::onAction,
         modifier = modifier,
         onNavigateToProgress = onNavigateToProgress,
+        onNavigateToSettings = onNavigateToSettings,
     )
 }

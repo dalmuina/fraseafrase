@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.domain.settings
 
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
@@ -15,7 +16,7 @@ class ObtainUserSettingsTest {
         val obtainUserSettings = ObtainUserSettings(repository)
 
         // When
-        val result = obtainUserSettings()
+        val result = obtainUserSettings(LanguageTag("pt-PT"))
 
         // Then
         result shouldBe UserSettings.DEFAULT

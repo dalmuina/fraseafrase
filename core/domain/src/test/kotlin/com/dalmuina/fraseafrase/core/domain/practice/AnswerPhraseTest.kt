@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.domain.practice
 
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
@@ -27,7 +28,7 @@ class AnswerPhraseTest {
         val practice = FakePracticeRepository(batchOf("A", "B", "C"))
 
         // When
-        AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+        AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
         // Then
         practice.read().activeBatch?.order?.map { it.value } shouldBe listOf("B", "C", "A")
@@ -39,7 +40,7 @@ class AnswerPhraseTest {
         val practice = FakePracticeRepository(batchOf("A", "B"))
 
         // When
-        AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+        AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
         // Then
         val answered = practice.read().progress.first { it.id.value == "A" }
@@ -62,7 +63,7 @@ class AnswerPhraseTest {
             )
 
             // When
-            AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
+            AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.MISS)
 
             // Then
             val answered = practice.read().progress.first { it.id.value == "A" }
@@ -78,7 +79,7 @@ class AnswerPhraseTest {
 
         // When / Then
         shouldThrow<IllegalArgumentException> {
-            AnswerPhrase(practice).invoke(PhraseId("C"), SelfAssessment.HIT)
+            AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("C"), SelfAssessment.HIT)
         }
     }
 
@@ -89,7 +90,7 @@ class AnswerPhraseTest {
 
         // When / Then
         shouldThrow<IllegalArgumentException> {
-            AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+            AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
         }
     }
 
@@ -107,7 +108,7 @@ class AnswerPhraseTest {
         )
 
         // When
-        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+        val result = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
         // Then
         result.resultingLevel shouldBe Level(1)
@@ -126,7 +127,7 @@ class AnswerPhraseTest {
         )
 
         // When
-        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+        val result = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
         // Then
         result.resultingLevel shouldBe Level(2)
@@ -146,7 +147,7 @@ class AnswerPhraseTest {
             )
 
             // When
-            val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
+            val result = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.MISS)
 
             // Then
             result.resultingLevel shouldBe Level(1)
@@ -165,7 +166,7 @@ class AnswerPhraseTest {
         )
 
         // When
-        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
+        val result = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.MISS)
 
         // Then
         result.resultingLevel shouldBe Level(0)
@@ -185,7 +186,7 @@ class AnswerPhraseTest {
         )
 
         // When
-        val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.HIT)
+        val result = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
 
         // Then
         result.resultingLevel shouldBe Level(5)
@@ -212,9 +213,9 @@ class AnswerPhraseTest {
             val answerPhrase = AnswerPhrase(practice)
 
             // When: A acierta sin subir de nivel, B falla, y C acierta certificando de nivel 2 a nivel 3
-            answerPhrase.invoke(PhraseId("A"), SelfAssessment.HIT)
-            answerPhrase.invoke(PhraseId("B"), SelfAssessment.MISS)
-            answerPhrase.invoke(PhraseId("C"), SelfAssessment.HIT)
+            answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.HIT)
+            answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("B"), SelfAssessment.MISS)
+            answerPhrase.invoke(LanguageTag("pt-PT"), PhraseId("C"), SelfAssessment.HIT)
 
             // Then
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 2, misses = 1, levelUps = 1)
@@ -235,7 +236,7 @@ class AnswerPhraseTest {
             )
 
             // When
-            val result = AnswerPhrase(practice).invoke(PhraseId("A"), SelfAssessment.MISS)
+            val result = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.MISS)
 
             // Then
             result.undo.phraseId shouldBe PhraseId("A")

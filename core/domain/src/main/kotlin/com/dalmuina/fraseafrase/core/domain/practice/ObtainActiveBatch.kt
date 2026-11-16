@@ -2,7 +2,8 @@ package com.dalmuina.fraseafrase.core.domain.practice
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
-import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
@@ -15,18 +16,18 @@ import javax.inject.Inject
  */
 class ObtainActiveBatch @Inject constructor(
     private val composeNextBatch: ComposeNextBatch,
-    private val catalogRepository: CatalogRepository,
+    private val obtainCatalogPhrases: ObtainCatalogPhrasesForActiveLanguage,
     private val settingsRepository: SettingsRepository,
     private val practiceRepository: PracticeRepository,
 ) {
 
-    suspend operator fun invoke(): ActiveBatchResult {
-        val catalog = when (val loaded = catalogRepository.phrases()) {
+    suspend operator fun invoke(targetLocale: LanguageTag): ActiveBatchResult {
+        val catalog = when (val loaded = obtainCatalogPhrases(targetLocale)) {
             is CatalogLoadResult.Loaded -> loaded.phrases
             is CatalogLoadResult.Failed -> return ActiveBatchResult.CatalogUnavailable(loaded.error)
         }
-        val settings = settingsRepository.settings()
-        return practiceRepository.transact { snapshot ->
+        val settings = settingsRepository.settings(targetLocale)
+        return practiceRepository.transact(targetLocale) { snapshot ->
             snapshot.batch()?.let { PracticeChange(snapshot, ActiveBatchResult.Existing(it)) }
                 ?: compose(snapshot, catalog, settings)
         }

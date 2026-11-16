@@ -3,6 +3,7 @@ package com.dalmuina.fraseafrase.core.data.practice
 import androidx.room3.executeSQL
 import androidx.room3.useWriterConnection
 import androidx.sqlite.SQLiteException
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
@@ -25,6 +26,7 @@ class RoomPracticeDataSourceWriteTest {
 
     private lateinit var database: PracticeDatabase
     private lateinit var source: RoomPracticeDataSource
+    private val ptPt = LanguageTag("pt-PT")
 
     @BeforeEach
     fun openDatabase() {
@@ -44,10 +46,10 @@ class RoomPracticeDataSourceWriteTest {
         val dao = database.phraseProgressDao()
         dao.insert(entry(id = "A", level = 0, batchPosition = 0))
         dao.insert(entry(id = "B", level = 0, batchPosition = 1))
-        database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
 
         // When
-        source.transact { snapshot ->
+        source.transact(ptPt) { snapshot ->
             PracticeChange(
                 next = snapshot.copy(
                     activeBatch = ActiveBatch(order = listOf(PhraseId("B"), PhraseId("A")), capacity = BatchSize(10)),
@@ -57,7 +59,7 @@ class RoomPracticeDataSourceWriteTest {
         }
 
         // Then
-        source.read().batch()?.entries?.map { it.id.value } shouldContainExactly listOf("B", "A")
+        source.read(ptPt).batch()?.entries?.map { it.id.value } shouldContainExactly listOf("B", "A")
     }
 
     // Scenario: Fallo a mitad de la operación no deja estado parcial (spec: practice-persistence)
@@ -70,8 +72,8 @@ class RoomPracticeDataSourceWriteTest {
             dao.insert(entry(id = "A", level = 0, batchPosition = 0))
             dao.insert(entry(id = "B", level = 0, batchPosition = 1))
             dao.insert(entry(id = "C", level = 0, batchPosition = 2))
-            database.activeBatchDao().insert(ActiveBatchEntity(id = 1, capacity = 10))
-            database.sessionCounterDao().insert(SessionCounterEntity(id = 1, sessionCount = 5))
+            database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
+            database.sessionCounterDao().insert(SessionCounterEntity(targetLocale = "pt-PT", sessionCount = 5))
             database.useWriterConnection { transactor ->
                 transactor.executeSQL(
                     "CREATE TRIGGER fail_on_b BEFORE UPDATE ON phrase_progress " +
@@ -79,12 +81,12 @@ class RoomPracticeDataSourceWriteTest {
                         "BEGIN SELECT RAISE(ABORT, 'injected failure'); END",
                 )
             }
-            val before = source.read()
+            val before = source.read(ptPt)
 
             // When / Then: se genera sesión, lo que vacía la tanda y la vuelve a componer solo con A, e incrementa
             // el contador; la escritura final de B falla y debe deshacer también la de A y la del contador
             shouldThrow<SQLiteException> {
-                source.transact { snapshot ->
+                source.transact(ptPt) { snapshot ->
                     PracticeChange(
                         next = snapshot.copy(
                             activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(10)),
@@ -95,16 +97,55 @@ class RoomPracticeDataSourceWriteTest {
                 }
             }
 
-            source.read() shouldBe before
+            source.read(ptPt) shouldBe before
         }
+
+    // Scenario: Fallo a mitad de la operación no deja estado parcial, sin afectar al otro idioma destino
+    // (spec: practice-persistence)
+    @Test
+    fun `given a failure for one locale then the other locale state is untouched`() = runTest {
+        // Given: pt-PT con un fallo inyectado al salir B de la tanda; pt-BR con su propia tanda activa intacta
+        val ptBr = LanguageTag("pt-BR")
+        val dao = database.phraseProgressDao()
+        dao.insert(entry(id = "A", level = 0, batchPosition = 0, targetLocale = "pt-PT"))
+        dao.insert(entry(id = "B", level = 0, batchPosition = 1, targetLocale = "pt-PT"))
+        dao.insert(entry(id = "X", level = 0, batchPosition = 0, targetLocale = "pt-BR"))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-BR", capacity = 10))
+        database.useWriterConnection { transactor ->
+            transactor.executeSQL(
+                "CREATE TRIGGER fail_on_b BEFORE UPDATE ON phrase_progress " +
+                    "WHEN NEW.phrase_id = 'B' AND NEW.batch_position IS NULL " +
+                    "BEGIN SELECT RAISE(ABORT, 'injected failure'); END",
+            )
+        }
+        val beforePtBr = source.read(ptBr)
+
+        // When: falla la transacción de pt-PT
+        shouldThrow<SQLiteException> {
+            source.transact(ptPt) { snapshot ->
+                PracticeChange(
+                    next = snapshot.copy(
+                        activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(10)),
+                    ),
+                    result = Unit,
+                )
+            }
+        }
+
+        // Then: pt-BR no se modifica
+        source.read(ptBr) shouldBe beforePtBr
+    }
 
     private fun entry(
         id: String,
         level: Int,
         batchPosition: Int? = null,
         dueAtSession: Int = 0,
+        targetLocale: String = "pt-PT",
     ) = PhraseProgressEntity(
         phraseId = id,
+        targetLocale = targetLocale,
         level = level,
         streak = 0,
         answeredInBatch = false,

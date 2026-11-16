@@ -274,7 +274,11 @@ class FraseAFraseAppTest {
         const val NAV_TAG_PRACTICE_INDICATOR = "nav-practice-indicator"
         const val NAV_TAG_PROGRESS_LABEL = "nav-progress-label"
         const val NAV_TAG_SETTINGS_LABEL = "nav-settings-label"
-        const val WAIT_TIMEOUT_MILLIS = 5_000L
+
+        // El catálogo ahora siembra dos idiomas destino en Room en el primer arranque (ADR-0019), en vez
+        // de solo parsear un JSON en memoria: el margen sube para no depender de que ese sembrado único
+        // termine en menos de 5 s en un emulador frío.
+        const val WAIT_TIMEOUT_MILLIS = 10_000L
         val NAV_FLOATING_MARGIN = 16.dp
         val NAV_INDICATOR_WIDTH = 64.dp
         val NAV_INDICATOR_HEIGHT = 32.dp

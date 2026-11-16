@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.feature.session
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageBadge
 import com.dalmuina.fraseafrase.core.designsystem.component.DsProgressBar
 import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTile
 import com.dalmuina.fraseafrase.core.designsystem.component.DsStatTileSize
@@ -63,12 +65,18 @@ internal fun PracticeSessionScreen(
     onAction: (PracticeSessionAction) -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToProgress: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             if (uiState is PracticeSessionUiState.Practicing && !uiState.completed) {
-                PracticeHeader(index = uiState.index, total = uiState.total)
+                PracticeHeader(
+                    index = uiState.index,
+                    total = uiState.total,
+                    languageCode = uiState.activeTargetLocale.value,
+                    onNavigateToSettings = onNavigateToSettings,
+                )
             }
         },
     ) { innerPadding ->
@@ -140,7 +148,12 @@ internal fun PracticeSessionScreen(
  * literales nuevos, igual que ya hace [PhraseCard] con el padding de 20 de la tarjeta de frase).
  */
 @Composable
-private fun PracticeHeader(index: Int, total: Int) {
+private fun PracticeHeader(
+    index: Int,
+    total: Int,
+    languageCode: String,
+    onNavigateToSettings: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -163,15 +176,26 @@ private fun PracticeHeader(index: Int, total: Int) {
                 text = stringResource(R.string.practice_title),
                 style = MaterialTheme.typography.headlineLarge,
             )
-            Surface(
-                shape = MaterialTheme.shapes.extraLarge,
-                color = AppColors.AccentSoft,
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.s),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = stringResource(R.string.practice_position, index, total),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = AppColors.AccentStrong,
-                    modifier = Modifier.padding(horizontal = AppTheme.spacing.m, vertical = AppTheme.spacing.s),
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = AppColors.AccentSoft,
+                ) {
+                    Text(
+                        text = stringResource(R.string.practice_position, index, total),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = AppColors.AccentStrong,
+                        modifier = Modifier.padding(horizontal = AppTheme.spacing.m, vertical = AppTheme.spacing.s),
+                    )
+                }
+                DsLanguageBadge(
+                    languageCode = languageCode,
+                    modifier = Modifier
+                        .clickable(onClick = onNavigateToSettings)
+                        .testTag("practice_language_badge"),
                 )
             }
         }

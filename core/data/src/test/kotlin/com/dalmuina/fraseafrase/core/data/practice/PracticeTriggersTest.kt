@@ -18,9 +18,10 @@ class PracticeTriggersTest {
     @TempDir
     lateinit var directory: Path
 
-    // Scenario: los seis triggers existen tras abrir la base (design D5, invariantes en triggers)
+    // Scenario: los cuatro triggers existen tras abrir la base (design D5/"PracticeDatabase v4", invariantes en
+    // triggers; sin active_batch_singleton desde v4, porque la PK target_locale ya garantiza una fila por idioma)
     @Test
-    fun `given a freshly opened database when reading sqlite_master then the six triggers exist`() = runTest {
+    fun `given a freshly opened database when reading sqlite_master then the four triggers exist`() = runTest {
         // Given
         val database = inMemoryPracticeDatabase()
 
@@ -70,7 +71,6 @@ class PracticeTriggersTest {
     private companion object {
         val expectedTriggerNames = listOf(
             "phrase_progress_level_range",
-            "active_batch_singleton",
             "active_batch_capacity",
         ).flatMap { listOf("${it}_insert", "${it}_update") }
     }

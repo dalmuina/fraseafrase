@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.feature.session
 
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeItem
 
 /**
@@ -27,7 +28,9 @@ sealed interface PracticeSessionUiState {
      * desglose acumulado de la tanda activa (`BatchOutcome` del dominio): cuántas autoevaluaciones fueron
      * acierto, cuántas fallo y cuántas frases subieron de nivel de consolidación en algún momento de la tanda.
      * El mensaje de tanda completada los muestra mientras [completed] es `true` (spec: practice-session, "El
-     * mensaje muestra el desglose de aciertos, fallos y subidas de nivel").
+     * mensaje muestra el desglose de aciertos, fallos y subidas de nivel"). [activeTargetLocale] es el idioma
+     * destino activo, para el icono de la cabecera (spec: language-indicator, "Icono del idioma activo en la
+     * cabecera").
      */
     data class Practicing(
         val current: PracticeItem,
@@ -43,6 +46,7 @@ sealed interface PracticeSessionUiState {
         val hits: Int = 0,
         val misses: Int = 0,
         val levelUps: Int = 0,
+        val activeTargetLocale: LanguageTag = LanguageTag("pt-PT"),
     ) : PracticeSessionUiState
 
     /** No hay frases para practicar (ADR-0012). */

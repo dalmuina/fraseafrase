@@ -12,12 +12,13 @@ import androidx.sqlite.execSQL
  * Room no tiene CHECK en sus anotaciones, así que cada invariante es un trigger BEFORE INSERT y BEFORE UPDATE que
  * aborta la sentencia. Los triggers se crean en cada apertura con `IF NOT EXISTS`, no solo al crear la base: una
  * migración que recrea tablas los elimina sin aviso y Room no los conoce (design D5, revisión). Los UNIQUE de posición
- * sí son índices de Room.
+ * sí son índices de Room. Desde `PracticeDatabase` v4 (ADR-0019, design "PracticeDatabase v4") ya no hay un trigger
+ * de singleton de `active_batch`: la PK `target_locale` garantiza como máximo una fila por idioma destino sin
+ * necesitar un trigger.
  */
 internal object PracticeSchema {
 
     private const val LEVEL_RANGE_MESSAGE = "level must be 0..5"
-    private const val SINGLETON_MESSAGE = "active_batch has a single row with id 1"
     private const val CAPACITY_MESSAGE = "capacity must be 10..30"
 
     val triggers: List<String> = listOf(
@@ -26,12 +27,6 @@ internal object PracticeSchema {
             table = "phrase_progress",
             condition = "NEW.level < 0 OR NEW.level > 5",
             message = LEVEL_RANGE_MESSAGE,
-        ),
-        guard(
-            name = "active_batch_singleton",
-            table = "active_batch",
-            condition = "NEW.id <> 1",
-            message = SINGLETON_MESSAGE,
         ),
         guard(
             name = "active_batch_capacity",

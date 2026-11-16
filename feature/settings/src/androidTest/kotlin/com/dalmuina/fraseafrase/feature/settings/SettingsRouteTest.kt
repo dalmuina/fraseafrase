@@ -4,12 +4,18 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.practice.RegenerateActiveBatchForLevel
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SaveUserSettings
+import com.dalmuina.fraseafrase.core.domain.settings.SelectActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
@@ -82,13 +88,21 @@ class SettingsRouteTest {
 
     private fun settingsViewModel(repository: SettingsRepository): SettingsViewModel {
         val practice = TestPracticeRepository()
+        val catalogRepository = TestCatalogRepository()
+        val obtainAvailableLanguages = ObtainAvailableLanguages(catalogRepository)
         return SettingsViewModel(
             obtainUserSettings = ObtainUserSettings(repository),
             saveUserSettings = SaveUserSettings(repository),
+            obtainActiveLanguage = ObtainActiveLanguage(repository),
+            obtainAvailableLanguages = obtainAvailableLanguages,
+            selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, repository),
             regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
                 practiceRepository = practice,
                 composeNextBatch = ComposeNextBatch(),
-                catalogRepository = TestCatalogRepository(),
+                obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                    deviceLocaleProvider = TestDeviceLocaleProvider(),
+                    catalogRepository = catalogRepository,
+                ),
             ),
         )
     }
@@ -96,9 +110,18 @@ class SettingsRouteTest {
     /** Fake local de [SettingsRepository]: devuelve los ajustes configurados y recuerda el último guardado. */
     private class TestSettingsRepository(initial: UserSettings) : SettingsRepository {
         private var settings: UserSettings = initial
-        override suspend fun settings(): UserSettings = settings
-        override suspend fun save(settings: UserSettings) {
+        private var activeTargetLocale: LanguageTag = LOCALE
+
+        override suspend fun settings(targetLocale: LanguageTag): UserSettings = settings
+
+        override suspend fun save(targetLocale: LanguageTag, settings: UserSettings) {
             this.settings = settings
+        }
+
+        override suspend fun activeTargetLocale(): LanguageTag = activeTargetLocale
+
+        override suspend fun setActiveTargetLocale(targetLocale: LanguageTag) {
+            activeTargetLocale = targetLocale
         }
     }
 
@@ -111,9 +134,12 @@ class SettingsRouteTest {
             sessionCount = 0,
         )
 
-        override suspend fun read(): PracticeSnapshot = mutex.withLock { state }
+        override suspend fun read(targetLocale: LanguageTag): PracticeSnapshot = mutex.withLock { state }
 
-        override suspend fun <T> transact(change: (PracticeSnapshot) -> PracticeChange<T>): T = mutex.withLock {
+        override suspend fun <T> transact(
+            targetLocale: LanguageTag,
+            change: (PracticeSnapshot) -> PracticeChange<T>,
+        ): T = mutex.withLock {
             val outcome = change(state)
             state = outcome.next
             outcome.result
@@ -122,10 +148,21 @@ class SettingsRouteTest {
 
     /** Fake local de [CatalogRepository], sin frases: basta para que [RegenerateActiveBatchForLevel] no falle. */
     private class TestCatalogRepository : CatalogRepository {
-        override suspend fun phrases(): CatalogLoadResult = CatalogLoadResult.Loaded(emptyList())
+        override suspend fun availableTargetLocales(): List<LanguageTag> = listOf(LOCALE)
+
+        override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> = emptyList()
+
+        override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult =
+            CatalogLoadResult.Loaded(emptyList())
+    }
+
+    /** Fake local de [DeviceLocaleProvider]: el locale del dispositivo no importa en este test. */
+    private class TestDeviceLocaleProvider : DeviceLocaleProvider {
+        override fun current(): LanguageTag = LOCALE
     }
 
     private companion object {
         const val WAIT_TIMEOUT_MILLIS = 5_000L
+        val LOCALE = LanguageTag("pt-PT")
     }
 }

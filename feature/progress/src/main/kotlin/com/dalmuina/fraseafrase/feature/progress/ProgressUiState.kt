@@ -1,6 +1,7 @@
 package com.dalmuina.fraseafrase.feature.progress
 
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 
 /**
@@ -16,12 +17,14 @@ sealed interface ProgressUiState {
      * [cefrLevel] es el nivel CEFR vigente de los ajustes (spec `progress-overview`, "Total de frases
      * disponibles y nivel CEFR vigente"). [byLevel] tiene una entrada por cada nivel de 0 a
      * [Level.MAX_LEVEL] con el total del catálogo en ese nivel. Ninguno de estos datos depende de si
-     * hay tanda activa.
+     * hay tanda activa. [activeTargetLocale] es el idioma destino activo, para el icono de la cabecera
+     * (spec: language-indicator, "Icono del idioma activo en la cabecera").
      */
     data class Content(
         val totalAvailable: Int,
         val cefrLevel: CefrLevel,
         val byLevel: Map<Level, Int>,
+        val activeTargetLocale: LanguageTag = LanguageTag("pt-PT"),
     ) : ProgressUiState
 
     /** El catálogo no se pudo leer: no hay ningún número que mostrar (spec `progress-overview`). */

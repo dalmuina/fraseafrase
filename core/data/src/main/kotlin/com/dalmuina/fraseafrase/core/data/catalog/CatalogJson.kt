@@ -20,6 +20,26 @@ object CatalogJson {
     private const val SUPPORTED_SCHEMA_VERSION = 1
     private val json = Json { ignoreUnknownKeys = true }
 
+    /**
+     * Cabecera de un documento (schemaVersion + targetLocale), sin validar el resto. El sembrado de
+     * [RoomCatalogDataSource] la usa para decidir si resembrar un idioma destino antes de (y aunque falle) el
+     * `parse` completo.
+     */
+    fun headerOf(text: String): CatalogHeader? {
+        // Decodifica solo la cabecera (sin `phrases`): con `ignoreUnknownKeys` ya activo en [json], el
+        // array de frases se salta durante el parseo en vez de materializarse en memoria, para no pagar
+        // el coste de las ~1000 frases dos veces por idioma destino en cada arranque (una vez aquí, otra
+        // en `parse`, cuando el sembrado sí hace falta).
+        val document = runCatching { json.decodeFromString<CatalogHeaderDocument>(text) }.getOrNull()
+        val schemaVersion = document?.schemaVersion
+        val targetLocale = document?.targetLocale?.takeIf { isValidLocale(it) }
+        return if (schemaVersion != null && targetLocale != null) {
+            CatalogHeader(schemaVersion = schemaVersion, targetLocale = targetLocale)
+        } else {
+            null
+        }
+    }
+
     fun parse(text: String): CatalogLoadResult {
         val document = runCatching { json.decodeFromString<CatalogDocument>(text) }
             .getOrElse { return CatalogLoadResult.Failed(CatalogLoadError.MalformedDocument) }
@@ -83,6 +103,15 @@ object CatalogJson {
 
     private fun isValidLocale(tag: String?): Boolean = tag != null && LanguageTag.isWellFormed(tag)
 }
+
+/** Cabecera mínima de un documento de catálogo, usada por el sembrado antes de validarlo por completo. */
+data class CatalogHeader(val schemaVersion: Int, val targetLocale: String)
+
+@Serializable
+private data class CatalogHeaderDocument(
+    val schemaVersion: Int? = null,
+    val targetLocale: String? = null,
+)
 
 @Serializable
 private data class CatalogDocument(
