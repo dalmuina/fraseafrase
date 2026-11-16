@@ -2,7 +2,7 @@
 
 ## 1. ADR
 
-- [ ] 1.1 Redactar `docs/adr/0020-respaldo-de-origen-sin-coincidir-con-el-destino.md` (Propuesto),
+- [x] 1.1 Redactar `docs/adr/0020-respaldo-de-origen-sin-coincidir-con-el-destino.md` (Propuesto),
   `Modifica a: ADR-0019`, con la regla de respaldo de `ResolveSourceLocale` fijada en design.md.
   Añadir la fila de ADR-0020 a la tabla de `docs/adr/README.md`.
 
