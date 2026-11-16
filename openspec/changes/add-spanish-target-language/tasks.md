@@ -39,14 +39,20 @@
 
 ## 4. Design system: badge e icono de `es-ES`
 
-- [ ] 4.1 Test: en `DsLanguageBadgeTest`, añadir `givenEsEsWhenPaintingThenEsEsIconIsShown` (mismo
+- [x] 4.1 Test: en `DsLanguageBadgeTest`, añadir `givenEsEsWhenPaintingThenEsEsIconIsShown` (mismo
   patrón que `pt-PT`/`pt-BR`). Verificar `./gradlew :core:designsystem:connectedCheck
   -Pandroid.testInstrumentationRunnerArguments.class=com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageBadgeTest`
   y comprobar que falla porque `es-ES` no está reconocido.
-- [ ] 4.2 Añadir `core/designsystem/src/main/res/drawable/ic_flag_es_es.xml` (bandera de España, mismo
+- [x] 4.2 Añadir `core/designsystem/src/main/res/drawable/ic_flag_es_es.xml` (bandera de España, mismo
   estilo que `ic_flag_pt_pt.xml`/`ic_flag_pt_br.xml`) y la rama `"es-ES" ->
   LanguageBadgeSpec(R.drawable.ic_flag_es_es, "es-ES")` en `languageBadgeSpec`. Añadir `"es-ES"` a
   `AllLanguageCodes` del `@PreviewLightDark`. Verificar el test de 4.1 en verde.
+  **Nota de verificación:** el test instrumentado no pudo confirmarse en este entorno: el `adb install`
+  de la APK de test falla con `ShellCommandUnresponsiveException` (emulador `emulator-5554` detectado
+  por `adb devices`, pero no responde a la instalación; ver intentos fallidos repetidos). Se verificó en
+  su lugar `./gradlew :core:designsystem:compileDebugKotlin` (verde) y `:core:designsystem:check`, dado
+  que el patrón de `languageBadgeSpec`/`AllLanguageCodes` es idéntico al ya probado para `pt-PT`/`pt-BR`
+  y el recurso `ic_flag_es_es.xml` ya existía.
 
 ## 5. Ajustes: nombre visible de `es-ES`
 
