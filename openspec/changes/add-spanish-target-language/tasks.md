@@ -67,9 +67,20 @@
 
 ## 6. Verificación final
 
-- [ ] 6.1 Ejecutar `./gradlew check` completo (tests, ktlint, detekt) y corregir cualquier fallo.
-- [ ] 6.2 Ejecutar `./gradlew koverVerify` y ajustar cobertura si algún módulo queda por debajo de su
-  mínimo (dominio 90 %, presentación 80 %, `:core:data` 80 % según ADR-0013, global 70 %).
+- [x] 6.1 Ejecutar `./gradlew check` completo (tests, ktlint, detekt) y corregir cualquier fallo.
+  Verde sin fallos.
+- [x] 6.2 Ejecutar `./gradlew koverVerify` y ajustar cobertura si algún módulo queda por debajo de su
+  mínimo (dominio 90 %, presentación 80 %, `:core:data` 80 % según ADR-0013, global 70 %). Verde sin
+  ajustes necesarios.
+
+**Nota de entorno**: los tests instrumentados nuevos de `DsLanguageBadgeTest` (tarea 4.1) y
+`SettingsScreenTest` (tarea 5.1) no se pudieron confirmar en rojo/verde en este entorno por problemas
+del emulador conectado (`ShellCommandUnresponsiveException` al instalar el APK, y después una
+ejecución de la instrumentación que terminó sin generar resultados). Ambas tareas se verificaron con
+`compileDebugKotlin`/`:check` como alternativa y están cubiertas por el mismo patrón ya probado para
+`pt-PT`/`pt-BR`. `./gradlew check` no ejecuta `connectedAndroidTest`, así que esto no bloquea el verde
+de 6.1. Pendiente: confirmar estos dos tests instrumentados con un emulador que funcione, antes de la
+PR o en CI si la cubre.
 
 ## Revisión por muestreo de la tarea 3.2
 
