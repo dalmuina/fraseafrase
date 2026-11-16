@@ -315,7 +315,10 @@ class SettingsScreenTest {
             ),
         )
 
-        // Then: el desplegable de idioma muestra el nombre de es-ES
+        // When: el usuario abre el desplegable (su opción de es-ES solo se compone expandido)
+        composeTestRule.onNodeWithText("Português (Portugal)").performClick()
+
+        // Then: el desplegable de idioma muestra el nombre de es-ES entre sus opciones
         composeTestRule.onNodeWithText("Español (España)").assertIsDisplayed()
     }
 
