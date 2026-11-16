@@ -29,6 +29,11 @@ idioma destino del resultado:
 2. Si no, y `es-ES` está entre los orígenes disponibles para ese destino (y no es el propio destino),
    se usa `es-ES` - preserva el comportamiento ya observable para `pt-PT`/`pt-BR`.
 3. Si no, se usa el primer origen disponible para ese destino distinto del propio destino.
+4. Si no hay ningún origen disponible distinto del propio destino (el catálogo de ese idioma destino
+   falló al cargar o está vacío), se usa el locale del dispositivo tal cual, sin lanzar error: en ese
+   caso no hay ninguna noción de "origen disponible" que respetar, y el resultado no tiene efecto
+   observable porque la consulta de frases ya va a devolver el mismo fallo de catálogo con
+   independencia del origen que se le pase.
 
 Esta regla sustituye únicamente la frase de ADR-0019 "si el catálogo no tiene contenido para ese
 locale como origen, se usa `es-ES` por defecto" por una regla que nunca puede resolver un origen igual

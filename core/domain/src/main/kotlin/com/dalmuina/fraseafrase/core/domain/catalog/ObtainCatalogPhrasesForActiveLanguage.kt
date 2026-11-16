@@ -15,7 +15,7 @@ class ObtainCatalogPhrasesForActiveLanguage @Inject constructor(
 
     suspend operator fun invoke(targetLocale: LanguageTag): CatalogLoadResult {
         val available = catalogRepository.availableSourceLocales(targetLocale)
-        val sourceLocale = ResolveSourceLocale(deviceLocaleProvider.current(), available)
+        val sourceLocale = ResolveSourceLocale(deviceLocaleProvider.current(), targetLocale, available)
         return catalogRepository.phrases(targetLocale, sourceLocale)
     }
 }

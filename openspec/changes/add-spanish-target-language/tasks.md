@@ -8,16 +8,16 @@
 
 ## 2. Dominio: `ResolveSourceLocale` sin coincidir con el destino
 
-- [ ] 2.1 Test: en `ResolveSourceLocaleTest`, añadir el escenario "el respaldo no coincide con el
+- [x] 2.1 Test: en `ResolveSourceLocaleTest`, añadir el escenario "el respaldo no coincide con el
   propio destino" (spec `phrase-catalog`, idem design.md) - `targetLocale` `es-ES`, `available`
   `[pt-PT]`, `deviceLocale` `es-ES`, debe resolver `pt-PT`. Adaptar los dos tests existentes a la
   nueva firma con `targetLocale`. Ejecutar `./gradlew :core:domain:test` y comprobar que el test
   nuevo falla (firma inexistente) y los adaptados compilan en rojo.
-- [ ] 2.2 Implementar la nueva firma de `ResolveSourceLocale` de design.md (excluye `targetLocale` de
+- [x] 2.2 Implementar la nueva firma de `ResolveSourceLocale` de design.md (excluye `targetLocale` de
   `available`, prefiere `es-ES` entre los candidatos, si no el primero disponible). Actualizar
   `ObtainCatalogPhrasesForActiveLanguage` para pasar `targetLocale`. Verificar
   `./gradlew :core:domain:test` en verde.
-- [ ] 2.3 Test: en `ObtainCatalogPhrasesForActiveLanguageTest`, comprobar que `targetLocale` llega a
+- [x] 2.3 Test: en `ObtainCatalogPhrasesForActiveLanguageTest`, comprobar que `targetLocale` llega a
   `ResolveSourceLocale` (p. ej. con un `FakeCatalogRepository` cuyo único `sourceLocale` disponible
   coincide con el `targetLocale` consultado, y verificando que no se usa como origen). Verificar
   `./gradlew :core:domain:test`.

@@ -86,7 +86,8 @@ object ResolveSourceLocale {
         val candidates = available.filterNot { it == targetLocale }
         return candidates.firstOrNull { it == deviceLocale }
             ?: candidates.firstOrNull { it == LanguageTag("es-ES") }
-            ?: candidates.first()
+            ?: candidates.firstOrNull()
+            ?: deviceLocale
     }
 }
 ```
@@ -94,15 +95,21 @@ object ResolveSourceLocale {
 - `candidates` excluye explícitamente `targetLocale` de `available` antes de elegir: aunque algún
   idioma destino futuro llegara a tener su propio código entre sus orígenes disponibles (no ocurre
   hoy: cada documento de catálogo declara un `sourceLocale` distinto de su `targetLocale`), el
-  resultado nunca podría ser "un idioma desde sí mismo".
+  resultado nunca podría ser "un idioma desde sí mismo" **mientras exista al menos un origen
+  disponible distinto del destino**.
 - Se sigue preferiendo `es-ES` como respaldo cuando está disponible y no es el propio destino, para no
   cambiar el comportamiento observable de `pt-PT`/`pt-BR` (su único origen disponible sigue siendo
   `es-ES`).
-- `candidates.first()` no lanza `NoSuchElementException` en la práctica: `available` para un
-  `targetLocale` ya sembrado nunca está vacío (ver Context), y le basta con tener un elemento distinto
-  de `targetLocale` porque ningún documento de catálogo declara su propio `targetLocale` como
-  `sourceLocale`. Queda cubierto por un test unitario que lo fija como invariante, no por manejo de
-  error: si algún día se incumpliera, es un error de contenido del catálogo, no un caso a silenciar.
+- `candidates` puede estar vacío: no solo si `available` solo contenía `targetLocale` (no ocurre hoy),
+  sino sobre todo cuando el catálogo de ese idioma destino falló al cargar o está vacío (asset no
+  legible, documento malformado, catálogo agotado) y `availableSourceLocales()` devuelve `[]` por ese
+  motivo, no por el filtrado. Ese caso ya existe hoy en los flujos de error de `practice-batch` y
+  `progress-overview` (tests con catálogo ilegible/malformado). En ese caso no hay ninguna noción de
+  "origen disponible" que respetar, así que el último recurso es devolver `deviceLocale` tal cual, sin
+  lanzar: el resultado no tiene efecto observable porque `CatalogRepository.phrases(targetLocale,
+  sourceLocale)` ya va a devolver el mismo fallo de catálogo con independencia del `sourceLocale` que
+  se le pase. Esto corrige la asunción original de este documento ("`available` para un `targetLocale`
+  ya sembrado nunca está vacío"), que no se sostiene para catálogos que fallan al cargar.
 
 **Alternativa descartada**: excluir `es-ES` de `availableTargetLocales()` cuando el origen resuelto
 coincidiera con él, o excluirlo de la lista de Ajustes. Se descarta porque el problema no es que
