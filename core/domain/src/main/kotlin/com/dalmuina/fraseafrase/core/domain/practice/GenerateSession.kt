@@ -27,10 +27,14 @@ class GenerateSession @Inject constructor(
             is CatalogLoadResult.Failed -> return ActiveBatchResult.CatalogUnavailable(loaded.error)
         }
         val settings = settingsRepository.settings(targetLocale)
-        return practiceRepository.transact(targetLocale) { snapshot ->
+        val result = practiceRepository.transact(targetLocale) { snapshot ->
             val nextSessionCount = snapshot.sessionCount + 1
             val cleared = snapshot.copy(activeBatch = null, sessionCount = nextSessionCount)
             composeNextBatchInto(composeNextBatch, cleared, catalog, settings, nextSessionCount)
         }
+        if (result is ActiveBatchResult.Created) {
+            settingsRepository.recordAppliedSettings(targetLocale, settings)
+        }
+        return result
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -89,7 +90,7 @@ class FraseAFraseAppTest {
         composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS).performClick()
 
         composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS).assertIsSelected()
-        composeTestRule.onNodeWithText("Guardar").assertExists()
+        composeTestRule.onNodeWithTag(SETTINGS_LANGUAGE_CARD_TAG).assertExists()
     }
 
     // Scenario: Volver a la práctica desde cualquier destino (spec: app-navigation)
@@ -109,7 +110,23 @@ class FraseAFraseAppTest {
     @Test
     fun givenSettingsScreen_whenSelectingPractice_thenPracticeIsShownAndSelected() {
         composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS).performClick()
-        composeTestRule.onNodeWithText("Guardar").assertExists()
+        composeTestRule.onNodeWithTag(SETTINGS_LANGUAGE_CARD_TAG).assertExists()
+
+        composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE).performClick()
+
+        composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE).assertIsSelected()
+        waitForPracticeScreen()
+    }
+
+    // Scenario: El guardado deja de ser una acción explícita (spec: settings-screen, "Guardado de los
+    // ajustes editados"): tras editar el nivel CEFR en Ajustes, pulsar la pestaña "Práctica" navega con
+    // normalidad, sin pasar por ningún botón "Guardar" (eliminado) ni mostrar confirmación alguna.
+    @Test
+    fun givenSettingsScreenWithAnEditedCefrLevel_whenSelectingPractice_thenPracticeIsShownAndSelected() {
+        composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS).performClick()
+        waitForSettingsScreen()
+
+        composeTestRule.onNodeWithText("B1").performClick()
 
         composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE).performClick()
 
@@ -263,6 +280,12 @@ class FraseAFraseAppTest {
         }
     }
 
+    private fun waitForSettingsScreen() {
+        composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) {
+            composeTestRule.onAllNodesWithTag(SETTINGS_LANGUAGE_CARD_TAG).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
     private companion object {
         const val NAV_TAG_PRACTICE = "nav-practice"
         const val NAV_TAG_PROGRESS = "nav-progress"
@@ -274,6 +297,7 @@ class FraseAFraseAppTest {
         const val NAV_TAG_PRACTICE_INDICATOR = "nav-practice-indicator"
         const val NAV_TAG_PROGRESS_LABEL = "nav-progress-label"
         const val NAV_TAG_SETTINGS_LABEL = "nav-settings-label"
+        const val SETTINGS_LANGUAGE_CARD_TAG = "settings_language_card"
 
         // El catálogo ahora siembra dos idiomas destino en Room en el primer arranque (ADR-0019), en vez
         // de solo parsear un JSON en memoria: el margen sube para no depender de que ese sembrado único

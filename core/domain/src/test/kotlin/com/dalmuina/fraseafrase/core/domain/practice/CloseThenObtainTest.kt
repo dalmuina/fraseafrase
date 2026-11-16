@@ -34,13 +34,16 @@ class CloseThenObtainTest {
 
     private fun obtain(practice: FakePracticeRepository, catalogResult: CatalogLoadResult = catalog) =
         ObtainActiveBatch(
-            composeNextBatch = ComposeNextBatch(),
-            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-                deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-                catalogRepository = FakeCatalogRepository(catalogResult),
-            ),
             settingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
             practiceRepository = practice,
+            regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+                practiceRepository = practice,
+                composeNextBatch = ComposeNextBatch(),
+                obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                    deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+                    catalogRepository = FakeCatalogRepository(catalogResult),
+                ),
+            ),
         )
 
     private suspend fun close(practice: FakePracticeRepository) {

@@ -31,15 +31,18 @@ class ObtainActiveBatchTest {
     private fun useCase(
         practice: FakePracticeRepository,
         catalog: CatalogLoadResult,
-        settings: UserSettings = UserSettings.DEFAULT,
+        settingsRepository: FakeSettingsRepository = FakeSettingsRepository(),
     ) = ObtainActiveBatch(
-        composeNextBatch = ComposeNextBatch(),
-        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-            deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-            catalogRepository = FakeCatalogRepository(catalog),
-        ),
-        settingsRepository = FakeSettingsRepository(settings),
+        settingsRepository = settingsRepository,
         practiceRepository = practice,
+        regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+            practiceRepository = practice,
+            composeNextBatch = ComposeNextBatch(),
+            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+                deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+                catalogRepository = FakeCatalogRepository(catalog),
+            ),
+        ),
     )
 
     private fun a1Catalog(count: Int) = CatalogLoadResult.Loaded(
@@ -163,5 +166,131 @@ class ObtainActiveBatchTest {
 
             // Then
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
+        }
+
+    // Scenario: Ajustes aplicados distintos recomponen sin tocar el progreso (spec: practice-persistence,
+    // "Recomposición de la tanda activa al detectar ajustes aplicados distintos")
+    @Test
+    fun `given different applied settings when obtaining the batch then it recomposes without touching progress`() =
+        runTest {
+            // Given: tanda activa compuesta con A1/N10, registrada como aplicada, y una frase con racha 2
+            val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(10)))
+            settingsRepository.recordAppliedSettings(targetLocale, UserSettings(CefrLevel.A1, BatchSize(10)))
+            val trackedPhrase = aPhraseProgress(id = "A", level = Level(2), streak = Streak(2), dueAtSession = 5)
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(trackedPhrase),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(10)),
+                    sessionCount = 3,
+                ),
+            )
+            val catalog = CatalogLoadResult.Loaded(
+                listOf(aCatalogPhrase(id = "A", level = CefrLevel.A1)) +
+                    (1..10).map { aCatalogPhrase(id = "b1-%02d".format(it), level = CefrLevel.B1) },
+            )
+
+            // When: los ajustes guardados pasan a B1 y se obtiene la tanda activa
+            val result = useCase(practice, catalog, settingsRepository).invoke(targetLocale)
+
+            // Then: se recompone con frases B1, sin incrementar el contador de sesiones ni tocar el progreso
+            val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
+            created.batch.entries.map { it.id.value }.shouldContain("b1-01")
+            practice.read().sessionCount shouldBe 3
+            val stored = practice.read().progress.single { it.id.value == "A" }
+            stored.streak shouldBe Streak(2)
+            stored.level shouldBe Level(2)
+            stored.dueAtSession shouldBe 5
+        }
+
+    // Scenario: Ajustes aplicados iguales no recomponen (spec: practice-persistence)
+    @Test
+    fun `given applied settings equal to saved ones when obtaining the batch then it does not recompose`() =
+        runTest {
+            // Given: tanda activa compuesta con B1/N20, registrada como aplicada y vigente
+            val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(20)))
+            settingsRepository.recordAppliedSettings(targetLocale, UserSettings(CefrLevel.B1, BatchSize(20)))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(aPhraseProgress(id = "A")),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(20)),
+                    sessionCount = 1,
+                ),
+            )
+
+            // When
+            val result = useCase(practice, a1Catalog(5), settingsRepository).invoke(targetLocale)
+
+            // Then: se devuelve la misma tanda activa, sin recomponerla
+            val existing = result.shouldBeInstanceOf<ActiveBatchResult.Existing>()
+            existing.batch.entries.map { it.id.value } shouldBe listOf("A")
+        }
+
+    // Scenario: Sin ajustes aplicados registrados todavía no se recompone (spec: practice-persistence)
+    @Test
+    fun `given no applied settings registered when obtaining the batch then it returns the existing batch as is`() =
+        runTest {
+            // Given: tanda activa sin ningún ajuste aplicado registrado, y ajustes guardados distintos del nivel
+            // con el que se compuso (irrelevante aquí porque no hay nada que comparar)
+            val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(20)))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(aPhraseProgress(id = "A")),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(20)),
+                    sessionCount = 1,
+                ),
+            )
+
+            // When
+            val result = useCase(practice, a1Catalog(5), settingsRepository).invoke(targetLocale)
+
+            // Then
+            val existing = result.shouldBeInstanceOf<ActiveBatchResult.Existing>()
+            existing.batch.entries.map { it.id.value } shouldBe listOf("A")
+        }
+
+    // Scenario: El cambio sobrevive al reinicio de la app (spec: practice-persistence)
+    @Test
+    fun `given a saved change made without reobtaining when the app restarts then the batch recomposes`() =
+        runTest {
+            // Given: tanda activa compuesta con A1, registrada como aplicada, y un cambio posterior de los
+            // ajustes guardados a B1 sin volver a obtener la tanda activa
+            val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10)))
+            settingsRepository.recordAppliedSettings(targetLocale, UserSettings(CefrLevel.A1, BatchSize(10)))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(aPhraseProgress(id = "A")),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(10)),
+                    sessionCount = 0,
+                ),
+            )
+            settingsRepository.save(targetLocale, UserSettings(CefrLevel.B1, BatchSize(10)))
+            val catalog = CatalogLoadResult.Loaded(
+                listOf(aCatalogPhrase(id = "A", level = CefrLevel.A1)) +
+                    (1..10).map { aCatalogPhrase(id = "b1-%02d".format(it), level = CefrLevel.B1) },
+            )
+
+            // When: la app se reinicia (nueva instancia de ObtainActiveBatch sobre el mismo estado persistido)
+            // y se obtiene la tanda activa
+            val result = useCase(practice, catalog, settingsRepository).invoke(targetLocale)
+
+            // Then: la tanda activa se recompone con frases del nivel CEFR B1
+            val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
+            created.batch.entries.map { it.id.value }.shouldContain("b1-01")
+        }
+
+    // Scenario: El primer uso registra sus ajustes aplicados (spec: practice-persistence, "Registro de los
+    // ajustes aplicados al componer")
+    @Test
+    fun `given no active batch and no applied settings when obtaining the batch then it records the saved settings`() =
+        runTest {
+            // Given: sin tanda activa ni ajustes aplicados registrados, con A1/N20 guardados
+            val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val practice = FakePracticeRepository()
+
+            // When
+            useCase(practice, a1Catalog(15), settingsRepository).invoke(targetLocale)
+
+            // Then
+            settingsRepository.appliedSettings(targetLocale) shouldBe UserSettings(CefrLevel.A1, BatchSize(20))
         }
 }

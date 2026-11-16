@@ -41,10 +41,13 @@ class ObtainPracticeSessionTest {
         settings: UserSettings = UserSettings.DEFAULT,
     ) = ObtainPracticeSession(
         obtainActiveBatch = ObtainActiveBatch(
-            composeNextBatch = ComposeNextBatch(),
-            obtainCatalogPhrases = obtainCatalogPhrases(catalog),
             settingsRepository = FakeSettingsRepository(settings),
             practiceRepository = practice,
+            regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+                practiceRepository = practice,
+                composeNextBatch = ComposeNextBatch(),
+                obtainCatalogPhrases = obtainCatalogPhrases(catalog),
+            ),
         ),
         obtainCatalogPhrases = obtainCatalogPhrases(catalog),
         practiceRepository = practice,

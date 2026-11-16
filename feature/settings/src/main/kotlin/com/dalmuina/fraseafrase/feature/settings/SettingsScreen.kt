@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,8 +18,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,10 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -50,13 +45,12 @@ import com.dalmuina.fraseafrase.core.designsystem.theme.AppTheme
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
-import com.dalmuina.fraseafrase.core.designsystem.R as DesignSystemR
 
 /**
  * Pantalla de ajustes sin estado (ADR-0006): pinta [uiState] y reenvía las acciones con [onAction]. La conexión
- * con el ViewModel está en [SettingsRoute]. La confirmación de guardado se muestra en el `Scaffold` de `:app`,
- * que sobrevive al cambio de pestaña (design D6 revisada de `add-settings-apply-flow`). La cabecera deja la
- * `TopAppBar` de Material 3 por el mismo patrón de título grande sin barra propia que usa `PracticeHeader` en
+ * con el ViewModel está en [SettingsRoute]. Desde `remove-settings-save-button` (design D3) cada edición válida
+ * se autoguarda de inmediato, sin confirmación visual ni botón "Guardar". La cabecera deja la `TopAppBar` de
+ * Material 3 por el mismo patrón de título grande sin barra propia que usa `PracticeHeader` en
  * `PracticeSessionScreen.kt` (design D7, fix-redesign-ui-mismatches).
  */
 @Composable
@@ -100,12 +94,22 @@ private fun LoadedContent(
             activeLanguageCode = state.activeTargetLocale.value,
             onNavigateToSettings = onNavigateToSettings,
         )
-        DsLanguageOptions(
-            options = state.availableTargetLocales.map { it.toDsLanguageOption() },
-            selectedCode = state.activeTargetLocale.value,
-            onSelect = { code -> onAction(SettingsAction.SelectLanguage(LanguageTag(code))) },
-            modifier = Modifier.fillMaxWidth(),
-        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("settings_language_card"),
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        ) {
+            Column(modifier = Modifier.padding(AppTheme.spacing.l)) {
+                DsLanguageOptions(
+                    options = state.availableTargetLocales.map { it.toDsLanguageOption() },
+                    selectedCode = state.activeTargetLocale.value,
+                    onSelect = { code -> onAction(SettingsAction.SelectLanguage(LanguageTag(code))) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
         CefrLevelCard(
             selectedLevel = state.cefrLevel,
             onSelectLevel = { onAction(SettingsAction.SelectCefrLevel(it)) },
@@ -115,25 +119,6 @@ private fun LoadedContent(
             isValid = state.isBatchSizeValid,
             onBatchSizeTextChange = { onAction(SettingsAction.ChangeBatchSizeText(it)) },
         )
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(AppTheme.dimensions.primaryActionHeight)
-                .testTag("settings_save_button"),
-            shape = MaterialTheme.shapes.medium,
-            onClick = { onAction(SettingsAction.Save) },
-            enabled = state.isBatchSizeValid,
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_check_save),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(ButtonDefaults.IconSize)
-                    .testTag("settings_save_icon"),
-            )
-            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(R.string.settings_save))
-        }
     }
 }
 
@@ -151,7 +136,9 @@ private fun CefrLevelCard(
     onSelectLevel: (CefrLevel) -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("settings_cefr_card"),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
