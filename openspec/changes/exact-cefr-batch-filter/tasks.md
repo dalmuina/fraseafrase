@@ -29,7 +29,7 @@
 
 ## 2. Verificación del módulo
 
-- [ ] 2.1 Ejecutar `./gradlew :core:domain:check -q --console=plain` y comprobar que termina en
+- [x] 2.1 Ejecutar `./gradlew :core:domain:check -q --console=plain` y comprobar que termina en
       verde (tests, detekt y Kover del módulo), confirmando que no queda ningún otro test que
       dependiera del comportamiento "igual o superior" fuera de `ComposeNextBatchTest.kt`
       (`./gradlew :core:domain:test -q --console=plain` ya ejercita todo el módulo).
