@@ -33,6 +33,14 @@
       verde (tests, detekt y Kover del módulo), confirmando que no queda ningún otro test que
       dependiera del comportamiento "igual o superior" fuera de `ComposeNextBatchTest.kt`
       (`./gradlew :core:domain:test -q --console=plain` ya ejercita todo el módulo).
+- [x] 2.2 Añadir en `RegenerateActiveBatchForLevelTest.kt` el test del escenario "El progreso de un
+      nivel CEFR abandonado se conserva y vuelve a ofrecerse al volver a ese nivel" (requisito
+      "Regeneración de la tanda activa por cambio de nivel CEFR sin resolución"): una frase de nivel
+      CEFR B1, cambiar a A1, componer, volver a B1 y comprobar que la frase de B1 reaparece con su
+      mismo nivel de consolidación y racha. Ejecutar
+      `./gradlew :core:domain:test --tests "*RegenerateActiveBatchForLevelTest*" -q --console=plain`
+      y comprobar que pasa en verde (comportamiento ya garantizado por `PracticeSnapshot.storing`,
+      detectado como hueco de cobertura en `/opsx:verify`).
 
 ## Workflow follow-up
 

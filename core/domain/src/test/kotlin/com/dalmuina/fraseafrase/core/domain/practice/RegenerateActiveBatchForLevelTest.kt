@@ -120,6 +120,38 @@ class RegenerateActiveBatchForLevelTest {
             ids.count { it in mastered } shouldBe 5
         }
 
+    // Scenario: El progreso de un nivel CEFR abandonado se conserva y vuelve a ofrecerse al volver a ese nivel
+    @Test
+    fun `given an abandoned cefr level phrase when its level is chosen again then it reappears unchanged`() =
+        runTest {
+            // Given: una frase a reforzar de nivel CEFR B1 con nivel de consolidación 3 y racha 2, nivel elegido B1
+            val progress = listOf(
+                aPhraseProgress(id = "b1-phrase", level = Level(3), streak = Streak(2), dueAtSession = 0),
+            )
+            val practice = FakePracticeRepository(snapshot(order = listOf("b1-phrase"), progress = progress))
+            val catalog = CatalogLoadResult.Loaded(
+                listOf(
+                    aCatalogPhrase(id = "b1-phrase", level = CefrLevel.B1),
+                    aCatalogPhrase(id = "a1-phrase", level = CefrLevel.A1),
+                ),
+            )
+            val sut = useCase(practice, catalog)
+
+            // When: el usuario cambia el nivel CEFR elegido a A1, practica (compone con A1), y después vuelve a B1
+            val switchedToA1 = sut.invoke(targetLocale, CefrLevel.A1, BatchSize(10))
+            val switchedToA1Batch = switchedToA1.shouldBeInstanceOf<ActiveBatchResult.Created>()
+            switchedToA1Batch.batch.entries.map { it.id.value } shouldBe listOf("a1-phrase")
+
+            val switchedBackToB1 = sut.invoke(targetLocale, CefrLevel.B1, BatchSize(10))
+
+            // Then: la frase de B1 conserva su nivel de consolidación y racha, y vuelve a ser candidata a la tanda
+            val switchedBackBatch = switchedBackToB1.shouldBeInstanceOf<ActiveBatchResult.Created>()
+            switchedBackBatch.batch.entries.map { it.id.value } shouldBe listOf("b1-phrase")
+            val stored = practice.read().progress.associateBy { it.id.value }
+            stored["b1-phrase"]!!.level shouldBe Level(3)
+            stored["b1-phrase"]!!.streak shouldBe Streak(2)
+        }
+
     // Scenario: Generar sesión reinicia el desglose para la tanda siguiente (spec: practice-session), aplicado
     // también al cambio de nivel CEFR/N desde Ajustes (ADR-0017)
     @Test
