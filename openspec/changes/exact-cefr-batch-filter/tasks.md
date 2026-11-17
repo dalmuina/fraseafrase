@@ -2,7 +2,7 @@
 
 ## 1. Dominio: filtro CEFR exacto en ComposeNextBatch
 
-- [ ] 1.1 En `ComposeNextBatchTest.kt`, cambiar el test
+- [x] 1.1 En `ComposeNextBatchTest.kt`, cambiar el test
       `given a reinforce and mastered phrase of a higher level when composing then both enter` a
       `given a reinforce and mastered phrase of a higher level when composing then neither enters`
       (mismo escenario del spec delta "El filtro CEFR admite niveles iguales o superiores al
@@ -11,16 +11,16 @@
       "R" y "M". Ejecutar `./gradlew :core:domain:test --tests "*ComposeNextBatchTest*" -q
       --console=plain` y comprobar que falla por aserción (las frases siguen entrando), no por
       error de compilación.
-- [ ] 1.2 Añadir el test `given a reinforce and mastered phrase of the exact chosen level when
+- [x] 1.2 Añadir el test `given a reinforce and mastered phrase of the exact chosen level when
       composing then both enter` (escenario "El filtro CEFR admite solo el nivel elegido en
       reforzar y dominadas"): reforzar y dominada ambas A1, nivel elegido A1, ambas entran.
       Ejecutar el mismo filtro de test y comprobar que also falla antes de implementar (si ya
       pasara, documentarlo y pasar a la siguiente tarea sin marcarla como roja).
-- [ ] 1.3 En `ComposeNextBatch.kt`, cambiar `catalogById.getValue(it.id).level >= cefrLevel` por
+- [x] 1.3 En `ComposeNextBatch.kt`, cambiar `catalogById.getValue(it.id).level >= cefrLevel` por
       `catalogById.getValue(it.id).level == cefrLevel` en los filtros de `reinforceCandidates` y
       `masteredCandidates`. Ejecutar `./gradlew :core:domain:test --tests "*ComposeNextBatchTest*"
       -q --console=plain` y comprobar que 1.1 y 1.2 pasan en verde.
-- [ ] 1.4 Revisar el comentario del test `given only below level material when composing then
+- [x] 1.4 Revisar el comentario del test `given only below level material when composing then
       there is no batch` (escenario "Sin material del nivel elegido o superior la tanda sale más
       pequeña") y, si hace falta, aclarar que "nivel elegido o superior" ahora significa
       simplemente "nivel elegido" (el filtro ya no admite superiores). Verificar con
