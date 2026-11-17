@@ -26,13 +26,13 @@ class ComposeNextBatch @Inject constructor() {
         val catalogIndex = catalog.withIndex().associate { it.value.id to it.index }
 
         val reinforceCandidates = progress
-            .filter { it.dueAtSession <= currentSession && catalogById.getValue(it.id).level >= cefrLevel }
+            .filter { it.dueAtSession <= currentSession && catalogById.getValue(it.id).level == cefrLevel }
             .sortedBy { catalogIndex.getValue(it.id) }
         val masteredCandidates = progress
             .filter {
                 it.level.value >= MASTERED_LEVEL &&
                     it.dueAtSession > currentSession &&
-                    catalogById.getValue(it.id).level >= cefrLevel
+                    catalogById.getValue(it.id).level == cefrLevel
             }
             .sortedBy { catalogIndex.getValue(it.id) }
         val newCandidates = catalog.filter { it.level == cefrLevel && it.id !in progressIds }

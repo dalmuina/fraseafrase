@@ -205,15 +205,40 @@ class ComposeNextBatchTest {
     }
 
     // Scenario: El filtro CEFR admite niveles iguales o superiores al elegido en reforzar y dominadas (spec:
-    // Composición de la tanda nueva por cuotas sobre el progreso)
+    // Composición de la tanda nueva por cuotas sobre el progreso). El título del escenario es legado; el
+    // cuerpo exige exclusión de niveles superiores (filtro de igualdad exacta).
     @Test
-    fun `given a reinforce and mastered phrase of a higher level when composing then both enter`() {
+    fun `given a reinforce and mastered phrase of a higher level when composing then neither enters`() {
         // Given
         val reinforce = aPhraseProgress(id = "R", level = Level(1), dueAtSession = 0)
         val mastered = aPhraseProgress(id = "M", level = Level(4), dueAtSession = 30)
         val catalog = listOf(
             aCatalogPhrase(id = "R", level = CefrLevel.B1),
             aCatalogPhrase(id = "M", level = CefrLevel.C1),
+        )
+
+        // When
+        val result = compose(
+            progress = listOf(reinforce, mastered),
+            catalog = catalog,
+            cefrLevel = CefrLevel.A1,
+            currentSession = 20,
+        )
+
+        // Then
+        result shouldBe BatchComposition.NothingAvailable
+    }
+
+    // Scenario: El filtro CEFR admite solo el nivel elegido en reforzar y dominadas (spec: Composición de la
+    // tanda nueva por cuotas sobre el progreso)
+    @Test
+    fun `given a reinforce and mastered phrase of the exact chosen level when composing then both enter`() {
+        // Given
+        val reinforce = aPhraseProgress(id = "R", level = Level(1), dueAtSession = 0)
+        val mastered = aPhraseProgress(id = "M", level = Level(4), dueAtSession = 30)
+        val catalog = listOf(
+            aCatalogPhrase(id = "R", level = CefrLevel.A1),
+            aCatalogPhrase(id = "M", level = CefrLevel.A1),
         )
 
         // When
