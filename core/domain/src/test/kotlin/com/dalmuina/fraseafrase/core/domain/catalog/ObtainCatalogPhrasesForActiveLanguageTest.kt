@@ -52,4 +52,38 @@ class ObtainCatalogPhrasesForActiveLanguageTest {
         result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
         catalog.lastPhrasesCall shouldBe (targetLocale to LanguageTag("es-ES"))
     }
+
+    // Scenario: El respaldo no coincide con el propio idioma destino
+    @Test
+    fun `given a target locale matching an available source when invoked then it does not resolve to itself`() =
+        runTest {
+            // Given
+            val esEsTargetLocale = LanguageTag("es-ES")
+            val ptPtSourceLocale = LanguageTag("pt-PT")
+            val catalogWithSelfMatchingSource = FakeCatalogRepository(
+                CatalogLoadResult.Loaded(
+                    listOf(
+                        aCatalogPhrase(id = "a").copy(
+                            targetLocale = esEsTargetLocale,
+                            sourceLocale = esEsTargetLocale,
+                        ),
+                        aCatalogPhrase(id = "b").copy(
+                            targetLocale = esEsTargetLocale,
+                            sourceLocale = ptPtSourceLocale,
+                        ),
+                    ),
+                ),
+                esEsTargetLocale,
+            )
+            val useCase = ObtainCatalogPhrasesForActiveLanguage(
+                deviceLocaleProvider = FakeDeviceLocaleProvider(esEsTargetLocale),
+                catalogRepository = catalogWithSelfMatchingSource,
+            )
+
+            // When
+            useCase(esEsTargetLocale)
+
+            // Then
+            catalogWithSelfMatchingSource.lastPhrasesCall shouldBe (esEsTargetLocale to ptPtSourceLocale)
+        }
 }

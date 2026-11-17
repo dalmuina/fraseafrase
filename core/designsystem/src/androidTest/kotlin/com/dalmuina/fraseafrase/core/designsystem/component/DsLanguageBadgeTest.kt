@@ -45,6 +45,18 @@ class DsLanguageBadgeTest {
         composeTestRule.onNodeWithContentDescription("pt-BR").assertExists()
     }
 
+    // Scenario: El icono muestra el idioma activo en Practicar (language-indicator, es-ES)
+    @Test
+    fun givenEsEsWhenPaintingThenEsEsIconIsShown() {
+        composeTestRule.setContent {
+            AppTheme {
+                DsLanguageBadge(languageCode = "es-ES")
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("es-ES").assertExists()
+    }
+
     // Scenario: pt-PT y pt-BR no comparten representación (language-indicator)
     @Test
     fun givenPtPtAndPtBrWhenPaintingThenIconsDiffer() {

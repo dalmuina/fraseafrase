@@ -11,10 +11,11 @@ class ResolveSourceLocaleTest {
     fun `given a device locale available in the catalog when resolving then it returns the device locale`() {
         // Given
         val deviceLocale = LanguageTag("es-ES")
+        val targetLocale = LanguageTag("pt-PT")
         val available = listOf(LanguageTag("es-ES"))
 
         // When
-        val result = ResolveSourceLocale(deviceLocale, available)
+        val result = ResolveSourceLocale(deviceLocale, targetLocale, available)
 
         // Then
         result shouldBe LanguageTag("es-ES")
@@ -25,12 +26,28 @@ class ResolveSourceLocaleTest {
     fun `given a device locale without available content when resolving then it falls back to es-ES`() {
         // Given
         val deviceLocale = LanguageTag("en-US")
+        val targetLocale = LanguageTag("pt-PT")
         val available = listOf(LanguageTag("es-ES"))
 
         // When
-        val result = ResolveSourceLocale(deviceLocale, available)
+        val result = ResolveSourceLocale(deviceLocale, targetLocale, available)
 
         // Then
         result shouldBe LanguageTag("es-ES")
+    }
+
+    // Scenario: El respaldo no coincide con el propio idioma destino
+    @Test
+    fun `given a fallback matching the target locale when resolving then it excludes the target locale`() {
+        // Given
+        val deviceLocale = LanguageTag("es-ES")
+        val targetLocale = LanguageTag("es-ES")
+        val available = listOf(LanguageTag("pt-PT"))
+
+        // When
+        val result = ResolveSourceLocale(deviceLocale, targetLocale, available)
+
+        // Then
+        result shouldBe LanguageTag("pt-PT")
     }
 }

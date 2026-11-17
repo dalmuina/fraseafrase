@@ -45,10 +45,11 @@ internal data class LanguageBadgeSpec(val drawableRes: Int, val contentDescripti
 internal fun languageBadgeSpec(languageCode: String): LanguageBadgeSpec? = when (languageCode) {
     "pt-PT" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_pt_pt, contentDescription = "pt-PT")
     "pt-BR" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_pt_br, contentDescription = "pt-BR")
+    "es-ES" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_es_es, contentDescription = "es-ES")
     else -> null
 }
 
-private val AllLanguageCodes = listOf("pt-PT", "pt-BR")
+private val AllLanguageCodes = listOf("pt-PT", "pt-BR", "es-ES")
 
 @PreviewLightDark
 @Composable

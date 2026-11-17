@@ -24,7 +24,7 @@ class RealCatalogContractTest {
 
     // Scenario: Versión del esquema (spec: phrase-catalog) — cada idioma destino empaquetado carga por separado
     @ParameterizedTest
-    @ValueSource(strings = ["pt-PT", "pt-BR"])
+    @ValueSource(strings = ["pt-PT", "pt-BR", "es-ES"])
     fun `given the packaged catalog of a target locale when parsing then it is loaded`(targetLocale: String) {
         // When
         val result = CatalogJson.parse(catalogTextOf(targetLocale))
@@ -51,6 +51,19 @@ class RealCatalogContractTest {
         // Given
         val currentIds = currentIdsOf("pt-BR")
         val releasedIds = releasedIdsOf("pt-BR")
+
+        // When / Then
+        releasedIds.shouldBeEmpty()
+        CatalogContract.retiredIds(releasedIds, currentIds).shouldBeEmpty()
+        CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
+    }
+
+    // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)
+    @Test
+    fun `given es-ES with no released ids yet when checking the contract then it passes without requiring any id`() {
+        // Given
+        val currentIds = currentIdsOf("es-ES")
+        val releasedIds = releasedIdsOf("es-ES")
 
         // When / Then
         releasedIds.shouldBeEmpty()
