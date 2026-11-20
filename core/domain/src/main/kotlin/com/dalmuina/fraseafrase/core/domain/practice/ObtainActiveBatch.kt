@@ -21,6 +21,7 @@ class ObtainActiveBatch @Inject constructor(
         val existing = practiceRepository.read(targetLocale).batch()
         if (existing != null) {
             val applied = settingsRepository.appliedSettings(targetLocale)
+            if (applied == null) settingsRepository.recordAppliedSettings(targetLocale, settings)
             if (applied == null || applied == settings) return ActiveBatchResult.Existing(existing)
         }
         val result = regenerateActiveBatchForLevel(targetLocale, settings.cefrLevel, settings.batchSize)
