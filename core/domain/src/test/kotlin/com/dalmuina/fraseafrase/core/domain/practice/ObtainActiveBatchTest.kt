@@ -227,7 +227,7 @@ class ObtainActiveBatchTest {
 
     // Scenario: Sin ajustes aplicados registrados todavía no se recompone (spec: practice-persistence)
     @Test
-    fun `given no applied settings registered when obtaining the batch then it returns the existing batch as is`() =
+    fun `given no applied settings registered when obtaining it then returns existing and records settings`() =
         runTest {
             // Given: tanda activa sin ningún ajuste aplicado registrado, y ajustes guardados distintos del nivel
             // con el que se compuso (irrelevante aquí porque no hay nada que comparar)
@@ -246,6 +246,37 @@ class ObtainActiveBatchTest {
             // Then
             val existing = result.shouldBeInstanceOf<ActiveBatchResult.Existing>()
             existing.batch.entries.map { it.id.value } shouldBe listOf("A")
+            settingsRepository.appliedSettings(targetLocale) shouldBe UserSettings(CefrLevel.B1, BatchSize(20))
+        }
+
+    // Scenario: Tras registrarse, un cambio posterior de ajustes ya recompone (spec: practice-persistence)
+    @Test
+    fun `given applied settings recorded on first obtain when saved settings change later then it recomposes`() =
+        runTest {
+            // Given: tanda activa sin ajustes aplicados registrados, con A1/N20 guardados
+            val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(aPhraseProgress(id = "A")),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(20)),
+                    sessionCount = 1,
+                ),
+            )
+            val catalog = CatalogLoadResult.Loaded(
+                listOf(aCatalogPhrase(id = "A", level = CefrLevel.A1)) +
+                    (1..20).map { aCatalogPhrase(id = "b1-%02d".format(it), level = CefrLevel.B1) },
+            )
+            val useCase = useCase(practice, catalog, settingsRepository)
+
+            // When: la primera obtención registra A1/N20 como ajustes aplicados, luego los ajustes guardados
+            // cambian a B1 y se obtiene la tanda activa de nuevo
+            useCase.invoke(targetLocale)
+            settingsRepository.save(targetLocale, UserSettings(CefrLevel.B1, BatchSize(20)))
+            val result = useCase.invoke(targetLocale)
+
+            // Then: la tanda activa se recompone con frases del nivel CEFR B1
+            val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
+            created.batch.entries.map { it.id.value }.shouldContain("b1-01")
         }
 
     // Scenario: El cambio sobrevive al reinicio de la app (spec: practice-persistence)
