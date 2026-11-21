@@ -34,11 +34,156 @@ object CatalogJson {
         val schemaVersion = document?.schemaVersion
         val targetLocale = document?.targetLocale?.takeIf { isValidLocale(it) }
         return if (schemaVersion != null && targetLocale != null) {
-            CatalogHeader(schemaVersion = schemaVersion, targetLocale = targetLocale)
+            CatalogHeader(
+                schemaVersion = schemaVersion,
+                targetLocale = targetLocale,
+                isTranslation = document.sourceLocale != null,
+            )
         } else {
             null
         }
     }
+
+    /**
+     * Parsea un documento de frases destino (sin `sourceLocale` ni `source`), copiando `targetLocale`
+     * de la raíz a cada frase. El `parse()` que sigue, de un único documento con `source` incluido, es
+     * el formato legado (ADR-0013) que usa todavía `RoomCatalogDataSource`, pendiente de bifurcarse a
+     * `parsePhrases`/`parseTranslations` (tasks.md, grupo 4).
+     */
+    fun parsePhrases(text: String): CatalogParseResult {
+        val document = runCatching { json.decodeFromString<PhraseCatalogDocument>(text) }
+            .getOrElse { return CatalogParseResult.Failed(CatalogLoadError.MalformedDocument) }
+        val error = phraseHeaderErrorOf(document) ?: targetPhrasesErrorOf(document)
+        return if (error != null) {
+            CatalogParseResult.Failed(error)
+        } else {
+            CatalogParseResult.PhrasesParsed(toTargetPhrases(document))
+        }
+    }
+
+    private fun phraseHeaderErrorOf(document: PhraseCatalogDocument): CatalogLoadError? {
+        val version = document.schemaVersion ?: return CatalogLoadError.MissingSchemaVersion
+        return when {
+            version != SUPPORTED_SCHEMA_VERSION -> CatalogLoadError.UnsupportedSchemaVersion(version)
+            !isValidLocale(document.targetLocale) -> CatalogLoadError.InvalidLocale("targetLocale")
+            else -> null
+        }
+    }
+
+    /** Primer error de las frases destino en orden de catálogo: id ausente, id repetido, o un campo inválido. */
+    private fun targetPhrasesErrorOf(document: PhraseCatalogDocument): CatalogLoadError? {
+        val seen = mutableSetOf<String>()
+        return document.phrases.orEmpty().firstNotNullOfOrNull { raw ->
+            val id = raw.id?.takeIf(String::isNotBlank)
+                ?: return@firstNotNullOfOrNull CatalogLoadError.InvalidPhrase(raw.id.orEmpty(), "id")
+            when {
+                !seen.add(id) -> CatalogLoadError.DuplicateId(id)
+                else -> invalidTargetFieldOf(raw)?.let { CatalogLoadError.InvalidPhrase(id, it) }
+            }
+        }
+    }
+
+    /** Nombre del primer campo de la frase destino que no cumple la spec, o null si todos son válidos. */
+    private fun invalidTargetFieldOf(raw: TargetPhraseDocument): String? = when {
+        raw.level.isNullOrBlank() || CefrLevel.entries.none { it.name == raw.level } -> "level"
+        raw.topic.isNullOrBlank() -> "topic"
+        raw.target.isNullOrBlank() -> "target"
+        else -> null
+    }
+
+    /** Solo se llama con un documento validado por [phraseHeaderErrorOf] y [targetPhrasesErrorOf]. */
+    private fun toTargetPhrases(document: PhraseCatalogDocument): List<TargetPhrase> {
+        val targetLocale = LanguageTag(checkNotNull(document.targetLocale))
+        return document.phrases.orEmpty().map { raw ->
+            TargetPhrase(
+                id = PhraseId(checkNotNull(raw.id)),
+                level = CefrLevel.valueOf(checkNotNull(raw.level)),
+                topic = Topic(checkNotNull(raw.topic)),
+                targetLocale = targetLocale,
+                target = checkNotNull(raw.target),
+            )
+        }
+    }
+
+    /**
+     * Parsea un documento de traducción, copiando `targetLocale`/`sourceLocale` de la raíz a cada
+     * traducción. Delega en [TranslationParsing] para no superar el límite de funciones por objeto.
+     */
+    fun parseTranslations(text: String): CatalogParseResult = TranslationParsing.parse(text)
+
+    /**
+     * Formato legado de un único documento con `source` incluido (ADR-0013), usado todavía por
+     * `RoomCatalogDataSource` hasta que se bifurque a `parsePhrases`/`parseTranslations` (tasks.md,
+     * grupo 4). Delega en [LegacyCatalogParsing] para no superar el límite de funciones por objeto.
+     */
+    fun parse(text: String): CatalogLoadResult = LegacyCatalogParsing.parse(text)
+
+    private fun isValidLocale(tag: String?): Boolean = tag != null && LanguageTag.isWellFormed(tag)
+}
+
+/** Parseo del documento de traducción (`targetLocale` + `sourceLocale`), design.md - "Dos tipos de documento JSON". */
+private object TranslationParsing {
+
+    private const val SUPPORTED_SCHEMA_VERSION = 1
+    private val json = Json { ignoreUnknownKeys = true }
+
+    fun parse(text: String): CatalogParseResult {
+        val document = runCatching { json.decodeFromString<TranslationCatalogDocument>(text) }
+            .getOrElse { return CatalogParseResult.Failed(CatalogLoadError.MalformedDocument) }
+        val error = headerErrorOf(document) ?: translationsErrorOf(document)
+        return if (error != null) {
+            CatalogParseResult.Failed(error)
+        } else {
+            CatalogParseResult.TranslationsParsed(toTranslations(document))
+        }
+    }
+
+    private fun headerErrorOf(document: TranslationCatalogDocument): CatalogLoadError? {
+        val version = document.schemaVersion ?: return CatalogLoadError.MissingSchemaVersion
+        return when {
+            version != SUPPORTED_SCHEMA_VERSION -> CatalogLoadError.UnsupportedSchemaVersion(version)
+            !isValidLocale(document.targetLocale) -> CatalogLoadError.InvalidLocale("targetLocale")
+            !isValidLocale(document.sourceLocale) -> CatalogLoadError.InvalidLocale("sourceLocale")
+            else -> null
+        }
+    }
+
+    /** Primer error de las traducciones en orden de documento: id ausente, id repetido, o `source` vacío. */
+    private fun translationsErrorOf(document: TranslationCatalogDocument): CatalogLoadError? {
+        val seen = mutableSetOf<String>()
+        return document.translations.orEmpty().firstNotNullOfOrNull { raw ->
+            val id = raw.id?.takeIf(String::isNotBlank)
+                ?: return@firstNotNullOfOrNull CatalogLoadError.InvalidPhrase(raw.id.orEmpty(), "id")
+            when {
+                !seen.add(id) -> CatalogLoadError.DuplicateId(id)
+                raw.source.isNullOrBlank() -> CatalogLoadError.InvalidPhrase(id, "source")
+                else -> null
+            }
+        }
+    }
+
+    /** Solo se llama con un documento validado por [headerErrorOf] y [translationsErrorOf]. */
+    private fun toTranslations(document: TranslationCatalogDocument): List<CatalogTranslation> {
+        val targetLocale = LanguageTag(checkNotNull(document.targetLocale))
+        val sourceLocale = LanguageTag(checkNotNull(document.sourceLocale))
+        return document.translations.orEmpty().map { raw ->
+            CatalogTranslation(
+                id = PhraseId(checkNotNull(raw.id)),
+                targetLocale = targetLocale,
+                sourceLocale = sourceLocale,
+                source = checkNotNull(raw.source),
+            )
+        }
+    }
+
+    private fun isValidLocale(tag: String?): Boolean = tag != null && LanguageTag.isWellFormed(tag)
+}
+
+/** Parseo del formato legado de documento único (ADR-0013), pendiente de retirarse en el grupo 4. */
+private object LegacyCatalogParsing {
+
+    private const val SUPPORTED_SCHEMA_VERSION = 1
+    private val json = Json { ignoreUnknownKeys = true }
 
     fun parse(text: String): CatalogLoadResult {
         val document = runCatching { json.decodeFromString<CatalogDocument>(text) }
@@ -104,13 +249,18 @@ object CatalogJson {
     private fun isValidLocale(tag: String?): Boolean = tag != null && LanguageTag.isWellFormed(tag)
 }
 
-/** Cabecera mínima de un documento de catálogo, usada por el sembrado antes de validarlo por completo. */
-data class CatalogHeader(val schemaVersion: Int, val targetLocale: String)
+/**
+ * Cabecera mínima de un documento de catálogo, usada por el sembrado antes de validarlo por completo.
+ * [isTranslation] distingue un documento de traducción de uno de frases destino por la presencia de
+ * `sourceLocale` en la cabecera (design.md - "Dos tipos de documento JSON").
+ */
+data class CatalogHeader(val schemaVersion: Int, val targetLocale: String, val isTranslation: Boolean)
 
 @Serializable
 private data class CatalogHeaderDocument(
     val schemaVersion: Int? = null,
     val targetLocale: String? = null,
+    val sourceLocale: String? = null,
 )
 
 @Serializable
@@ -127,5 +277,36 @@ private data class PhraseDocument(
     val level: String? = null,
     val topic: String? = null,
     val target: String? = null,
+    val source: String? = null,
+)
+
+/** Documento de frases destino (sin `sourceLocale` ni `source`), design.md - "Dos tipos de documento JSON". */
+@Serializable
+private data class PhraseCatalogDocument(
+    val schemaVersion: Int? = null,
+    val targetLocale: String? = null,
+    val phrases: List<TargetPhraseDocument>? = null,
+)
+
+@Serializable
+private data class TargetPhraseDocument(
+    val id: String? = null,
+    val level: String? = null,
+    val topic: String? = null,
+    val target: String? = null,
+)
+
+/** Documento de traducción (`targetLocale` + `sourceLocale`), design.md - "Dos tipos de documento JSON". */
+@Serializable
+private data class TranslationCatalogDocument(
+    val schemaVersion: Int? = null,
+    val targetLocale: String? = null,
+    val sourceLocale: String? = null,
+    val translations: List<TranslationDocument>? = null,
+)
+
+@Serializable
+private data class TranslationDocument(
+    val id: String? = null,
     val source: String? = null,
 )

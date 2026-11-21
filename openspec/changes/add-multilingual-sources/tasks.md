@@ -11,26 +11,26 @@
 
 ## 2. `:core:data` - parseo de los dos tipos de documento
 
-- [ ] 2.1 Test: `CatalogJsonTest` - un documento de frases destino sin `sourceLocale` ni `source` se
+- [x] 2.1 Test: `CatalogJsonTest` - un documento de frases destino sin `sourceLocale` ni `source` se
   parsea y cada frase hereda `targetLocale` (spec `phrase-catalog`, escenario "Frase destino hereda
   el locale de la raíz"). Debe fallar porque `CatalogDocument` todavía exige `sourceLocale`.
-- [ ] 2.2 Implementación: `PhraseCatalogDocument`/`PhraseDocument` sin `sourceLocale`/`source`,
+- [x] 2.2 Implementación: `PhraseCatalogDocument`/`PhraseDocument` sin `sourceLocale`/`source`,
   `CatalogJson.parsePhrases()`, tipo nuevo `CatalogParseResult.PhrasesParsed` propio de
   `:core:data` (design.md - "Dos tipos de documento JSON"; **sin relación de herencia con**
   `CatalogLoadResult` del dominio, que es `sealed interface` en `:core:domain` y no admite
   subtipos declarados en otro módulo). Verificación: 2.1 en verde.
-- [ ] 2.3 Test: `CatalogJsonTest` - un documento de traducción válido se parsea y cada traducción
+- [x] 2.3 Test: `CatalogJsonTest` - un documento de traducción válido se parsea y cada traducción
   hereda `targetLocale`/`sourceLocale` (spec, escenario "Traducción hereda los locales de la raíz");
   casos de error: `schemaVersion` ausente/no soportado, locale vacío/ausente/no BCP-47, `id`/`source`
   vacío, ids duplicados, documento no JSON (spec, escenarios correspondientes de documento de
   traducción). Deben fallar: no existe `parseTranslations`.
-- [ ] 2.4 Implementación: `TranslationCatalogDocument`/`TranslationDocument`,
+- [x] 2.4 Implementación: `TranslationCatalogDocument`/`TranslationDocument`,
   `CatalogJson.parseTranslations()`, `CatalogParseResult.TranslationsParsed`. Verificación: 2.3 en
   verde.
-- [ ] 2.5 Test: `CatalogJsonTest` - `headerOf()` distingue un documento de traducción de uno de
+- [x] 2.5 Test: `CatalogJsonTest` - `headerOf()` distingue un documento de traducción de uno de
   frases destino por la presencia de `sourceLocale` en la cabecera. Debe fallar: `headerOf()` no
   expone el tipo todavía.
-- [ ] 2.6 Implementación: `CatalogHeader` gana el tipo de documento (o un campo derivado) y
+- [x] 2.6 Implementación: `CatalogHeader` gana el tipo de documento (o un campo derivado) y
   `headerOf()` lo calcula de `sourceLocale`. Verificación: 2.5 en verde.
 
 ## 3. `:core:data` - esquema de Room
