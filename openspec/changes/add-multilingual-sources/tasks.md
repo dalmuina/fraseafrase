@@ -172,8 +172,8 @@ publicados siguen siendo la tarea 7.1, que parte ya de `parsePhrases()` migrado.
 
 ## 10. Verificación final
 
-- [ ] 10.1 `./gradlew check` en verde (tests, ktlint, detekt, lint) en todo el proyecto.
-- [ ] 10.2 `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
+- [x] 10.1 `./gradlew check` en verde (tests, ktlint, detekt, lint) en todo el proyecto.
+- [x] 10.2 `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
 
 ## Workflow follow-up
 
