@@ -104,22 +104,22 @@ test, sin ampliar aún su alcance a 8 idiomas) se añade a este grupo y se imple
 5.2, sin commit intermedio. La ampliación a los 8 idiomas y los tests de idioma nuevo sin ids
 publicados siguen siendo la tarea 7.1, que parte ya de `parsePhrases()` migrado.
 
-- [ ] 5.0 Migrar `RealCatalogContractTest.currentIdsOf()` de `CatalogJson.parse()` (legado) a
+- [x] 5.0 Migrar `RealCatalogContractTest.currentIdsOf()` de `CatalogJson.parse()` (legado) a
   `CatalogJson.parsePhrases()`, adaptando el cast de `CatalogLoadResult.Loaded` al tipo de
   resultado que devuelva `parsePhrases()` (`CatalogParseResult.PhrasesParsed`, grupo 2). Alcance
   limitado a los 3 idiomas ya cubiertos (`pt-PT`, `pt-BR`, `es-ES`); no amplíes el `@ValueSource`
   todavía (eso es 7.1). Verificación: los 3 tests existentes de `RealCatalogContractTest` siguen en
   verde leyendo los ficheros `phrases-<target>.json` todavía sin migrar (formato legado, con
   `source`) - este paso solo cambia el método de parseo del test, no el asset.
-- [ ] 5.1 Reescribir `phrases-pt-PT.json`, `phrases-pt-BR.json`, `phrases-es-ES.json` sin
+- [x] 5.1 Reescribir `phrases-pt-PT.json`, `phrases-pt-BR.json`, `phrases-es-ES.json` sin
   `sourceLocale` ni `source`, mismos `id`/`level`/`topic`/`target` y mismo orden. Verificación:
   `RealCatalogContractTest` (ya migrado en 5.0 a `parsePhrases()`) sigue en verde para los tres, sin
   tocar `released-ids-pt-PT.txt`/`pt-BR.txt`/`es-ES.txt`.
-- [ ] 5.2 Crear `translations-pt-PT-from-es-ES.json`, `translations-pt-BR-from-es-ES.json`,
+- [x] 5.2 Crear `translations-pt-PT-from-es-ES.json`, `translations-pt-BR-from-es-ES.json`,
   `translations-es-ES-from-pt-PT.json` con el `source` retirado en 5.1, mismos `id`. Verificación:
   `RoomCatalogDataSourceTest` (integración) carga las 1000 frases de cada idioma con su traducción
   igual que antes de la migración.
-- [ ] 5.3 Si tras 5.0-5.2 ningún código de producción llama ya a `CatalogJson.parse()`/
+- [x] 5.3 Si tras 5.0-5.2 ningún código de producción llama ya a `CatalogJson.parse()`/
   `CatalogDocument` (legado, ADR-0013): retíralo junto con su test dedicado en `CatalogJsonTest`,
   para no dejar código muerto. Si algo más lo sigue usando, no lo retires y anota por qué.
   Verificación: `./gradlew :core:data:check` en verde sin referencias al tipo legado si se retira.

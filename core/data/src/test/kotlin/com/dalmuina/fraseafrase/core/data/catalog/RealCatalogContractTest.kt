@@ -1,6 +1,5 @@
 package com.dalmuina.fraseafrase.core.data.catalog
 
-import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -20,17 +19,18 @@ class RealCatalogContractTest {
         File("src/test/resources/catalog/released-ids-$targetLocale.txt").readLines().filter(String::isNotBlank)
 
     private fun currentIdsOf(targetLocale: String) =
-        (CatalogJson.parse(catalogTextOf(targetLocale)) as CatalogLoadResult.Loaded).phrases.map { it.id.value }
+        (CatalogJson.parsePhrases(catalogTextOf(targetLocale)) as CatalogParseResult.PhrasesParsed)
+            .phrases.map { it.id.value }
 
     // Scenario: Versión del esquema (spec: phrase-catalog) — cada idioma destino empaquetado carga por separado
     @ParameterizedTest
     @ValueSource(strings = ["pt-PT", "pt-BR", "es-ES"])
     fun `given the packaged catalog of a target locale when parsing then it is loaded`(targetLocale: String) {
         // When
-        val result = CatalogJson.parse(catalogTextOf(targetLocale))
+        val result = CatalogJson.parsePhrases(catalogTextOf(targetLocale))
 
         // Then
-        result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+        result.shouldBeInstanceOf<CatalogParseResult.PhrasesParsed>()
     }
 
     // Scenario: Ids publicados siguen presentes y en el mismo orden (spec: phrase-catalog)
