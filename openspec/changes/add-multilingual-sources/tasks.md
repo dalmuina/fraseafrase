@@ -142,11 +142,11 @@ publicados siguen siendo la tarea 7.1, que parte ya de `parsePhrases()` migrado.
 
 ## 7. `:core:data` - contrato ampliado a 8 idiomas destino
 
-- [ ] 7.1 Test: `RealCatalogContractTest` (ya migrado a `parsePhrases()` en 5.0) - `@ValueSource`
+- [x] 7.1 Test: `RealCatalogContractTest` (ya migrado a `parsePhrases()` en 5.0) - `@ValueSource`
   ampliado de 3 a los 8 idiomas destino (`pt-PT, pt-BR, es-ES, it-IT, en-GB, de-DE, fr-FR, ru-RU`)
   y un test por idioma nuevo sin ids publicados (spec, escenario "Un idioma destino nuevo sin ids
   publicados no bloquea su primera carga"). Debe fallar hasta que 6.1-6.3 existan.
-- [ ] 7.2 Verificación: `./gradlew :core:data:check` en verde con los 8 idiomas.
+- [x] 7.2 Verificación: `./gradlew :core:data:check` en verde con los 8 idiomas.
 
 ## 8. `:core:designsystem` - insignias de idioma
 

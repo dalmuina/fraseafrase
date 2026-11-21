@@ -24,7 +24,7 @@ class RealCatalogContractTest {
 
     // Scenario: Versión del esquema (spec: phrase-catalog) — cada idioma destino empaquetado carga por separado
     @ParameterizedTest
-    @ValueSource(strings = ["pt-PT", "pt-BR", "es-ES"])
+    @ValueSource(strings = ["pt-PT", "pt-BR", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU"])
     fun `given the packaged catalog of a target locale when parsing then it is loaded`(targetLocale: String) {
         // When
         val result = CatalogJson.parsePhrases(catalogTextOf(targetLocale))
@@ -64,6 +64,71 @@ class RealCatalogContractTest {
         // Given
         val currentIds = currentIdsOf("es-ES")
         val releasedIds = releasedIdsOf("es-ES")
+
+        // When / Then
+        releasedIds.shouldBeEmpty()
+        CatalogContract.retiredIds(releasedIds, currentIds).shouldBeEmpty()
+        CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
+    }
+
+    // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)
+    @Test
+    fun `given it-IT with no released ids yet when checking the contract then it passes without requiring any id`() {
+        // Given
+        val currentIds = currentIdsOf("it-IT")
+        val releasedIds = releasedIdsOf("it-IT")
+
+        // When / Then
+        releasedIds.shouldBeEmpty()
+        CatalogContract.retiredIds(releasedIds, currentIds).shouldBeEmpty()
+        CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
+    }
+
+    // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)
+    @Test
+    fun `given en-GB with no released ids yet when checking the contract then it passes without requiring any id`() {
+        // Given
+        val currentIds = currentIdsOf("en-GB")
+        val releasedIds = releasedIdsOf("en-GB")
+
+        // When / Then
+        releasedIds.shouldBeEmpty()
+        CatalogContract.retiredIds(releasedIds, currentIds).shouldBeEmpty()
+        CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
+    }
+
+    // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)
+    @Test
+    fun `given de-DE with no released ids yet when checking the contract then it passes without requiring any id`() {
+        // Given
+        val currentIds = currentIdsOf("de-DE")
+        val releasedIds = releasedIdsOf("de-DE")
+
+        // When / Then
+        releasedIds.shouldBeEmpty()
+        CatalogContract.retiredIds(releasedIds, currentIds).shouldBeEmpty()
+        CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
+    }
+
+    // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)
+    @Test
+    fun `given fr-FR with no released ids yet when checking the contract then it passes without requiring any id`() {
+        // Given
+        val currentIds = currentIdsOf("fr-FR")
+        val releasedIds = releasedIdsOf("fr-FR")
+
+        // When / Then
+        releasedIds.shouldBeEmpty()
+        CatalogContract.retiredIds(releasedIds, currentIds).shouldBeEmpty()
+        CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
+    }
+
+    // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)
+    @Test
+    fun `given ru-RU with no released ids yet when checking the contract then it passes without requiring any id`() {
+        // Given
+        val currentIds = currentIdsOf("ru-RU")
+        val releasedIds = releasedIdsOf("ru-RU")
 
         // When / Then
         releasedIds.shouldBeEmpty()
