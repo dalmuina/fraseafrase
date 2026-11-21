@@ -2,7 +2,7 @@
 
 ## 1. ADR
 
-- [ ] 1.1 Redactar `docs/adr/0022-separar-frases-destino-de-sus-traducciones.md` con cabecera
+- [x] 1.1 Redactar `docs/adr/0022-separar-frases-destino-de-sus-traducciones.md` con cabecera
   `Sustituye a: ADR-0019 (solo la parte de formato de documento)` (contexto, decisión y
   consecuencias del design.md), y actualizar solo la línea de estado de ADR-0019 a
   `Sustituido por ADR-0022 (solo formato de documento)` (ADR-0001). ADR-0013 no se toca: ya está
