@@ -150,12 +150,12 @@ publicados siguen siendo la tarea 7.1, que parte ya de `parsePhrases()` migrado.
 
 ## 8. `:core:designsystem` - insignias de idioma
 
-- [ ] 8.1 Test: `DsLanguageBadgeTest` - un escenario por idioma nuevo
+- [x] 8.1 Test: `DsLanguageBadgeTest` - un escenario por idioma nuevo
   (`givenItItWhenPaintingThenItItIconIsShown`, `givenEnGbWhenPaintingThenEnGbIconIsShown`,
   `givenDeDeWhenPaintingThenDeDeIconIsShown`, `givenFrFrWhenPaintingThenFrFrIconIsShown`,
   `givenRuRuWhenPaintingThenRuRuIconIsShown`), mismo patrón que el de `es-ES`. Deben fallar:
   `languageBadgeSpec` no tiene esas ramas.
-- [ ] 8.2 Implementación: drawables `ic_flag_it_it.xml`, `ic_flag_en_gb.xml`, `ic_flag_de_de.xml`,
+- [x] 8.2 Implementación: drawables `ic_flag_it_it.xml`, `ic_flag_en_gb.xml`, `ic_flag_de_de.xml`,
   `ic_flag_fr_fr.xml`, `ic_flag_ru_ru.xml` (mismo estilo que los existentes) y 5 ramas nuevas en
   `languageBadgeSpec`; `AllLanguageCodes` del `@PreviewLightDark` ampliada. Verificación: 8.1 en
   verde.
