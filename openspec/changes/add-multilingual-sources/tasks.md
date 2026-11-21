@@ -162,11 +162,11 @@ publicados siguen siendo la tarea 7.1, que parte ya de `parsePhrases()` migrado.
 
 ## 9. `:feature:settings` - nombres visibles
 
-- [ ] 9.1 Test: `SettingsScreenTest`/`SettingsViewModelTest` - con un fake de 8 idiomas disponibles,
+- [x] 9.1 Test: `SettingsScreenTest`/`SettingsViewModelTest` - con un fake de 8 idiomas disponibles,
   la lista de nombres visibles incluye los 5 nuevos (spec `settings-screen`, "Selección del idioma
   destino", sin cambiar su texto: solo se amplían los fakes del test existente). Debe fallar si el
   escenario ya enumeraba los idiomas de forma cerrada.
-- [ ] 9.2 Implementación: 5 ramas nuevas en `LanguageTag.toDsLanguageOption()`
+- [x] 9.2 Implementación: 5 ramas nuevas en `LanguageTag.toDsLanguageOption()`
   (`"it-IT" -> "Italiano (Italia)"`, `"en-GB" -> "English (UK)"`, `"de-DE" -> "Deutsch (Deutschland)"`,
   `"fr-FR" -> "Français (France)"`, `"ru-RU" -> "Русский (Россия)"`). Verificación: 9.1 en verde.
 

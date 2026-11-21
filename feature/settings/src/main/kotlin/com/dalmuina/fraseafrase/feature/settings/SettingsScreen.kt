@@ -37,7 +37,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageOption
 import com.dalmuina.fraseafrase.core.designsystem.component.DsLanguageOptions
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppColors
 import com.dalmuina.fraseafrase.core.designsystem.theme.AppCornerShapes
@@ -315,22 +314,6 @@ private fun BatchSizeStepButton(
 /** Resultado de pulsar +/- sobre el texto en edición: solo cambia si ya es un entero; si no, lo deja intacto. */
 private fun steppedBatchSizeText(batchSizeText: String, delta: Int): String =
     batchSizeText.toIntOrNull()?.let { (it + delta).toString() } ?: batchSizeText
-
-/**
- * Mapea un [LanguageTag] del dominio a una [DsLanguageOption] del design system (ADR-0010: `DsLanguageOptions`
- * no conoce `LanguageTag`). El nombre a mostrar no está fijado en ninguna spec ni mock: se elige el nombre
- * nativo del idioma con su variante entre paréntesis, igual que lo haría cualquier selector de idioma/región.
- * Un código no reconocido usa el propio valor de [LanguageTag] como nombre, para no perder la opción.
- */
-private fun LanguageTag.toDsLanguageOption(): DsLanguageOption = DsLanguageOption(
-    code = value,
-    displayName = when (value) {
-        "pt-PT" -> "Português (Portugal)"
-        "pt-BR" -> "Português (Brasil)"
-        "es-ES" -> "Español (España)"
-        else -> value
-    },
-)
 
 // Signo menos tipográfico (no el guion ASCII) para el botón de decremento, como en el mock "Ajustes"; no hay
 // icono de "quitar" en material-icons-core (solo en la versión extended, no disponible en esta feature).
