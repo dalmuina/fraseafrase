@@ -126,17 +126,17 @@ publicados siguen siendo la tarea 7.1, que parte ya de `parsePhrases()` migrado.
 
 ## 6. Contenido nuevo: 5 idiomas destino
 
-- [ ] 6.1 Crear `phrases-it-IT.json`, `phrases-en-GB.json`, `phrases-de-DE.json`,
+- [x] 6.1 Crear `phrases-it-IT.json`, `phrases-en-GB.json`, `phrases-de-DE.json`,
   `phrases-fr-FR.json`, `phrases-ru-RU.json`: 1000 frases cada uno, traducidas desde
   `phrases-pt-PT.json` (mismo `id`/`level`/`topic`, `target` traducido a su idioma), revisadas por
   muestreo (mismo criterio que `pt-BR`/`es-ES`, design.md - Risks). Verificación:
   `RealCatalogContractTest` nuevo (tarea 7.1) carga cada documento sin error de esquema.
-- [ ] 6.2 Crear `translations-it-IT-from-es-ES.json`, `translations-en-GB-from-es-ES.json`,
+- [x] 6.2 Crear `translations-it-IT-from-es-ES.json`, `translations-en-GB-from-es-ES.json`,
   `translations-de-DE-from-es-ES.json`, `translations-fr-FR-from-es-ES.json`,
   `translations-ru-RU-from-es-ES.json`: `source` en español para cada `id` de 6.1 (el mismo `source`
   que `translations-pt-PT-from-es-ES.json`, ya que comparten `id`). Verificación: carga sin ids
   huérfanos (spec, escenario correspondiente).
-- [ ] 6.3 Crear `released-ids-it-IT.txt`, `released-ids-en-GB.txt`, `released-ids-de-DE.txt`,
+- [x] 6.3 Crear `released-ids-it-IT.txt`, `released-ids-en-GB.txt`, `released-ids-de-DE.txt`,
   `released-ids-fr-FR.txt`, `released-ids-ru-RU.txt` vacíos. Verificación: existen en
   `core/data/src/test/resources/catalog/`.
 
