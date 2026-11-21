@@ -16,18 +16,39 @@ class RoomCatalogDataSourceTest {
 
     private val ptPt = LanguageTag("pt-PT")
     private val esEs = LanguageTag("es-ES")
+    private val enGb = LanguageTag("en-GB")
 
-    private fun document(schemaVersion: Int = 1, targetLocale: String = "pt-PT", id: String = "a1-saludos-001") =
-        """
+    private fun phraseDocument(
+        schemaVersion: Int = 1,
+        targetLocale: String = "pt-PT",
+        id: String = "a1-saludos-001",
+        target: String = "Bom dia",
+    ) = """
         {
           "schemaVersion": $schemaVersion,
           "targetLocale": "$targetLocale",
-          "sourceLocale": "es-ES",
           "phrases": [
-            { "id": "$id", "level": "A1", "topic": "saludos", "target": "Bom dia", "source": "Buenos días" }
+            { "id": "$id", "level": "A1", "topic": "saludos", "target": "$target" }
           ]
         }
-        """.trimIndent()
+    """.trimIndent()
+
+    private fun translationDocument(
+        schemaVersion: Int = 1,
+        targetLocale: String = "pt-PT",
+        sourceLocale: String = "es-ES",
+        id: String = "a1-saludos-001",
+        source: String = "Buenos días",
+    ) = """
+        {
+          "schemaVersion": $schemaVersion,
+          "targetLocale": "$targetLocale",
+          "sourceLocale": "$sourceLocale",
+          "translations": [
+            { "id": "$id", "source": "$source" }
+          ]
+        }
+    """.trimIndent()
 
     private fun source(database: CatalogDatabase, documents: () -> List<String>) = RoomCatalogDataSource(
         database = database,
@@ -40,7 +61,7 @@ class RoomCatalogDataSourceTest {
     fun `given no previous seed when reading phrases then the catalog is seeded and returned`() = runTest {
         // Given
         val database = inMemoryCatalogDatabase()
-        val dataSource = source(database) { listOf(document()) }
+        val dataSource = source(database) { listOf(phraseDocument(), translationDocument()) }
 
         // When
         val result = dataSource.phrases(ptPt, esEs)
@@ -58,7 +79,7 @@ class RoomCatalogDataSourceTest {
         var reads = 0
         val dataSource = source(database) {
             reads++
-            listOf(document())
+            listOf(phraseDocument(), translationDocument())
         }
 
         // When
@@ -66,7 +87,7 @@ class RoomCatalogDataSourceTest {
         database.catalogDao().deletePhrasesForTargetLocale("pt-PT")
         val secondInstanceSameSeed = source(database) {
             reads++
-            listOf(document())
+            listOf(phraseDocument(), translationDocument())
         }
         val result = secondInstanceSameSeed.phrases(ptPt, esEs)
 
@@ -84,18 +105,19 @@ class RoomCatalogDataSourceTest {
         // valor y que siga siendo válido, así que se simula la marca antigua directamente sobre la tabla de
         // seguimiento del sembrado, igual que ocurriría tras una actualización real de la app)
         val database = inMemoryCatalogDatabase()
-        source(database) { listOf(document(schemaVersion = 1, id = "old")) }.phrases(ptPt, esEs)
+        source(database) { listOf(phraseDocument(), translationDocument()) }.phrases(ptPt, esEs)
         database.catalogDao().upsertSeedVersion(
             CatalogSeedVersionEntity(targetLocale = "pt-PT", schemaVersion = 0),
         )
 
         // When
-        val result =
-            source(database) { listOf(document(schemaVersion = 1, id = "new")) }.phrases(ptPt, esEs)
+        val result = source(database) {
+            listOf(phraseDocument(target = "Bom dia (actualizado)"), translationDocument())
+        }.phrases(ptPt, esEs)
 
         // Then
         result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
-        result.phrases.map { it.id.value } shouldBe listOf("new")
+        result.phrases.single().target shouldBe "Bom dia (actualizado)"
     }
 
     // Scenario: Dos idiomas destino conviven de forma independiente (spec: phrase-catalog)
@@ -105,8 +127,10 @@ class RoomCatalogDataSourceTest {
         val database = inMemoryCatalogDatabase()
         val dataSource = source(database) {
             listOf(
-                document(targetLocale = "pt-PT", id = "pt-pt-id"),
-                document(targetLocale = "pt-BR", id = "pt-br-id"),
+                phraseDocument(targetLocale = "pt-PT", id = "pt-pt-id"),
+                translationDocument(targetLocale = "pt-PT", id = "pt-pt-id"),
+                phraseDocument(targetLocale = "pt-BR", id = "pt-br-id"),
+                translationDocument(targetLocale = "pt-BR", id = "pt-br-id"),
             )
         }
 
@@ -128,8 +152,10 @@ class RoomCatalogDataSourceTest {
     fun `given one invalid target locale document when seeding then the other locale is not affected`() = runTest {
         // Given
         val database = inMemoryCatalogDatabase()
-        val invalidDocument = document(targetLocale = "pt-BR").replace("\"level\": \"A1\"", "\"level\": \"Z9\"")
-        val dataSource = source(database) { listOf(document(), invalidDocument) }
+        val invalidDocument = phraseDocument(targetLocale = "pt-BR").replace("\"level\": \"A1\"", "\"level\": \"Z9\"")
+        val dataSource = source(database) {
+            listOf(phraseDocument(), translationDocument(), invalidDocument)
+        }
 
         // When
         val availableTargetLocales = dataSource.availableTargetLocales()
@@ -140,4 +166,82 @@ class RoomCatalogDataSourceTest {
         ptPtPhrases.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
         ptPtPhrases.phrases.map { it.id.value } shouldBe listOf("a1-saludos-001")
     }
+
+    // Scenario: Un cambio de schemaVersion en un documento de traducción vuelve a sembrarlo sin tocar las
+    // frases destino ni otros orígenes (spec: phrase-catalog)
+    @Test
+    fun `given a reseeded translation document when seeding then its phrases and other origins are kept`() =
+        runTest {
+            // Given: pt-PT ya sembrado con dos orígenes (es-ES y en-GB)
+            val database = inMemoryCatalogDatabase()
+            source(database) {
+                listOf(
+                    phraseDocument(),
+                    translationDocument(sourceLocale = "es-ES"),
+                    translationDocument(sourceLocale = "en-GB"),
+                )
+            }.availableTargetLocales()
+
+            // When: se resiembra solo el documento de traducción es-ES, con otro schemaVersion
+            database.catalogDao().upsertSeedVersion(
+                CatalogSeedVersionEntity(targetLocale = "pt-PT", sourceLocale = "es-ES", schemaVersion = 0),
+            )
+            val dataSource = source(database) {
+                listOf(
+                    phraseDocument(),
+                    translationDocument(sourceLocale = "es-ES", source = "Buenos días (actualizado)"),
+                    translationDocument(sourceLocale = "en-GB"),
+                )
+            }
+            val esEsPhrases = dataSource.phrases(ptPt, esEs)
+            val enGbPhrases = dataSource.phrases(ptPt, enGb)
+
+            // Then
+            esEsPhrases.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+            esEsPhrases.phrases.single().source shouldBe "Buenos días (actualizado)"
+            esEsPhrases.phrases.map { it.id.value } shouldBe listOf("a1-saludos-001")
+            enGbPhrases.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+            enGbPhrases.phrases.map { it.id.value } shouldBe listOf("a1-saludos-001")
+        }
+
+    // Scenario: Traducción sin frase destino correspondiente rechaza la carga (spec: phrase-catalog)
+    @Test
+    fun `given a translation id without a matching target phrase when seeding then nothing of it is seeded`() =
+        runTest {
+            // Given: pt-PT sin el id a1-saludos-999, y una traducción que sí lo incluye
+            val database = inMemoryCatalogDatabase()
+            val dataSource = source(database) {
+                listOf(
+                    phraseDocument(id = "a1-saludos-001"),
+                    translationDocument(id = "a1-saludos-999"),
+                )
+            }
+
+            // When
+            val ptPtPhrases = dataSource.phrases(ptPt, esEs)
+            val availableSourceLocales = dataSource.availableSourceLocales(ptPt)
+
+            // Then
+            ptPtPhrases.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+            ptPtPhrases.phrases.shouldBeEmpty()
+            availableSourceLocales.shouldBeEmpty()
+        }
+
+    // Scenario: Persistencia del catálogo en Room (spec: phrase-catalog) - orden inverso de documentos nuevos
+    @Test
+    fun `given a translation document delivered before its target phrases when seeding then both are seeded`() =
+        runTest {
+            // Given: el documento de traducción llega antes que el de frases destino de su mismo idioma destino
+            val database = inMemoryCatalogDatabase()
+            val dataSource = source(database) {
+                listOf(translationDocument(), phraseDocument())
+            }
+
+            // When
+            val result = dataSource.phrases(ptPt, esEs)
+
+            // Then
+            result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+            result.phrases.map { it.id.value } shouldBe listOf("a1-saludos-001")
+        }
 }

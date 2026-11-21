@@ -1,0 +1,6006 @@
+{
+  "schemaVersion": 1,
+  "targetLocale": "de-DE",
+  "phrases": [
+    {
+      "id": "a1-saludos-001",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Guten Morgen, wie geht's?"
+    },
+    {
+      "id": "a1-comida-001",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Ich habe Hunger."
+    },
+    {
+      "id": "a1-saludos-002",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Guten Tag!"
+    },
+    {
+      "id": "a1-saludos-003",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Gute Nacht, bis morgen."
+    },
+    {
+      "id": "a1-saludos-004",
+      "level": "A1",
+      "topic": "saludos",
+      "target": "Wie heißt du?"
+    },
+    {
+      "id": "a1-comida-002",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Ich möchte einen Kaffee, bitte."
+    },
+    {
+      "id": "a1-comida-003",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Das Brot ist frisch."
+    },
+    {
+      "id": "a1-comida-004",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Ich mag Obst sehr."
+    },
+    {
+      "id": "a1-comida-005",
+      "level": "A1",
+      "topic": "comida",
+      "target": "Die Suppe ist heiß."
+    },
+    {
+      "id": "a1-familia-001",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Das ist meine Mutter."
+    },
+    {
+      "id": "a1-familia-002",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Mein Vater arbeitet viel."
+    },
+    {
+      "id": "a1-familia-003",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Ich habe einen Bruder und eine Schwester."
+    },
+    {
+      "id": "a1-familia-004",
+      "level": "A1",
+      "topic": "familia",
+      "target": "Meine Großeltern wohnen hier."
+    },
+    {
+      "id": "a1-numeros-001",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Ich bin zwanzig Jahre alt."
+    },
+    {
+      "id": "a1-numeros-002",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Es ist drei Uhr."
+    },
+    {
+      "id": "a1-numeros-003",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Das kostet zehn Euro."
+    },
+    {
+      "id": "a1-numeros-004",
+      "level": "A1",
+      "topic": "numeros",
+      "target": "Ich wohne im fünften Stock."
+    },
+    {
+      "id": "a1-tiempo-001",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Heute regnet es."
+    },
+    {
+      "id": "a1-tiempo-002",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Im August ist es sehr heiß."
+    },
+    {
+      "id": "a1-tiempo-003",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Der Himmel ist bewölkt."
+    },
+    {
+      "id": "a1-tiempo-004",
+      "level": "A1",
+      "topic": "tiempo",
+      "target": "Im Winter ist es kalt."
+    },
+    {
+      "id": "a1-casa-001",
+      "level": "A1",
+      "topic": "casa",
+      "target": "Mein Haus ist klein."
+    },
+    {
+      "id": "a1-casa-002",
+      "level": "A1",
+      "topic": "casa",
+      "target": "Das Zimmer hat ein großes Fenster."
+    },
+    {
+      "id": "a1-casa-003",
+      "level": "A1",
+      "topic": "casa",
+      "target": "Die Küche ist sauber."
+    },
+    {
+      "id": "a1-casa-004",
+      "level": "A1",
+      "topic": "casa",
+      "target": "Wo ist die Toilette?"
+    },
+    {
+      "id": "a1-colores-001",
+      "level": "A1",
+      "topic": "colores",
+      "target": "Das Auto ist rot."
+    },
+    {
+      "id": "a1-colores-002",
+      "level": "A1",
+      "topic": "colores",
+      "target": "Mir gefällt die Farbe Blau."
+    },
+    {
+      "id": "a1-colores-003",
+      "level": "A1",
+      "topic": "colores",
+      "target": "Das Hemd ist weiß."
+    },
+    {
+      "id": "a1-animales-001",
+      "level": "A1",
+      "topic": "animales",
+      "target": "Der Hund ist im Garten."
+    },
+    {
+      "id": "a1-animales-002",
+      "level": "A1",
+      "topic": "animales",
+      "target": "Ich habe eine schwarze Katze."
+    },
+    {
+      "id": "a2-viajes-001",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Ich möchte ein Hotelzimmer reservieren."
+    },
+    {
+      "id": "a2-viajes-002",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Der Flug hat eine Stunde Verspätung."
+    },
+    {
+      "id": "a2-viajes-003",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Ich brauche einen Stadtplan."
+    },
+    {
+      "id": "a2-viajes-004",
+      "level": "A2",
+      "topic": "viajes",
+      "target": "Wo ist der Bahnhof?"
+    },
+    {
+      "id": "a2-compras-001",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Wie viel kostet dieser Pullover?"
+    },
+    {
+      "id": "a2-compras-002",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Kann ich mit Karte bezahlen?"
+    },
+    {
+      "id": "a2-compras-003",
+      "level": "A2",
+      "topic": "compras",
+      "target": "Dieser Schuh ist sehr teuer."
+    },
+    {
+      "id": "a2-compras-004",
+      "level": "A2",
+      "topic": "compras",
+      "target": "In diesem Geschäft gibt es einen Rabatt."
+    },
+    {
+      "id": "a2-trabajo-001",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Ich arbeite in einer Schule in der Nähe meines Hauses."
+    },
+    {
+      "id": "a2-trabajo-002",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Die Besprechung beginnt um zehn Uhr."
+    },
+    {
+      "id": "a2-trabajo-003",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Ich muss diese E-Mail heute schicken."
+    },
+    {
+      "id": "a2-trabajo-004",
+      "level": "A2",
+      "topic": "trabajo",
+      "target": "Mein Chef ist im Urlaub."
+    },
+    {
+      "id": "a2-salud-001",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Ich fühle mich heute nicht gut."
+    },
+    {
+      "id": "a2-salud-002",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Ich habe Kopfschmerzen."
+    },
+    {
+      "id": "a2-salud-003",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Ich muss zum Arzt gehen."
+    },
+    {
+      "id": "a2-salud-004",
+      "level": "A2",
+      "topic": "salud",
+      "target": "Die Apotheke öffnet um neun Uhr."
+    },
+    {
+      "id": "a2-rutina-001",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Ich stehe immer um sieben Uhr auf."
+    },
+    {
+      "id": "a2-rutina-002",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Nach der Arbeit gehe ich ins Fitnessstudio."
+    },
+    {
+      "id": "a2-rutina-003",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Ich dusche vor dem Frühstück."
+    },
+    {
+      "id": "a2-rutina-004",
+      "level": "A2",
+      "topic": "rutina",
+      "target": "Am Wochenende schlafe ich lange."
+    },
+    {
+      "id": "a2-ocio-001",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Ich lese gern am Abend."
+    },
+    {
+      "id": "a2-ocio-002",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Gehen wir am Samstag ins Kino?"
+    },
+    {
+      "id": "a2-ocio-003",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Sie spielt sehr gut Klavier."
+    },
+    {
+      "id": "a2-ocio-004",
+      "level": "A2",
+      "topic": "ocio",
+      "target": "Wir spielen Fußball im Park."
+    },
+    {
+      "id": "a2-transporte-001",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "Ich nehme jeden Tag den Bus."
+    },
+    {
+      "id": "a2-transporte-002",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "Der Zug fährt von Gleis zwei ab."
+    },
+    {
+      "id": "a2-transporte-003",
+      "level": "A2",
+      "topic": "transporte",
+      "target": "Ich fahre lieber mit dem Fahrrad."
+    },
+    {
+      "id": "a2-tecnologia-001",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "Mein Handy hat keinen Akku mehr."
+    },
+    {
+      "id": "a2-tecnologia-002",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "Ich habe das Passwort vergessen."
+    },
+    {
+      "id": "a2-tecnologia-003",
+      "level": "A2",
+      "topic": "tecnologia",
+      "target": "Das Internet ist sehr langsam."
+    },
+    {
+      "id": "b1-trabajo-001",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Ich denke darüber nach, den Job zu wechseln."
+    },
+    {
+      "id": "b1-trabajo-002",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Mein Vertrag endet am Jahresende."
+    },
+    {
+      "id": "b1-trabajo-003",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Wir müssen die Frist diese Woche einhalten."
+    },
+    {
+      "id": "b1-trabajo-004",
+      "level": "B1",
+      "topic": "trabajo",
+      "target": "Sie wurde nach zwei Jahren befördert."
+    },
+    {
+      "id": "b1-viajes-001",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Ich habe den Anschluss wegen der Verspätung verpasst."
+    },
+    {
+      "id": "b1-viajes-002",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Wir haben ein Auto gemietet, um das Hinterland zu besuchen."
+    },
+    {
+      "id": "b1-viajes-003",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Die Reise ist besser gelaufen, als wir erwartet hatten."
+    },
+    {
+      "id": "b1-viajes-004",
+      "level": "B1",
+      "topic": "viajes",
+      "target": "Wir haben vergessen, das Ladegerät mitzunehmen."
+    },
+    {
+      "id": "b1-relaciones-001",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Wir kennen uns seit mehr als zehn Jahren."
+    },
+    {
+      "id": "b1-relaciones-002",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Er hat sich noch nicht für das entschuldigt, was er gesagt hat."
+    },
+    {
+      "id": "b1-relaciones-003",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Wir bleiben trotz der Entfernung in Kontakt."
+    },
+    {
+      "id": "b1-relaciones-004",
+      "level": "B1",
+      "topic": "relaciones",
+      "target": "Ich vertraue ihrer Meinung ziemlich stark."
+    },
+    {
+      "id": "b1-medioambiente-001",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "Wir sollten zu Hause mehr recyceln."
+    },
+    {
+      "id": "b1-medioambiente-002",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "Die Dürre hat dieses Jahr die Ernten beeinträchtigt."
+    },
+    {
+      "id": "b1-medioambiente-003",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "In der Region gibt es immer weniger verfügbares Wasser."
+    },
+    {
+      "id": "b1-medioambiente-004",
+      "level": "B1",
+      "topic": "medioambiente",
+      "target": "Es ist wichtig, Energie zu sparen, wann immer es möglich ist."
+    },
+    {
+      "id": "b1-cultura-001",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Dieser Film hat mehrere internationale Preise gewonnen."
+    },
+    {
+      "id": "b1-cultura-002",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Die Ausstellung zeigt die Geschichte der Stadt."
+    },
+    {
+      "id": "b1-cultura-003",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Ich lese lieber das Buch, bevor ich den Film sehe."
+    },
+    {
+      "id": "b1-cultura-004",
+      "level": "B1",
+      "topic": "cultura",
+      "target": "Das Festival zieht Touristen aus dem ganzen Land an."
+    },
+    {
+      "id": "b1-deportes-001",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Der Spieler verletzte sich in der zweiten Halbzeit."
+    },
+    {
+      "id": "b1-deportes-002",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Die Mannschaft trainiert jeden Tag der Woche."
+    },
+    {
+      "id": "b1-deportes-003",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Wir haben das Finale mit einem Punkt gewonnen."
+    },
+    {
+      "id": "b1-deportes-004",
+      "level": "B1",
+      "topic": "deportes",
+      "target": "Sie hat angefangen zu laufen, um ihre Gesundheit zu verbessern."
+    },
+    {
+      "id": "b1-educacion-001",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "Die Abschlussprüfung ist schwieriger, als wir dachten."
+    },
+    {
+      "id": "b1-educacion-002",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "Die Schüler müssen die Arbeit bis Freitag abgeben."
+    },
+    {
+      "id": "b1-educacion-003",
+      "level": "B1",
+      "topic": "educacion",
+      "target": "Ich habe mich entschieden, mich für einen Englischkurs anzumelden."
+    },
+    {
+      "id": "b1-tecnologia-001",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Diese App verbraucht viel Akku."
+    },
+    {
+      "id": "b1-tecnologia-002",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Sie haben ein Update gemacht, das das Problem behoben hat."
+    },
+    {
+      "id": "b1-tecnologia-003",
+      "level": "B1",
+      "topic": "tecnologia",
+      "target": "Ich habe die Dateien aus Sicherheitsgründen in der Cloud gespeichert."
+    },
+    {
+      "id": "b2-politica-001",
+      "level": "B2",
+      "topic": "politica",
+      "target": "Die Debatte konzentrierte sich auf die vorgeschlagenen Steuerreformen."
+    },
+    {
+      "id": "b2-politica-002",
+      "level": "B2",
+      "topic": "politica",
+      "target": "Die Wahlbeteiligung ist im Vergleich zum Vorjahr gesunken."
+    },
+    {
+      "id": "b2-politica-003",
+      "level": "B2",
+      "topic": "politica",
+      "target": "Viele Bürger fühlen sich von den Institutionen kaum vertreten."
+    },
+    {
+      "id": "b2-politica-004",
+      "level": "B2",
+      "topic": "politica",
+      "target": "Der Gesetzesvorschlag hat im Parlament starken Widerstand ausgelöst."
+    },
+    {
+      "id": "b2-economia-001",
+      "level": "B2",
+      "topic": "economia",
+      "target": "Die Inflation hat vor allem Familien mit geringerem Einkommen getroffen."
+    },
+    {
+      "id": "b2-economia-002",
+      "level": "B2",
+      "topic": "economia",
+      "target": "Die Jugendarbeitslosigkeit bleibt ein strukturelles Problem."
+    },
+    {
+      "id": "b2-economia-003",
+      "level": "B2",
+      "topic": "economia",
+      "target": "Die Exporte sind trotz der Instabilität des Marktes gewachsen."
+    },
+    {
+      "id": "b2-economia-004",
+      "level": "B2",
+      "topic": "economia",
+      "target": "Das Unternehmen hat erhebliche Kürzungen im Jahresbudget angekündigt."
+    },
+    {
+      "id": "b2-salud-001",
+      "level": "B2",
+      "topic": "salud",
+      "target": "Das Gesundheitssystem steht wegen Personalmangels unter Druck."
+    },
+    {
+      "id": "b2-salud-002",
+      "level": "B2",
+      "topic": "salud",
+      "target": "Die klinische Forschung hat dank neuer Finanzierungen Fortschritte gemacht."
+    },
+    {
+      "id": "b2-salud-003",
+      "level": "B2",
+      "topic": "salud",
+      "target": "Viele Patienten warten monatelang auf einen Facharzttermin."
+    },
+    {
+      "id": "b2-salud-004",
+      "level": "B2",
+      "topic": "salud",
+      "target": "Die Vorsorge ist genauso wichtig wie die Behandlung selbst."
+    },
+    {
+      "id": "b2-educacion-001",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "Der Lehrplan wurde überarbeitet, um digitale Kompetenzen einzubeziehen."
+    },
+    {
+      "id": "b2-educacion-002",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "Die Ungleichheiten beim Zugang zur Bildung bereiten Experten weiterhin Sorgen."
+    },
+    {
+      "id": "b2-educacion-003",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "Die Universität hat in Stipendien für Studierende mit weniger Mitteln investiert."
+    },
+    {
+      "id": "b2-educacion-004",
+      "level": "B2",
+      "topic": "educacion",
+      "target": "Der Schulabbruch ist in den letzten fünf Jahren zurückgegangen."
+    },
+    {
+      "id": "b2-cultura-001",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "Das Werk hat eine intensive Debatte über Identität und Erinnerung ausgelöst."
+    },
+    {
+      "id": "b2-cultura-002",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "Das historische Erbe der Stadt ist schlecht erhalten."
+    },
+    {
+      "id": "b2-cultura-003",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "Die Kritik war sich über den wahren Wert des Romans uneinig."
+    },
+    {
+      "id": "b2-cultura-004",
+      "level": "B2",
+      "topic": "cultura",
+      "target": "Der Regisseur entschied sich für eine nicht lineare Erzählweise."
+    },
+    {
+      "id": "b2-trabajo-001",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "Das Unternehmen hat die Fernarbeit dauerhaft eingeführt."
+    },
+    {
+      "id": "b2-trabajo-002",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "Die Personalfluktuation ist nach der Umstrukturierung gestiegen."
+    },
+    {
+      "id": "b2-trabajo-003",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "Wir haben über die Gewerkschaft bessere Bedingungen ausgehandelt."
+    },
+    {
+      "id": "b2-trabajo-004",
+      "level": "B2",
+      "topic": "trabajo",
+      "target": "Zu viele Besprechungen verringern die Produktivität des Teams."
+    },
+    {
+      "id": "b2-medioambiente-001",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "Der Klimawandel hat die Extremereignisse verstärkt."
+    },
+    {
+      "id": "b2-medioambiente-002",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "Die Energiewende erfordert langfristige Investitionen."
+    },
+    {
+      "id": "b2-medioambiente-003",
+      "level": "B2",
+      "topic": "medioambiente",
+      "target": "Der Verlust der Biodiversität bedroht ganze Ökosysteme."
+    },
+    {
+      "id": "b2-tecnologia-001",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "Die künstliche Intelligenz verändert mehrere Branchen."
+    },
+    {
+      "id": "b2-tecnologia-002",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "Der Datenschutz ist zu einem zentralen Anliegen geworden."
+    },
+    {
+      "id": "b2-tecnologia-003",
+      "level": "B2",
+      "topic": "tecnologia",
+      "target": "Die Automatisierung hat Aufgaben ersetzt, die früher manuell erledigt wurden."
+    },
+    {
+      "id": "c1-filosofia-001",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Die These, nach der Fortschritt immer linear verläuft, sollte hinterfragt werden."
+    },
+    {
+      "id": "c1-filosofia-002",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Wie sehr man auch das Gegenteil behauptet, die individuelle Freiheit ist nicht absolut."
+    },
+    {
+      "id": "c1-filosofia-003",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Man sollte zwischen persönlicher Überzeugung und nachweisbarer Wahrheit unterscheiden."
+    },
+    {
+      "id": "c1-filosofia-004",
+      "level": "C1",
+      "topic": "filosofia",
+      "target": "Die Mehrdeutigkeit des Begriffs erschwert jeden dauerhaften Konsens."
+    },
+    {
+      "id": "c1-economia-001",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Die Informationsasymmetrie verzerrt das Funktionieren der Märkte."
+    },
+    {
+      "id": "c1-economia-002",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Obwohl die Produktivität gestiegen ist, sind die Löhne stagniert."
+    },
+    {
+      "id": "c1-economia-003",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Die Deregulierung hatte Folgen, die niemand vollständig vorausgesehen hatte."
+    },
+    {
+      "id": "c1-economia-004",
+      "level": "C1",
+      "topic": "economia",
+      "target": "Man sollte Wirtschaftswachstum nicht mit der Verteilung des Wohlstands verwechseln."
+    },
+    {
+      "id": "c1-politica-001",
+      "level": "C1",
+      "topic": "politica",
+      "target": "Die Legitimität einer Entscheidung hängt nicht nur von ihrer formalen Rechtmäßigkeit ab."
+    },
+    {
+      "id": "c1-politica-002",
+      "level": "C1",
+      "topic": "politica",
+      "target": "Der erreichte Kompromiss wird kaum alle beteiligten Parteien zufriedenstellen."
+    },
+    {
+      "id": "c1-politica-003",
+      "level": "C1",
+      "topic": "politica",
+      "target": "Die diskursive Polarisierung hat die Qualität der öffentlichen Debatte unterminiert."
+    },
+    {
+      "id": "c1-politica-004",
+      "level": "C1",
+      "topic": "politica",
+      "target": "Jede institutionelle Reform bringt kurzfristig politische Kosten mit sich."
+    },
+    {
+      "id": "c1-ciencia-001",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "Die Reproduzierbarkeit der Ergebnisse ist wesentlich, um eine Hypothese zu validieren."
+    },
+    {
+      "id": "c1-ciencia-002",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "Der Fortschritt der Genomik wirft ethische Dilemmata auf, die noch unbeantwortet sind."
+    },
+    {
+      "id": "c1-ciencia-003",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "Die wissenschaftliche Gemeinschaft ist sich über die Interpretation der Daten uneinig."
+    },
+    {
+      "id": "c1-ciencia-004",
+      "level": "C1",
+      "topic": "ciencia",
+      "target": "Nicht jede statistische Korrelation impliziert einen kausalen Zusammenhang."
+    },
+    {
+      "id": "c1-literatura-001",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "Der Erzähler nimmt bewusst eine wenig verlässliche Perspektive ein."
+    },
+    {
+      "id": "c1-literatura-002",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "Das Werk tritt mit der Tradition in Dialog und unterwandert sie zugleich."
+    },
+    {
+      "id": "c1-literatura-003",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "Die fragmentierte Sprache spiegelt die Desorientierung der Hauptfigur wider."
+    },
+    {
+      "id": "c1-literatura-004",
+      "level": "C1",
+      "topic": "literatura",
+      "target": "Die kritische Rezeption hat sich seit der Erstveröffentlichung radikal verändert."
+    },
+    {
+      "id": "c1-sociedad-001",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "Der soziale Zusammenhalt schwächt sich ab, wenn die Ungleichheit zunimmt."
+    },
+    {
+      "id": "c1-sociedad-002",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "Die Alterung der Bevölkerung erfordert ein Umdenken beim Rentensystem."
+    },
+    {
+      "id": "c1-sociedad-003",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "Die soziale Mobilität hängt von Faktoren ab, die über die individuelle Leistung hinausgehen."
+    },
+    {
+      "id": "c1-sociedad-004",
+      "level": "C1",
+      "topic": "sociedad",
+      "target": "Das Vertrauen in die Institutionen hat sich in den letzten Jahrzehnten verschlechtert."
+    },
+    {
+      "id": "c1-medios-001",
+      "level": "C1",
+      "topic": "medios",
+      "target": "Desinformation verbreitet sich schneller, als Tatsachen korrigiert werden können."
+    },
+    {
+      "id": "c1-medios-002",
+      "level": "C1",
+      "topic": "medios",
+      "target": "Die Grenze zwischen Journalismus und Meinung ist zunehmend verschwommen."
+    },
+    {
+      "id": "c1-medios-003",
+      "level": "C1",
+      "topic": "medios",
+      "target": "Empfehlungsalgorithmen verstärken die bereits bestehenden Überzeugungen des Nutzers."
+    },
+    {
+      "id": "c1-derecho-001",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "Die jüngste Rechtsprechung hat die Auslegung dieses Artikels verändert."
+    },
+    {
+      "id": "c1-derecho-002",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "Der Grundsatz der Verhältnismäßigkeit begrenzt den Handlungsspielraum des Staates."
+    },
+    {
+      "id": "c1-derecho-003",
+      "level": "C1",
+      "topic": "derecho",
+      "target": "Die Mehrdeutigkeit der Norm führte zu widersprüchlichen Auslegungen vor den Gerichten."
+    },
+    {
+      "id": "a1-ropa-001",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Der Pullover ist blau."
+    },
+    {
+      "id": "a1-ropa-002",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Ich muss neue Schuhe kaufen."
+    },
+    {
+      "id": "a1-ropa-003",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Er trägt einen schwarzen Mantel."
+    },
+    {
+      "id": "a1-ropa-004",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Diese Hose ist sehr groß."
+    },
+    {
+      "id": "a1-ropa-005",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Mir gefällt dieses rote Kleid."
+    },
+    {
+      "id": "a1-ropa-006",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Mir ist kalt, ich ziehe einen Mantel an."
+    },
+    {
+      "id": "a1-ropa-007",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Meine Schuhe sind schmutzig."
+    },
+    {
+      "id": "a1-ropa-008",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Sie hat eine neue Bluse gekauft."
+    },
+    {
+      "id": "a1-ropa-009",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Dieser Hut ist sehr schön."
+    },
+    {
+      "id": "a1-ropa-010",
+      "level": "A1",
+      "topic": "ropa",
+      "target": "Ich muss heute die Wäsche waschen."
+    },
+    {
+      "id": "a1-cuerpo-001",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Meine Beine schmerzen."
+    },
+    {
+      "id": "a1-cuerpo-002",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Er hat grüne Augen."
+    },
+    {
+      "id": "a1-cuerpo-003",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Meine Hand ist kalt."
+    },
+    {
+      "id": "a1-cuerpo-004",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Sie hat lange Haare."
+    },
+    {
+      "id": "a1-cuerpo-005",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Mir tut der Kopf weh."
+    },
+    {
+      "id": "a1-cuerpo-006",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Meine Füße sind müde."
+    },
+    {
+      "id": "a1-cuerpo-007",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Mein Arm ist verletzt."
+    },
+    {
+      "id": "a1-cuerpo-008",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Sie lächelt mit offenem Mund."
+    },
+    {
+      "id": "a1-cuerpo-009",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Meine Nase ist rot vor Kälte."
+    },
+    {
+      "id": "a1-cuerpo-010",
+      "level": "A1",
+      "topic": "cuerpo",
+      "target": "Ich wasche mir die Hände vor dem Essen."
+    },
+    {
+      "id": "a1-escuela-001",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Ich gehe jeden Tag zur Schule."
+    },
+    {
+      "id": "a1-escuela-002",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Der Lehrer erklärt die Lektion."
+    },
+    {
+      "id": "a1-escuela-003",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Ich habe morgen eine Prüfung."
+    },
+    {
+      "id": "a1-escuela-004",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Die Schüler lernen in der Bibliothek."
+    },
+    {
+      "id": "a1-escuela-005",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Der Unterricht beginnt um acht Uhr."
+    },
+    {
+      "id": "a1-escuela-006",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Ich brauche ein neues Heft."
+    },
+    {
+      "id": "a1-escuela-007",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Ich mag Mathematik sehr."
+    },
+    {
+      "id": "a1-escuela-008",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Mein Sohn geht zu Fuß zur Schule."
+    },
+    {
+      "id": "a1-escuela-009",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Die Klasse hat zwanzig Schüler."
+    },
+    {
+      "id": "a1-escuela-010",
+      "level": "A1",
+      "topic": "escuela",
+      "target": "Ich habe den Bleistift zu Hause vergessen."
+    },
+    {
+      "id": "a1-profesiones-001",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Mein Vater ist Arzt."
+    },
+    {
+      "id": "a1-profesiones-002",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Sie arbeitet als Lehrerin."
+    },
+    {
+      "id": "a1-profesiones-003",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Ich möchte Ingenieur werden."
+    },
+    {
+      "id": "a1-profesiones-004",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Mein Nachbar ist Polizist."
+    },
+    {
+      "id": "a1-profesiones-005",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Meine Mutter ist Krankenschwester."
+    },
+    {
+      "id": "a1-profesiones-006",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Er ist Koch in einem Restaurant."
+    },
+    {
+      "id": "a1-profesiones-007",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Sie studiert, um Anwältin zu werden."
+    },
+    {
+      "id": "a1-profesiones-008",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Mein Onkel ist Taxifahrer."
+    },
+    {
+      "id": "a1-profesiones-009",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Ich arbeite als Verkäufer in einem Geschäft."
+    },
+    {
+      "id": "a1-profesiones-010",
+      "level": "A1",
+      "topic": "profesiones",
+      "target": "Sie ist seit zehn Jahren Friseurin."
+    },
+    {
+      "id": "a1-dias_semana-001",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Heute ist Montag."
+    },
+    {
+      "id": "a1-dias_semana-002",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Ich arbeite von Montag bis Freitag."
+    },
+    {
+      "id": "a1-dias_semana-003",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Am Sonntag ruhe ich mich zu Hause aus."
+    },
+    {
+      "id": "a1-dias_semana-004",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Die Besprechung ist am Mittwoch."
+    },
+    {
+      "id": "a1-dias_semana-005",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Ich gehe dienstags und donnerstags ins Fitnessstudio."
+    },
+    {
+      "id": "a1-dias_semana-006",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Der Samstag ist mein Lieblingstag."
+    },
+    {
+      "id": "a1-dias_semana-007",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Das Geschäft schließt am Sonntag."
+    },
+    {
+      "id": "a1-dias_semana-008",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Morgen ist Freitag."
+    },
+    {
+      "id": "a1-dias_semana-009",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Ich lerne jeden Abend, außer am Samstag."
+    },
+    {
+      "id": "a1-dias_semana-010",
+      "level": "A1",
+      "topic": "dias_semana",
+      "target": "Die Woche hat sieben Tage."
+    },
+    {
+      "id": "a1-meses-001",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Mein Geburtstag ist im März."
+    },
+    {
+      "id": "a1-meses-002",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Der Dezember ist hier sehr kalt."
+    },
+    {
+      "id": "a1-meses-003",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Die Ferien beginnen im Juli."
+    },
+    {
+      "id": "a1-meses-004",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Das Jahr hat zwölf Monate."
+    },
+    {
+      "id": "a1-meses-005",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Ich werde im September reisen."
+    },
+    {
+      "id": "a1-meses-006",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Wir haben im Mai geheiratet."
+    },
+    {
+      "id": "a1-meses-007",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Die Prüfung ist im Januar."
+    },
+    {
+      "id": "a1-meses-008",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Im April regnet es viel."
+    },
+    {
+      "id": "a1-meses-009",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Ich bin im Oktober geboren."
+    },
+    {
+      "id": "a1-meses-010",
+      "level": "A1",
+      "topic": "meses",
+      "target": "Der Februar ist ein kurzer Monat."
+    },
+    {
+      "id": "a1-estaciones-001",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Ich mag den Sommer sehr."
+    },
+    {
+      "id": "a1-estaciones-002",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Im Herbst fallen die Blätter."
+    },
+    {
+      "id": "a1-estaciones-003",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Der Winter ist kalt und dunkel."
+    },
+    {
+      "id": "a1-estaciones-004",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Im Frühling blühen die Blumen."
+    },
+    {
+      "id": "a1-estaciones-005",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Ich mag den Sommer mehr als den Winter."
+    },
+    {
+      "id": "a1-estaciones-006",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Im Sommer gehen wir an den Strand."
+    },
+    {
+      "id": "a1-estaciones-007",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Der Herbst hat schöne Farben."
+    },
+    {
+      "id": "a1-estaciones-008",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Es gibt vier Jahreszeiten im Jahr."
+    },
+    {
+      "id": "a1-estaciones-009",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Im Winter trage ich einen warmen Mantel."
+    },
+    {
+      "id": "a1-estaciones-010",
+      "level": "A1",
+      "topic": "estaciones",
+      "target": "Der Frühling beginnt im März."
+    },
+    {
+      "id": "a1-ciudad-001",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Diese Stadt ist sehr groß."
+    },
+    {
+      "id": "a1-ciudad-002",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Ich wohne im Stadtzentrum."
+    },
+    {
+      "id": "a1-ciudad-003",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "In der Stadt gibt es viel Verkehr."
+    },
+    {
+      "id": "a1-ciudad-004",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Der Platz ist in der Nähe."
+    },
+    {
+      "id": "a1-ciudad-005",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Der Stadtpark ist schön."
+    },
+    {
+      "id": "a1-ciudad-006",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Diese Straße ist sehr lang."
+    },
+    {
+      "id": "a1-ciudad-007",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Das Museum öffnet um zehn Uhr."
+    },
+    {
+      "id": "a1-ciudad-008",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Ich gehe gern in der Stadt spazieren."
+    },
+    {
+      "id": "a1-ciudad-009",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Die Stadt hat viele Touristen."
+    },
+    {
+      "id": "a1-ciudad-010",
+      "level": "A1",
+      "topic": "ciudad",
+      "target": "Der Markt ist auf dem Hauptplatz."
+    },
+    {
+      "id": "a1-direcciones-001",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Biegen Sie an der nächsten Straße rechts ab."
+    },
+    {
+      "id": "a1-direcciones-002",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Die Bank ist links."
+    },
+    {
+      "id": "a1-direcciones-003",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Gehen Sie geradeaus bis zur Ampel."
+    },
+    {
+      "id": "a1-direcciones-004",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Die Apotheke ist in der Nähe des Marktes."
+    },
+    {
+      "id": "a1-direcciones-005",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Ist der Bahnhof weit von hier?"
+    },
+    {
+      "id": "a1-direcciones-006",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Können Sie mir den Weg zeigen?"
+    },
+    {
+      "id": "a1-direcciones-007",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Das Haus ist hinter der Kirche."
+    },
+    {
+      "id": "a1-direcciones-008",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Das Hotel ist zwischen der Bank und dem Café."
+    },
+    {
+      "id": "a1-direcciones-009",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Wir haben uns verirrt, wo ist das hier?"
+    },
+    {
+      "id": "a1-direcciones-010",
+      "level": "A1",
+      "topic": "direcciones",
+      "target": "Das Geschäft ist gegenüber dem Park."
+    },
+    {
+      "id": "a1-deportes_basico-001",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Ich spiele gern Fußball."
+    },
+    {
+      "id": "a1-deportes_basico-002",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Ich schwimme jeden Morgen."
+    },
+    {
+      "id": "a1-deportes_basico-003",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Er läuft im Park."
+    },
+    {
+      "id": "a1-deportes_basico-004",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Wir spielen am Nachmittag Basketball."
+    },
+    {
+      "id": "a1-deportes_basico-005",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Sie macht zweimal pro Woche Gymnastik."
+    },
+    {
+      "id": "a1-deportes_basico-006",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Ich spiele Tennis mit meinem Freund."
+    },
+    {
+      "id": "a1-deportes_basico-007",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Wir fahren gern Fahrrad."
+    },
+    {
+      "id": "a1-deportes_basico-008",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Ich gehe am Sonntag ins Schwimmbad."
+    },
+    {
+      "id": "a1-deportes_basico-009",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Mein Sohn spielt Fußball in der Schule."
+    },
+    {
+      "id": "a1-deportes_basico-010",
+      "level": "A1",
+      "topic": "deportes_basico",
+      "target": "Ich mache jeden Abend Yoga."
+    },
+    {
+      "id": "a1-musica-001",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Ich mag Musik sehr."
+    },
+    {
+      "id": "a1-musica-002",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Sie singt sehr gut."
+    },
+    {
+      "id": "a1-musica-003",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Er spielt Gitarre."
+    },
+    {
+      "id": "a1-musica-004",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Ich höre Musik im Auto."
+    },
+    {
+      "id": "a1-musica-005",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Wir gehen am Samstag zu einem Konzert."
+    },
+    {
+      "id": "a1-musica-006",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Mein Sohn lernt Klavier."
+    },
+    {
+      "id": "a1-musica-007",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Dieses Lied ist sehr schön."
+    },
+    {
+      "id": "a1-musica-008",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Ich mag klassische Musik."
+    },
+    {
+      "id": "a1-musica-009",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Sie hat eine Band mit ihren Freunden."
+    },
+    {
+      "id": "a1-musica-010",
+      "level": "A1",
+      "topic": "musica",
+      "target": "Wir tanzen zu dieser Musik."
+    },
+    {
+      "id": "a1-mascotas-001",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Ich habe einen kleinen Hund."
+    },
+    {
+      "id": "a1-mascotas-002",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Meine Katze schläft den ganzen Tag."
+    },
+    {
+      "id": "a1-mascotas-003",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Ich gehe morgens mit dem Hund spazieren."
+    },
+    {
+      "id": "a1-mascotas-004",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Sie hat zwei Fische zu Hause."
+    },
+    {
+      "id": "a1-mascotas-005",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Der Hund spielt gern im Garten."
+    },
+    {
+      "id": "a1-mascotas-006",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Ich füttere die Katze jeden Abend."
+    },
+    {
+      "id": "a1-mascotas-007",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Mein Sohn möchte einen Welpen."
+    },
+    {
+      "id": "a1-mascotas-008",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Der Vogel singt am Morgen."
+    },
+    {
+      "id": "a1-mascotas-009",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Wir bringen den Hund zum Tierarzt."
+    },
+    {
+      "id": "a1-mascotas-010",
+      "level": "A1",
+      "topic": "mascotas",
+      "target": "Sie hat eine Katze von der Straße aufgenommen."
+    },
+    {
+      "id": "a1-naturaleza-001",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Ich gehe gern im Wald spazieren."
+    },
+    {
+      "id": "a1-naturaleza-002",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Der Fluss fließt in der Nähe des Dorfes."
+    },
+    {
+      "id": "a1-naturaleza-003",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Im Park gibt es viele Bäume."
+    },
+    {
+      "id": "a1-naturaleza-004",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Das Meer ist heute sehr ruhig."
+    },
+    {
+      "id": "a1-naturaleza-005",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Wir besteigen den Berg im Sommer."
+    },
+    {
+      "id": "a1-naturaleza-006",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Die Blumen im Garten sind gelb."
+    },
+    {
+      "id": "a1-naturaleza-007",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Die Sonne geht im Sommer sehr früh auf."
+    },
+    {
+      "id": "a1-naturaleza-008",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Wir sehen die Sterne in der Nacht."
+    },
+    {
+      "id": "a1-naturaleza-009",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Der See ist in der Nähe meines Hauses."
+    },
+    {
+      "id": "a1-naturaleza-010",
+      "level": "A1",
+      "topic": "naturaleza",
+      "target": "Ich beobachte gern Vögel."
+    },
+    {
+      "id": "a1-emociones-001",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Ich bin heute sehr glücklich."
+    },
+    {
+      "id": "a1-emociones-002",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Sie ist traurig wegen der Nachricht."
+    },
+    {
+      "id": "a1-emociones-003",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Ich habe Angst vor Spinnen."
+    },
+    {
+      "id": "a1-emociones-004",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Wir sind nach der Arbeit müde."
+    },
+    {
+      "id": "a1-emociones-005",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Er hat sich über seinen Bruder geärgert."
+    },
+    {
+      "id": "a1-emociones-006",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Ich bin über das Ergebnis überrascht."
+    },
+    {
+      "id": "a1-emociones-007",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Ich fühle mich heute Nachmittag ruhig."
+    },
+    {
+      "id": "a1-emociones-008",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Sie ist vor der Prüfung nervös."
+    },
+    {
+      "id": "a1-emociones-009",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Wir sind sehr stolz auf dich."
+    },
+    {
+      "id": "a1-emociones-010",
+      "level": "A1",
+      "topic": "emociones",
+      "target": "Ich fühle mich manchmal einsam."
+    },
+    {
+      "id": "a1-horario-001",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Wie viel Uhr ist es?"
+    },
+    {
+      "id": "a1-horario-002",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Das Abendessen ist um acht Uhr."
+    },
+    {
+      "id": "a1-horario-003",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Ich komme immer pünktlich an."
+    },
+    {
+      "id": "a1-horario-004",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Das Geschäft öffnet um neun Uhr morgens."
+    },
+    {
+      "id": "a1-horario-005",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Der Film beginnt um halb acht."
+    },
+    {
+      "id": "a1-horario-006",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Ich habe um die Mittagszeit einen Termin."
+    },
+    {
+      "id": "a1-horario-007",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Der Flug startet um Mitternacht."
+    },
+    {
+      "id": "a1-horario-008",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Ich verlasse die Arbeit um sechs Uhr."
+    },
+    {
+      "id": "a1-horario-009",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Die Besprechung dauert eine Stunde."
+    },
+    {
+      "id": "a1-horario-010",
+      "level": "A1",
+      "topic": "horario",
+      "target": "Wir sind zu früh angekommen."
+    },
+    {
+      "id": "a1-dinero-001",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Wie viel Geld hast du?"
+    },
+    {
+      "id": "a1-dinero-002",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Ich muss Geld wechseln."
+    },
+    {
+      "id": "a1-dinero-003",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Ich habe nicht genug Geld."
+    },
+    {
+      "id": "a1-dinero-004",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Sie spart jeden Monat Geld."
+    },
+    {
+      "id": "a1-dinero-005",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Das ist mir zu teuer."
+    },
+    {
+      "id": "a1-dinero-006",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Ich bezahle immer bar."
+    },
+    {
+      "id": "a1-dinero-007",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Der Geldautomat funktioniert nicht."
+    },
+    {
+      "id": "a1-dinero-008",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Ich bekomme mein Gehalt am Monatsende."
+    },
+    {
+      "id": "a1-dinero-009",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Ich habe mir von meinem Bruder Geld geliehen."
+    },
+    {
+      "id": "a1-dinero-010",
+      "level": "A1",
+      "topic": "dinero",
+      "target": "Dieser Preis ist sehr günstig."
+    },
+    {
+      "id": "a1-telefono-001",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Mein Telefon klingelt."
+    },
+    {
+      "id": "a1-telefono-002",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Kann ich dein Telefon benutzen?"
+    },
+    {
+      "id": "a1-telefono-003",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Ich habe das Telefon zu Hause vergessen."
+    },
+    {
+      "id": "a1-telefono-004",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Ruf mich an, wenn du ankommst."
+    },
+    {
+      "id": "a1-telefono-005",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Ich habe deine Nummer nicht."
+    },
+    {
+      "id": "a1-telefono-006",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Das Telefon ist runtergefallen und kaputtgegangen."
+    },
+    {
+      "id": "a1-telefono-007",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Ich habe dir gestern eine Nachricht geschickt."
+    },
+    {
+      "id": "a1-telefono-008",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Der Akku des Telefons ist leer."
+    },
+    {
+      "id": "a1-telefono-009",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Ich antworte immer schnell auf Nachrichten."
+    },
+    {
+      "id": "a1-telefono-010",
+      "level": "A1",
+      "topic": "telefono",
+      "target": "Ich habe einen wichtigen Anruf verpasst."
+    },
+    {
+      "id": "a2-restaurante-001",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Ich wollte einen Tisch für zwei Personen reservieren."
+    },
+    {
+      "id": "a2-restaurante-002",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Was empfehlen Sie von der Speisekarte?"
+    },
+    {
+      "id": "a2-restaurante-003",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Die Rechnung, bitte."
+    },
+    {
+      "id": "a2-restaurante-004",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Dieses Gericht hat viel Salz."
+    },
+    {
+      "id": "a2-restaurante-005",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Können wir uns auf die Terrasse setzen?"
+    },
+    {
+      "id": "a2-restaurante-006",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Der Kellner hat die falsche Suppe gebracht."
+    },
+    {
+      "id": "a2-restaurante-007",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Wir würden gern die Weinkarte sehen."
+    },
+    {
+      "id": "a2-restaurante-008",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Das Essen war köstlich."
+    },
+    {
+      "id": "a2-restaurante-009",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Wir haben vierzig Minuten auf den Tisch gewartet."
+    },
+    {
+      "id": "a2-restaurante-010",
+      "level": "A2",
+      "topic": "restaurante",
+      "target": "Können wir getrennt bezahlen?"
+    },
+    {
+      "id": "a2-hogar-001",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Ich muss das Wohnzimmer aufräumen."
+    },
+    {
+      "id": "a2-hogar-002",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Die Waschmaschine ist kaputtgegangen."
+    },
+    {
+      "id": "a2-hogar-003",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Wir werden das Schlafzimmer blau anmalen."
+    },
+    {
+      "id": "a2-hogar-004",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Die Glühbirne in der Küche muss noch gewechselt werden."
+    },
+    {
+      "id": "a2-hogar-005",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Wir haben eine kleinere Wohnung gemietet."
+    },
+    {
+      "id": "a2-hogar-006",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Der Kühlschrank ist leer."
+    },
+    {
+      "id": "a2-hogar-007",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Wir müssen das Haus vor Samstag putzen."
+    },
+    {
+      "id": "a2-hogar-008",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Der Wasserhahn in der Küche tropft."
+    },
+    {
+      "id": "a2-hogar-009",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Wir sind letzten Monat umgezogen."
+    },
+    {
+      "id": "a2-hogar-010",
+      "level": "A2",
+      "topic": "hogar",
+      "target": "Die Heizung funktioniert nicht richtig."
+    },
+    {
+      "id": "a2-citas_medicas-001",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Ich habe einen Termin um drei Uhr."
+    },
+    {
+      "id": "a2-citas_medicas-002",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Der Arzt hat eine Blutuntersuchung angeordnet."
+    },
+    {
+      "id": "a2-citas_medicas-003",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Ich muss einen Termin beim Zahnarzt ausmachen."
+    },
+    {
+      "id": "a2-citas_medicas-004",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Die Ärztin hat mir ein Antibiotikum verschrieben."
+    },
+    {
+      "id": "a2-citas_medicas-005",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Ich habe den Termin von gestern abgesagt."
+    },
+    {
+      "id": "a2-citas_medicas-006",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Ich muss nächste Woche eine Untersuchung machen."
+    },
+    {
+      "id": "a2-citas_medicas-007",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Der Pfleger hat meinen Blutdruck gemessen."
+    },
+    {
+      "id": "a2-citas_medicas-008",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Das Wartezimmer war voll."
+    },
+    {
+      "id": "a2-citas_medicas-009",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Ich bin nachts in die Notaufnahme gegangen."
+    },
+    {
+      "id": "a2-citas_medicas-010",
+      "level": "A2",
+      "topic": "citas_medicas",
+      "target": "Das Ergebnis der Untersuchung kommt am Donnerstag."
+    },
+    {
+      "id": "a2-banco-001",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Ich muss ein Bankkonto eröffnen."
+    },
+    {
+      "id": "a2-banco-002",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Meine Karte wurde gesperrt."
+    },
+    {
+      "id": "a2-banco-003",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Ich habe meinem Bruder Geld überwiesen."
+    },
+    {
+      "id": "a2-banco-004",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Wie hoch ist der Kontostand?"
+    },
+    {
+      "id": "a2-banco-005",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Ich habe meine Debitkarte verloren."
+    },
+    {
+      "id": "a2-banco-006",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Die Bank verlangt eine hohe Gebühr."
+    },
+    {
+      "id": "a2-banco-007",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Ich muss einen Kredit beantragen."
+    },
+    {
+      "id": "a2-banco-008",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Die App der Bank funktioniert nicht."
+    },
+    {
+      "id": "a2-banco-009",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Ich habe am Geldautomaten Geld abgehoben."
+    },
+    {
+      "id": "a2-banco-010",
+      "level": "A2",
+      "topic": "banco",
+      "target": "Der Filialleiter der Bank hat mich heute angerufen."
+    },
+    {
+      "id": "a2-correos-001",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Ich habe einen Brief nach Spanien geschickt."
+    },
+    {
+      "id": "a2-correos-002",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Wie viel kostet es, dieses Paket zu versenden?"
+    },
+    {
+      "id": "a2-correos-003",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Ist der Briefträger heute schon gekommen?"
+    },
+    {
+      "id": "a2-correos-004",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Das Paket ist noch nicht angekommen."
+    },
+    {
+      "id": "a2-correos-005",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Ich muss Briefmarken kaufen."
+    },
+    {
+      "id": "a2-correos-006",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Das Postamt schließt um fünf Uhr."
+    },
+    {
+      "id": "a2-correos-007",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Ich habe heute einen wichtigen Brief erhalten."
+    },
+    {
+      "id": "a2-correos-008",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Die Sendung hat zwei Wochen gedauert."
+    },
+    {
+      "id": "a2-correos-009",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Ich muss mein Paket verfolgen."
+    },
+    {
+      "id": "a2-correos-010",
+      "level": "A2",
+      "topic": "correos",
+      "target": "Wir haben die Einladung per Post geschickt."
+    },
+    {
+      "id": "a2-vecinos-001",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Meine Nachbarn sind sehr freundlich."
+    },
+    {
+      "id": "a2-vecinos-002",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Der Nachbar von nebenan macht viel Lärm."
+    },
+    {
+      "id": "a2-vecinos-003",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Wir haben die neuen Nachbarn gestern kennengelernt."
+    },
+    {
+      "id": "a2-vecinos-004",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Ich habe den Nachbarn gebeten, die Pflanzen zu gießen."
+    },
+    {
+      "id": "a2-vecinos-005",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Die Nachbarn haben eine Feier im Gebäude organisiert."
+    },
+    {
+      "id": "a2-vecinos-006",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Die Nachbarin hat mir geholfen, die Einkäufe zu tragen."
+    },
+    {
+      "id": "a2-vecinos-007",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Wir haben eine Versammlung der Hausgemeinschaft vereinbart."
+    },
+    {
+      "id": "a2-vecinos-008",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Der Hund des Nachbarn bellt die ganze Nacht."
+    },
+    {
+      "id": "a2-vecinos-009",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Wir tauschen immer Gefälligkeiten mit den Nachbarn aus."
+    },
+    {
+      "id": "a2-vecinos-010",
+      "level": "A2",
+      "topic": "vecinos",
+      "target": "Neue Nachbarn sind in den dritten Stock eingezogen."
+    },
+    {
+      "id": "a2-fiestas-001",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Wir werden eine Geburtstagsfeier organisieren."
+    },
+    {
+      "id": "a2-fiestas-002",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Wir haben alle Freunde zur Feier eingeladen."
+    },
+    {
+      "id": "a2-fiestas-003",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Die Feier dauerte bis zum frühen Morgen."
+    },
+    {
+      "id": "a2-fiestas-004",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Wir haben den Saal für die Feier dekoriert."
+    },
+    {
+      "id": "a2-fiestas-005",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Ich habe einen Kuchen für die Feier gebracht."
+    },
+    {
+      "id": "a2-fiestas-006",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Die Musik war auf der Feier sehr laut."
+    },
+    {
+      "id": "a2-fiestas-007",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Wir haben Silvester mit der Familie gefeiert."
+    },
+    {
+      "id": "a2-fiestas-008",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Wir haben eine Überraschung für sie vorbereitet."
+    },
+    {
+      "id": "a2-fiestas-009",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Wir haben die ganze Nacht auf der Feier getanzt."
+    },
+    {
+      "id": "a2-fiestas-010",
+      "level": "A2",
+      "topic": "fiestas",
+      "target": "Die Hochzeitsfeier war sehr schön."
+    },
+    {
+      "id": "a2-cine-001",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Wir sehen uns den neuen Film im Kino an."
+    },
+    {
+      "id": "a2-cine-002",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Der Film dauerte fast drei Stunden."
+    },
+    {
+      "id": "a2-cine-003",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Wir haben vor dem Film Popcorn gekauft."
+    },
+    {
+      "id": "a2-cine-004",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Dieser Regisseur macht sehr interessante Filme."
+    },
+    {
+      "id": "a2-cine-005",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Die Vorstellung um zehn Uhr war ausgebucht."
+    },
+    {
+      "id": "a2-cine-006",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Ich bevorzuge Filme mit Untertiteln statt synchronisierte Filme."
+    },
+    {
+      "id": "a2-cine-007",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Das Ende des Films hat mich sehr überrascht."
+    },
+    {
+      "id": "a2-cine-008",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Wir waren im Sommer im Freiluftkino."
+    },
+    {
+      "id": "a2-cine-009",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Die Kritik lobte die Hauptdarsteller."
+    },
+    {
+      "id": "a2-cine-010",
+      "level": "A2",
+      "topic": "cine",
+      "target": "Ich habe den Anfang des Films verpasst."
+    },
+    {
+      "id": "a2-supermercado-001",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Ich bin in den Supermarkt gegangen, um Obst zu kaufen."
+    },
+    {
+      "id": "a2-supermercado-002",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Der Supermarkt war heute sehr voll."
+    },
+    {
+      "id": "a2-supermercado-003",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Ich habe die Einkaufsliste zu Hause vergessen."
+    },
+    {
+      "id": "a2-supermercado-004",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Dieser Supermarkt hat niedrigere Preise."
+    },
+    {
+      "id": "a2-supermercado-005",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Ich habe zu viele Produkte im Supermarkt gekauft."
+    },
+    {
+      "id": "a2-supermercado-006",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Die Schlange an der Kasse war sehr lang."
+    },
+    {
+      "id": "a2-supermercado-007",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Ich habe im Supermarkt nicht gefunden, was ich gesucht habe."
+    },
+    {
+      "id": "a2-supermercado-008",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Ich habe meine eigene Tasche zum Supermarkt mitgebracht."
+    },
+    {
+      "id": "a2-supermercado-009",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Dieser Supermarkt schließt um zehn Uhr abends."
+    },
+    {
+      "id": "a2-supermercado-010",
+      "level": "A2",
+      "topic": "supermercado",
+      "target": "Diese Woche gibt es ein Angebot für Milch."
+    },
+    {
+      "id": "a2-hoteles-001",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Wir haben ein Zimmer mit Meerblick reserviert."
+    },
+    {
+      "id": "a2-hoteles-002",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Das Hotel bietet Frühstück inklusive an."
+    },
+    {
+      "id": "a2-hoteles-003",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Die Rezeption des Hotels ist 24 Stunden geöffnet."
+    },
+    {
+      "id": "a2-hoteles-004",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Das Zimmer war kleiner, als wir erwartet hatten."
+    },
+    {
+      "id": "a2-hoteles-005",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Wir haben gebeten, das Zimmer zu wechseln."
+    },
+    {
+      "id": "a2-hoteles-006",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Das Hotel hat einen Pool im obersten Stockwerk."
+    },
+    {
+      "id": "a2-hoteles-007",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Wir haben sehr spät eingecheckt."
+    },
+    {
+      "id": "a2-hoteles-008",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Der Zimmerservice hat sehr lange gedauert."
+    },
+    {
+      "id": "a2-hoteles-009",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Wir haben das Gepäck an der Rezeption gelassen."
+    },
+    {
+      "id": "a2-hoteles-010",
+      "level": "A2",
+      "topic": "hoteles",
+      "target": "Dieses Hotel hat gute Bewertungen online."
+    },
+    {
+      "id": "a2-aeropuerto-001",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Der Flug wurde wegen des schlechten Wetters gestrichen."
+    },
+    {
+      "id": "a2-aeropuerto-002",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Wir mussten zwei Stunden am Flughafen warten."
+    },
+    {
+      "id": "a2-aeropuerto-003",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Ich habe mein Gepäck am Flughafen verloren."
+    },
+    {
+      "id": "a2-aeropuerto-004",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Der Online-Check-in macht alles einfacher."
+    },
+    {
+      "id": "a2-aeropuerto-005",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Wir sind sehr früh am Flughafen angekommen."
+    },
+    {
+      "id": "a2-aeropuerto-006",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Die Sicherheitskontrolle am Flughafen hat ziemlich lange gedauert."
+    },
+    {
+      "id": "a2-aeropuerto-007",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Unser Flug startet von Terminal zwei."
+    },
+    {
+      "id": "a2-aeropuerto-008",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Wir haben etwas im Duty-Free-Shop gekauft."
+    },
+    {
+      "id": "a2-aeropuerto-009",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Das Flugzeug ist mit einer Stunde Verspätung gelandet."
+    },
+    {
+      "id": "a2-aeropuerto-010",
+      "level": "A2",
+      "topic": "aeropuerto",
+      "target": "Ein Familienmitglied hat uns am Flughafen abgeholt."
+    },
+    {
+      "id": "a2-ropa_compras-001",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Dieses Geschäft hat sehr teure Kleidung."
+    },
+    {
+      "id": "a2-ropa_compras-002",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Ich habe drei verschiedene Kleider anprobiert."
+    },
+    {
+      "id": "a2-ropa_compras-003",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Diese Größe passt mir nicht."
+    },
+    {
+      "id": "a2-ropa_compras-004",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Es gibt Rabatte auf Winterkleidung."
+    },
+    {
+      "id": "a2-ropa_compras-005",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Ich habe den Pullover gegen eine größere Größe umgetauscht."
+    },
+    {
+      "id": "a2-ropa_compras-006",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Diese Farbe passt nicht zu meinen Schuhen."
+    },
+    {
+      "id": "a2-ropa_compras-007",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Ich habe einen neuen Mantel im Schlussverkauf gekauft."
+    },
+    {
+      "id": "a2-ropa_compras-008",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Dieser Stoff ist sehr bequem."
+    },
+    {
+      "id": "a2-ropa_compras-009",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Das Geschäft akzeptiert keine Rückgaben ohne Quittung."
+    },
+    {
+      "id": "a2-ropa_compras-010",
+      "level": "A2",
+      "topic": "ropa_compras",
+      "target": "Ich suche ein Kleid für eine Hochzeit."
+    },
+    {
+      "id": "a2-clima-001",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Für morgen ist Regen vorhergesagt."
+    },
+    {
+      "id": "a2-clima-002",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Heute ist es unerträglich heiß."
+    },
+    {
+      "id": "a2-clima-003",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Der Wind ist heute Nachmittag sehr stark."
+    },
+    {
+      "id": "a2-clima-004",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Die Wettervorhersage hat sich wieder geändert."
+    },
+    {
+      "id": "a2-clima-005",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Es hat dieses Jahr zum ersten Mal geschneit."
+    },
+    {
+      "id": "a2-clima-006",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Der Himmel wurde plötzlich sehr dunkel."
+    },
+    {
+      "id": "a2-clima-007",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Für heute gibt es eine Sturmwarnung."
+    },
+    {
+      "id": "a2-clima-008",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Die Temperatur ist in der Nacht stark gefallen."
+    },
+    {
+      "id": "a2-clima-009",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Wir haben vorsichtshalber einen Schirm mitgenommen."
+    },
+    {
+      "id": "a2-clima-010",
+      "level": "A2",
+      "topic": "clima",
+      "target": "Der Sommer ist dieses Jahr trockener."
+    },
+    {
+      "id": "a2-internet-001",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Die Internetverbindung ist sehr langsam."
+    },
+    {
+      "id": "a2-internet-002",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Ich muss das WLAN-Passwort aktualisieren."
+    },
+    {
+      "id": "a2-internet-003",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Ich kann nicht auf meine E-Mails zugreifen."
+    },
+    {
+      "id": "a2-internet-004",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Der Router ist diese Woche kaputtgegangen."
+    },
+    {
+      "id": "a2-internet-005",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Ich verbringe zu viel Zeit in den sozialen Netzwerken."
+    },
+    {
+      "id": "a2-internet-006",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Ich habe gestern eine neue App heruntergeladen."
+    },
+    {
+      "id": "a2-internet-007",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Mein Computer hat einen Virus."
+    },
+    {
+      "id": "a2-internet-008",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Der Videoanruf wurde mehrmals unterbrochen."
+    },
+    {
+      "id": "a2-internet-009",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Ich habe dieses Buch in einem Online-Shop gekauft."
+    },
+    {
+      "id": "a2-internet-010",
+      "level": "A2",
+      "topic": "internet",
+      "target": "Ich habe ein neues Konto auf dieser Website erstellt."
+    },
+    {
+      "id": "a2-mascotas_cuidado-001",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Ich bringe den Hund jedes Jahr zum Tierarzt."
+    },
+    {
+      "id": "a2-mascotas_cuidado-002",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Die Katze braucht eine neue Impfung."
+    },
+    {
+      "id": "a2-mascotas_cuidado-003",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Ich habe neues Futter für den Hund gekauft."
+    },
+    {
+      "id": "a2-mascotas_cuidado-004",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Mein Hund wurde an der Pfote operiert."
+    },
+    {
+      "id": "a2-mascotas_cuidado-005",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Ich lasse die Katze im Urlaub bei meiner Nachbarin."
+    },
+    {
+      "id": "a2-mascotas_cuidado-006",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Der Tierarzt hat empfohlen, die Ernährung zu ändern."
+    },
+    {
+      "id": "a2-mascotas_cuidado-007",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Ich bürste den Hund jede Woche."
+    },
+    {
+      "id": "a2-mascotas_cuidado-008",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Mein Hund hat Angst vor Gewittern."
+    },
+    {
+      "id": "a2-mascotas_cuidado-009",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Ich habe die Katze letzte Woche kastrieren lassen."
+    },
+    {
+      "id": "a2-mascotas_cuidado-010",
+      "level": "A2",
+      "topic": "mascotas_cuidado",
+      "target": "Ich suche ein Hotel, das Tiere akzeptiert."
+    },
+    {
+      "id": "a2-vida_social-001",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Ich habe am Wochenende alte Freunde getroffen."
+    },
+    {
+      "id": "a2-vida_social-002",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Wir machen immer einmal im Monat ein gemeinsames Abendessen."
+    },
+    {
+      "id": "a2-vida_social-003",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Ich habe den Kontakt zu einigen Schulkameraden verloren."
+    },
+    {
+      "id": "a2-vida_social-004",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Ich habe meine Freunde eingeladen, Brettspiele zu spielen."
+    },
+    {
+      "id": "a2-vida_social-005",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Wir haben uns vor zwei Jahren auf einer Feier kennengelernt."
+    },
+    {
+      "id": "a2-vida_social-006",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Wir sind nach der Arbeit einen Kaffee trinken gegangen."
+    },
+    {
+      "id": "a2-vida_social-007",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Meine beste Freundin ist in eine andere Stadt gezogen."
+    },
+    {
+      "id": "a2-vida_social-008",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Wir haben eine Reise mit der Freundesgruppe organisiert."
+    },
+    {
+      "id": "a2-vida_social-009",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Ich habe meinen Freund über einen gemeinsamen Freund kennengelernt."
+    },
+    {
+      "id": "a2-vida_social-010",
+      "level": "A2",
+      "topic": "vida_social",
+      "target": "Ich verbringe gern Zeit mit neuen Leuten."
+    },
+    {
+      "id": "a2-planes_futuro-001",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Ich plane, nächstes Jahr in eine andere Stadt zu ziehen."
+    },
+    {
+      "id": "a2-planes_futuro-002",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Wir wollen in zwei Jahren ein Haus kaufen."
+    },
+    {
+      "id": "a2-planes_futuro-003",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Wir denken daran, im Sommer durch Europa zu reisen."
+    },
+    {
+      "id": "a2-planes_futuro-004",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Ich weiß noch nicht, was ich nach der Schule machen werde."
+    },
+    {
+      "id": "a2-planes_futuro-005",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Wir werden im September einen neuen Kurs anfangen."
+    },
+    {
+      "id": "a2-planes_futuro-006",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Ich habe vor, bald den Job zu wechseln."
+    },
+    {
+      "id": "a2-planes_futuro-007",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Wir möchten in den nächsten Jahren ein Kind haben."
+    },
+    {
+      "id": "a2-planes_futuro-008",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Wir werden für einen langen Urlaub sparen."
+    },
+    {
+      "id": "a2-planes_futuro-009",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Wir haben beschlossen, die Reise auf nächstes Jahr zu verschieben."
+    },
+    {
+      "id": "a2-planes_futuro-010",
+      "level": "A2",
+      "topic": "planes_futuro",
+      "target": "Wir planen die Hochzeit noch."
+    },
+    {
+      "id": "b1-politica_local-001",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Das Rathaus hat einen neuen Haushalt verabschiedet."
+    },
+    {
+      "id": "b1-politica_local-002",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Wir werden im Oktober bei den Kommunalwahlen abstimmen."
+    },
+    {
+      "id": "b1-politica_local-003",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Der Bezirksvorsteher hat versprochen, den Park zu renovieren."
+    },
+    {
+      "id": "b1-politica_local-004",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Es gab eine Debatte über den neuen Verkehrsplan."
+    },
+    {
+      "id": "b1-politica_local-005",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Die Anwohner haben sich über den Mangel an Beleuchtung beschwert."
+    },
+    {
+      "id": "b1-politica_local-006",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Das Rathaus wird eine neue Bibliothek bauen."
+    },
+    {
+      "id": "b1-politica_local-007",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Der Kandidat hat letzte Woche das Viertel besucht."
+    },
+    {
+      "id": "b1-politica_local-008",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Die öffentliche Versammlung diskutierte die Erhöhung der lokalen Steuern."
+    },
+    {
+      "id": "b1-politica_local-009",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Sie kritisierten die Verwaltung der öffentlichen Gelder."
+    },
+    {
+      "id": "b1-politica_local-010",
+      "level": "B1",
+      "topic": "politica_local",
+      "target": "Der Bürgerhaushalt ermöglicht es den Bürgern, über Projekte zu entscheiden."
+    },
+    {
+      "id": "b1-voluntariado-001",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Sie ist Freiwillige in einem Tierheim."
+    },
+    {
+      "id": "b1-voluntariado-002",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Wir haben am Samstag an einer Strandreinigung teilgenommen."
+    },
+    {
+      "id": "b1-voluntariado-003",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Der Verein sucht Freiwillige, um älteren Menschen zu helfen."
+    },
+    {
+      "id": "b1-voluntariado-004",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Ich habe einige Stunden pro Woche dem Ehrenamt gewidmet."
+    },
+    {
+      "id": "b1-voluntariado-005",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Das Projekt hängt von der Arbeit der Freiwilligen ab."
+    },
+    {
+      "id": "b1-voluntariado-006",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Wir haben eine Lebensmittelsammlung für bedürftige Familien organisiert."
+    },
+    {
+      "id": "b1-voluntariado-007",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Ehrenamtliche Arbeit hat mich gelehrt, geduldiger zu sein."
+    },
+    {
+      "id": "b1-voluntariado-008",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Die NGO organisiert jeden Monat Freiwilligenaktionen."
+    },
+    {
+      "id": "b1-voluntariado-009",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Wir haben geholfen, Häuser nach dem Sturm wieder aufzubauen."
+    },
+    {
+      "id": "b1-voluntariado-010",
+      "level": "B1",
+      "topic": "voluntariado",
+      "target": "Viele junge Menschen sammeln Erfahrung durch ehrenamtliche Arbeit."
+    },
+    {
+      "id": "b1-inmigracion-001",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Die Stadt hat in den letzten Jahren viele Einwanderer aufgenommen."
+    },
+    {
+      "id": "b1-inmigracion-002",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Es war schwierig, sich an ein neues Land anzupassen."
+    },
+    {
+      "id": "b1-inmigracion-003",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Ich habe die Sprache gelernt, um mich besser zu integrieren."
+    },
+    {
+      "id": "b1-inmigracion-004",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Viele Einwanderer haben Schwierigkeiten, eine Arbeit zu finden."
+    },
+    {
+      "id": "b1-inmigracion-005",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Die Regierung hat ein Unterstützungsprogramm für Neuankömmlinge geschaffen."
+    },
+    {
+      "id": "b1-inmigracion-006",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Die örtliche Gemeinschaft hat uns bei der Ankunft sehr geholfen."
+    },
+    {
+      "id": "b1-inmigracion-007",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Heimweh nach der Familie ist unter Einwanderern verbreitet."
+    },
+    {
+      "id": "b1-inmigracion-008",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Ich bin vor fünf Jahren ausgewandert, um bessere Chancen zu suchen."
+    },
+    {
+      "id": "b1-inmigracion-009",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Die behördlichen Verfahren dauerten fast ein Jahr."
+    },
+    {
+      "id": "b1-inmigracion-010",
+      "level": "B1",
+      "topic": "inmigracion",
+      "target": "Die kulturelle Vielfalt bereichert die Stadt."
+    },
+    {
+      "id": "b1-medios_comunicacion-001",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Die lokalen Zeitungen haben viele Leser verloren."
+    },
+    {
+      "id": "b1-medios_comunicacion-002",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Ich lese lieber Nachrichten online, statt fernzusehen."
+    },
+    {
+      "id": "b1-medios_comunicacion-003",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Die Reportage enthüllte wichtige Informationen über den Fall."
+    },
+    {
+      "id": "b1-medios_comunicacion-004",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Viele Menschen vertrauen den traditionellen Medien weniger."
+    },
+    {
+      "id": "b1-medios_comunicacion-005",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Der Journalist hat den Minister live interviewt."
+    },
+    {
+      "id": "b1-medios_comunicacion-006",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Diese Nachricht verbreitete sich schnell in den sozialen Netzwerken."
+    },
+    {
+      "id": "b1-medios_comunicacion-007",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Der Sender hat die Sendung wegen geringer Zuschauerzahlen abgesetzt."
+    },
+    {
+      "id": "b1-medios_comunicacion-008",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Es ist wichtig, die Quellen zu überprüfen, bevor man Nachrichten teilt."
+    },
+    {
+      "id": "b1-medios_comunicacion-009",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Die Dokumentation zeigte eine wenig bekannte Realität."
+    },
+    {
+      "id": "b1-medios_comunicacion-010",
+      "level": "B1",
+      "topic": "medios_comunicacion",
+      "target": "Die Presse kritisierte die Entscheidung der Regierung."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-001",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Ich habe letzten Monat eine Smartwatch gekauft."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-002",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Das Unternehmen hat einen Roboter zum Putzen des Hauses auf den Markt gebracht."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-003",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Diese App nutzt Gesichtserkennung."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-004",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Autonome Autos werfen immer noch viele Fragen auf."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-005",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Ich habe dieses Jahr Solarpaneele zu Hause installiert."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-006",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Die virtuelle Realität verändert die Videospiele."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-007",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Wir haben internetfähige Haushaltsgeräte gekauft."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-008",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Dieser 3D-Drucker erstellt sehr präzise Teile."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-009",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Der Akku des Elektroautos hält den ganzen Tag."
+    },
+    {
+      "id": "b1-nuevas_tecnologias-010",
+      "level": "B1",
+      "topic": "nuevas_tecnologias",
+      "target": "Die virtuellen Assistenten verstehen bereits mehrere Sprachen."
+    },
+    {
+      "id": "b1-emprendimiento-001",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Wir haben beschlossen, unser eigenes Geschäft zu eröffnen."
+    },
+    {
+      "id": "b1-emprendimiento-002",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Die Anfangsinvestition war höher, als wir erwartet hatten."
+    },
+    {
+      "id": "b1-emprendimiento-003",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Wir haben einen Partner mit Erfahrung in der Branche gefunden."
+    },
+    {
+      "id": "b1-emprendimiento-004",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Unser Startup hat dieses Jahr eine Finanzierung erhalten."
+    },
+    {
+      "id": "b1-emprendimiento-005",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Wir sind mit dem ersten Geschäft gescheitert, haben aber viel gelernt."
+    },
+    {
+      "id": "b1-emprendimiento-006",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Wir haben das Produkt nach zwei Jahren Arbeit eingeführt."
+    },
+    {
+      "id": "b1-emprendimiento-007",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Der Geschäftsplan brauchte Anpassungen."
+    },
+    {
+      "id": "b1-emprendimiento-008",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Wir haben an einem Wettbewerb für junge Unternehmer teilgenommen."
+    },
+    {
+      "id": "b1-emprendimiento-009",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Unser Unternehmen ist schneller gewachsen als erwartet."
+    },
+    {
+      "id": "b1-emprendimiento-010",
+      "level": "B1",
+      "topic": "emprendimiento",
+      "target": "Wir haben letztes Jahr die ersten Mitarbeiter eingestellt."
+    },
+    {
+      "id": "b1-ocio_cultural-001",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Wir haben eine Ausstellung zeitgenössischer Kunst besucht."
+    },
+    {
+      "id": "b1-ocio_cultural-002",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Wir haben ein sehr aufregendes Theaterstück besucht."
+    },
+    {
+      "id": "b1-ocio_cultural-003",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Das Musikfestival dauerte das ganze Wochenende."
+    },
+    {
+      "id": "b1-ocio_cultural-004",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Wir waren bei einem Jazzkonzert in der Altstadt."
+    },
+    {
+      "id": "b1-ocio_cultural-005",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Die Bibliothek hat einen Lesekreis organisiert."
+    },
+    {
+      "id": "b1-ocio_cultural-006",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Das Museum hat eine beeindruckende Gemäldesammlung."
+    },
+    {
+      "id": "b1-ocio_cultural-007",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Ich habe an einem Fotografie-Workshop im Kulturzentrum teilgenommen."
+    },
+    {
+      "id": "b1-ocio_cultural-008",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Die Tanzvorstellung erhielt sehr positive Kritiken."
+    },
+    {
+      "id": "b1-ocio_cultural-009",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Wir sind ins örtliche Filmforum gegangen, um eine Dokumentation zu sehen."
+    },
+    {
+      "id": "b1-ocio_cultural-010",
+      "level": "B1",
+      "topic": "ocio_cultural",
+      "target": "Die Buchmesse zog Tausende von Besuchern an."
+    },
+    {
+      "id": "b1-alimentacion_saludable-001",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Ich habe beschlossen, meinen Zuckerkonsum zu reduzieren."
+    },
+    {
+      "id": "b1-alimentacion_saludable-002",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Ich esse seit letztem Jahr mehr Gemüse."
+    },
+    {
+      "id": "b1-alimentacion_saludable-003",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Der Ernährungsberater empfahl, meine Gewohnheiten zu ändern."
+    },
+    {
+      "id": "b1-alimentacion_saludable-004",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Ich vermeide verarbeitete Lebensmittel, wann immer ich kann."
+    },
+    {
+      "id": "b1-alimentacion_saludable-005",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Wir haben angefangen, mehr zu Hause zu kochen."
+    },
+    {
+      "id": "b1-alimentacion_saludable-006",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Ich trinke mehr Wasser als früher."
+    },
+    {
+      "id": "b1-alimentacion_saludable-007",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Ich habe meinen Konsum von rotem Fleisch reduziert."
+    },
+    {
+      "id": "b1-alimentacion_saludable-008",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Wir planen die Mahlzeiten der Woche im Voraus."
+    },
+    {
+      "id": "b1-alimentacion_saludable-009",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Eine ausgewogene Ernährung verbessert die tägliche Energie."
+    },
+    {
+      "id": "b1-alimentacion_saludable-010",
+      "level": "B1",
+      "topic": "alimentacion_saludable",
+      "target": "Ich habe Limonade gegen Wasser mit Zitrone ausgetauscht."
+    },
+    {
+      "id": "b1-psicologia-001",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Die Therapie hat mir geholfen, besser mit Ängsten umzugehen."
+    },
+    {
+      "id": "b1-psicologia-002",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Stress bei der Arbeit beeinträchtigt die psychische Gesundheit."
+    },
+    {
+      "id": "b1-psicologia-003",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Mit dem Meditieren anzufangen hat meinen Alltag verändert."
+    },
+    {
+      "id": "b1-psicologia-004",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Es ist wichtig, mit jemandem, dem man vertraut, über seine Gefühle zu sprechen."
+    },
+    {
+      "id": "b1-psicologia-005",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Der Psychologe empfahl Atemtechniken."
+    },
+    {
+      "id": "b1-psicologia-006",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Ich habe nach einer schwierigen Zeit professionelle Hilfe gesucht."
+    },
+    {
+      "id": "b1-psicologia-007",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Das Selbstwertgefühl verbessert sich durch kleine tägliche Erfolge."
+    },
+    {
+      "id": "b1-psicologia-008",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Das Burnout beeinträchtigte seine Motivation bei der Arbeit."
+    },
+    {
+      "id": "b1-psicologia-009",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Nein sagen zu lernen half ihr, Stress zu reduzieren."
+    },
+    {
+      "id": "b1-psicologia-010",
+      "level": "B1",
+      "topic": "psicologia",
+      "target": "Die Gruppentherapie schuf ein Gemeinschaftsgefühl."
+    },
+    {
+      "id": "b1-urbanismo-001",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Die Stadt hat dieses Jahr mehr Fahrradwege gebaut."
+    },
+    {
+      "id": "b1-urbanismo-002",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Das neue Viertel wurde nachhaltig geplant."
+    },
+    {
+      "id": "b1-urbanismo-003",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Sie haben den Platz für Autos in der historischen Altstadt reduziert."
+    },
+    {
+      "id": "b1-urbanismo-004",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Der Mangel an erschwinglichem Wohnraum beunruhigt viele Anwohner."
+    },
+    {
+      "id": "b1-urbanismo-005",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Sie haben mehr Grünflächen innerhalb der Stadt geschaffen."
+    },
+    {
+      "id": "b1-urbanismo-006",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Das Projekt hat das alte Industriegebiet vollständig erneuert."
+    },
+    {
+      "id": "b1-urbanismo-007",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Die Hauspreise sind in diesem Viertel stark gestiegen."
+    },
+    {
+      "id": "b1-urbanismo-008",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Die Gentrifizierung hat den Charakter dieses Viertels verändert."
+    },
+    {
+      "id": "b1-urbanismo-009",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Sie haben eine neue U-Bahn gebaut, um den Verkehr zu entlasten."
+    },
+    {
+      "id": "b1-urbanismo-010",
+      "level": "B1",
+      "topic": "urbanismo",
+      "target": "Die Stadtplaner schlagen mehr Fußgängerzonen vor."
+    },
+    {
+      "id": "b1-transporte_publico-001",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Die U-Bahn war heute Morgen sehr voll."
+    },
+    {
+      "id": "b1-transporte_publico-002",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Ich habe eine Monatskarte für den Bus gekauft."
+    },
+    {
+      "id": "b1-transporte_publico-003",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Die U-Bahn-Linie wurde wegen Bauarbeiten unterbrochen."
+    },
+    {
+      "id": "b1-transporte_publico-004",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "In der Stadt bevorzuge ich öffentliche Verkehrsmittel gegenüber dem Auto."
+    },
+    {
+      "id": "b1-transporte_publico-005",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Der Bus hatte zwanzig Minuten Verspätung."
+    },
+    {
+      "id": "b1-transporte_publico-006",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Die neue Linie hat die Reisezeit deutlich verkürzt."
+    },
+    {
+      "id": "b1-transporte_publico-007",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Es gibt wenige Verkehrsverbindungen zwischen diesen Gebieten."
+    },
+    {
+      "id": "b1-transporte_publico-008",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Der Ticketpreis ist dieses Jahr gestiegen."
+    },
+    {
+      "id": "b1-transporte_publico-009",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Wir benutzen die App, um die Fahrpläne in Echtzeit zu sehen."
+    },
+    {
+      "id": "b1-transporte_publico-010",
+      "level": "B1",
+      "topic": "transporte_publico",
+      "target": "Der Regionalzug verbindet die beiden Städte in einer Stunde."
+    },
+    {
+      "id": "b1-igualdad-001",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Das Unternehmen hat eine Politik der Lohngleichheit eingeführt."
+    },
+    {
+      "id": "b1-igualdad-002",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Es gibt immer noch Lohnunterschiede zwischen Männern und Frauen."
+    },
+    {
+      "id": "b1-igualdad-003",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Das Gesetz verbietet Diskriminierung am Arbeitsplatz."
+    },
+    {
+      "id": "b1-igualdad-004",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Wir fördern die Chancengleichheit in der Schule."
+    },
+    {
+      "id": "b1-igualdad-005",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Sie kämpft seit Jahren für die Gleichstellung der Geschlechter."
+    },
+    {
+      "id": "b1-igualdad-006",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Die Organisation verteidigt die Rechte der Minderheiten."
+    },
+    {
+      "id": "b1-igualdad-007",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Es fehlt an weiblicher Vertretung in Führungspositionen."
+    },
+    {
+      "id": "b1-igualdad-008",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Der Zugang zur Bildung ist nicht für alle gleich."
+    },
+    {
+      "id": "b1-igualdad-009",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Die Kampagne sensibilisiert für die Gleichberechtigung."
+    },
+    {
+      "id": "b1-igualdad-010",
+      "level": "B1",
+      "topic": "igualdad",
+      "target": "Die Inklusion von Menschen mit Behinderung hat sich in diesem Unternehmen verbessert."
+    },
+    {
+      "id": "b1-familia_moderna-001",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Viele Familien haben heute andere Strukturen als die traditionellen."
+    },
+    {
+      "id": "b1-familia_moderna-002",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Wir teilen die Hausarbeit gleichmäßiger auf."
+    },
+    {
+      "id": "b1-familia_moderna-003",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Er ist dieses Jahr zu Hause geblieben, um sich um die Kinder zu kümmern."
+    },
+    {
+      "id": "b1-familia_moderna-004",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Alleinerziehende Familien stehen vor besonderen Herausforderungen."
+    },
+    {
+      "id": "b1-familia_moderna-005",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Beruf und Familie zu vereinbaren bleibt schwierig."
+    },
+    {
+      "id": "b1-familia_moderna-006",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Wir treffen die wichtigen Entscheidungen über die Kinder gemeinsam."
+    },
+    {
+      "id": "b1-familia_moderna-007",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Wir leben weit von der Familie entfernt, sprechen aber jeden Tag."
+    },
+    {
+      "id": "b1-familia_moderna-008",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Wir haben beschlossen, keine Kinder zu haben, und es geht uns so sehr gut."
+    },
+    {
+      "id": "b1-familia_moderna-009",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Die Großeltern helfen sehr bei der Betreuung der Kinder."
+    },
+    {
+      "id": "b1-familia_moderna-010",
+      "level": "B1",
+      "topic": "familia_moderna",
+      "target": "Jede Familie organisiert ihr Leben auf ihre eigene Weise."
+    },
+    {
+      "id": "b1-redes_sociales-001",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Ich verbringe zu viel Zeit damit, Videos in den sozialen Netzwerken zu schauen."
+    },
+    {
+      "id": "b1-redes_sociales-002",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Diese Falschmeldung verbreitete sich schnell online."
+    },
+    {
+      "id": "b1-redes_sociales-003",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Ich habe aufgehört, mehreren Konten zu folgen, um Stress zu reduzieren."
+    },
+    {
+      "id": "b1-redes_sociales-004",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Die sozialen Netzwerke haben die Art, wie wir kommunizieren, verändert."
+    },
+    {
+      "id": "b1-redes_sociales-005",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Ich habe Fotos von der Reise veröffentlicht, sobald wir angekommen waren."
+    },
+    {
+      "id": "b1-redes_sociales-006",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Der Algorithmus zeigt immer die gleiche Art von Inhalten."
+    },
+    {
+      "id": "b1-redes_sociales-007",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Ich habe beschlossen, die Benachrichtigungen während der Arbeit zu deaktivieren."
+    },
+    {
+      "id": "b1-redes_sociales-008",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Mich mit anderen in den sozialen Netzwerken zu vergleichen, wirkt sich negativ auf mich aus."
+    },
+    {
+      "id": "b1-redes_sociales-009",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Das Unternehmen nutzt soziale Netzwerke, um Kunden zu gewinnen."
+    },
+    {
+      "id": "b1-redes_sociales-010",
+      "level": "B1",
+      "topic": "redes_sociales",
+      "target": "Ich habe einen Monat lang eine Pause von den sozialen Netzwerken gemacht."
+    },
+    {
+      "id": "b1-mercado_laboral-001",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Der Arbeitsmarkt wird immer wettbewerbsintensiver."
+    },
+    {
+      "id": "b1-mercado_laboral-002",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Viele Unternehmen bieten jetzt hybride Arbeit an."
+    },
+    {
+      "id": "b1-mercado_laboral-003",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Ich suche seit sechs Monaten erfolglos Arbeit."
+    },
+    {
+      "id": "b1-mercado_laboral-004",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Das Vorstellungsgespräch lief besser, als ich erwartet hatte."
+    },
+    {
+      "id": "b1-mercado_laboral-005",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Ich habe ein Angebot mit besseren Bedingungen angenommen."
+    },
+    {
+      "id": "b1-mercado_laboral-006",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Praktische Erfahrung zählt mehr als der Titel."
+    },
+    {
+      "id": "b1-mercado_laboral-007",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Ich habe einen Kurs gemacht, um meinen Lebenslauf zu verbessern."
+    },
+    {
+      "id": "b1-mercado_laboral-008",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Viele junge Menschen wechseln häufig den Job."
+    },
+    {
+      "id": "b1-mercado_laboral-009",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Die Arbeitslosigkeit ist in diesem Quartal leicht gesunken."
+    },
+    {
+      "id": "b1-mercado_laboral-010",
+      "level": "B1",
+      "topic": "mercado_laboral",
+      "target": "Die Automatisierung hat einige Arbeitsplätze abgebaut."
+    },
+    {
+      "id": "b1-turismo_sostenible-001",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Wir haben eine Unterkunft mit nachhaltigen Praktiken gewählt."
+    },
+    {
+      "id": "b1-turismo_sostenible-002",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Der Massentourismus schadet diesem Gebiet."
+    },
+    {
+      "id": "b1-turismo_sostenible-003",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Wir reisen lieber außerhalb der Hochsaison."
+    },
+    {
+      "id": "b1-turismo_sostenible-004",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Das Dorf begrenzt die Anzahl der Besucher pro Tag."
+    },
+    {
+      "id": "b1-turismo_sostenible-005",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Wir haben uns für weniger umweltschädliche Verkehrsmittel auf der Reise entschieden."
+    },
+    {
+      "id": "b1-turismo_sostenible-006",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Wir unterstützen lokale Geschäfte statt internationaler Ketten."
+    },
+    {
+      "id": "b1-turismo_sostenible-007",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Der Touristenüberschuss beeinträchtigt das Leben der Anwohner."
+    },
+    {
+      "id": "b1-turismo_sostenible-008",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Verantwortungsvolles Reisen verringert die Umweltbelastung."
+    },
+    {
+      "id": "b1-turismo_sostenible-009",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Wir haben an einer von einem Einheimischen geführten Tour teilgenommen."
+    },
+    {
+      "id": "b1-turismo_sostenible-010",
+      "level": "B1",
+      "topic": "turismo_sostenible",
+      "target": "Einige Städte haben begonnen, eine Touristensteuer zu erheben."
+    },
+    {
+      "id": "b1-bienestar-001",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Ich habe angefangen, nachts mehr zu schlafen."
+    },
+    {
+      "id": "b1-bienestar-002",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Ich nehme mir am Ende des Tages immer Zeit für mich."
+    },
+    {
+      "id": "b1-bienestar-003",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Die Handynutzung zu reduzieren hat meinen Schlaf verbessert."
+    },
+    {
+      "id": "b1-bienestar-004",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Jeden Tag spazieren zu gehen hat mir geholfen, mich besser zu fühlen."
+    },
+    {
+      "id": "b1-bienestar-005",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Ich habe gelernt, bei der Arbeit Grenzen zu setzen."
+    },
+    {
+      "id": "b1-bienestar-006",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Zeit in der Natur zu verbringen verringert meine Angst."
+    },
+    {
+      "id": "b1-bienestar-007",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Regelmäßige Pausen verbessern meine Konzentration."
+    },
+    {
+      "id": "b1-bienestar-008",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Ich habe beschlossen, der Erholung Vorrang vor zusätzlicher Arbeit zu geben."
+    },
+    {
+      "id": "b1-bienestar-009",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Gute Beziehungen zu pflegen ist für das Wohlbefinden wesentlich."
+    },
+    {
+      "id": "b1-bienestar-010",
+      "level": "B1",
+      "topic": "bienestar",
+      "target": "Dankbarkeit zu üben hat meine tägliche Sichtweise verändert."
+    },
+    {
+      "id": "b2-sanidad_publica-001",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Das öffentliche Gesundheitssystem steht vor wachsenden Wartelisten."
+    },
+    {
+      "id": "b2-sanidad_publica-002",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Die Regierung hat das Budget für das Gesundheitswesen erhöht."
+    },
+    {
+      "id": "b2-sanidad_publica-003",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Der Ärztemangel betrifft vor allem die ländlichen Gebiete."
+    },
+    {
+      "id": "b2-sanidad_publica-004",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Die Reform des Gesundheitssystems hat Kontroversen ausgelöst."
+    },
+    {
+      "id": "b2-sanidad_publica-005",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Die öffentlichen Krankenhäuser sind im Winter überlastet."
+    },
+    {
+      "id": "b2-sanidad_publica-006",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Die kostenlose Impfung hat die Krankheitsfälle reduziert."
+    },
+    {
+      "id": "b2-sanidad_publica-007",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "In Prävention zu investieren senkt die Kosten langfristig."
+    },
+    {
+      "id": "b2-sanidad_publica-008",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Die örtlichen Gesundheitszentren haben mehrere Fachkräfte verloren."
+    },
+    {
+      "id": "b2-sanidad_publica-009",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Die psychische Gesundheit erhält immer noch nicht genügend Mittel."
+    },
+    {
+      "id": "b2-sanidad_publica-010",
+      "level": "B2",
+      "topic": "sanidad_publica",
+      "target": "Der Zugang zur Basisversorgung variiert stark zwischen den Regionen."
+    },
+    {
+      "id": "b2-union_europea-001",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Die Europäische Union hat neue Umweltvorschriften verabschiedet."
+    },
+    {
+      "id": "b2-union_europea-002",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Europäische Fördermittel haben einen Teil dieser Infrastruktur finanziert."
+    },
+    {
+      "id": "b2-union_europea-003",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Das Land hat die einheitliche Währung noch nicht eingeführt."
+    },
+    {
+      "id": "b2-union_europea-004",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Die Verhandlungen zwischen den Mitgliedstaaten waren angespannt."
+    },
+    {
+      "id": "b2-union_europea-005",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Die Freizügigkeit erleichtert es, in einem anderen Land zu arbeiten."
+    },
+    {
+      "id": "b2-union_europea-006",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Das Europäische Parlament stimmte für die neue Richtlinie."
+    },
+    {
+      "id": "b2-union_europea-007",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Mehrere Länder forderten mehr Hilfe für die Energiekrise."
+    },
+    {
+      "id": "b2-union_europea-008",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Die gemeinsame Agrarpolitik betrifft die Landwirte direkt."
+    },
+    {
+      "id": "b2-union_europea-009",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Der Beitritt brachte dem Land bedeutende wirtschaftliche Vorteile."
+    },
+    {
+      "id": "b2-union_europea-010",
+      "level": "B2",
+      "topic": "union_europea",
+      "target": "Die Europawahlen hatten eine niedrige Wahlbeteiligung."
+    },
+    {
+      "id": "b2-cambio_climatico-001",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Die globalen Temperaturen steigen jedes Jahr weiter an."
+    },
+    {
+      "id": "b2-cambio_climatico-002",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Wissenschaftler warnen vor dem beschleunigten Abschmelzen der Gletscher."
+    },
+    {
+      "id": "b2-cambio_climatico-003",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Lang anhaltende Dürren beeinträchtigen die landwirtschaftliche Produktion."
+    },
+    {
+      "id": "b2-cambio_climatico-004",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Die Emissionen zu senken erfordert tiefgreifende Veränderungen in der Industrie."
+    },
+    {
+      "id": "b2-cambio_climatico-005",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Der Anstieg des Meeresspiegels bedroht Küstengebiete."
+    },
+    {
+      "id": "b2-cambio_climatico-006",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Mehrere Länder unterzeichneten ein Abkommen zur Begrenzung der Emissionen."
+    },
+    {
+      "id": "b2-cambio_climatico-007",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Waldbrände sind häufiger und intensiver geworden."
+    },
+    {
+      "id": "b2-cambio_climatico-008",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Die ökologische Wende erfordert erhebliche öffentliche Investitionen."
+    },
+    {
+      "id": "b2-cambio_climatico-009",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Extreme Wetterereignisse haben im letzten Jahrzehnt zugenommen."
+    },
+    {
+      "id": "b2-cambio_climatico-010",
+      "level": "B2",
+      "topic": "cambio_climatico",
+      "target": "Die Zivilgesellschaft drängt auf ambitioniertere Klimapolitik."
+    },
+    {
+      "id": "b2-inteligencia_artificial-001",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Die künstliche Intelligenz beeinflusst bereits wichtige medizinische Entscheidungen."
+    },
+    {
+      "id": "b2-inteligencia_artificial-002",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Viele Unternehmen haben repetitive Aufgaben mit KI automatisiert."
+    },
+    {
+      "id": "b2-inteligencia_artificial-003",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "KI-Algorithmen können bestehende Vorurteile reproduzieren."
+    },
+    {
+      "id": "b2-inteligencia_artificial-004",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Die Regulierung der künstlichen Intelligenz wird noch diskutiert."
+    },
+    {
+      "id": "b2-inteligencia_artificial-005",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Sprachmodelle erzeugen zunehmend kohärenten Text."
+    },
+    {
+      "id": "b2-inteligencia_artificial-006",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Die KI hat den Finanzsektor tiefgreifend verändert."
+    },
+    {
+      "id": "b2-inteligencia_artificial-007",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Es gibt Besorgnis über den Verlust von Arbeitsplätzen durch die Automatisierung."
+    },
+    {
+      "id": "b2-inteligencia_artificial-008",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Forscher warnen vor den ethischen Risiken fortgeschrittener KI."
+    },
+    {
+      "id": "b2-inteligencia_artificial-009",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Dieses Werkzeug nutzt KI, um Bankbetrug zu erkennen."
+    },
+    {
+      "id": "b2-inteligencia_artificial-010",
+      "level": "B2",
+      "topic": "inteligencia_artificial",
+      "target": "Generative KI wirft Fragen zum Urheberrecht auf."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-001",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Die Immobilienpreise sind in den letzten fünf Jahren explodiert."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-002",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Es wird für junge Menschen immer schwieriger, ein Haus zu kaufen."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-003",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Die Miete verschlingt einen großen Teil des Gehalts."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-004",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Der Mangel an erschwinglichem Wohnraum verschärft die soziale Krise."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-005",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Ausländische Investoren haben die Nachfrage nach Immobilien erhöht."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-006",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Der Neubau von Wohnungen hält nicht mit der Nachfrage Schritt."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-007",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Die Regierung schlug vor, die Mietsteigerungen zu begrenzen."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-008",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Viele Familien waren gezwungen, in weiter entfernte Viertel zu ziehen."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-009",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Touristenunterkünfte haben das Angebot an Wohnungsmieten verringert."
+    },
+    {
+      "id": "b2-mercado_inmobiliario-010",
+      "level": "B2",
+      "topic": "mercado_inmobiliario",
+      "target": "Der höhere Zinssatz hat den Zugang zu Krediten erschwert."
+    },
+    {
+      "id": "b2-desigualdad_social-001",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Der Einkommensunterschied zwischen den Regionen wächst weiter."
+    },
+    {
+      "id": "b2-desigualdad_social-002",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Kinderarmut betrifft einen bedeutenden Teil der Bevölkerung."
+    },
+    {
+      "id": "b2-desigualdad_social-003",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Der Zugang zu einer qualitativ hochwertigen Bildung ist nicht für alle gleich."
+    },
+    {
+      "id": "b2-desigualdad_social-004",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Die Sozialpolitik versucht, die bestehenden Ungleichheiten zu verringern."
+    },
+    {
+      "id": "b2-desigualdad_social-005",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Die Vermögenskonzentration hat in den letzten Jahrzehnten zugenommen."
+    },
+    {
+      "id": "b2-desigualdad_social-006",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Die ärmeren Viertel haben weniger Zugang zu grundlegenden Dienstleistungen."
+    },
+    {
+      "id": "b2-desigualdad_social-007",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Die soziale Mobilität ist in den letzten Generationen schwieriger geworden."
+    },
+    {
+      "id": "b2-desigualdad_social-008",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Die Krise hat die bereits bestehenden Ungleichheiten verschärft."
+    },
+    {
+      "id": "b2-desigualdad_social-009",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Der Mindestlohn hält nicht mit den Lebenshaltungskosten Schritt."
+    },
+    {
+      "id": "b2-desigualdad_social-010",
+      "level": "B2",
+      "topic": "desigualdad_social",
+      "target": "Der Mangel an Chancen hält den Kreislauf der Armut aufrecht."
+    },
+    {
+      "id": "b2-globalizacion-001",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Die Globalisierung hat den Handel zwischen weit entfernten Ländern erleichtert."
+    },
+    {
+      "id": "b2-globalizacion-002",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Viele Unternehmen haben die Produktion verlagert, um Kosten zu senken."
+    },
+    {
+      "id": "b2-globalizacion-003",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Die wirtschaftliche Verflechtung erhöht das Risiko globaler Krisen."
+    },
+    {
+      "id": "b2-globalizacion-004",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Die Populärkultur verbreitet sich schnell über die Grenzen hinweg."
+    },
+    {
+      "id": "b2-globalizacion-005",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Die globalen Lieferketten erwiesen sich als anfällig."
+    },
+    {
+      "id": "b2-globalizacion-006",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Einige lokale Branchen litten unter der internationalen Konkurrenz."
+    },
+    {
+      "id": "b2-globalizacion-007",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Die Globalisierung brachte ungleiche Vorteile zwischen den Ländern."
+    },
+    {
+      "id": "b2-globalizacion-008",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Die großen multinationalen Konzerne beeinflussen die nationale Politik."
+    },
+    {
+      "id": "b2-globalizacion-009",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Der Zugang zum Internet hat den globalen Informationsaustausch beschleunigt."
+    },
+    {
+      "id": "b2-globalizacion-010",
+      "level": "B2",
+      "topic": "globalizacion",
+      "target": "Mehrere Bewegungen setzen sich für einen lokaleren und nachhaltigeren Handel ein."
+    },
+    {
+      "id": "b2-energias_renovables-001",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Das Land hat dieses Jahr stark in Windenergie investiert."
+    },
+    {
+      "id": "b2-energias_renovables-002",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Solarpaneele sind in den letzten Jahren erschwinglicher geworden."
+    },
+    {
+      "id": "b2-energias_renovables-003",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Die Energiewende schafft neue Arbeitsplätze."
+    },
+    {
+      "id": "b2-energias_renovables-004",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Wasserkraftwerke liefern einen bedeutenden Teil des Stroms."
+    },
+    {
+      "id": "b2-energias_renovables-005",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Die Energiespeicherung bleibt eine technische Herausforderung."
+    },
+    {
+      "id": "b2-energias_renovables-006",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Mehrere Länder haben in den letzten Jahren Kohlekraftwerke geschlossen."
+    },
+    {
+      "id": "b2-energias_renovables-007",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Die Investitionen in erneuerbare Energien überstiegen die in fossile Brennstoffe."
+    },
+    {
+      "id": "b2-energias_renovables-008",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Ländliche Gemeinden profitieren von lokalen Windenergieprojekten."
+    },
+    {
+      "id": "b2-energias_renovables-009",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Das Stromnetz muss modernisiert werden, um erneuerbare Energien zu integrieren."
+    },
+    {
+      "id": "b2-energias_renovables-010",
+      "level": "B2",
+      "topic": "energias_renovables",
+      "target": "Die Kosten für Solarenergie sind im letzten Jahrzehnt drastisch gesunken."
+    },
+    {
+      "id": "b2-politica_internacional-001",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Die Spannungen zwischen den beiden Ländern haben in den letzten Monaten zugenommen."
+    },
+    {
+      "id": "b2-politica_internacional-002",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Der Gipfel endete ohne eine endgültige Einigung."
+    },
+    {
+      "id": "b2-politica_internacional-003",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Die Wirtschaftssanktionen trafen die lokale Bevölkerung schwer."
+    },
+    {
+      "id": "b2-politica_internacional-004",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Die Diplomatie konnte einen größeren Konflikt verhindern."
+    },
+    {
+      "id": "b2-politica_internacional-005",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Der Konflikt hat eine Flüchtlingskrise in der Region ausgelöst."
+    },
+    {
+      "id": "b2-politica_internacional-006",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Die Handelsverhandlungen zogen sich über mehrere Jahre hin."
+    },
+    {
+      "id": "b2-politica_internacional-007",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Die internationale Organisation forderte einen sofortigen Waffenstillstand."
+    },
+    {
+      "id": "b2-politica_internacional-008",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Mehrere Verbündete zogen die diplomatische Unterstützung für die Regierung zurück."
+    },
+    {
+      "id": "b2-politica_internacional-009",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Der Vertrag garantiert Zusammenarbeit in Sicherheit und Handel."
+    },
+    {
+      "id": "b2-politica_internacional-010",
+      "level": "B2",
+      "topic": "politica_internacional",
+      "target": "Die internationale Gemeinschaft verurteilte die Menschenrechtsverletzungen."
+    },
+    {
+      "id": "b2-crisis_economica-001",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Die Rezession hat Tausende von Menschen arbeitslos gemacht."
+    },
+    {
+      "id": "b2-crisis_economica-002",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Die Zentralbank hat die Zinssätze erhöht, um die Inflation einzudämmen."
+    },
+    {
+      "id": "b2-crisis_economica-003",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Viele kleine Unternehmen haben während der Krise schließen müssen."
+    },
+    {
+      "id": "b2-crisis_economica-004",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Die Regierung hat ein Rettungspaket für die Banken verabschiedet."
+    },
+    {
+      "id": "b2-crisis_economica-005",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Das Verbrauchervertrauen ist deutlich gesunken."
+    },
+    {
+      "id": "b2-crisis_economica-006",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Die Staatsverschuldung ist auf besorgniserregende Höhen gestiegen."
+    },
+    {
+      "id": "b2-crisis_economica-007",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Die Finanzkrise hat sich schnell auf andere Märkte ausgebreitet."
+    },
+    {
+      "id": "b2-crisis_economica-008",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Die Löhne hielten nicht mit dem Anstieg der Lebenshaltungskosten Schritt."
+    },
+    {
+      "id": "b2-crisis_economica-009",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Mehrere Branchen haben sich noch nicht vollständig von der Krise erholt."
+    },
+    {
+      "id": "b2-crisis_economica-010",
+      "level": "B2",
+      "topic": "crisis_economica",
+      "target": "Finanzspekulation trug dazu bei, die Krise zu verschärfen."
+    },
+    {
+      "id": "b2-demografia-001",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die alternde Bevölkerung setzt das Rentensystem unter Druck."
+    },
+    {
+      "id": "b2-demografia-002",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die Geburtenrate sinkt in den meisten europäischen Ländern weiter."
+    },
+    {
+      "id": "b2-demografia-003",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Viele ländliche Gebiete haben in den letzten Jahrzehnten Bevölkerung verloren."
+    },
+    {
+      "id": "b2-demografia-004",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die Alterung der Gesellschaft erfordert mehr Langzeitpflege."
+    },
+    {
+      "id": "b2-demografia-005",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die Einwanderung trägt dazu bei, den demografischen Rückgang auszugleichen."
+    },
+    {
+      "id": "b2-demografia-006",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die Großstädte konzentrieren zunehmend die junge Bevölkerung."
+    },
+    {
+      "id": "b2-demografia-007",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die Lebenserwartung ist im letzten Jahrhundert erheblich gestiegen."
+    },
+    {
+      "id": "b2-demografia-008",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Diese Studie analysiert die demografischen Trends der Region."
+    },
+    {
+      "id": "b2-demografia-009",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die Landflucht beeinträchtigt die lokalen öffentlichen Dienstleistungen."
+    },
+    {
+      "id": "b2-demografia-010",
+      "level": "B2",
+      "topic": "demografia",
+      "target": "Die Geburtenpolitik hatte nur begrenzte Erfolge."
+    },
+    {
+      "id": "b2-innovacion-001",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Das Unternehmen investiert einen großen Teil des Gewinns in Forschung."
+    },
+    {
+      "id": "b2-innovacion-002",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Die technologische Innovation hat sich in den letzten zwanzig Jahren beschleunigt."
+    },
+    {
+      "id": "b2-innovacion-003",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Die Universitäten arbeiten zunehmend mit privaten Unternehmen zusammen."
+    },
+    {
+      "id": "b2-innovacion-004",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Dieses Patent stellt einen wichtigen Fortschritt in der Branche dar."
+    },
+    {
+      "id": "b2-innovacion-005",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Die Innovationskultur erfordert Toleranz gegenüber Fehlern."
+    },
+    {
+      "id": "b2-innovacion-006",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Das Labor hat ein widerstandsfähigeres und leichteres Material entwickelt."
+    },
+    {
+      "id": "b2-innovacion-007",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Steuerliche Anreize fördern die private Forschung."
+    },
+    {
+      "id": "b2-innovacion-008",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Der Mangel an Finanzierung schränkt viele innovative Projekte ein."
+    },
+    {
+      "id": "b2-innovacion-009",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Dieses Startup hat eine disruptive Lösung für die Branche entwickelt."
+    },
+    {
+      "id": "b2-innovacion-010",
+      "level": "B2",
+      "topic": "innovacion",
+      "target": "Der Wissenstransfer zwischen Branchen erzeugt neue Ideen."
+    },
+    {
+      "id": "b2-etica_empresarial-001",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Das Unternehmen wurde für wenig transparente Praktiken kritisiert."
+    },
+    {
+      "id": "b2-etica_empresarial-002",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Immer mehr Verbraucher schätzen sozial verantwortungsbewusste Unternehmen."
+    },
+    {
+      "id": "b2-etica_empresarial-003",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Der Verhaltenskodex legt klare Regeln für die Mitarbeiter fest."
+    },
+    {
+      "id": "b2-etica_empresarial-004",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Sie haben prekäre Arbeitsbedingungen in der Lieferkette angezeigt."
+    },
+    {
+      "id": "b2-etica_empresarial-005",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Das Unternehmen hat sich verpflichtet, seinen CO2-Fußabdruck zu verringern."
+    },
+    {
+      "id": "b2-etica_empresarial-006",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Der Mangel an Unternehmensethik hat dem Ruf der Marke geschadet."
+    },
+    {
+      "id": "b2-etica_empresarial-007",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Investoren fordern zunehmend ökologische und soziale Kriterien."
+    },
+    {
+      "id": "b2-etica_empresarial-008",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Das Unternehmen hat dieses Jahr einen Nachhaltigkeitsbericht veröffentlicht."
+    },
+    {
+      "id": "b2-etica_empresarial-009",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Mehrere Mitarbeiter haben Mobbing am Arbeitsplatz angezeigt."
+    },
+    {
+      "id": "b2-etica_empresarial-010",
+      "level": "B2",
+      "topic": "etica_empresarial",
+      "target": "Die Gehaltstransparenz wurde zu einer wachsenden Forderung."
+    },
+    {
+      "id": "b2-seguridad_informatica-001",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Das Unternehmen wurde Opfer eines groß angelegten Cyberangriffs."
+    },
+    {
+      "id": "b2-seguridad_informatica-002",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Die Nutzerdaten wurden bei einem jüngsten Angriff kompromittiert."
+    },
+    {
+      "id": "b2-seguridad_informatica-003",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Es ist wichtig, die Passwörter regelmäßig zu aktualisieren."
+    },
+    {
+      "id": "b2-seguridad_informatica-004",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Die Zwei-Faktor-Authentifizierung verringert das Risiko von Eindringversuchen."
+    },
+    {
+      "id": "b2-seguridad_informatica-005",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Viele Unternehmen investieren wenig in IT-Sicherheit."
+    },
+    {
+      "id": "b2-seguridad_informatica-006",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Der Virus hat alle Dateien auf dem Server verschlüsselt."
+    },
+    {
+      "id": "b2-seguridad_informatica-007",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Die Spezialisten haben einen schwerwiegenden Fehler im System entdeckt."
+    },
+    {
+      "id": "b2-seguridad_informatica-008",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Sie haben die Mitarbeiter geschult, Phishing-Versuche zu erkennen."
+    },
+    {
+      "id": "b2-seguridad_informatica-009",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Das Datenleck betraf Millionen von Nutzern weltweit."
+    },
+    {
+      "id": "b2-seguridad_informatica-010",
+      "level": "B2",
+      "topic": "seguridad_informatica",
+      "target": "Das Unternehmen zahlte ein Lösegeld, um die gestohlenen Daten zurückzubekommen."
+    },
+    {
+      "id": "b2-migraciones-001",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Die Migrationsströme haben aufgrund regionaler Konflikte zugenommen."
+    },
+    {
+      "id": "b2-migraciones-002",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Viele Migranten riskieren ihr Leben auf gefährlichen Reisen."
+    },
+    {
+      "id": "b2-migraciones-003",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Die Grenzpolitik ist restriktiver geworden."
+    },
+    {
+      "id": "b2-migraciones-004",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Die Integration der Migranten hängt vom Zugang zu Arbeit ab."
+    },
+    {
+      "id": "b2-migraciones-005",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Mehrere Länder diskutieren Reformen des Asylsystems."
+    },
+    {
+      "id": "b2-migraciones-006",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Die Rücküberweisungen der Auswanderer sind wichtig für die lokale Wirtschaft."
+    },
+    {
+      "id": "b2-migraciones-007",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Die Migrationskrise hat Spaltungen zwischen den europäischen Regierungen offengelegt."
+    },
+    {
+      "id": "b2-migraciones-008",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Humanitäre Organisationen unterstützen Migranten auf den schwierigsten Routen."
+    },
+    {
+      "id": "b2-migraciones-009",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Die öffentliche Meinung ist über die Migrationspolitik gespalten."
+    },
+    {
+      "id": "b2-migraciones-010",
+      "level": "B2",
+      "topic": "migraciones",
+      "target": "Viele qualifizierte Migranten schaffen es nicht, ihre Abschlüsse anerkennen zu lassen."
+    },
+    {
+      "id": "b2-justicia_social-001",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Die Bewegung fordert tiefgreifende Reformen im Justizsystem."
+    },
+    {
+      "id": "b2-justicia_social-002",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Die Ungleichheit vor dem Gesetz bleibt ein ernstes Problem."
+    },
+    {
+      "id": "b2-justicia_social-003",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Die Organisationen setzen sich für den kostenlosen Zugang zur Justiz ein."
+    },
+    {
+      "id": "b2-justicia_social-004",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Die Überlastung der Gerichte verzögert wichtige Verfahren."
+    },
+    {
+      "id": "b2-justicia_social-005",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Viele Menschen haben nicht die Mittel, einen Anwalt zu bezahlen."
+    },
+    {
+      "id": "b2-justicia_social-006",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Die Strafrechtsreform zielt darauf ab, die Rückfallquote zu senken."
+    },
+    {
+      "id": "b2-justicia_social-007",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Die sozialen Bewegungen drängen auf mehr Transparenz in der Justiz."
+    },
+    {
+      "id": "b2-justicia_social-008",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Rassistische Diskriminierung im Justizsystem wird weiterhin angeklagt."
+    },
+    {
+      "id": "b2-justicia_social-009",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Der Zugang zur Justiz variiert stark je nach Einkommensniveau."
+    },
+    {
+      "id": "b2-justicia_social-010",
+      "level": "B2",
+      "topic": "justicia_social",
+      "target": "Mehrere Fälle haben schwerwiegende Mängel im Strafvollzugssystem aufgedeckt."
+    },
+    {
+      "id": "b2-sostenibilidad-001",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Das Unternehmen hat den Plastikmüll erheblich reduziert."
+    },
+    {
+      "id": "b2-sostenibilidad-002",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Verantwortungsvoller Konsum hat bei jungen Verbrauchern an Bedeutung gewonnen."
+    },
+    {
+      "id": "b2-sostenibilidad-003",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Die Kreislaufwirtschaft schlägt vor, wiederzuverwenden statt zu entsorgen."
+    },
+    {
+      "id": "b2-sostenibilidad-004",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Mehrere Gemeinden haben Einwegplastik verboten."
+    },
+    {
+      "id": "b2-sostenibilidad-005",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Die nachhaltige Landwirtschaft verringert die Auswirkungen auf Boden und Wasser."
+    },
+    {
+      "id": "b2-sostenibilidad-006",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Die Umweltzertifizierung wurde zu einem wichtigen Kriterium für Käufer."
+    },
+    {
+      "id": "b2-sostenibilidad-007",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Fast Fashion erzeugt eine enorme Menge an Textilabfällen."
+    },
+    {
+      "id": "b2-sostenibilidad-008",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "In Nachhaltigkeit zu investieren senkt die Kosten langfristig."
+    },
+    {
+      "id": "b2-sostenibilidad-009",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Das Recycling von Elektronik bleibt unzureichend."
+    },
+    {
+      "id": "b2-sostenibilidad-010",
+      "level": "B2",
+      "topic": "sostenibilidad",
+      "target": "Nachhaltige Städte priorisieren Grünflächen und saubere Verkehrsmittel."
+    },
+    {
+      "id": "c1-epistemologia-001",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Die Unterscheidung zwischen gerechtfertigtem Glauben und Wissen sorgt weiterhin für Debatten."
+    },
+    {
+      "id": "c1-epistemologia-002",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Nicht jede subjektive Gewissheit entspricht einer objektiven Wahrheit."
+    },
+    {
+      "id": "c1-epistemologia-003",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Der radikale Skeptizismus stellt die Möglichkeit, überhaupt etwas zu wissen, selbst in Frage."
+    },
+    {
+      "id": "c1-epistemologia-004",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Die Zuverlässigkeit einer Quelle hängt von dem Kontext ab, in dem sie entsteht."
+    },
+    {
+      "id": "c1-epistemologia-005",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Man sollte die methodischen Grenzen von den begrifflichen Grenzen einer Theorie trennen."
+    },
+    {
+      "id": "c1-epistemologia-006",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Die Beobachtung ist niemals völlig unabhängig von der Theorie, die sie rahmt."
+    },
+    {
+      "id": "c1-epistemologia-007",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Die Unsicherheit einzugestehen macht den praktischen Nutzen eines Modells nicht ungültig."
+    },
+    {
+      "id": "c1-epistemologia-008",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Die Begutachtung durch Fachkollegen garantiert allein nicht die Validität einer Studie."
+    },
+    {
+      "id": "c1-epistemologia-009",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Korrelation mit Erklärung zu verwechseln ist ein verbreiteter erkenntnistheoretischer Fehler."
+    },
+    {
+      "id": "c1-epistemologia-010",
+      "level": "C1",
+      "topic": "epistemologia",
+      "target": "Die Wissenschaftsgeschichte zeigt, dass akzeptierte Paradigmen ersetzt werden können."
+    },
+    {
+      "id": "c1-geopolitica-001",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Die Kontrolle der Seewege bestimmt weiterhin das regionale Gleichgewicht."
+    },
+    {
+      "id": "c1-geopolitica-002",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Die strategischen Bündnisse ändern sich entsprechend den energiepolitischen Interessen."
+    },
+    {
+      "id": "c1-geopolitica-003",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Die Abhängigkeit von kritischen Ressourcen bestimmt die Außenpolitik vieler Länder."
+    },
+    {
+      "id": "c1-geopolitica-004",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Die Rivalität zwischen den Großmächten definiert das globale geopolitische Spielfeld neu."
+    },
+    {
+      "id": "c1-geopolitica-005",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Ein regionaler Konflikt kann wirtschaftliche Auswirkungen haben, die weit über seine Grenzen hinausreichen."
+    },
+    {
+      "id": "c1-geopolitica-006",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Die Wirtschaftsdiplomatie ist genauso relevant geworden wie die traditionelle Diplomatie."
+    },
+    {
+      "id": "c1-geopolitica-007",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Bestimmte Infrastrukturen werden heute als Vermögenswerte der nationalen Sicherheit betrachtet."
+    },
+    {
+      "id": "c1-geopolitica-008",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Die Multipolarität erschwert die Bildung internationaler Konsense."
+    },
+    {
+      "id": "c1-geopolitica-009",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Das regionale Machtgleichgewicht hängt von wirtschaftlichen und militärischen Faktoren ab."
+    },
+    {
+      "id": "c1-geopolitica-010",
+      "level": "C1",
+      "topic": "geopolitica",
+      "target": "Sanktionen haben Auswirkungen, die häufig über die ursprünglichen Ziele hinausgehen."
+    },
+    {
+      "id": "c1-bioetica-001",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Der Fortschritt der Genom-Editierung wirft Dilemmata auf, die das Gesetz noch nicht gelöst hat."
+    },
+    {
+      "id": "c1-bioetica-002",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Nicht jeder wissenschaftliche Fortschritt ist ohne Einschränkungen ethisch wünschenswert."
+    },
+    {
+      "id": "c1-bioetica-003",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Die informierte Einwilligung bleibt bei jeder klinischen Studie zentral."
+    },
+    {
+      "id": "c1-bioetica-004",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Die Zuteilung knapper medizinischer Ressourcen erfordert transparente Kriterien."
+    },
+    {
+      "id": "c1-bioetica-005",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Künstliche Intelligenz in der medizinischen Diagnostik wirft Fragen der Verantwortung auf."
+    },
+    {
+      "id": "c1-bioetica-006",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Die Debatte über Sterbehilfe stellt individuelle Autonomie und Lebensschutz gegenüber."
+    },
+    {
+      "id": "c1-bioetica-007",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Die genetische Manipulation von Embryonen bleibt ethisch umstritten."
+    },
+    {
+      "id": "c1-bioetica-008",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Gleichberechtigten Zugang zu innovativen Behandlungen zu gewährleisten ist eine anhaltende Herausforderung."
+    },
+    {
+      "id": "c1-bioetica-009",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Der Schutz genetischer Daten erfordert eine spezifische Regulierung."
+    },
+    {
+      "id": "c1-bioetica-010",
+      "level": "C1",
+      "topic": "bioetica",
+      "target": "Jedes Bioethik-Komitee muss Innovation und Vorsicht in Einklang bringen."
+    },
+    {
+      "id": "c1-filosofia_moral-001",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Zwischen dem, was legal ist, und dem, was moralisch richtig ist, zu unterscheiden, ist nicht immer einfach."
+    },
+    {
+      "id": "c1-filosofia_moral-002",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Der moralische Relativismus hat Schwierigkeiten, universelle Normen zu rechtfertigen."
+    },
+    {
+      "id": "c1-filosofia_moral-003",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Die Absicht einer Handlung zählt für viele ethische Theorien genauso wie ihre Konsequenzen."
+    },
+    {
+      "id": "c1-filosofia_moral-004",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Vergangene Entscheidungen rückwirkend zu beurteilen ignoriert häufig den Kontext der damaligen Zeit."
+    },
+    {
+      "id": "c1-filosofia_moral-005",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Kollektive Verantwortung ist schwerer zuzuschreiben als individuelle."
+    },
+    {
+      "id": "c1-filosofia_moral-006",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Nicht jede moralische Pflicht leitet sich aus einem expliziten Gesellschaftsvertrag ab."
+    },
+    {
+      "id": "c1-filosofia_moral-007",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Der Utilitarismus stößt auf Kritik, wenn er Minderheiten für das allgemeine Wohl opfert."
+    },
+    {
+      "id": "c1-filosofia_moral-008",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Die Übereinstimmung zwischen Worten und Handeln ist ein zentrales Kriterium moralischer Integrität."
+    },
+    {
+      "id": "c1-filosofia_moral-009",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Ethische Dilemmata lassen selten eine Lösung ohne Kosten zu."
+    },
+    {
+      "id": "c1-filosofia_moral-010",
+      "level": "C1",
+      "topic": "filosofia_moral",
+      "target": "Die Tugend liegt für Aristoteles zwischen zwei fehlerhaften Extremen."
+    },
+    {
+      "id": "c1-teoria_economica-001",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Die unsichtbare Hand des Marktes garantiert allein keine gerechten Ergebnisse."
+    },
+    {
+      "id": "c1-teoria_economica-002",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Die rationalen Erwartungen der Akteure beeinflussen direkt die zukünftigen Preise."
+    },
+    {
+      "id": "c1-teoria_economica-003",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Die Spieltheorie hilft, strategisches Verhalten in Oligopolen zu erklären."
+    },
+    {
+      "id": "c1-teoria_economica-004",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Nicht jedes Marktversagen rechtfertigt ein direktes staatliches Eingreifen."
+    },
+    {
+      "id": "c1-teoria_economica-005",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Nachhaltiges Wirtschaftswachstum hängt von realen Produktivitätsgewinnen ab."
+    },
+    {
+      "id": "c1-teoria_economica-006",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Die expansive Geldpolitik hat kurz- und langfristig unterschiedliche Auswirkungen."
+    },
+    {
+      "id": "c1-teoria_economica-007",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Die Phillips-Kurve legt einen instabilen Zusammenhang zwischen Inflation und Arbeitslosigkeit nahe."
+    },
+    {
+      "id": "c1-teoria_economica-008",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Transaktionskosten erklären, warum bestimmte Tauschgeschäfte niemals stattfinden."
+    },
+    {
+      "id": "c1-teoria_economica-009",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Die Informationsasymmetrie rechtfertigt die Existenz bestimmter Vermittler."
+    },
+    {
+      "id": "c1-teoria_economica-010",
+      "level": "C1",
+      "topic": "teoria_economica",
+      "target": "Kein wirtschaftliches Modell erfasst die Komplexität des menschlichen Verhaltens vollständig."
+    },
+    {
+      "id": "c1-critica_literaria-001",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Die Erzählstimme bestimmt entscheidend die Interpretation des Lesers."
+    },
+    {
+      "id": "c1-critica_literaria-002",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Ein Werk auf die Biografie des Autors zu reduzieren, verarmt seine Lektüre."
+    },
+    {
+      "id": "c1-critica_literaria-003",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Die Intertextualität offenbart Dialoge, die der Autor nicht immer explizit gemacht hat."
+    },
+    {
+      "id": "c1-critica_literaria-004",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Der literarische Kanon spiegelt historische Entscheidungen wider, nicht nur ästhetische Verdienste."
+    },
+    {
+      "id": "c1-critica_literaria-005",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Bewusste Mehrdeutigkeit kann wirksamer sein als explizite Klarheit."
+    },
+    {
+      "id": "c1-critica_literaria-006",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Die fragmentierte Struktur des Romans verlangt einen aktiveren Leser."
+    },
+    {
+      "id": "c1-critica_literaria-007",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Jede Epoche liest die Klassiker im Licht ihrer eigenen Anliegen neu."
+    },
+    {
+      "id": "c1-critica_literaria-008",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Das erzählerische Schweigen vermittelt genauso viel wie das explizit Gesagte."
+    },
+    {
+      "id": "c1-critica_literaria-009",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Die Übersetzung verändert unvermeidlich bestimmte Sinnschichten des Originals."
+    },
+    {
+      "id": "c1-critica_literaria-010",
+      "level": "C1",
+      "topic": "critica_literaria",
+      "target": "Die kritische Rezeption eines Werkes ändert sich je nach dem sozialen Kontext, in dem es gelesen wird."
+    },
+    {
+      "id": "c1-sociologia-001",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Ungleichheit reproduziert sich auch durch symbolische Mechanismen, nicht nur durch wirtschaftliche."
+    },
+    {
+      "id": "c1-sociologia-002",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Implizite soziale Normen regulieren das Verhalten genauso wie das formale Gesetz."
+    },
+    {
+      "id": "c1-sociologia-003",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Die intergenerationale soziale Mobilität ist in mehreren entwickelten Wirtschaften zurückgegangen."
+    },
+    {
+      "id": "c1-sociologia-004",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Das kulturelle Kapital beeinflusst den akademischen Erfolg stärker, als man gewöhnlich zugibt."
+    },
+    {
+      "id": "c1-sociologia-005",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Institutionen formen individuelle Präferenzen genauso, wie sie sie widerspiegeln."
+    },
+    {
+      "id": "c1-sociologia-006",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Anomie entsteht, wenn soziale Normen ihre regulierende Kraft verlieren."
+    },
+    {
+      "id": "c1-sociologia-007",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Kollektive Identität entsteht sowohl durch Abgrenzung als auch durch Zugehörigkeit."
+    },
+    {
+      "id": "c1-sociologia-008",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Die soziale Schichtung besteht selbst in formal egalitären Gesellschaften fort."
+    },
+    {
+      "id": "c1-sociologia-009",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Informelle soziale Netzwerke bestimmen weiterhin den Zugang zu bestimmten Arbeitsplätzen."
+    },
+    {
+      "id": "c1-sociologia-010",
+      "level": "C1",
+      "topic": "sociologia",
+      "target": "Die primäre Sozialisation hinterlässt Spuren, die im Erwachsenenleben schwer zu ändern sind."
+    },
+    {
+      "id": "c1-antropologia-001",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Keine kulturelle Praxis sollte außerhalb ihres Herkunftskontexts bewertet werden."
+    },
+    {
+      "id": "c1-antropologia-002",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Ethnozentrismus verzerrt das Verständnis fremder Bräuche."
+    },
+    {
+      "id": "c1-antropologia-003",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Rituale erfüllen soziale Funktionen, die weit über ihre scheinbare Bedeutung hinausgehen."
+    },
+    {
+      "id": "c1-antropologia-004",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Die Globalisierung verändert lokale Traditionen, ohne sie notwendigerweise zu zerstören."
+    },
+    {
+      "id": "c1-antropologia-005",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Verwandtschaft organisiert sich zwischen den Kulturen auf sehr unterschiedliche Weise."
+    },
+    {
+      "id": "c1-antropologia-006",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Die teilnehmende Beobachtung erfordert ein heikles Gleichgewicht zwischen Nähe und Distanz."
+    },
+    {
+      "id": "c1-antropologia-007",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Glaubenssysteme stiften Sinn, selbst wenn sie widersprüchlich erscheinen."
+    },
+    {
+      "id": "c1-antropologia-008",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Der Begriff der kulturellen Reinheit ignoriert die historischen Prozesse der Vermischung."
+    },
+    {
+      "id": "c1-antropologia-009",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Jede Gesellschaft definiert die Grenzen zwischen öffentlich und privat auf unterschiedliche Weise."
+    },
+    {
+      "id": "c1-antropologia-010",
+      "level": "C1",
+      "topic": "antropologia",
+      "target": "Längere Feldforschung offenbart Widersprüche, die die Theorie allein nicht erfasst."
+    },
+    {
+      "id": "c1-linguistica-001",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Die Grammatik einer Sprache entwickelt sich durch den Gebrauch, nicht nur durch normative Festlegung."
+    },
+    {
+      "id": "c1-linguistica-002",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Syntaktische Mehrdeutigkeit kann durch den pragmatischen Kontext aufgelöst werden."
+    },
+    {
+      "id": "c1-linguistica-003",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Keine dialektale Variante ist einer anderen von Natur aus unterlegen."
+    },
+    {
+      "id": "c1-linguistica-004",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Der Spracherwerb folgt zwischen den Kulturen erstaunlich ähnlichen Mustern."
+    },
+    {
+      "id": "c1-linguistica-005",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Der Kontakt zwischen Sprachen erzeugt Interferenzphänomene, die schwer vorherzusagen sind."
+    },
+    {
+      "id": "c1-linguistica-006",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Der Tod einer Sprache bedeutet den Verlust einer besonderen Art, die Welt zu kategorisieren."
+    },
+    {
+      "id": "c1-linguistica-007",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Die lexikalische Semantik stimmt nicht immer zwischen scheinbar gleichwertigen Übersetzungen überein."
+    },
+    {
+      "id": "c1-linguistica-008",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Die Intonation vermittelt Informationen, die die schriftliche Transkription kaum erfasst."
+    },
+    {
+      "id": "c1-linguistica-009",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Frühe Zweisprachigkeit reorganisiert bestimmte kognitive Netzwerke im Gehirn."
+    },
+    {
+      "id": "c1-linguistica-010",
+      "level": "C1",
+      "topic": "linguistica",
+      "target": "Die sprachliche Standardisierung tendiert dazu, Minderheitenvarietäten zu marginalisieren."
+    },
+    {
+      "id": "c1-historiografia-001",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Die offizielle Geschichte spiegelt häufig die Perspektive der Sieger wider."
+    },
+    {
+      "id": "c1-historiografia-002",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Alte Quellen im Licht neuer Fragen neu zu interpretieren, offenbart vergessene Aspekte."
+    },
+    {
+      "id": "c1-historiografia-003",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Die neuere Geschichtsschreibung schätzt die marginalisierten Stimmen der Vergangenheit stärker."
+    },
+    {
+      "id": "c1-historiografia-004",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Keine historische Erzählung ist gegenüber der Gegenwart völlig neutral."
+    },
+    {
+      "id": "c1-historiografia-005",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Die erhaltenen Archive bestimmen unvermeidlich das, was wir wissen können."
+    },
+    {
+      "id": "c1-historiografia-006",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Die historische Periodisierung ist eine nützliche Konstruktion, keine natürliche Realität."
+    },
+    {
+      "id": "c1-historiografia-007",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Ereignisse aus unterschiedlichen Epochen zu vergleichen erfordert methodische Vorsicht."
+    },
+    {
+      "id": "c1-historiografia-008",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Das kollektive Gedächtnis stimmt nicht immer mit den dokumentierten Tatsachen überein."
+    },
+    {
+      "id": "c1-historiografia-009",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Die Mikrogeschichte erlaubt es, unsichtbare Dynamiken in den allgemeinen Erzählungen zu beobachten."
+    },
+    {
+      "id": "c1-historiografia-010",
+      "level": "C1",
+      "topic": "historiografia",
+      "target": "Die Geschichte anhand neuer Belege neu zu schreiben, ist Teil der wissenschaftlichen Methode."
+    },
+    {
+      "id": "c1-neurociencia-001",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Die Neuroplastizität ermöglicht erstaunliche Reorganisationen nach einer Verletzung."
+    },
+    {
+      "id": "c1-neurociencia-002",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Keine isolierte Gehirnregion erklärt ein komplexes Verhalten vollständig."
+    },
+    {
+      "id": "c1-neurociencia-003",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Die Beziehung zwischen Bewusstsein und neuronaler Aktivität ist weiterhin nicht vollständig erklärt."
+    },
+    {
+      "id": "c1-neurociencia-004",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Chronischer Stress verändert strukturell bestimmte mit dem Gedächtnis verbundene Bereiche."
+    },
+    {
+      "id": "c1-neurociencia-005",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Neuroimaging-Studien müssen mit methodischer Vorsicht interpretiert werden."
+    },
+    {
+      "id": "c1-neurociencia-006",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Die Entscheidungsfindung umfasst sowohl bewusste als auch automatische Prozesse."
+    },
+    {
+      "id": "c1-neurociencia-007",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Der Schlaf spielt eine wesentliche Rolle bei der Konsolidierung des Gedächtnisses."
+    },
+    {
+      "id": "c1-neurociencia-008",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Bestimmte kognitive Störungen resultieren aus Veränderungen in spezifischen neuronalen Netzwerken."
+    },
+    {
+      "id": "c1-neurociencia-009",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Die affektive Neurowissenschaft untersucht, wie Emotionen im Gehirn organisiert sind."
+    },
+    {
+      "id": "c1-neurociencia-010",
+      "level": "C1",
+      "topic": "neurociencia",
+      "target": "Den Geist vollständig auf neuronale Prozesse zu reduzieren bleibt umstritten."
+    },
+    {
+      "id": "c1-teoria_politica-001",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Die Legitimität einer Regierung erschöpft sich nicht in der formalen Einhaltung des Gesetzes."
+    },
+    {
+      "id": "c1-teoria_politica-002",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Der Gesellschaftsvertrag setzt eine Zustimmung voraus, die selten explizit ist."
+    },
+    {
+      "id": "c1-teoria_politica-003",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Die Gewaltenteilung soll eine übermäßige Machtkonzentration verhindern."
+    },
+    {
+      "id": "c1-teoria_politica-004",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Die Volkssouveränität besteht in liberalen Demokratien gemeinsam mit verfassungsrechtlichen Grenzen."
+    },
+    {
+      "id": "c1-teoria_politica-005",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Der Populismus nutzt häufig das Misstrauen gegenüber den traditionellen Institutionen aus."
+    },
+    {
+      "id": "c1-teoria_politica-006",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Die politische Repräsentation spiegelt niemals perfekt den Willen aller Bürger wider."
+    },
+    {
+      "id": "c1-teoria_politica-007",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Der Pluralismus setzt voraus, dass der Interessenkonflikt legitim und unvermeidlich ist."
+    },
+    {
+      "id": "c1-teoria_politica-008",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Die Tyrannei der Mehrheit ist ein Risiko, das schon die klassischen liberalen Theoretiker beschäftigte."
+    },
+    {
+      "id": "c1-teoria_politica-009",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Die Entpolitisierung bestimmter technischer Entscheidungen verbirgt eminent politische Entscheidungen."
+    },
+    {
+      "id": "c1-teoria_politica-010",
+      "level": "C1",
+      "topic": "teoria_politica",
+      "target": "Die Staatsbürgerschaft beinhaltet Pflichten, die über das einfache Wahlrecht hinausgehen."
+    },
+    {
+      "id": "c1-estetica-001",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Das Schöne war nie ein völlig vom historischen Kontext unabhängiger Begriff."
+    },
+    {
+      "id": "c1-estetica-002",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Die zeitgenössische Kunst stellt häufig die traditionellen ästhetischen Kategorien infrage."
+    },
+    {
+      "id": "c1-estetica-003",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Das ästhetische Urteil verbindet subjektive Elemente mit teilweise gemeinsamen Kriterien."
+    },
+    {
+      "id": "c1-estetica-004",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Die technische Reproduzierbarkeit hat unsere Beziehung zum einzigartigen Werk tiefgreifend verändert."
+    },
+    {
+      "id": "c1-estetica-005",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Das Hässliche kann eine ebenso relevante ästhetische Funktion erfüllen wie das Schöne."
+    },
+    {
+      "id": "c1-estetica-006",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Die Absicht des Künstlers erschöpft nicht die mögliche Bedeutung eines Werkes."
+    },
+    {
+      "id": "c1-estetica-007",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Der ästhetische Geschmack spiegelt auch soziale Hierarchien und kulturelles Kapital wider."
+    },
+    {
+      "id": "c1-estetica-008",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Die ästhetische Erfahrung umfasst sowohl die sinnliche Wahrnehmung als auch die Interpretation."
+    },
+    {
+      "id": "c1-estetica-009",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Die Avantgarde suchte bewusst den Bruch mit den etablierten Konventionen."
+    },
+    {
+      "id": "c1-estetica-010",
+      "level": "C1",
+      "topic": "estetica",
+      "target": "Die Banalisierung bestimmter Bilder entleert mit der Zeit ihre ästhetische Wirkung."
+    },
+    {
+      "id": "c1-logica-001",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Ein Argument kann formal gültig und trotzdem inhaltlich falsch sein."
+    },
+    {
+      "id": "c1-logica-002",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Der Strohmann-Fehlschluss verzerrt absichtlich die Position des Gegners."
+    },
+    {
+      "id": "c1-logica-003",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Korrelation mit Kausalität zu verwechseln ist ein wiederkehrender logischer Fehler."
+    },
+    {
+      "id": "c1-logica-004",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Die innere Konsistenz einer Theorie garantiert nicht ihre Übereinstimmung mit der Realität."
+    },
+    {
+      "id": "c1-logica-005",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Der Satz vom Widerspruch liegt jeder deduktiven Argumentation zugrunde."
+    },
+    {
+      "id": "c1-logica-006",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Die Induktion bietet niemals absolute Gewissheit, nur eine hohe Wahrscheinlichkeit."
+    },
+    {
+      "id": "c1-logica-007",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Ein einziges Gegenbeispiel reicht aus, um eine universelle Aussage zu widerlegen."
+    },
+    {
+      "id": "c1-logica-008",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Lexikalische Mehrdeutigkeit kann scheinbar korrekte Syllogismen ungültig machen."
+    },
+    {
+      "id": "c1-logica-009",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Nicht jede gültige Schlussfolgerung geht von wahren Prämissen aus."
+    },
+    {
+      "id": "c1-logica-010",
+      "level": "C1",
+      "topic": "logica",
+      "target": "Der Zirkelschluss setzt verdeckt das voraus, was er beweisen sollte."
+    },
+    {
+      "id": "c1-metafisica-001",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Die Frage danach, was existiert, übersteigt das, was die Wissenschaft allein beantworten kann."
+    },
+    {
+      "id": "c1-metafisica-002",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Determinismus und freier Wille erzeugen weiterhin entgegengesetzte philosophische Positionen."
+    },
+    {
+      "id": "c1-metafisica-003",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Die persönliche Identität im Laufe der Zeit ist ein philosophisches Problem ohne Konsens."
+    },
+    {
+      "id": "c1-metafisica-004",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Nicht alle Philosophen akzeptieren, dass die Zeit eine grundlegende Dimension der Realität ist."
+    },
+    {
+      "id": "c1-metafisica-005",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Die Beziehung zwischen Geist und Körper bleibt eines der großen Rätsel der Philosophie."
+    },
+    {
+      "id": "c1-metafisica-006",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Realismus und Idealismus bieten unvereinbare Antworten auf die Natur der Realität."
+    },
+    {
+      "id": "c1-metafisica-007",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Die Existenz von Universalien teilt weiterhin realistische und nominalistische Philosophen."
+    },
+    {
+      "id": "c1-metafisica-008",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Kausalität könnte eher eine Konstruktion des Geistes sein als eine Eigenschaft der Welt."
+    },
+    {
+      "id": "c1-metafisica-009",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Die Existenz der objektiven Zeit zu verneinen beseitigt nicht die subjektive Erfahrung der Dauer."
+    },
+    {
+      "id": "c1-metafisica-010",
+      "level": "C1",
+      "topic": "metafisica",
+      "target": "Die Möglichkeit alternativer Welten ist in bestimmten Modaltheorien zentral."
+    },
+    {
+      "id": "c1-retorica-001",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Wirksame Überzeugung verbindet rationale Argumente mit emotionalen Appellen."
+    },
+    {
+      "id": "c1-retorica-002",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Das Ethos des Redners beeinflusst die seiner Rede zugeschriebene Glaubwürdigkeit."
+    },
+    {
+      "id": "c1-retorica-003",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Ein rhetorisch wirksames Argument ist nicht immer logisch stichhaltig."
+    },
+    {
+      "id": "c1-retorica-004",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Die strategische Wiederholung verstärkt das Einprägen einer politischen Botschaft."
+    },
+    {
+      "id": "c1-retorica-005",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Schweigen kann rhetorisch genauso wirksam sein wie das ausdrückliche Wort."
+    },
+    {
+      "id": "c1-retorica-006",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Die Wahl des Publikums bestimmt unvermeidlich den Aufbau der Rede."
+    },
+    {
+      "id": "c1-retorica-007",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Bestimmte rhetorische Fehlschlüsse überzeugen, obwohl sie auf schwachen Prämissen beruhen."
+    },
+    {
+      "id": "c1-retorica-008",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Ironie erfordert, dass das Publikum einen gemeinsamen Interpretationskontext teilt."
+    },
+    {
+      "id": "c1-retorica-009",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Die klassische Rhetorik unterschied klar zwischen der beratenden und der gerichtlichen Gattung."
+    },
+    {
+      "id": "c1-retorica-010",
+      "level": "C1",
+      "topic": "retorica",
+      "target": "Eine gut aufgebaute Rede nimmt die vorhersehbarsten Einwände vorweg und entkräftet sie."
+    },
+    {
+      "id": "c1-hermeneutica-001",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Einen Text zu interpretieren erfordert, ihn in den historischen Horizont einzuordnen, in dem er entstanden ist."
+    },
+    {
+      "id": "c1-hermeneutica-002",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Keine Lektüre ist völlig neutral gegenüber den Voraussetzungen des Lesers."
+    },
+    {
+      "id": "c1-hermeneutica-003",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Der hermeneutische Zirkel bedeutet, dass das Verstehen der Teile vom Ganzen abhängt und umgekehrt."
+    },
+    {
+      "id": "c1-hermeneutica-004",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Der zeitliche Abstand zwischen Text und Leser bestimmt seine Interpretation."
+    },
+    {
+      "id": "c1-hermeneutica-005",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Einen alten Text wörtlich zu interpretieren kann seinen ursprünglichen Sinn verfehlen."
+    },
+    {
+      "id": "c1-hermeneutica-006",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Die Horizontverschmelzung erlaubt es, den anderen zu verstehen, ohne die eigene Perspektive aufzuheben."
+    },
+    {
+      "id": "c1-hermeneutica-007",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Ein heiliger Text lässt gleichzeitig wörtliche und symbolische Lesarten zu."
+    },
+    {
+      "id": "c1-hermeneutica-008",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Das Vorverständnis des Interpreten prägt unvermeidlich das, was er im Text findet."
+    },
+    {
+      "id": "c1-hermeneutica-009",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Einen Klassiker im Licht der Gegenwart neu zu interpretieren bedeutet nicht, ihn willkürlich zu verzerren."
+    },
+    {
+      "id": "c1-hermeneutica-010",
+      "level": "C1",
+      "topic": "hermeneutica",
+      "target": "Die juristische Hermeneutik versucht, den Wortlaut des Gesetzes mit seinem Zweck in Einklang zu bringen."
+    }
+  ]
+}

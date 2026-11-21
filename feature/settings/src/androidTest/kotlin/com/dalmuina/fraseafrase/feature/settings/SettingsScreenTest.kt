@@ -322,6 +322,38 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithText("Español (España)").assertIsDisplayed()
     }
 
+    // Scenario: Elegir un idioma destino de la lista (spec: settings-screen) - it-IT, en-GB, de-DE,
+    // fr-FR y ru-RU disponibles entre los idiomas destino (add-multilingual-sources)
+    @Test
+    fun givenNewTargetLanguagesAvailable_whenShowingTheScreen_thenTheLanguageDropdownShowsTheirNames() {
+        // Given/When: la pantalla muestra pt-PT como idioma activo con los 8 idiomas disponibles
+        setScreen(
+            loaded(
+                activeTargetLocale = LanguageTag("pt-PT"),
+                availableTargetLocales = listOf(
+                    LanguageTag("pt-PT"),
+                    LanguageTag("pt-BR"),
+                    LanguageTag("es-ES"),
+                    LanguageTag("it-IT"),
+                    LanguageTag("en-GB"),
+                    LanguageTag("de-DE"),
+                    LanguageTag("fr-FR"),
+                    LanguageTag("ru-RU"),
+                ),
+            ),
+        )
+
+        // When: el usuario abre el desplegable (las opciones solo se componen expandido)
+        composeTestRule.onNodeWithText("Português (Portugal)").performClick()
+
+        // Then: el desplegable de idioma muestra el nombre de cada uno de los 5 idiomas nuevos
+        composeTestRule.onNodeWithText("Italiano (Italia)").assertIsDisplayed()
+        composeTestRule.onNodeWithText("English (UK)").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Deutsch (Deutschland)").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Français (France)").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Русский (Россия)").assertIsDisplayed()
+    }
+
     // Scenario: El icono muestra el idioma activo en Ajustes (spec: language-indicator)
     @Test
     fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {

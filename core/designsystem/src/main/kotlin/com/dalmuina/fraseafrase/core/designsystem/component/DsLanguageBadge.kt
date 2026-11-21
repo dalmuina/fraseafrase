@@ -46,10 +46,15 @@ internal fun languageBadgeSpec(languageCode: String): LanguageBadgeSpec? = when 
     "pt-PT" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_pt_pt, contentDescription = "pt-PT")
     "pt-BR" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_pt_br, contentDescription = "pt-BR")
     "es-ES" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_es_es, contentDescription = "es-ES")
+    "it-IT" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_it_it, contentDescription = "it-IT")
+    "en-GB" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_en_gb, contentDescription = "en-GB")
+    "de-DE" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_de_de, contentDescription = "de-DE")
+    "fr-FR" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_fr_fr, contentDescription = "fr-FR")
+    "ru-RU" -> LanguageBadgeSpec(drawableRes = R.drawable.ic_flag_ru_ru, contentDescription = "ru-RU")
     else -> null
 }
 
-private val AllLanguageCodes = listOf("pt-PT", "pt-BR", "es-ES")
+private val AllLanguageCodes = listOf("pt-PT", "pt-BR", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU")
 
 @PreviewLightDark
 @Composable

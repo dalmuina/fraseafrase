@@ -7,23 +7,28 @@ import com.dalmuina.fraseafrase.core.domain.catalog.Topic
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 
 /** Mapeos entre las filas de Room y los tipos del dominio (ADR-0010: los mapeos viven en :core:data). */
-internal fun CatalogPhraseEntity.toDomain(): CatalogPhrase = CatalogPhrase(
-    id = PhraseId(id),
-    level = CefrLevel.valueOf(level),
-    topic = Topic(topic),
-    targetLocale = LanguageTag(targetLocale),
+internal fun CatalogPhraseWithSource.toDomain(): CatalogPhrase = CatalogPhrase(
+    id = PhraseId(phrase.id),
+    level = CefrLevel.valueOf(phrase.level),
+    topic = Topic(phrase.topic),
+    targetLocale = LanguageTag(phrase.targetLocale),
     sourceLocale = LanguageTag(sourceLocale),
-    target = target,
+    target = phrase.target,
     source = source,
 )
 
-internal fun CatalogPhrase.toEntity(position: Int): CatalogPhraseEntity = CatalogPhraseEntity(
+internal fun TargetPhrase.toEntity(position: Int): CatalogPhraseEntity = CatalogPhraseEntity(
     id = id.value,
     targetLocale = targetLocale.value,
-    sourceLocale = sourceLocale.value,
     position = position,
     level = level.name,
     topic = topic.value,
     target = target,
+)
+
+internal fun CatalogTranslation.toEntity(): CatalogTranslationEntity = CatalogTranslationEntity(
+    id = id.value,
+    targetLocale = targetLocale.value,
+    sourceLocale = sourceLocale.value,
     source = source,
 )

@@ -9,8 +9,8 @@ import androidx.room3.RoomDatabase
  * `core/data/schemas`.
  */
 @Database(
-    entities = [CatalogPhraseEntity::class, CatalogSeedVersionEntity::class],
-    version = 1,
+    entities = [CatalogPhraseEntity::class, CatalogTranslationEntity::class, CatalogSeedVersionEntity::class],
+    version = 2,
     exportSchema = true,
 )
 abstract class CatalogDatabase : RoomDatabase() {
