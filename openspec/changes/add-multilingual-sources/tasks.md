@@ -33,7 +33,17 @@
 - [x] 2.6 Implementación: `CatalogHeader` gana el tipo de documento (o un campo derivado) y
   `headerOf()` lo calcula de `sourceLocale`. Verificación: 2.5 en verde.
 
-## 3. `:core:data` - esquema de Room
+## 3. `:core:data` - esquema de Room y sembrado independiente por documento
+
+**Nota de secuenciación (añadida durante `/opsx:apply`):** 3.1-3.11 se implementan en una sola
+invocación/sesión de TDD, sin commit intermedio. Cambiar las columnas de
+`CatalogPhraseEntity`/`CatalogSeedVersionEntity` (3.2) rompe la compilación de
+`RoomCatalogDataSource.kt` y `CatalogMapping.kt`, que leen/escriben esas columnas directamente; esos
+dos ficheros solo vuelven a compilar con los cambios de las tareas 3.6-3.11 (bifurcación de
+`seedDocument`, mapeos nuevos). `:core:data:compileDebugKotlin` solo puede estar en verde al final
+de 3.11, no tras 3.2 ni 3.4 en solitario. El orden rojo/verde interno de cada tarea (3.1→3.2,
+3.3→3.4, 3.5→3.6, 3.7→3.8, 3.9→3.10) se mantiene igual; esto era originalmente dos grupos (3 y 4)
+que se fusionaron por esta razón de compilación compartida.
 
 - [ ] 3.1 Test: `CatalogPhraseEntityTest`/`CatalogTranslationEntityTest` o test de esquema - PK de
   `catalog_phrase` es `(id, target_locale)` sin `source_locale`; `catalog_translation` existe con PK
@@ -42,7 +52,7 @@
 - [ ] 3.2 Implementación: `CatalogPhraseEntity` sin `sourceLocale`/`source`; `CatalogTranslationEntity`
   nueva; `CatalogSeedVersionEntity` con PK `(target_locale, source_locale)` y `source_locale = ""`
   para frases destino (design.md - "Esquema de Room"); `CatalogDatabase` sube de versión.
-  Verificación: 3.1 en verde y `:core:data:compileDebugKotlin` sin errores.
+  Verificación: 3.1 en verde (el módulo completo no compila todavía: ver nota de secuenciación).
 - [ ] 3.3 Test: `CatalogDaoTest` - `phrasesFor(targetLocale, sourceLocale)` hace el JOIN entre
   `catalog_phrase` y `catalog_translation` y devuelve el `source` correcto; `deletePhrasesForTargetLocale`
   y un nuevo `deleteTranslationsFor(targetLocale, sourceLocale)` borran solo su propia fila clave;
@@ -51,37 +61,37 @@
   `sourceLocalesFor` lee la columna que se retira de `catalog_phrase`.
 - [ ] 3.4 Implementación: `CatalogDao` con el JOIN, `insertTranslations`, `deleteTranslationsFor`,
   `seedVersionFor(targetLocale, sourceLocale)`, `sourceLocalesFor` sobre `catalog_translation`.
-  Verificación: 3.3 en verde.
+  Verificación: 3.3 en verde (el módulo completo sigue sin compilar: ver nota de secuenciación).
 
-## 4. `:core:data` - sembrado independiente por documento
-
-- [ ] 4.1 Test: `RoomCatalogDataSourceTest` - sembrar un documento de traducción nuevo para un
+- [ ] 3.5 Test: `RoomCatalogDataSourceTest` - sembrar un documento de traducción nuevo para un
   destino ya sembrado no borra sus frases destino ni las traducciones de otro origen ya sembrado
   (spec, escenario "Un cambio de `schemaVersion` en un documento de traducción vuelve a sembrarlo
   sin tocar las frases destino ni otros orígenes"). Debe fallar: `replaceSeed` actual borra por
   `target_locale` sin distinguir tipo de documento.
-- [ ] 4.2 Implementación: `RoomCatalogDataSource.seedDocument` se bifurca por el tipo de resultado
+- [ ] 3.6 Implementación: `RoomCatalogDataSource.seedDocument` se bifurca por el tipo de resultado
   del parseo (frases destino vs. traducción) y cada rama borra/inserta solo su propia clave
-  (design.md - "Esquema de Room"). Verificación: 4.1 en verde.
-- [ ] 4.3 Test: `RoomCatalogDataSourceTest` - un documento de traducción con un id sin frase destino
+  (design.md - "Esquema de Room"). Verificación: 3.5 en verde.
+- [ ] 3.7 Test: `RoomCatalogDataSourceTest` - un documento de traducción con un id sin frase destino
   correspondiente para ese `targetLocale` no siembra nada de él (spec, escenario "Traducción sin
   frase destino correspondiente rechaza la carga"). Debe fallar: no hay esa validación todavía.
-- [ ] 4.4 Implementación: validación de ids huérfanos antes de `replaceSeed` de un documento de
-  traducción. Verificación: 4.3 en verde.
-- [ ] 4.5 Test: `RoomCatalogDataSourceTest` - en una instalación nueva, sembrar un documento de
+- [ ] 3.8 Implementación: validación de ids huérfanos antes de `replaceSeed` de un documento de
+  traducción. Verificación: 3.7 en verde.
+- [ ] 3.9 Test: `RoomCatalogDataSourceTest` - en una instalación nueva, sembrar un documento de
   traducción y el de frases destino de su mismo idioma destino, entregados en orden inverso (el de
   traducción antes que el de frases destino), siembra ambos igual que en el orden habitual, sin que
   la validación de ids huérfanos rechace la traducción por llegar antes (design.md - "Un id de
   traducción sin frase destino correspondiente... por eso `ensureSeeded()` siembra en dos pasadas").
   Debe fallar: `ensureSeeded()` siembra en el orden en que recibe los documentos, sin separar por
   tipo.
-- [ ] 4.6 Implementación: `RoomCatalogDataSource.ensureSeeded()` siembra en dos pasadas: primero
+- [ ] 3.10 Implementación: `RoomCatalogDataSource.ensureSeeded()` siembra en dos pasadas: primero
   todos los documentos de frases destino de `catalogDocuments()`, después todos los de traducción,
-  sin depender del orden de `AssetManager.list()`. Verificación: 4.5 en verde.
-- [ ] 4.7 Implementación: `CatalogMapping.toDomain()`/`toEntity()` adaptados a `CatalogPhraseEntity`
+  sin depender del orden de `AssetManager.list()`. Verificación: 3.9 en verde.
+- [ ] 3.11 Implementación: `CatalogMapping.toDomain()`/`toEntity()` adaptados a `CatalogPhraseEntity`
   sin `source`, a la fila de proyección del JOIN (`CatalogPhraseWithSource`) y a
   `CatalogTranslationEntity`; el `CatalogPhrase` del dominio no cambia. Verificación:
-  `CatalogMappingTest` existente sigue en verde con las firmas nuevas.
+  `:core:data:compileDebugKotlin` y `CatalogMappingTest` en verde con las firmas nuevas (este es el
+  punto en el que el módulo completo vuelve a compilar: ver nota de secuenciación al inicio de este
+  grupo).
 
 ## 5. Migración de contenido existente
 
