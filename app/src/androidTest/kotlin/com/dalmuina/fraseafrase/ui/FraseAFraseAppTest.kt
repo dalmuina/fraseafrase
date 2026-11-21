@@ -88,6 +88,7 @@ class FraseAFraseAppTest {
         waitForProgressScreen()
 
         composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS).performClick()
+        waitForSettingsScreen()
 
         composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS).assertIsSelected()
         composeTestRule.onNodeWithTag(SETTINGS_LANGUAGE_CARD_TAG).assertExists()
@@ -110,6 +111,7 @@ class FraseAFraseAppTest {
     @Test
     fun givenSettingsScreen_whenSelectingPractice_thenPracticeIsShownAndSelected() {
         composeTestRule.onNodeWithTag(NAV_TAG_SETTINGS).performClick()
+        waitForSettingsScreen()
         composeTestRule.onNodeWithTag(SETTINGS_LANGUAGE_CARD_TAG).assertExists()
 
         composeTestRule.onNodeWithTag(NAV_TAG_PRACTICE).performClick()
