@@ -37,7 +37,7 @@ object CatalogJson {
             CatalogHeader(
                 schemaVersion = schemaVersion,
                 targetLocale = targetLocale,
-                isTranslation = document.sourceLocale != null,
+                sourceLocale = document.sourceLocale,
             )
         } else {
             null
@@ -251,10 +251,13 @@ private object LegacyCatalogParsing {
 
 /**
  * Cabecera mínima de un documento de catálogo, usada por el sembrado antes de validarlo por completo.
- * [isTranslation] distingue un documento de traducción de uno de frases destino por la presencia de
- * `sourceLocale` en la cabecera (design.md - "Dos tipos de documento JSON").
+ * [sourceLocale] distingue un documento de traducción de uno de frases destino por su sola presencia
+ * en la cabecera (design.md - "Dos tipos de documento JSON"); [isTranslation] lo deriva.
  */
-data class CatalogHeader(val schemaVersion: Int, val targetLocale: String, val isTranslation: Boolean)
+data class CatalogHeader(val schemaVersion: Int, val targetLocale: String, val sourceLocale: String? = null) {
+
+    val isTranslation: Boolean get() = sourceLocale != null
+}
 
 @Serializable
 private data class CatalogHeaderDocument(
