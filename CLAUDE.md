@@ -235,8 +235,9 @@ Para no llenar el contexto con logs, ejecuta Gradle con `-q --console=plain` y r
     - **Siguiente grupo** (durante apply): números de tarea, módulos, rutas de escenarios y ficheros previstos, ya
       preparados para el prompt de `tdd-implementer`, para que tras un `/clear` no haga falta releer `design.md` ni `specs/**`.
 - Cuando un cambio llega a **Fase: `pr`** con la PR ya abierta por el hook y nada pendiente salvo que
-  el usuario mergee, `handoff.md` se resetea a una plantilla mínima (cambio y rama: ninguno activo, con
-  una referencia de una línea al último cambio cerrado; fase: ninguna; veredicto: pendiente; siguiente
+  el usuario mergee, o cuando un cambio de vía rápida o de contenido queda commiteado, `handoff.md` se resetea a una
+  plantilla mínima (cambio y rama: ninguno activo, con una referencia de una línea al último cambio cerrado;
+  tipo: ninguno; fase: ninguna; veredicto: pendiente; siguiente
   paso: el usuario decide el próximo cambio; decisiones pendientes: ninguna). No se acumula el histórico
   de cambios cerrados: ya lo cuentan `git log`, las PRs y `openspec/changes/archive/`.
 - Cada parada termina con una línea de estado de contexto:
