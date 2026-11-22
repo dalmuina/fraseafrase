@@ -2,6 +2,7 @@ package com.dalmuina.fraseafrase.core.data.catalog
 
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -43,5 +44,43 @@ class CatalogContractTest {
 
         // Then
         retired shouldContainExactly listOf("B")
+    }
+
+    // Scenario: Documentos con los mismos ids cumplen el contrato (spec: phrase-catalog, Ids paralelos)
+    @Test
+    fun `given two documents with the same ids when checking parallel ids then there are no mismatches`() {
+        // Given
+        val docs = mapOf("pt-PT" to listOf("A", "B", "C"), "es-ES" to listOf("A", "B", "C"))
+
+        // When / Then
+        CatalogContract.parallelIdMismatches(docs).shouldBeEmpty()
+    }
+
+    // Scenario: Un documento al que le falta un id incumple el contrato (spec: phrase-catalog, Ids paralelos)
+    @Test
+    fun `given a document missing an id when checking parallel ids then it reports the missing id`() {
+        // Given
+        val docs = mapOf("pt-PT" to listOf("A", "B", "C"), "es-ES" to listOf("A", "B"))
+
+        // When
+        val mismatches = CatalogContract.parallelIdMismatches(docs)
+
+        // Then
+        mismatches["es-ES"]?.missing shouldBe listOf("C")
+        mismatches["es-ES"]?.extra shouldBe emptyList()
+    }
+
+    // Scenario: Un documento con un id de más incumple el contrato (spec: phrase-catalog, Ids paralelos)
+    @Test
+    fun `given a document with an extra id when checking parallel ids then it reports the extra id`() {
+        // Given
+        val docs = mapOf("pt-PT" to listOf("A", "B"), "es-ES" to listOf("A", "B", "D"))
+
+        // When
+        val mismatches = CatalogContract.parallelIdMismatches(docs)
+
+        // Then
+        mismatches["es-ES"]?.extra shouldBe listOf("D")
+        mismatches["es-ES"]?.missing shouldBe emptyList()
     }
 }

@@ -9,11 +9,10 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 /**
- * Parseo puro de los dos tipos de documento del catálogo JSON (ADR-0022): frases destino y
- * traducciones. Convierte el texto en los tipos intermedios de [CatalogParseResult], copiando los
- * locales de la raíz a cada elemento, y devuelve errores tipados en lugar de excepciones. Los campos
- * son anulables para que la validación sea nuestra y no un fallo del deserializador: así cada motivo
- * de rechazo tiene su resultado.
+ * Parseo puro del documento de frases del catálogo JSON (ADR-0023). Convierte el texto en los tipos
+ * intermedios de [CatalogParseResult], copiando el locale de la raíz a cada frase, y devuelve errores tipados en
+ * lugar de excepciones. Los campos son anulables para que la validación sea nuestra y no un fallo del
+ * deserializador: así cada motivo de rechazo tiene su resultado.
  */
 object CatalogJson {
 
@@ -37,7 +36,6 @@ object CatalogJson {
             CatalogHeader(
                 schemaVersion = schemaVersion,
                 targetLocale = targetLocale,
-                sourceLocale = document.sourceLocale,
             )
         } else {
             null
@@ -45,7 +43,7 @@ object CatalogJson {
     }
 
     /**
-     * Parsea un documento de frases destino (sin `sourceLocale` ni `source`), copiando `targetLocale`
+     * Parsea un documento de frases, copiando `targetLocale`
      * de la raíz a cada frase.
      */
     fun parsePhrases(text: String): CatalogParseResult {
@@ -103,91 +101,18 @@ object CatalogJson {
         }
     }
 
-    /**
-     * Parsea un documento de traducción, copiando `targetLocale`/`sourceLocale` de la raíz a cada
-     * traducción. Delega en [TranslationParsing] para no superar el límite de funciones por objeto.
-     */
-    fun parseTranslations(text: String): CatalogParseResult = TranslationParsing.parse(text)
-
     private fun isValidLocale(tag: String?): Boolean = tag != null && LanguageTag.isWellFormed(tag)
 }
 
-/** Parseo del documento de traducción (`targetLocale` + `sourceLocale`), design.md - "Dos tipos de documento JSON". */
-private object TranslationParsing {
-
-    private const val SUPPORTED_SCHEMA_VERSION = 1
-    private val json = Json { ignoreUnknownKeys = true }
-
-    fun parse(text: String): CatalogParseResult {
-        val document = runCatching { json.decodeFromString<TranslationCatalogDocument>(text) }
-            .getOrElse { return CatalogParseResult.Failed(CatalogLoadError.MalformedDocument) }
-        val error = headerErrorOf(document) ?: translationsErrorOf(document)
-        return if (error != null) {
-            CatalogParseResult.Failed(error)
-        } else {
-            CatalogParseResult.TranslationsParsed(toTranslations(document))
-        }
-    }
-
-    private fun headerErrorOf(document: TranslationCatalogDocument): CatalogLoadError? {
-        val version = document.schemaVersion ?: return CatalogLoadError.MissingSchemaVersion
-        return when {
-            version != SUPPORTED_SCHEMA_VERSION -> CatalogLoadError.UnsupportedSchemaVersion(version)
-            !isValidLocale(document.targetLocale) -> CatalogLoadError.InvalidLocale("targetLocale")
-            !isValidLocale(document.sourceLocale) -> CatalogLoadError.InvalidLocale("sourceLocale")
-            else -> null
-        }
-    }
-
-    /** Primer error de las traducciones en orden de documento: id ausente, id repetido, o `source` vacío. */
-    private fun translationsErrorOf(document: TranslationCatalogDocument): CatalogLoadError? {
-        val seen = mutableSetOf<String>()
-        return document.translations.orEmpty().firstNotNullOfOrNull { raw ->
-            val id = raw.id?.takeIf(String::isNotBlank)
-                ?: return@firstNotNullOfOrNull CatalogLoadError.InvalidPhrase(raw.id.orEmpty(), "id")
-            when {
-                !seen.add(id) -> CatalogLoadError.DuplicateId(id)
-                raw.source.isNullOrBlank() -> CatalogLoadError.InvalidPhrase(id, "source")
-                else -> null
-            }
-        }
-    }
-
-    /** Solo se llama con un documento validado por [headerErrorOf] y [translationsErrorOf]. */
-    private fun toTranslations(document: TranslationCatalogDocument): List<CatalogTranslation> {
-        val targetLocale = LanguageTag(checkNotNull(document.targetLocale))
-        val sourceLocale = LanguageTag(checkNotNull(document.sourceLocale))
-        return document.translations.orEmpty().map { raw ->
-            CatalogTranslation(
-                id = PhraseId(checkNotNull(raw.id)),
-                targetLocale = targetLocale,
-                sourceLocale = sourceLocale,
-                source = checkNotNull(raw.source),
-            )
-        }
-    }
-
-    private fun isValidLocale(tag: String?): Boolean = tag != null && LanguageTag.isWellFormed(tag)
-}
-
-/**
- * Cabecera mínima de un documento de catálogo, usada por el sembrado antes de validarlo por completo.
- * [sourceLocale] distingue un documento de traducción de uno de frases destino por su sola presencia
- * en la cabecera (design.md - "Dos tipos de documento JSON"); [isTranslation] lo deriva.
- */
-data class CatalogHeader(val schemaVersion: Int, val targetLocale: String, val sourceLocale: String? = null) {
-
-    val isTranslation: Boolean get() = sourceLocale != null
-}
+/** Cabecera mínima de un documento de frases, usada por el sembrado antes de validarlo por completo. */
+data class CatalogHeader(val schemaVersion: Int, val targetLocale: String)
 
 @Serializable
 private data class CatalogHeaderDocument(
     val schemaVersion: Int? = null,
     val targetLocale: String? = null,
-    val sourceLocale: String? = null,
 )
 
-/** Documento de frases destino (sin `sourceLocale` ni `source`), design.md - "Dos tipos de documento JSON". */
 @Serializable
 private data class PhraseCatalogDocument(
     val schemaVersion: Int? = null,
@@ -201,19 +126,4 @@ private data class TargetPhraseDocument(
     val level: String? = null,
     val topic: String? = null,
     val target: String? = null,
-)
-
-/** Documento de traducción (`targetLocale` + `sourceLocale`), design.md - "Dos tipos de documento JSON". */
-@Serializable
-private data class TranslationCatalogDocument(
-    val schemaVersion: Int? = null,
-    val targetLocale: String? = null,
-    val sourceLocale: String? = null,
-    val translations: List<TranslationDocument>? = null,
-)
-
-@Serializable
-private data class TranslationDocument(
-    val id: String? = null,
-    val source: String? = null,
 )

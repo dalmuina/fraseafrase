@@ -5,7 +5,6 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
@@ -14,11 +13,11 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
-import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -30,10 +29,8 @@ class ObtainPracticeSessionTest {
 
     private val targetLocale = LanguageTag("pt-PT")
 
-    private fun obtainCatalogPhrases(catalog: CatalogLoadResult) = ObtainCatalogPhrasesForActiveLanguage(
-        deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-        catalogRepository = FakeCatalogRepository(catalog),
-    )
+    private fun obtainCatalogPhrases(catalog: CatalogLoadResult) =
+        anObtainCatalogPhrases(FakeCatalogRepository(catalog))
 
     private fun useCase(
         practice: FakePracticeRepository,

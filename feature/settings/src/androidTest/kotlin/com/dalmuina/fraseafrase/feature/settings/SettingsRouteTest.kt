@@ -4,7 +4,10 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
+import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
@@ -80,12 +83,20 @@ class SettingsRouteTest {
     ): SettingsViewModel {
         val catalogRepository = TestCatalogRepository(availableTargetLocales)
         val obtainAvailableLanguages = ObtainAvailableLanguages(catalogRepository)
+        val obtainSourceLanguage = ObtainSourceLanguage(
+            object : DeviceLocaleProvider {
+                override fun current(): LanguageTag = LanguageTag("es-ES")
+            },
+            catalogRepository,
+            DefaultSourceLocale(LanguageTag("es-ES")),
+        )
         return SettingsViewModel(
             obtainUserSettings = ObtainUserSettings(repository),
             saveUserSettings = SaveUserSettings(repository),
-            obtainActiveLanguage = ObtainActiveLanguage(repository),
+            obtainActiveLanguage = ObtainActiveLanguage(repository, obtainSourceLanguage, catalogRepository),
             obtainAvailableLanguages = obtainAvailableLanguages,
-            selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, repository),
+            selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, obtainSourceLanguage, repository),
+            obtainSourceLanguage = obtainSourceLanguage,
         )
     }
 
@@ -119,8 +130,6 @@ class SettingsRouteTest {
     /** Fake local de [CatalogRepository]: solo expone los idiomas destino disponibles configurados, sin frases. */
     private class TestCatalogRepository(private val targetLocales: List<LanguageTag>) : CatalogRepository {
         override suspend fun availableTargetLocales(): List<LanguageTag> = targetLocales
-
-        override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> = emptyList()
 
         override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult =
             CatalogLoadResult.Loaded(emptyList())

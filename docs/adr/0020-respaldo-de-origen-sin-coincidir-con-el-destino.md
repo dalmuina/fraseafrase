@@ -1,6 +1,6 @@
 # ADR-0020: El respaldo del idioma de origen nunca coincide con el idioma destino
 
-- **Estado:** Propuesto
+- **Estado:** Sustituido por ADR-0023
 - **Fecha:** 2026-11-16
 - **Modifica a:** ADR-0019 (solo la regla de respaldo de `ResolveSourceLocale`)
 

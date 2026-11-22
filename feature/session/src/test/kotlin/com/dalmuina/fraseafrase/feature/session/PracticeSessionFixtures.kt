@@ -4,8 +4,10 @@ import com.dalmuina.fraseafrase.core.domain.audio.PlayPhraseAudio
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
 import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
@@ -102,33 +104,31 @@ internal fun sessionViewModel(
     sessionViewModelWith(
         practice = practice,
         catalogRepository = FakeCatalogRepository(catalog, targetLocale = activeTargetLocale),
-        settings = settings,
+        settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale),
         phrasePlayer = phrasePlayer,
-        activeTargetLocale = activeTargetLocale,
     )
 
 /** Catálogo cuyo resultado puede cambiar entre lecturas, para simular un catálogo que deja de cargarse. */
 internal class SwitchableCatalogRepository(var result: CatalogLoadResult) : CatalogRepository {
     override suspend fun availableTargetLocales(): List<LanguageTag> = listOf(FakeSettingsRepository.DEFAULT_LOCALE)
-    override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> = listOf(SOURCE_LOCALE)
     override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult = result
-
-    private companion object {
-        val SOURCE_LOCALE = LanguageTag("es-ES")
-    }
 }
 
 /** Igual que [sessionViewModel], pero con un catálogo cualquiera, por ejemplo uno que cambia durante el test. */
 internal fun sessionViewModelWith(
     practice: FakePracticeRepository,
     catalogRepository: CatalogRepository,
-    settings: UserSettings = UserSettings.DEFAULT,
+    settingsRepository: FakeSettingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
     phrasePlayer: FakePhrasePlayer = FakePhrasePlayer(),
-    activeTargetLocale: LanguageTag = FakeSettingsRepository.DEFAULT_LOCALE,
+    deviceLocaleProvider: FakeDeviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
 ): PracticeSessionViewModel {
-    val settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale)
+    val obtainSourceLanguage = ObtainSourceLanguage(
+        deviceLocaleProvider,
+        catalogRepository,
+        DefaultSourceLocale(LanguageTag("es-ES")),
+    )
     val obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-        deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+        obtainSourceLanguage = obtainSourceLanguage,
         catalogRepository = catalogRepository,
     )
     val composeNextBatch = ComposeNextBatch()
@@ -153,6 +153,6 @@ internal fun sessionViewModelWith(
         ),
         playPhraseAudio = PlayPhraseAudio(phrasePlayer),
         revertLastAnswer = RevertLastAnswer(practice),
-        obtainActiveLanguage = ObtainActiveLanguage(settingsRepository),
+        obtainActiveLanguage = ObtainActiveLanguage(settingsRepository, obtainSourceLanguage, catalogRepository),
     )
 }

@@ -3,51 +3,36 @@ package com.dalmuina.fraseafrase.core.domain.catalog
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-// Resolución del idioma de origen por defecto (spec: phrase-catalog, ADR-0019)
+// Resolución del idioma de origen: dispositivo o por defecto (spec: phrase-catalog)
 class ResolveSourceLocaleTest {
 
-    // Scenario: El locale del dispositivo coincide con el origen disponible
+    private val default = LanguageTag("es-ES")
+
+    // Scenario: El idioma del dispositivo está disponible
     @Test
     fun `given a device locale available in the catalog when resolving then it returns the device locale`() {
         // Given
-        val deviceLocale = LanguageTag("es-ES")
-        val targetLocale = LanguageTag("pt-PT")
-        val available = listOf(LanguageTag("es-ES"))
+        val device = LanguageTag("pt-PT")
+        val available = listOf(LanguageTag("es-ES"), LanguageTag("pt-PT"))
 
         // When
-        val result = ResolveSourceLocale(deviceLocale, targetLocale, available)
-
-        // Then
-        result shouldBe LanguageTag("es-ES")
-    }
-
-    // Scenario: El locale del dispositivo no tiene contenido disponible
-    @Test
-    fun `given a device locale without available content when resolving then it falls back to es-ES`() {
-        // Given
-        val deviceLocale = LanguageTag("en-US")
-        val targetLocale = LanguageTag("pt-PT")
-        val available = listOf(LanguageTag("es-ES"))
-
-        // When
-        val result = ResolveSourceLocale(deviceLocale, targetLocale, available)
-
-        // Then
-        result shouldBe LanguageTag("es-ES")
-    }
-
-    // Scenario: El respaldo no coincide con el propio idioma destino
-    @Test
-    fun `given a fallback matching the target locale when resolving then it excludes the target locale`() {
-        // Given
-        val deviceLocale = LanguageTag("es-ES")
-        val targetLocale = LanguageTag("es-ES")
-        val available = listOf(LanguageTag("pt-PT"))
-
-        // When
-        val result = ResolveSourceLocale(deviceLocale, targetLocale, available)
+        val result = ResolveSourceLocale(device, default, available)
 
         // Then
         result shouldBe LanguageTag("pt-PT")
+    }
+
+    // Scenario: El idioma del dispositivo no está disponible
+    @Test
+    fun `given a device locale not available when resolving then it returns the default`() {
+        // Given
+        val device = LanguageTag("en-US")
+        val available = listOf(LanguageTag("es-ES"), LanguageTag("pt-PT"))
+
+        // When
+        val result = ResolveSourceLocale(device, default, available)
+
+        // Then
+        result shouldBe LanguageTag("es-ES")
     }
 }

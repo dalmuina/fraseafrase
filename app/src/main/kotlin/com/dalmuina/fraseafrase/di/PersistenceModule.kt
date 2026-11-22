@@ -11,7 +11,9 @@ import com.dalmuina.fraseafrase.core.data.practice.createPracticeDatabase
 import com.dalmuina.fraseafrase.core.data.settings.DataStoreSettingsDataSource
 import com.dalmuina.fraseafrase.core.domain.audio.PhrasePlayer
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
 import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeRepository
 import com.dalmuina.fraseafrase.core.domain.settings.SettingsRepository
 import com.dalmuina.fraseafrase.core.platform.AndroidDeviceLocaleProvider
@@ -60,6 +62,9 @@ abstract class PersistenceModule {
         @Singleton
         fun provideCatalogDatabase(@ApplicationContext context: Context): CatalogDatabase =
             createCatalogDatabase(context)
+
+        @Provides
+        fun provideDefaultSourceLocale(): DefaultSourceLocale = DefaultSourceLocale(LanguageTag("es-ES"))
 
         @Provides
         @IoDispatcher

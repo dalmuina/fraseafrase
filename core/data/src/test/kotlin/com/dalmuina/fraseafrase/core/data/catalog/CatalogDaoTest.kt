@@ -1,83 +1,96 @@
 package com.dalmuina.fraseafrase.core.data.catalog
 
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
-// Scenario: Persistencia del catálogo en Room (spec: phrase-catalog) — JOIN y borrado independiente por clave
+// Scenario: Persistencia del catálogo en Room (spec: phrase-catalog) — self-JOIN entre idiomas
 class CatalogDaoTest {
 
-    private fun phrase(id: String, targetLocale: String = "pt-PT", position: Int = 0) = CatalogPhraseEntity(
+    private fun phrase(
+        id: String,
+        targetLocale: String,
+        target: String,
+        level: String = "A1",
+        position: Int = 0,
+    ) = CatalogPhraseEntity(
         id = id,
         targetLocale = targetLocale,
         position = position,
-        level = "A1",
+        level = level,
         topic = "saludos",
-        target = "Bom dia",
+        target = target,
     )
 
-    private fun translation(
-        id: String,
-        targetLocale: String = "pt-PT",
-        sourceLocale: String = "es-ES",
-        source: String = "Buenos días",
-    ) = CatalogTranslationEntity(
-        id = id,
-        targetLocale = targetLocale,
-        sourceLocale = sourceLocale,
-        source = source,
-    )
-
-    // Scenario: 3.3 - phrasesFor hace el JOIN y devuelve el source correcto
+    // Scenario: El origen sale del texto destino del otro idioma (spec: phrase-catalog)
     @Test
-    fun `given a phrase and its translation when querying phrasesFor then the source is joined`() = runTest {
-        // Given
-        val database = inMemoryCatalogDatabase()
-        val dao = database.catalogDao()
-        dao.insertPhrases(listOf(phrase(id = "a1-saludos-001")))
-        dao.insertTranslations(listOf(translation(id = "a1-saludos-001", source = "Buenos días")))
-
-        // When
-        val found = dao.phrasesFor(targetLocale = "pt-PT", sourceLocale = "es-ES")
-
-        // Then
-        found.map { it.phrase.id to it.source } shouldBe listOf("a1-saludos-001" to "Buenos días")
-    }
-
-    // Scenario: 3.3 - deletePhrasesForTargetLocale y deleteTranslationsFor borran solo su propia clave
-    @Test
-    fun `given translations of two origins when deleting one origin then only that key is removed`() =
+    fun `given phrases of pt-PT and es-ES when querying pt-PT from es-ES then the source is the es-ES target`() =
         runTest {
             // Given
-            val database = inMemoryCatalogDatabase()
-            val dao = database.catalogDao()
-            dao.insertPhrases(listOf(phrase(id = "a1-saludos-001")))
-            dao.insertTranslations(
+            val dao = inMemoryCatalogDatabase().catalogDao()
+            dao.insertPhrases(
                 listOf(
-                    translation(id = "a1-saludos-001", sourceLocale = "es-ES"),
-                    translation(id = "a1-saludos-001", sourceLocale = "en-GB"),
+                    phrase(id = "a1-saludos-001", targetLocale = "pt-PT", target = "Bom dia", level = "A1"),
+                    phrase(id = "a1-saludos-001", targetLocale = "es-ES", target = "Buenos días", level = "A2"),
                 ),
             )
 
             // When
-            dao.deleteTranslationsFor(targetLocale = "pt-PT", sourceLocale = "es-ES")
+            val found = dao.phrasesFor(targetLocale = "pt-PT", sourceLocale = "es-ES")
 
             // Then
-            dao.phrasesFor(targetLocale = "pt-PT", sourceLocale = "es-ES").shouldBeEmpty()
-            dao.phrasesFor(targetLocale = "pt-PT", sourceLocale = "en-GB").map { it.phrase.id } shouldBe
-                listOf("a1-saludos-001")
+            val row = found.single()
+            row.phrase.id shouldBe "a1-saludos-001"
+            row.phrase.target shouldBe "Bom dia"
+            row.phrase.level shouldBe "A1"
+            row.phrase.targetLocale shouldBe "pt-PT"
+            row.source shouldBe "Buenos días"
+            row.sourceLocale shouldBe "es-ES"
         }
 
-    // Scenario: 3.3 - deletePhrasesForTargetLocale solo borra su propio target_locale
+    // Scenario: Un par sin fichero propio está disponible (spec: phrase-catalog)
+    @Test
+    fun `given phrases of fr-FR and de-DE when querying de-DE from fr-FR then every phrase is returned`() = runTest {
+        // Given
+        val dao = inMemoryCatalogDatabase().catalogDao()
+        dao.insertPhrases(
+            listOf(
+                phrase(id = "a", targetLocale = "de-DE", target = "Guten Morgen", position = 0),
+                phrase(id = "b", targetLocale = "de-DE", target = "Danke", position = 1),
+                phrase(id = "a", targetLocale = "fr-FR", target = "Bonjour", position = 0),
+                phrase(id = "b", targetLocale = "fr-FR", target = "Merci", position = 1),
+            ),
+        )
+
+        // When
+        val found = dao.phrasesFor(targetLocale = "de-DE", sourceLocale = "fr-FR")
+
+        // Then
+        found.map { it.phrase.id to it.source } shouldBe listOf("a" to "Bonjour", "b" to "Merci")
+    }
+
+    // Scenario: Un idioma de origen con documento inválido no devuelve frases (spec: phrase-catalog)
+    @Test
+    fun `given a source locale without seeded phrases when querying then the list is empty`() = runTest {
+        // Given
+        val dao = inMemoryCatalogDatabase().catalogDao()
+        dao.insertPhrases(listOf(phrase(id = "a", targetLocale = "pt-PT", target = "Bom dia")))
+
+        // When
+        val found = dao.phrasesFor(targetLocale = "pt-PT", sourceLocale = "it-IT")
+
+        // Then
+        found.shouldBeEmpty()
+    }
+
+    // Scenario: Persistencia del catálogo en Room - el borrado de un idioma no afecta a otro
     @Test
     fun `given phrases of two target locales when deleting one locale then the other is kept`() = runTest {
         // Given
-        val database = inMemoryCatalogDatabase()
-        val dao = database.catalogDao()
-        dao.insertPhrases(listOf(phrase(id = "a1-saludos-001", targetLocale = "pt-PT")))
-        dao.insertPhrases(listOf(phrase(id = "a1-saludos-002", targetLocale = "pt-BR")))
+        val dao = inMemoryCatalogDatabase().catalogDao()
+        dao.insertPhrases(listOf(phrase(id = "a", targetLocale = "pt-PT", target = "Bom dia")))
+        dao.insertPhrases(listOf(phrase(id = "b", targetLocale = "pt-BR", target = "Bom dia")))
 
         // When
         dao.deletePhrasesForTargetLocale("pt-PT")
@@ -86,44 +99,16 @@ class CatalogDaoTest {
         dao.targetLocales() shouldBe listOf("pt-BR")
     }
 
-    // Scenario: 3.3 - sourceLocalesFor lee de catalog_translation, no de catalog_phrase
+    // Scenario: Persistencia del catálogo en Room - versionado por idioma
     @Test
-    fun `given translations of two source locales when querying sourceLocalesFor then both are returned`() =
-        runTest {
-            // Given
-            val database = inMemoryCatalogDatabase()
-            val dao = database.catalogDao()
-            dao.insertPhrases(listOf(phrase(id = "a1-saludos-001")))
-            dao.insertTranslations(
-                listOf(
-                    translation(id = "a1-saludos-001", sourceLocale = "es-ES"),
-                    translation(id = "a1-saludos-001", sourceLocale = "en-GB"),
-                ),
-            )
+    fun `given seed versions of two locales when querying seedVersionFor then each is independent`() = runTest {
+        // Given
+        val dao = inMemoryCatalogDatabase().catalogDao()
+        dao.upsertSeedVersion(CatalogSeedVersionEntity(targetLocale = "pt-PT", schemaVersion = 1))
+        dao.upsertSeedVersion(CatalogSeedVersionEntity(targetLocale = "es-ES", schemaVersion = 2))
 
-            // When
-            val sourceLocales = dao.sourceLocalesFor("pt-PT")
-
-            // Then
-            sourceLocales shouldContainExactlyInAnyOrder listOf("es-ES", "en-GB")
-        }
-
-    // Scenario: 3.3 - seedVersionFor versiona por (target_locale, source_locale)
-    @Test
-    fun `given seed versions of two source locales when querying seedVersionFor then each is independent`() =
-        runTest {
-            // Given
-            val database = inMemoryCatalogDatabase()
-            val dao = database.catalogDao()
-            dao.upsertSeedVersion(
-                CatalogSeedVersionEntity(targetLocale = "pt-PT", sourceLocale = "es-ES", schemaVersion = 1),
-            )
-            dao.upsertSeedVersion(
-                CatalogSeedVersionEntity(targetLocale = "pt-PT", sourceLocale = "en-GB", schemaVersion = 2),
-            )
-
-            // When / Then
-            dao.seedVersionFor("pt-PT", "es-ES")?.schemaVersion shouldBe 1
-            dao.seedVersionFor("pt-PT", "en-GB")?.schemaVersion shouldBe 2
-        }
+        // When / Then
+        dao.seedVersionFor("pt-PT")?.schemaVersion shouldBe 1
+        dao.seedVersionFor("es-ES")?.schemaVersion shouldBe 2
+    }
 }
