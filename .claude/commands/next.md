@@ -23,7 +23,7 @@ Si el handoff y el repositorio no coinciden, para y explica la discrepancia.
 4. **Tipo vía rápida o contenido:** no hay OpenSpec. Si no está hecho, impleméntalo en esta sesión; después
    `./gradlew :<módulo>:check` de los módulos tocados y un único commit. Opcional: una ronda de code-reviewer si el
    diff no es trivial. Tras el commit, resetea `.claude/handoff.md` a la plantilla mínima de CLAUDE.md (sección
-   "Contexto y sesiones"), con una línea de referencia a este cambio. Después para: push y PR los hace el usuario.
+   "Contexto y sesiones"), con una línea de referencia a este cambio. Después para: push y PR lo hace el usuario.
 5. Rama de cambio (ligero o normal) sin carpeta en `openspec/changes`: `/opsx:explore`, o `/opsx:propose` si el explore
    ya está resuelto en el handoff. **Modelo recomendado: Opus.**
 6. Propuesta sin veredicto APROBADO: android-architect y `openspec validate <cambio> --strict`.
