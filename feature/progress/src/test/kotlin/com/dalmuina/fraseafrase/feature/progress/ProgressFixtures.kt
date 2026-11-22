@@ -26,8 +26,19 @@ internal fun progressViewModel(
     settings: UserSettings = UserSettings.DEFAULT,
     activeTargetLocale: LanguageTag = FakeSettingsRepository.DEFAULT_LOCALE,
 ): ProgressViewModel {
-    val settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale)
-    val catalogRepository = FakeCatalogRepository(catalog, targetLocale = activeTargetLocale)
+    return progressViewModel(
+        settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale),
+        catalogRepository = FakeCatalogRepository(catalog, targetLocale = activeTargetLocale),
+        practice = practice,
+    )
+}
+
+/** Variante con los repositorios ya creados, para que un test cambie los ajustes tras abrir la pantalla. */
+internal fun progressViewModel(
+    settingsRepository: FakeSettingsRepository,
+    catalogRepository: FakeCatalogRepository,
+    practice: FakePracticeRepository = FakePracticeRepository(),
+): ProgressViewModel {
     val obtainUserSettings = ObtainUserSettings(settingsRepository)
     val obtainSourceLanguage = ObtainSourceLanguage(
         FakeDeviceLocaleProvider(LanguageTag("es-ES")),
