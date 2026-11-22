@@ -96,6 +96,7 @@ class SettingsRouteTest {
             obtainActiveLanguage = ObtainActiveLanguage(repository, obtainSourceLanguage, catalogRepository),
             obtainAvailableLanguages = obtainAvailableLanguages,
             selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, obtainSourceLanguage, repository),
+            obtainSourceLanguage = obtainSourceLanguage,
         )
     }
 

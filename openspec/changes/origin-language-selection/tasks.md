@@ -108,15 +108,15 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 
 ## 5. Ajustes: destino sin el idioma de origen (`:feature:settings`)
 
-- [ ] 5.1 Test: `SettingsViewModelTest` - con `pt-PT`, `es-ES` y `en-GB` disponibles y el dispositivo en `es-ES`,
+- [x] 5.1 Test: `SettingsViewModelTest` - con `pt-PT`, `es-ES` y `en-GB` disponibles y el dispositivo en `es-ES`,
   `Loaded.availableTargetLocales` es `pt-PT` y `en-GB` (`settings-screen`: "El desplegable de destino excluye el
   idioma de origen"); con el dispositivo cambiado a `en-GB` después de cargar, elegir `en-GB` no lanza, el destino
   activo sigue en `pt-PT` y las opciones pasan a `pt-PT` y `es-ES` (`settings-screen`: "Elegir un idioma que ha
   pasado a ser el origen recarga las opciones sin cerrar la app"). Debe fallar porque hoy incluye `es-ES` y no
   recarga.
-- [ ] 5.2 Implementación: `reload()` filtra el origen con `ObtainSourceLanguage` y `RejectedSourceLocale` lanza
+- [x] 5.2 Implementación: `reload()` filtra el origen con `ObtainSourceLanguage` y `RejectedSourceLocale` lanza
   `reload()` (design D6). Verificación: 5.1 en verde.
-- [ ] 5.3 Test: `SettingsScreenTest` (instrumentado, `givenX_whenY_thenZ`) - el desplegable de destino muestra solo
+- [x] 5.3 Test: `SettingsScreenTest` (instrumentado, `givenX_whenY_thenZ`) - el desplegable de destino muestra solo
   las opciones del estado y no el idioma de origen (`settings-screen`: "El desplegable de destino excluye el idioma
   de origen"). Si pasa sin cambios de producción (la pantalla ya pinta la lista del estado), se deja como test de
   regresión. Verificación: `:feature:settings:check`.
