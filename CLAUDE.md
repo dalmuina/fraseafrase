@@ -8,10 +8,10 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
 
 ## Reglas de oro
 
-0. **Clasifica antes de actuar.** Decide primero si la petición va por la **vía rápida** o por el **flujo OpenSpec**
-   (ver "Vía rápida"). Las reglas 1 y 2 aplican al flujo OpenSpec; la vía rápida tiene sus propias reglas.
+0. **Clasifica antes de actuar.** Asigna un **Tipo** a la petición con la tabla de "Tipos de cambio" y anótalo en
+   `handoff.md`. Las reglas 1 y 2 aplican a los tipos ligero y normal; vía rápida y contenido tienen sus propias reglas.
 1. **Spec first.** Ningún código de producción sin una tarea en un `tasks.md` aprobado de `openspec/changes/`,
-   salvo en la vía rápida. Si te piden algo que no está en una tarea y no cumple los criterios de la vía rápida,
+   salvo en vía rápida o contenido. Si te piden algo que no está en una tarea y no cumple esos criterios,
    propón primero un cambio con `/opsx:propose`.
 2. **TDD siempre que haya comportamiento.** Rojo → verde → refactor. Escribe el test, ejecútalo y comprueba que
    **falla por el motivo esperado** antes de escribir el código. Nunca escribas test y código de producción en el
@@ -21,6 +21,18 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
    para y propón un ADR nuevo que lo sustituya; no lo ignores ni lo edites.
 4. **Método y alcance del MVP: ADR-0012.** Usa su terminología (tanda, nivel, racha, certificada, pendiente, arrastrada). Lo que esté fuera es un cambio posterior, no una mejora "de paso".
 5. **No amplíes el alcance.** Implementa exactamente lo que dice la tarea. Si ves algo mejorable, anótalo y avisa.
+
+## Tipos de cambio
+
+| Tipo | Cuándo | Pasos |
+|---|---|---|
+| **Vía rápida** | Ver criterios abajo: visual, textos o refactor sin comportamiento nuevo | Sesión principal → `:<módulo>:check` → commit. Sin OpenSpec ni subagentes. |
+| **Contenido** | Solo assets o datos (frases, traducciones, iconos) de un idioma o esquema **ya existente**, cubiertos por tests de contrato | Sesión principal o script, sin `tdd-implementer`. Nunca se lee entero un asset del catálogo (`jq`, `head`, Grep). Verifica con el test de contrato y `:<módulo>:check`. Respeta ADR-0013 (ids). |
+| **Ligero** | Configuración o infraestructura, o un único requisito sin lógica de dominio relevante; diff pequeño | `propose` → 1 ronda de `android-architect` → 1-2 grupos de apply → 1 ronda de `code-reviewer` → archive. `verify` opcional. |
+| **Normal** | Lógica de dominio, casos de uso, persistencia, navegación o varios módulos | Flujo completo (tabla "Flujo de trabajo") con el límite de dos rondas por fase. |
+
+Si un cambio de contenido añade un idioma nuevo, cambia el esquema o necesita código, deja de ser contenido: es ligero o normal.
+Si dudas entre dos tipos, pregunta al usuario.
 
 ## Vía rápida (sin OpenSpec ni subagentes)
 
@@ -53,21 +65,38 @@ para y pasa al flujo OpenSpec.
 | Alcance poco claro | `/opsx:explore` | – |
 | Proponer el cambio | `/opsx:propose` | – |
 | Revisar propuesta y diseño **antes de aprobar** | – | `android-architect` |
-| Implementar tareas | `/opsx:apply` | `tdd-implementer` (un grupo de tareas por invocación) |
+| Implementar tareas | `/next` (delegación directa) | `tdd-implementer` (un grupo de tareas por invocación) |
 | Revisar el código | – | `code-reviewer` |
 | Verificar contra la especificación | `/opsx:verify` | – |
 | Cerrar (en la rama del cambio, antes de la PR) | `/opsx:archive` | – |
 
 Normalmente se invoca `/next`, que diagnostica en qué paso de esta tabla está el cambio y lo ejecuta;
 usa los comandos `/opsx:*` sueltos solo cuando ya sabes exactamente en qué paso estás.
+Las skills y comandos `/opsx:*` los genera OpenSpec y `openspec update` los sobrescribe: no los edites; las reglas
+propias del proyecto van en este fichero, en `/next` y en `openspec/config.yaml`. (OpenSpec 2.0 solo instala skills:
+al actualizar, sustituye las referencias `/opsx:*` por `/openspec-*`.)
 
 **Delegación en `tdd-implementer`:**
+- No se usa la skill `/opsx:apply` para delegar (hace que la sesión principal lea todos los artefactos):
+  `/next` invoca el subagente directamente con la plantilla de su regla 7.
 - Los grupos de tareas se ejecutan **de uno en uno**, nunca en paralelo: comparten `build/`, el daemon de Gradle
-  y la caché de KSP.
-- En el prompt de cada invocación pasa el nombre del cambio, los números de tarea, los módulos afectados y las
-  rutas de los escenarios de `specs/**` que satisfacen esas tareas, para que el subagente no tenga que explorar.
+  y la caché de KSP. Un grupo tiene como mucho 6 tareas de un módulo.
+- En el prompt de cada invocación pasa el nombre del cambio, los números de tarea, los módulos afectados, las
+  rutas de los escenarios de `specs/**` y los ficheros previstos, para que el subagente no tenga que explorar.
 - El subagente verifica solo los módulos tocados (`./gradlew :<módulo>:check`). El `./gradlew check` global lo
-  ejecuta el hook al hacer el commit del grupo; no lo repitas a mano.
+  ejecuta el hook al hacer el commit del grupo; no lo repitas a mano. La sección final de verificación (`check`,
+  `koverVerify`) la ejecuta la sesión principal.
+
+**Modelos por fase:**
+
+| Fase o rol | Modelo |
+|---|---|
+| Sesión principal en explore, propose y decisiones de diseño | Opus |
+| Sesión principal en apply (orquestación), review, verify y archive | Sonnet (`/model sonnet`) |
+| `tdd-implementer` | Sonnet; Haiku (`model: haiku` al invocar) en grupos mecánicos |
+| `android-architect` | Sonnet; Opus (`model: opus` al invocar) en cambios normales con dominio o persistencia |
+| `code-reviewer` | Sonnet |
+| Búsquedas con `Explore` | Haiku |
 
 Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas de los artefactos: `openspec/config.yaml`.
 
@@ -75,10 +104,11 @@ Especificaciones vigentes: `openspec/specs/<dominio>/spec.md`. Contexto y reglas
 
 - Cada cambio se trabaja en su propia rama, que crea el usuario desde `develop` con el formato
   `<versión>/<nombre-del-cambio>`, por ejemplo `1.0.0/add-practice-batch`. La versión es la de la
-  release objetivo (actual: `1.0.0`) y el nombre coincide con el del cambio de OpenSpec.
+  release objetivo (actual: `1.0.0`) y el nombre coincide, preferiblemente, con el del cambio de OpenSpec.
 - Los commits van a la rama actual: uno por grupo de tareas, con Conventional Commits en inglés. No se reescribe
-  el historial (sin rebase, sin amend de commits ya publicados, sin force push). Un hook del proyecto bloquea
-  el commit si la rama es `develop`/`master` o si `./gradlew check` falla, así que no hace falta comprobarlo a mano.
+  el historial (sin rebase, sin amend de commits ya publicados, sin force push). Un hook del proyecto
+  (`.claude/settings.json`) bloquea el commit si la rama es `develop`/`master` o si `./gradlew check` falla, así que
+  no hace falta ejecutar `check` a mano antes de commitear, tampoco en los arreglos sueltos del orquestador.
 - Al terminar el cambio, en su misma rama y antes de la PR: ejecuta `/opsx:archive` y haz un último commit con el
   archivo del cambio y las specs sincronizadas. El archivo nunca va en una rama aparte ni después de la
   integración en `develop`.
@@ -175,17 +205,17 @@ Para no llenar el contexto con logs, ejecuta Gradle con `-q --console=plain` y r
     - **Corregir:** errores reales sin impacto en el funcionamiento (redacción, formato, evidencias, comentarios). Se corrigen en una sola pasada, sin nueva revisión.
     - **Descartar:** lo que no encaja en los anteriores. No se hace y no va a `docs/deuda-tecnica.md`, salvo que tenga un valor claro.
 - **Máximo dos rondas por fase.** La segunda verifica solo los bloqueantes de la primera, recibe el texto de las observaciones anteriores y no admite hallazgos nuevos, salvo pérdida de datos, cierre de la app o seguridad.
-- **Rigor proporcional.**
-    - Vía rápida (ver su sección): sin `android-architect`; como mucho una ronda de `code-reviewer`.
-    - Cambio ligero (configuración o infraestructura, sin lógica de dominio, diff pequeño): una ronda de `android-architect` y una de `code-reviewer`.
-    - Cambio normal: flujo completo con el límite de dos rondas.
+- **Rigor proporcional:** según el Tipo (tabla "Tipos de cambio"). Vía rápida y contenido: sin `android-architect`
+  y como mucho una ronda de `code-reviewer`. Ligero: una ronda de cada revisor. Normal: hasta dos rondas.
+- **Veredictos:** `android-architect` → `APROBADO | CAMBIOS NECESARIOS | RECHAZADO`; `code-reviewer` → `LISTO | CAMBIOS NECESARIOS`.
+  Un veredicto con solo hallazgos "Corregir" es APROBADO/LISTO: se aplican y no hay nueva ronda.
 - **Evidencias en `tasks.md`** solo cuando son la única prueba de un escenario (por ejemplo, una mutación). En lo demás, el commit y la build en verde son la evidencia.
 - **Subagentes:** cada subagente de revisión recibe este presupuesto en su prompt.
 
 ## No hacer
 
 - No hagas commit, push ni merge en `develop` ni en `master`.
-- No modifiques el JDK del daemon (ADR-0011); un permiso del proyecto bloquea editar `gradle/gradle-daemon-jvm.properties`.
+- No modifiques el JDK del daemon (ADR-0011); un permiso de `.claude/settings.json` bloquea editar `gradle/gradle-daemon-jvm.properties`.
 - No uses sintaxis de Kotlin 2.2+ que detekt 1.23 no analiza: parámetros de contexto, guardas en `when`, interpolación con varios `$` (ADR-0011).
 - No añadas librerías sin justificarlo en el `design.md` del cambio; las versiones van en `gradle/libs.versions.toml`.
 - No apliques `org.jetbrains.kotlin.android`: con AGP 9 Kotlin viene integrado en el plugin de Android.
@@ -198,9 +228,12 @@ Para no llenar el contexto con logs, ejecuta Gradle con `-q --console=plain` y r
 
 - Las decisiones del usuario se escriben en el artefacto que corresponda (spec delta, `design.md` o `tasks.md`) antes de continuar con cualquier otra tarea.
 - `.claude/handoff.md` (en `.gitignore`, nunca se commitea) se actualiza en cada parada con: cambio y rama, grupo y tarea actual, siguiente paso exacto, decisiones pendientes y notas de entorno. Tras un `/clear` o al empezar sesión, es lo primero que se lee, junto con `tasks.md` y `git log`.
-- `handoff.md` lleva siempre dos campos de estado:
-    - **Fase:** `vía rápida` | `explore` | `propose` | `architect` | `apply grupo N` | `review` | `verify` | `archive` | `pr`.
+- `handoff.md` lleva siempre estos campos de estado:
+    - **Tipo:** `vía rápida` | `contenido` | `ligero` | `normal`.
+    - **Fase:** `vía rápida` | `contenido` | `explore` | `propose` | `architect` | `apply grupo N` | `review` | `verify` | `archive` | `pr`.
     - **Veredicto android-architect:** `pendiente` | `APROBADO` + fecha.
+    - **Siguiente grupo** (durante apply): números de tarea, módulos, rutas de escenarios y ficheros previstos, ya
+      preparados para el prompt de `tdd-implementer`, para que tras un `/clear` no haga falta releer `design.md` ni `specs/**`.
 - Cuando un cambio llega a **Fase: `pr`** con la PR ya abierta por el hook y nada pendiente salvo que
   el usuario mergee, `handoff.md` se resetea a una plantilla mínima (cambio y rama: ninguno activo, con
   una referencia de una línea al último cambio cerrado; fase: ninguna; veredicto: pendiente; siguiente
@@ -210,4 +243,6 @@ Para no llenar el contexto con logs, ejecuta Gradle con `-q --console=plain` y r
     - ✅ Seguro para `/clear`: todo commiteado, `tasks.md` y `handoff.md` al día, nada solo en la conversación.
     - ⚠️ Mejor `/compact`: trabajo a medias o decisión todavía no escrita.
     - ⛔ No limpies: cambios sin commitear o comando en curso.
-- Regla práctica: `/clear` tras el commit de un grupo; `/compact` a mitad de grupo.
+- **`/clear` obligatorio** (con ✅) tras: el commit de artefactos aprobados, el commit de cada grupo, la revisión
+  de código y `verify`. Un cambio completo nunca se hace en una sola sesión: cada turno de la sesión principal
+  relee todo su contexto, y es la mayor fuente de consumo de tokens. `/compact` solo a mitad de grupo.

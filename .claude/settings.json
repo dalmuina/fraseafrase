@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(gradle/gradle-daemon-jvm.properties)",
+      "Write(gradle/gradle-daemon-jvm.properties)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-commit-check.sh",
+            "timeout": 600,
+            "statusMessage": "Comprobando rama y ./gradlew check antes del commit..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-archive-pr.sh",
+            "timeout": 60,
+            "statusMessage": "Comprobando si este commit cierra un archive para abrir la PR..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -15,7 +15,7 @@ cd "$repo_root" || exit 0
 
 branch="$(git branch --show-current)"
 if [ "$branch" = "develop" ] || [ "$branch" = "master" ]; then
-  echo "Bloqueado: no se puede commitear en la rama '$branch'. Cambia a una rama de cambio antes de commitear (regla de oro 2 de CLAUDE.md)." >&2
+  echo "Bloqueado: no se puede commitear en la rama '$branch'. Cambia a una rama de cambio antes de commitear (CLAUDE.md, apartado 'Ramas y commits')." >&2
   exit 2
 fi
 
