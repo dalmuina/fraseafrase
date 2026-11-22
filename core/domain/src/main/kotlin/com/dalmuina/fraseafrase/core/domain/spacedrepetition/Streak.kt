@@ -13,6 +13,6 @@ value class Streak(val value: Int) {
     /** Un acierto suma 1 a la racha. */
     fun afterHit(): Streak = Streak(value + 1)
 
-    /** Un fallo reinicia la racha a 0. */
-    fun afterMiss(): Streak = Streak(0)
+    /** Un fallo resta 1 a la racha, sin bajar de 0 (ADR-0024). */
+    fun afterMiss(): Streak = Streak(maxOf(value - 1, 0))
 }

@@ -67,7 +67,7 @@ class PracticeBatchTest {
         updated.entries.map { it.id } shouldContainExactly listOf(PhraseId("C"), PhraseId("A"), PhraseId("B"))
     }
 
-    // Scenario: Bajada instantánea de nivel ante un fallo (spec: Racha de aciertos dentro de la tanda)
+    // Scenario: Fallo con racha 0 baja un nivel (spec: spaced-repetition, ADR-0024; racha 0 por defecto en el builder)
     @Test
     fun `given a batch with a phrase of level 2 when the user misses it then its level drops to 1`() {
         // Given

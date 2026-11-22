@@ -28,11 +28,37 @@ class StreakTest {
         next shouldBe Streak(2)
     }
 
-    // Scenario: Fallo reinicia la racha (spec: Racha de aciertos dentro de la tanda)
+    // Scenario: Fallo resta uno a la racha (spec: spaced-repetition, ADR-0024)
     @Test
-    fun `given a streak of 2 when a miss is recorded then the streak becomes 0`() {
+    fun `given a streak of 2 when a miss is recorded then the streak becomes 1`() {
         // Given
         val streak = Streak(2)
+
+        // When
+        val next = streak.afterMiss()
+
+        // Then
+        next shouldBe Streak(1)
+    }
+
+    // Scenario: Fallo reinicia la racha (spec: spaced-repetition, ADR-0024)
+    @Test
+    fun `given a streak of 1 when a miss is recorded then the streak becomes 0`() {
+        // Given
+        val streak = Streak(1)
+
+        // When
+        val next = streak.afterMiss()
+
+        // Then
+        next shouldBe Streak(0)
+    }
+
+    // Scenario: Fallo en nivel 0 no cambia el nivel pero sí fija la sesión siguiente (suelo en 0)
+    @Test
+    fun `given a streak of 0 when a miss is recorded then the streak stays 0`() {
+        // Given
+        val streak = Streak(0)
 
         // When
         val next = streak.afterMiss()

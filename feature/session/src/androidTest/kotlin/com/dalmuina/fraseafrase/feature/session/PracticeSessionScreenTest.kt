@@ -526,13 +526,13 @@ class PracticeSessionScreenTest {
         composeTestRule.onNodeWithContentDescription("Insignia de Plata").assertDoesNotExist()
     }
 
-    // Scenario: Fallo reinicia el contador (spec: practice-session)
+    // Scenario: Fallo reinicia el contador (spec: practice-session, ADR-0024)
     @Test
-    fun givenPhraseWithLevel2WhenMissedAndShownAgainThenTheCounterShowsThreeForSilver() {
-        // Given: la frase A de nivel de consolidación 2 y racha 2, revelada
+    fun givenPhraseWithLevel2AndStreak1WhenMissedAndShownAgainThenTheCounterShowsThreeForGold() {
+        // Given: la frase A de nivel de consolidación 2 y racha 1 (2 aciertos para "Oro"), revelada
         var uiState: PracticeSessionUiState by mutableStateOf(
             practicing(current = item(), revealed = true).copy(
-                remainingHitsForNextLevel = 1,
+                remainingHitsForNextLevel = 2,
                 nextLevelBadgeLabel = "Oro",
             ),
         )
@@ -542,10 +542,10 @@ class PracticeSessionScreenTest {
                     uiState = uiState,
                     onAction = { action ->
                         assertTrue(action == PracticeSessionAction.Answer(SelfAssessment.MISS))
-                        // El fallo bajó el nivel de consolidación de 2 a 1 (ADR-0015) antes de calcular el contador
+                        // El fallo resta 1 a la racha (1 → 0) sin cambiar de nivel (ADR-0024)
                         uiState = practicing(current = item(), revealed = true).copy(
                             remainingHitsForNextLevel = 3,
-                            nextLevelBadgeLabel = "Plata",
+                            nextLevelBadgeLabel = "Oro",
                         )
                     },
                 )
@@ -555,8 +555,8 @@ class PracticeSessionScreenTest {
         // When: el usuario se autoevalúa con fallo y A vuelve a mostrarse, revelada
         composeTestRule.onNodeWithText("Fallo").performClick()
 
-        // Then: la pantalla muestra que le faltan 3 aciertos para la insignia "Plata"
-        composeTestRule.onNodeWithText("Te faltan 3 aciertos para la insignia Plata").assertIsDisplayed()
+        // Then: la pantalla muestra que le faltan 3 aciertos para la insignia "Oro"
+        composeTestRule.onNodeWithText("Te faltan 3 aciertos para la insignia Oro").assertIsDisplayed()
     }
 
     // Scenario: Racha de tres sigue mostrando el contador en 0 (spec: practice-session)

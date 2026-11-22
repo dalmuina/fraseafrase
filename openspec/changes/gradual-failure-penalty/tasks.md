@@ -10,29 +10,29 @@ redactado en `docs/adr/0024-un-fallo-resta-un-acierto.md` (Propuesto).
 > Plata`. El hook ejecuta `./gradlew check` global al commitear, por eso 1.6 adapta ese test en este mismo grupo
 > (design D3). Solo cambian tests en `:feature:session`, no código de producción.
 
-- [ ] 1.1 Test: `StreakTest` - `given a streak of 2 when a miss is recorded then the streak becomes 1` (sustituye
+- [x] 1.1 Test: `StreakTest` - `given a streak of 2 when a miss is recorded then the streak becomes 1` (sustituye
   al de "→ 0"; `spaced-repetition` "Fallo resta uno a la racha"), `given a streak of 1 when a miss is recorded then
   the streak becomes 0` ("Fallo reinicia la racha") y `given a streak of 0 when a miss is recorded then the streak
   stays 0` (suelo en 0; "Fallo en nivel 0 no cambia el nivel pero sí fija la sesión siguiente"). Debe fallar por la
   aserción del primero.
-- [ ] 1.2 Implementación: `Streak.afterMiss()` = `Streak(maxOf(value - 1, 0))` y su KDoc (design D1).
+- [x] 1.2 Implementación: `Streak.afterMiss()` = `Streak(maxOf(value - 1, 0))` y su KDoc (design D1).
   Verificación: 1.1 en verde.
-- [ ] 1.3 Test: `PhraseProgressTest` - un test por escenario de fallo de `spaced-repetition` "Resolución de la
+- [x] 1.3 Test: `PhraseProgressTest` - un test por escenario de fallo de `spaced-repetition` "Resolución de la
   autoevaluación": racha 0 en nivel 3 → nivel 2 racha 2; racha 0 en nivel 1 → nivel 0 racha 2; racha 0 en nivel 5
   → nivel 4 racha 2; nivel 3 racha 2 → nivel 3 racha 1; nivel 0 racha 0 → sin cambios; nivel 0 racha 2 → racha 1;
   todos con `dueAtSession` 11 en la sesión 10. Además, de "Racha persistente entre sesiones": nivel 2 racha 2 →
   nivel 2 racha 1 ("Fallo resta uno a la racha") y nivel 2 racha 1 → nivel 2 racha 0 ("Fallo reinicia la racha").
   En total, 8 tests. Los tres tests de fallo actuales se renombran y fijan la racha de
   partida. Debe fallar por la racha resultante tras bajar de nivel y por el nivel con racha > 0.
-- [ ] 1.4 Implementación: `PhraseProgress.recordMiss` según design D1 (racha `CERTIFICATION_STREAK - 1` al bajar
+- [x] 1.4 Implementación: `PhraseProgress.recordMiss` según design D1 (racha `CERTIFICATION_STREAK - 1` al bajar
   de nivel) y KDoc de `record` con la regla de ADR-0024. Verificación: 1.3 en verde.
-- [ ] 1.5 Tests existentes de `:core:domain` que fijan el resultado de un fallo: `AnswerPhraseTest` (líneas de los
+- [x] 1.5 Tests existentes de `:core:domain` que fijan el resultado de un fallo: `AnswerPhraseTest` (líneas de los
   tests de miss), `RevertLastAnswerTest`, `PracticeBatchTest` (`...misses it then its level drops to 1`). Los que
   parten de racha 0 siguen valiendo: solo se actualiza el comentario de escenario/ADR; los que parten de racha > 0
   se ajustan al resultado nuevo. `AnswerPhraseTest` `...undo exposes the progress before the miss` cubre
   `spaced-repetition` "Revertir un fallo restaura el nivel, la racha y el vencimiento anteriores" con nivel 3
   racha 0 → nivel 2 racha 2. Verificación: `./gradlew :core:domain:check`.
-- [ ] 1.6 `PracticeSessionViewModelTest`: sustituir el test del contador tras un fallo por
+- [x] 1.6 `PracticeSessionViewModelTest`: sustituir el test del contador tras un fallo por
   `given a level 2 phrase with streak 2 when answering with a miss then it shows 2 remaining hits for Oro` y
   añadir `given a level 2 phrase with streak 1 when answering with a miss then it shows 3 remaining hits for Oro` y
   `given a level 2 phrase with streak 0 when answering with a miss then it shows 1 remaining hit for Plata`
