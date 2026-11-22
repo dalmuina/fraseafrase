@@ -34,9 +34,9 @@ data class PhraseProgress(
      * Registra la autoevaluación de esta frase en la sesión generada [currentSession] y resuelve al
      * instante (ADR-0017): un acierto que lleva la racha a [CERTIFICATION_STREAK] certifica la frase
      * (sube de nivel, racha a 0, enfriamiento del nuevo nivel); un acierto que no certifica solo fija
-     * la sesión siguiente; un fallo con racha mayor que 0 le resta 1 a la racha sin
-     * cambiar de nivel; un fallo con racha 0 baja el nivel en 1 (si era mayor que 0) y deja la racha a un acierto
-     * de recertificar ([CERTIFICATION_STREAK] - 1) (ADR-0024). Todo fallo fija la sesión siguiente.
+     * la sesión siguiente; un fallo con racha mayor que 0 le resta 1 a la racha sin cambiar de nivel;
+     * un fallo con racha 0 baja el nivel en 1 (si era mayor que 0) y deja la racha a un acierto de
+     * recertificar ([CERTIFICATION_STREAK] - 1) (ADR-0024). Todo fallo fija la sesión siguiente.
      * Es una función pura: la sesión llega como dato.
      */
     fun record(assessment: SelfAssessment, currentSession: Int): PhraseProgress = when (assessment) {
