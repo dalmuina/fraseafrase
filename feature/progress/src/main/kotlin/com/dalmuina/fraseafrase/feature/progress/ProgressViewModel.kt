@@ -7,6 +7,7 @@ import com.dalmuina.fraseafrase.core.domain.progress.ProgressOverviewResult
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,13 +27,23 @@ class ProgressViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ProgressUiState>(ProgressUiState.Loading)
     val uiState: StateFlow<ProgressUiState> = _uiState.asStateFlow()
 
+    private var reloadJob: Job? = null
+
     init {
-        viewModelScope.launch { reload() }
+        launchReload()
     }
 
-    /** No hay ninguna acción todavía (ver [ProgressAction]). */
-    @Suppress("UNUSED_PARAMETER")
-    fun onAction(action: ProgressAction) = Unit
+    fun onAction(action: ProgressAction) {
+        when (action) {
+            ProgressAction.Resume -> launchReload()
+        }
+    }
+
+    /** Cancela la relectura anterior para que una lectura antigua no pise a una más reciente. */
+    private fun launchReload() {
+        reloadJob?.cancel()
+        reloadJob = viewModelScope.launch { reload() }
+    }
 
     private suspend fun reload() {
         val targetLocale = obtainActiveLanguage()
