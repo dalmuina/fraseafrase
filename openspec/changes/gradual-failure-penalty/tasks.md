@@ -54,10 +54,12 @@ redactado en `docs/adr/0024-un-fallo-resta-un-acierto.md` (Propuesto).
 > comprobar que detectan el fallo, ejecutarlos una vez con `recordMiss` en su versión anterior (mutación) y
 > anotar el resultado en esta tarea.
 
-- [ ] 2.1 Test: `PracticeSessionViewModelTest` - `given a level 3 phrase with streak 2 when answering with a miss
+- [x] 2.1 Test: `PracticeSessionViewModelTest` - `given a level 3 phrase with streak 2 when answering with a miss
   then badgeChange is null` (`practice-session`: "Un fallo con racha mayor que 0 no muestra el indicador") y
   `given a level 3 phrase with streak 1 when answering with a miss then the badge stays Oro` ("Un fallo con racha
-  mayor que 0 mantiene la insignia"). Verificación: `./gradlew :feature:session:check` y evidencia de mutación.
+  mayor que 0 mantiene la insignia"). Verificación: `./gradlew :feature:session:check` y evidencia de mutación. Evidencia: con `recordMiss` mutado a
+  "todo fallo baja el nivel" (comportamiento previo a ADR-0024), los 2 tests fallan; revertida la mutación, pasan.
+  Tests en `PracticeSessionFailureBadgeTest` (nuevo fichero, por el límite de LargeClass de `PracticeSessionViewModelTest`).
 
 ## 3. Cierre y verificación (sesión principal)
 
