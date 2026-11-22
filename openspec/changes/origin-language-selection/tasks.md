@@ -141,11 +141,11 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 
 ## 8. Cierre y verificación (sesión principal)
 
-- [ ] 8.1 Líneas de estado (ADR-0001): ADR-0023 → `Aceptado`; ADR-0019 → `Sustituido por ADR-0022 (formato de
+- [x] 8.1 Líneas de estado (ADR-0001): ADR-0023 → `Aceptado`; ADR-0019 → `Sustituido por ADR-0022 (formato de
   documento) y ADR-0023 (regla de origen)`; ADR-0020 (Propuesto) → `Sustituido por ADR-0023`; ADR-0022 (Propuesto)
   → `Sustituido por ADR-0023 (documentos de traducción)`; añadir 0022 y 0023 (`Aceptado`) a la tabla de
   `docs/adr/README.md`.
-- [ ] 8.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio 90 %,
+- [x] 8.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio 90 %,
   presentación 80 %, global 70 %).
 - [ ] 8.3 Instalar la app de depuración y comprobar a mano: con el móvil en inglés las frases salen en inglés; con
   el móvil en japonés, en español; el desplegable de destino nunca ofrece el idioma de origen.

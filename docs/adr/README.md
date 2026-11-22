@@ -24,9 +24,11 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0016](0016-generar-sesion-por-cuotas.md) | Generar sesión por cuotas en vez de cerrar tanda con aviso | Sustituido por 0017 |
 | [0017](0017-repeticion-por-contador-de-sesiones.md) | Repetición por contador de sesiones, sin cola de arrastradas | Sustituido por 0018 |
 | [0018](0018-progreso-basico-sin-certificadas-de-la-tanda-activa.md) | Progreso básico sin certificadas de la tanda activa | Aceptado |
-| [0019](0019-catalogo-en-room-y-seleccion-de-idioma-destino.md) | Catálogo en Room, selección de idioma destino y origen derivado del dispositivo | Aceptado |
-| [0020](0020-respaldo-de-origen-sin-coincidir-con-el-destino.md) | El respaldo del idioma de origen nunca coincide con el idioma destino | Propuesto |
+| [0019](0019-catalogo-en-room-y-seleccion-de-idioma-destino.md) | Catálogo en Room, selección de idioma destino y origen derivado del dispositivo | Sustituido por 0022 y 0023 |
+| [0020](0020-respaldo-de-origen-sin-coincidir-con-el-destino.md) | El respaldo del idioma de origen nunca coincide con el idioma destino | Sustituido por 0023 |
 | [0021](0021-filtro-cefr-exacto-en-reforzar-y-dominadas.md) | Filtro CEFR exacto en "a reforzar" y "dominadas" | Aceptado |
+| [0022](0022-separar-frases-destino-de-sus-traducciones.md) | Separar las frases destino de sus traducciones en documentos y tablas independientes | Sustituido por 0023 |
+| [0023](0023-origen-del-dispositivo-y-texto-de-origen-desde-frases.md) | Origen del dispositivo y texto de origen desde las frases | Aceptado |
 
 ## Plantilla
 

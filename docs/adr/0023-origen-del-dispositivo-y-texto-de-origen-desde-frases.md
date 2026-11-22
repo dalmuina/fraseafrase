@@ -1,6 +1,6 @@
 # ADR-0023: Idioma de origen del dispositivo y texto de origen desde el documento de frases
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-22
 - **Sustituye a:** ADR-0022 (la parte de documentos y tabla de traducción), ADR-0020 (por completo) y ADR-0019
   (solo la regla "idioma de origen derivado del dispositivo")
