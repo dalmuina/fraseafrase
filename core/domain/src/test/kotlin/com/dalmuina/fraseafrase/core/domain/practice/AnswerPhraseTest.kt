@@ -48,7 +48,8 @@ class AnswerPhraseTest {
         answered.answeredInBatch shouldBe true
     }
 
-    // Scenario: Bajada instantánea de nivel ante un fallo (spec: spaced-repetition)
+    // Scenario: Fallo con racha 0 baja un nivel y fija la sesión siguiente (spec: spaced-repetition, ADR-0024;
+    // racha 0 por defecto en el builder)
     @Test
     fun `given a level 2 phrase when answering with a miss then its level drops and dueAtSession is next session`() =
         runTest {
@@ -222,11 +223,12 @@ class AnswerPhraseTest {
         }
 
     // Scenario: Revertir un fallo restaura el nivel, la racha y el vencimiento anteriores (spec: spaced-repetition)
+    // El fallo lleva nivel 3 racha 0 a nivel 2 racha 2 (ADR-0024); el deshacer expone el progreso previo.
     @Test
     fun `given a miss on a level 3 phrase when answering then undo exposes the progress before the miss`() =
         runTest {
-            // Given: nivel 3, racha 1, dueAtSession 5, sesión actual 10
-            val progress = aPhraseProgress(id = "A", level = Level(3), streak = Streak(1), dueAtSession = 5)
+            // Given: nivel 3, racha 0, dueAtSession 5, sesión actual 10
+            val progress = aPhraseProgress(id = "A", level = Level(3), streak = Streak(0), dueAtSession = 5)
             val practice = FakePracticeRepository(
                 PracticeSnapshot(
                     progress = listOf(progress, aPhraseProgress(id = "B")),

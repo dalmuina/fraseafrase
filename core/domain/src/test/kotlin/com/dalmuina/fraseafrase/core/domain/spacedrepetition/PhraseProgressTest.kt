@@ -119,64 +119,68 @@ class PhraseProgressTest {
 
     // Scenario: Fallo en nivel 3 baja a nivel 2 y fija la sesión siguiente (spec: Resolución de la autoevaluación)
     @Test
-    fun `given a level 3 phrase when recording a miss then it drops to level 2 and due at session 11`() {
-        // Given
-        val progress = PhraseProgress(
-            id = PhraseId("p-1"),
-            level = Level(3),
-            streak = Streak(0),
-            answeredInBatch = false,
-            dueAtSession = 20,
-        )
-
-        // When
-        val updated = progress.record(SelfAssessment.MISS, 10)
-
-        // Then
-        updated.level shouldBe Level(2)
-        updated.dueAtSession shouldBe 11
+    fun `given a level 3 phrase with streak 0 when recording a miss then it is level 2 streak 2 due at 11`() {
+        missed(level = 3, streak = 0) shouldBe expected(level = 2, streak = 2)
     }
 
     // Scenario: Fallo en nivel 1 baja a nivel 0 y fija la sesión siguiente (spec: Resolución de la autoevaluación)
     @Test
-    fun `given a level 1 phrase when recording a miss then it drops to level 0 and due at session 11`() {
-        // Given
-        val progress = PhraseProgress(
-            id = PhraseId("p-1"),
-            level = Level(1),
-            streak = Streak(0),
-            answeredInBatch = false,
-            dueAtSession = 11,
-        )
+    fun `given a level 1 phrase with streak 0 when recording a miss then it is level 0 streak 2 due at 11`() {
+        missed(level = 1, streak = 0) shouldBe expected(level = 0, streak = 2)
+    }
 
-        // When
-        val updated = progress.record(SelfAssessment.MISS, 10)
+    // Scenario: Fallo con racha 0 en nivel 5 baja a nivel 4 con racha 2 (spec: Resolución de la autoevaluación)
+    @Test
+    fun `given a level 5 phrase with streak 0 when recording a miss then it is level 4 streak 2 due at 11`() {
+        missed(level = 5, streak = 0) shouldBe expected(level = 4, streak = 2)
+    }
 
-        // Then
-        updated.level shouldBe Level(0)
-        updated.dueAtSession shouldBe 11
+    // Scenario: Fallo con racha mayor que 0 no baja de nivel (spec: Resolución de la autoevaluación)
+    @Test
+    fun `given a level 3 phrase with streak 2 when recording a miss then it is level 3 streak 1 due at 11`() {
+        missed(level = 3, streak = 2) shouldBe expected(level = 3, streak = 1)
     }
 
     // Scenario: Fallo en nivel 0 no cambia el nivel pero sí fija la sesión siguiente
     // (spec: Resolución de la autoevaluación)
     @Test
-    fun `given a level 0 phrase when recording a miss then the level stays and due at session is 11`() {
-        // Given
-        val progress = PhraseProgress(
-            id = PhraseId("p-1"),
-            level = Level(0),
-            streak = Streak(0),
-            answeredInBatch = false,
-            dueAtSession = 0,
-        )
-
-        // When
-        val updated = progress.record(SelfAssessment.MISS, 10)
-
-        // Then
-        updated.level shouldBe Level(0)
-        updated.dueAtSession shouldBe 11
+    fun `given a level 0 phrase with streak 0 when recording a miss then it stays level 0 streak 0 due at 11`() {
+        missed(level = 0, streak = 0) shouldBe expected(level = 0, streak = 0)
     }
+
+    // Scenario: Fallo en nivel 0 con racha mayor que 0 resta uno a la racha (spec: Resolución de la autoevaluación)
+    @Test
+    fun `given a level 0 phrase with streak 2 when recording a miss then it is level 0 streak 1 due at 11`() {
+        missed(level = 0, streak = 2) shouldBe expected(level = 0, streak = 1)
+    }
+
+    // Scenario: Fallo resta uno a la racha (spec: Racha persistente entre sesiones)
+    @Test
+    fun `given a level 2 phrase with streak 2 when recording a miss then it is level 2 streak 1 due at 11`() {
+        missed(level = 2, streak = 2) shouldBe expected(level = 2, streak = 1)
+    }
+
+    // Scenario: Fallo reinicia la racha (spec: Racha persistente entre sesiones)
+    @Test
+    fun `given a level 2 phrase with streak 1 when recording a miss then it is level 2 streak 0 due at 11`() {
+        missed(level = 2, streak = 1) shouldBe expected(level = 2, streak = 0)
+    }
+
+    private fun missed(level: Int, streak: Int): PhraseProgress = PhraseProgress(
+        id = PhraseId("p-1"),
+        level = Level(level),
+        streak = Streak(streak),
+        answeredInBatch = false,
+        dueAtSession = 20,
+    ).record(SelfAssessment.MISS, 10)
+
+    private fun expected(level: Int, streak: Int): PhraseProgress = PhraseProgress(
+        id = PhraseId("p-1"),
+        level = Level(level),
+        streak = Streak(streak),
+        answeredInBatch = true,
+        dueAtSession = 11,
+    )
 
     // Scenario: Acierto que certifica sube de nivel y entra en enfriamiento (spec: Resolución de la autoevaluación)
     @Test

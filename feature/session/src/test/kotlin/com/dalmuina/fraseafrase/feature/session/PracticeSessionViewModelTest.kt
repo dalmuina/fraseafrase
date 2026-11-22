@@ -443,48 +443,6 @@ class PracticeSessionViewModelTest {
         viewModel.practicing().nextLevelBadgeLabel shouldBe "Bronce"
     }
 
-    // Scenario: Fallo reinicia el contador (spec: practice-session)
-    @Test
-    fun `given a level 2 phrase with streak 2 when answering with a miss then it shows 3 remaining hits for Plata`() =
-        runTest {
-            // Given: tanda con la frase A de nivel 2 y racha 2, y B sin responder (para no completar la tanda)
-            val practice = FakePracticeRepository(
-                activeBatchSnapshot(
-                    order = listOf("A", "B"),
-                    progress = listOf(
-                        aPhraseProgress(
-                            id = "A",
-                            level = Level(2),
-                            streak = Streak(2),
-                            answeredInBatch = true,
-                            dueAtSession = 1,
-                        ),
-                        aPhraseProgress(id = "B"),
-                    ),
-                ),
-            )
-            val viewModel = sessionViewModel(practice, catalogOf("A", "B"))
-            advanceUntilIdle()
-            viewModel.onAction(PracticeSessionAction.Reveal)
-
-            // When: el usuario se autoevalúa con fallo; el fallo baja el nivel de A a 1 (ADR-0015), lo que muestra
-            // el indicador de cambio de insignia (spec: add-level-change-animation) y hay que consumirlo para
-            // liberar los controles
-            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.MISS))
-            advanceUntilIdle()
-            viewModel.onAction(PracticeSessionAction.ConsumeBadgeChange)
-            advanceUntilIdle()
-            viewModel.onAction(PracticeSessionAction.Reveal)
-            viewModel.onAction(PracticeSessionAction.Answer(SelfAssessment.HIT))
-            advanceUntilIdle()
-            viewModel.onAction(PracticeSessionAction.Reveal)
-
-            // Then: al mostrarse A de nuevo y revelarla
-            viewModel.practicing().current.id.value shouldBe "A"
-            viewModel.practicing().remainingHitsForNextLevel shouldBe 3
-            viewModel.practicing().nextLevelBadgeLabel shouldBe "Plata"
-        }
-
     // Scenario: Racha de tres sigue mostrando el contador en 0 (spec: practice-session)
     @Test
     fun `given a level 1 phrase with streak 3 when shown then it shows 0 remaining hits for Plata`() = runTest {
@@ -703,7 +661,8 @@ class PracticeSessionViewModelTest {
             badgeChange?.toLevel shouldBe 3
         }
 
-    // Scenario: Un fallo que baja el nivel muestra el indicador (spec: add-level-change-animation)
+    // Scenario: Un fallo que baja el nivel muestra el indicador (spec: add-level-change-animation, ADR-0024;
+    // el builder parte de racha 0)
     @Test
     fun `given a level 3 phrase when answering with a miss then badgeChange shows DOWN to Plata`() = runTest {
         // Given: tanda A (nivel 3) y B, con A revelada
@@ -749,7 +708,7 @@ class PracticeSessionViewModelTest {
         viewModel.practicing().badgeChange shouldBe null
     }
 
-    // Scenario: Un fallo en nivel 0 no muestra el indicador (spec: add-level-change-animation)
+    // Scenario: Un fallo en nivel 0 no muestra el indicador (spec: add-level-change-animation, ADR-0024)
     @Test
     fun `given a level 0 phrase when answering with a miss then badgeChange is null`() = runTest {
         // Given: tanda A (nivel 0) y B, con A revelada
