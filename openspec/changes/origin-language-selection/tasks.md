@@ -48,16 +48,16 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 > `FakeCatalogRepository` (`:core:testing`) toma el `source` por id del catálogo de origen solo si lo contiene; si
 > no, conserva el `source` de las frases del destino (design D4), para que los tests de un solo idioma no cambien.
 
-- [ ] 2.1 Test: `SelectActiveLanguageTest` - elegir el idioma de origen devuelve `RejectedSourceLocale` sin
+- [x] 2.1 Test: `SelectActiveLanguageTest` - elegir el idioma de origen devuelve `RejectedSourceLocale` sin
   excepción y sin guardar nada; elegir otro disponible devuelve `Selected` y lo guarda (`user-settings`: "No se
   puede elegir como destino el idioma de origen"). Debe fallar porque hoy lo acepta.
-- [ ] 2.2 Implementación: `SelectLanguageResult` y `SelectActiveLanguage` con `ObtainSourceLanguage` (design D3).
+- [x] 2.2 Implementación: `SelectLanguageResult` y `SelectActiveLanguage` con `ObtainSourceLanguage` (design D3).
   Verificación: 2.1 en verde.
-- [ ] 2.3 Test: `ObtainCatalogPhrasesForActiveLanguageTest` reescrito - con el dispositivo en `en-GB` y `en-GB`
+- [x] 2.3 Test: `ObtainCatalogPhrasesForActiveLanguageTest` reescrito - con el dispositivo en `en-GB` y `en-GB`
   disponible, cada frase de `pt-PT` lleva como `source` el texto `en-GB` con su mismo id; con el dispositivo en
   `ja-JP`, el de `es-ES` (`phrase-catalog`: "El origen sale del texto destino del otro idioma"); con un fake de un
   solo idioma, el `source` se conserva. Debe fallar porque hoy consulta `availableSourceLocales`.
-- [ ] 2.4 Implementación: `ObtainCatalogPhrasesForActiveLanguage` con `ObtainSourceLanguage`,
+- [x] 2.4 Implementación: `ObtainCatalogPhrasesForActiveLanguage` con `ObtainSourceLanguage`,
   `FakeCatalogRepository` con `source` por id (design D3, D4) y adaptación de los sitios de la nota. Verificación:
   2.3 en verde, `:core:domain:check`, `:core:testing:check` y `test` de `:core:data`, `:feature:session`,
   `:feature:progress`.

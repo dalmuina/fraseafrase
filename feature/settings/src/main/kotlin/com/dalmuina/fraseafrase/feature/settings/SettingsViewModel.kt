@@ -9,6 +9,7 @@ import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SaveUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SelectActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.settings.SelectLanguageResult
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +56,8 @@ class SettingsViewModel @Inject constructor(
     private fun selectLanguage(targetLocale: LanguageTag) {
         viewModelScope.launch {
             val settings = obtainUserSettings(targetLocale)
-            selectActiveLanguage(targetLocale)
+            // Rejection handling (reload) arrives with the settings group of origin-language-selection.
+            if (selectActiveLanguage(targetLocale) == SelectLanguageResult.RejectedSourceLocale) return@launch
             val current = _uiState.value as? SettingsUiState.Loaded ?: return@launch
             _uiState.value = current.copy(
                 activeTargetLocale = targetLocale,

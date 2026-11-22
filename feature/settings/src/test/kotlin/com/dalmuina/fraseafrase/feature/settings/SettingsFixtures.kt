@@ -29,19 +29,16 @@ internal fun settingsViewModel(
         availableTargetLocales.associateWith { catalog },
     )
     val obtainAvailableLanguages = ObtainAvailableLanguages(catalogRepository)
+    val obtainSourceLanguage = ObtainSourceLanguage(
+        FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+        catalogRepository,
+        DefaultSourceLocale(LanguageTag("es-ES")),
+    )
     return SettingsViewModel(
         obtainUserSettings = ObtainUserSettings(repository),
         saveUserSettings = SaveUserSettings(repository),
-        obtainActiveLanguage = ObtainActiveLanguage(
-            repository,
-            ObtainSourceLanguage(
-                FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-                catalogRepository,
-                DefaultSourceLocale(LanguageTag("es-ES")),
-            ),
-            catalogRepository,
-        ),
+        obtainActiveLanguage = ObtainActiveLanguage(repository, obtainSourceLanguage, catalogRepository),
         obtainAvailableLanguages = obtainAvailableLanguages,
-        selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, repository),
+        selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, obtainSourceLanguage, repository),
     )
 }

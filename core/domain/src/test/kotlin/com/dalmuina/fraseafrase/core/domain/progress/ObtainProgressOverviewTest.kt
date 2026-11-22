@@ -5,7 +5,6 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.PracticeSnapshot
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
@@ -16,11 +15,11 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
-import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -36,10 +35,7 @@ class ObtainProgressOverviewTest {
         catalog: CatalogLoadResult,
         settings: UserSettings = UserSettings.DEFAULT,
     ) = ObtainProgressOverview(
-        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-            deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-            catalogRepository = FakeCatalogRepository(catalog),
-        ),
+        obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(catalog)),
         practiceRepository = practice,
         obtainUserSettings = ObtainUserSettings(FakeSettingsRepository(settings)),
     )

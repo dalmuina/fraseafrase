@@ -199,7 +199,11 @@ class PracticeSessionRouteTest {
         val catalogRepository = TestCatalogRepository(catalog)
         val settingsRepository = TestSettingsRepository()
         val obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-            deviceLocaleProvider = TestDeviceLocaleProvider,
+            obtainSourceLanguage = ObtainSourceLanguage(
+                TestDeviceLocaleProvider,
+                catalogRepository,
+                DefaultSourceLocale(LanguageTag("es-ES")),
+            ),
             catalogRepository = catalogRepository,
         )
         val composeNextBatch = ComposeNextBatch()

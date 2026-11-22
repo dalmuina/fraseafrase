@@ -6,7 +6,6 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
@@ -31,6 +30,7 @@ import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 /** Snapshot con una tanda activa de frases [order], en ese orden, y el progreso dado (por defecto, sin respuestas). */
@@ -129,10 +129,7 @@ internal fun sessionViewModelWith(
     activeTargetLocale: LanguageTag = FakeSettingsRepository.DEFAULT_LOCALE,
 ): PracticeSessionViewModel {
     val settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale)
-    val obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-        deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-        catalogRepository = catalogRepository,
-    )
+    val obtainCatalogPhrases = anObtainCatalogPhrases(catalogRepository)
     val composeNextBatch = ComposeNextBatch()
     val regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
         practiceRepository = practice,
