@@ -3,14 +3,18 @@ package com.dalmuina.fraseafrase
 import com.dalmuina.fraseafrase.core.data.catalog.CatalogDatabase
 import com.dalmuina.fraseafrase.core.data.practice.PracticeDatabase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
 import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
+import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.SelectActiveLanguage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Before
@@ -62,6 +66,12 @@ class PersistenceWiringTest {
     @Inject
     lateinit var selectActiveLanguage: SelectActiveLanguage
 
+    @Inject
+    lateinit var obtainSourceLanguage: ObtainSourceLanguage
+
+    @Inject
+    lateinit var defaultSourceLocale: DefaultSourceLocale
+
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -110,5 +120,13 @@ class PersistenceWiringTest {
         assertNotNull(obtainAvailableLanguages)
         assertNotNull(obtainActiveLanguage)
         assertNotNull(selectActiveLanguage)
+    }
+
+    // Escenario: El idioma del dispositivo no está disponible (phrase-catalog): el grafo de producción
+    // resuelve ObtainSourceLanguage y el idioma de origen por defecto es es-ES.
+    @Test
+    fun givenProductionGraph_whenInjectingSourceLanguage_thenDefaultSourceLocaleIsEsEs() {
+        assertNotNull(obtainSourceLanguage)
+        assertEquals(LanguageTag("es-ES"), defaultSourceLocale.value)
     }
 }

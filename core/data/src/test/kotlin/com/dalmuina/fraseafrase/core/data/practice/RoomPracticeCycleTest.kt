@@ -3,7 +3,6 @@ package com.dalmuina.fraseafrase.core.data.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatchResult
 import com.dalmuina.fraseafrase.core.domain.practice.ObtainActiveBatch
@@ -16,10 +15,10 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
-import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -61,10 +60,7 @@ class RoomPracticeCycleTest {
         regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
             practiceRepository = source,
             composeNextBatch = ComposeNextBatch(),
-            obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-                deviceLocaleProvider = FakeDeviceLocaleProvider(ptPt),
-                catalogRepository = FakeCatalogRepository(catalog, targetLocale = ptPt),
-            ),
+            obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(catalog, targetLocale = ptPt)),
         ),
     ).invoke(ptPt)
 
@@ -127,10 +123,7 @@ class RoomPracticeCycleTest {
             regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
                 practiceRepository = source2,
                 composeNextBatch = ComposeNextBatch(),
-                obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-                    deviceLocaleProvider = FakeDeviceLocaleProvider(ptBr),
-                    catalogRepository = FakeCatalogRepository(catalog, targetLocale = ptBr),
-                ),
+                obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(catalog, targetLocale = ptBr)),
             ),
         )
 

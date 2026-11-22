@@ -42,7 +42,7 @@ class PracticeSessionViewModel @Inject constructor(
 
     // Ids de la tanda cargada, en orden, para que `resume()` detecte si de verdad cambió (design D4). No es parte
     // del `UiState` expuesto: es solo un apunte interno para esa comparación.
-    private var loadedBatchIds: List<PhraseId> = emptyList()
+    private var loadedBatch: List<LoadedItem> = emptyList()
 
     // Autoevaluación más reciente, pendiente de revertir (design D3). Se reemplaza con cada autoevaluación nueva,
     // nunca se acumula, y se limpia a `null` al revertir, al generar sesión y en cualquier recarga que no sea
@@ -173,8 +173,8 @@ class PracticeSessionViewModel @Inject constructor(
     private suspend fun reload(previous: PracticeSessionUiState.Practicing? = null, onlyIfChanged: Boolean = false) {
         activeTargetLocale = obtainActiveLanguage()
         val session = obtainPracticeSession(activeTargetLocale)
-        if (onlyIfChanged && session.hasSameBatchAs(loadedBatchIds)) return
-        if (session is PracticeSessionResult.Ready) loadedBatchIds = session.items.map { it.id }
+        if (onlyIfChanged && session.hasSameBatchAs(loadedBatch)) return
+        if (session is PracticeSessionResult.Ready) loadedBatch = session.items.map { LoadedItem(it.id, it.source) }
         // Sin `previous` no hay ninguna autoevaluación de la que `pendingUndo` sea reflejo (carga inicial, Resume
         // tras un cambio externo de tanda o recarga tras generar sesión): se limpia para no apuntar a una frase
         // que puede ya no estar en la última posición de la tanda nueva (design D3).
@@ -251,9 +251,12 @@ class PracticeSessionViewModel @Inject constructor(
  */
 private data class PendingUndo(val answer: UndoableAnswer, val indexBefore: Int)
 
-/** Compara [this] con [ids], la tanda ya cargada: distinta si cambió de resultado, frase, orden o tamaño (D4). */
-private fun PracticeSessionResult.hasSameBatchAs(ids: List<PhraseId>): Boolean =
-    this is PracticeSessionResult.Ready && items.map { it.id } == ids
+/** Frase de la tanda cargada: id y texto de origen, para detectar también un cambio de idioma de origen (D7). */
+private data class LoadedItem(val id: PhraseId, val source: String)
+
+/** Compara [this] con [loaded], la tanda ya cargada: distinta si cambió resultado, frase, orden, tamaño u origen. */
+private fun PracticeSessionResult.hasSameBatchAs(loaded: List<LoadedItem>): Boolean =
+    this is PracticeSessionResult.Ready && items.map { LoadedItem(it.id, it.source) } == loaded
 
 private fun PracticeSessionUiState.Practicing?.nextIndex(): Int = when {
     this == null -> 1

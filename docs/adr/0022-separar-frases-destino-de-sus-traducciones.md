@@ -1,6 +1,6 @@
 # ADR-0022: Separar las frases destino de sus traducciones en documentos y tablas independientes
 
-- **Estado:** Propuesto
+- **Estado:** Sustituido por ADR-0023 (documentos de traducción)
 - **Fecha:** 2026-11-21
 - **Sustituye a:** ADR-0019 (solo la parte de formato de documento)
 

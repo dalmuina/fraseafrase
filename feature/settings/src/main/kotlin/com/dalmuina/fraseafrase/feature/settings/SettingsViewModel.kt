@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SaveUserSettings
 import com.dalmuina.fraseafrase.core.domain.settings.SelectActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.settings.SelectLanguageResult
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +33,7 @@ class SettingsViewModel @Inject constructor(
     private val obtainActiveLanguage: ObtainActiveLanguage,
     private val obtainAvailableLanguages: ObtainAvailableLanguages,
     private val selectActiveLanguage: SelectActiveLanguage,
+    private val obtainSourceLanguage: ObtainSourceLanguage,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
@@ -55,7 +58,11 @@ class SettingsViewModel @Inject constructor(
     private fun selectLanguage(targetLocale: LanguageTag) {
         viewModelScope.launch {
             val settings = obtainUserSettings(targetLocale)
-            selectActiveLanguage(targetLocale)
+            if (selectActiveLanguage(targetLocale) == SelectLanguageResult.RejectedSourceLocale) {
+                // The chosen language became the source language: refresh the options, keep the active target.
+                reload()
+                return@launch
+            }
             val current = _uiState.value as? SettingsUiState.Loaded ?: return@launch
             _uiState.value = current.copy(
                 activeTargetLocale = targetLocale,
@@ -94,7 +101,8 @@ class SettingsViewModel @Inject constructor(
 
     private suspend fun reload() {
         val activeTargetLocale = obtainActiveLanguage()
-        val availableTargetLocales = obtainAvailableLanguages()
+        val sourceLocale = obtainSourceLanguage()
+        val availableTargetLocales = obtainAvailableLanguages().filter { it != sourceLocale }
         val settings = obtainUserSettings(activeTargetLocale)
         _uiState.value = SettingsUiState.Loaded(
             activeTargetLocale = activeTargetLocale,

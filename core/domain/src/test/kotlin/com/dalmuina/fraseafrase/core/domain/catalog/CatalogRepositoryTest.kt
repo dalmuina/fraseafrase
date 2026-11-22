@@ -50,20 +50,4 @@ class CatalogRepositoryTest {
             // Then
             result shouldBe listOf(ptPt)
         }
-
-    // Scenario soporte: availableSourceLocales deriva de los sourceLocale de ese idioma destino
-    @Test
-    fun `given a loaded catalog when listing available source locales then it returns the distinct source locales`() =
-        runTest {
-            // Given
-            val repository = FakeCatalogRepository.withCatalogs(
-                mapOf(ptPt to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "a")))),
-            )
-
-            // When
-            val result = repository.availableSourceLocales(ptPt)
-
-            // Then
-            result shouldBe listOf(LanguageTag("es-ES"))
-        }
 }

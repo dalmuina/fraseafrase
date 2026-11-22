@@ -4,6 +4,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
@@ -102,6 +103,51 @@ class SettingsViewModelTest {
 
             // Then: una lectura posterior del idioma destino activo devuelve pt-BR, sin ninguna acción adicional
             repository.activeTargetLocale() shouldBe LanguageTag("pt-BR")
+        }
+
+    // Scenario: El desplegable de destino excluye el idioma de origen (spec: settings-screen)
+    @Test
+    fun `given the device in es-ES when the screen opens then the target options exclude the source language`() =
+        runTest {
+            // Given: pt-PT, es-ES y en-GB disponibles y el dispositivo en es-ES
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+
+            // When: el usuario abre la pantalla de ajustes
+            val viewModel = settingsViewModel(
+                repository,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("es-ES"), LanguageTag("en-GB")),
+            )
+            advanceUntilIdle()
+
+            // Then: las opciones son pt-PT y en-GB
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.availableTargetLocales shouldBe listOf(LanguageTag("pt-PT"), LanguageTag("en-GB"))
+        }
+
+    // Scenario: Elegir un idioma que ha pasado a ser el origen recarga las opciones sin cerrar la app
+    @Test
+    fun `given the device changed to the chosen language when selecting it then options reload and active is kept`() =
+        runTest {
+            // Given: ajustes abiertos con el dispositivo en es-ES y pt-PT activo
+            val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
+            val device = FakeDeviceLocaleProvider(LanguageTag("es-ES"))
+            val viewModel = settingsViewModel(
+                repository,
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("es-ES"), LanguageTag("en-GB")),
+                deviceLocale = device,
+            )
+            advanceUntilIdle()
+            device.locale = LanguageTag("en-GB")
+
+            // When: el usuario elige en-GB, que ya es el origen
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("en-GB")))
+            advanceUntilIdle()
+
+            // Then: no lanza, el destino activo sigue en pt-PT y las opciones son pt-PT y es-ES
+            val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
+            state.activeTargetLocale shouldBe LanguageTag("pt-PT")
+            state.availableTargetLocales shouldBe listOf(LanguageTag("pt-PT"), LanguageTag("es-ES"))
+            repository.activeTargetLocale() shouldBe LanguageTag("pt-PT")
         }
 
     // Scenario: Elegir un nivel CEFR de la lista (spec: settings-screen)

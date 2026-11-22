@@ -4,8 +4,8 @@ import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 
 /**
- * Fila de frase destino sembrada desde un documento de frases destino (ADR-0019, ADR-0022). No lleva `source`: el
- * texto de origen vive en [CatalogTranslationEntity], en una tabla independiente por combinación destino/origen.
+ * Fila de frase sembrada desde un `phrases-<idioma>.json` (ADR-0019). No lleva `source`: el texto de origen se
+ * obtiene uniendo esta tabla consigo misma por `id`, con el `target` de la fila del idioma de origen.
  * [position] conserva el orden de catálogo del documento original: una consulta SQL no lo garantiza por sí sola.
  */
 @Entity(

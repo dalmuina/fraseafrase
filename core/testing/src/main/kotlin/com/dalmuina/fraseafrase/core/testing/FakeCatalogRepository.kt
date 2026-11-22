@@ -9,7 +9,9 @@ import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
  * Fake de [CatalogRepository] con un catálogo por idioma destino. El constructor de un solo idioma destino
  * es un atajo para los tests que solo ejercitan uno (por defecto `pt-PT`); [withCatalogs] permite configurar
  * varios idiomas destino a la vez. [lastPhrasesCall] registra el último `(targetLocale, sourceLocale)` con el
- * que se llamó a [phrases], para comprobar qué idioma de origen resolvió un caso de uso.
+ * que se llamó a [phrases], para comprobar qué idioma de origen resolvió un caso de uso. Si el catálogo del
+ * idioma de origen está cargado, el `source` de cada frase es el `target` de la frase con el mismo id en él
+ * (como el self-JOIN real); si no, se conserva el `source` de las frases.
  */
 class FakeCatalogRepository private constructor(
     private val catalogs: Map<LanguageTag, CatalogLoadResult>,
@@ -26,16 +28,22 @@ class FakeCatalogRepository private constructor(
     override suspend fun availableTargetLocales(): List<LanguageTag> =
         catalogs.filterValues { it is CatalogLoadResult.Loaded }.keys.toList()
 
-    override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> =
-        (catalogs[targetLocale] as? CatalogLoadResult.Loaded)
-            ?.phrases
-            ?.map { it.sourceLocale }
-            ?.distinct()
-            .orEmpty()
-
     override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult {
         lastPhrasesCall = targetLocale to sourceLocale
-        return catalogs[targetLocale] ?: CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)
+        val result = catalogs[targetLocale] ?: return CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)
+        val sourceCatalog = catalogs[sourceLocale]
+        return if (result is CatalogLoadResult.Loaded && sourceCatalog is CatalogLoadResult.Loaded) {
+            val sourceTextById = sourceCatalog.phrases.associate { it.id to it.target }
+            CatalogLoadResult.Loaded(
+                result.phrases.map { phrase ->
+                    sourceTextById[phrase.id]
+                        ?.let { phrase.copy(source = it, sourceLocale = sourceLocale) }
+                        ?: phrase
+                },
+            )
+        } else {
+            result
+        }
     }
 
     companion object {

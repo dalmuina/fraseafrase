@@ -3,7 +3,6 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
-import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
@@ -11,10 +10,10 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
-import com.dalmuina.fraseafrase.core.testing.FakeDeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.test.runTest
@@ -28,10 +27,7 @@ class RegenerateActiveBatchForLevelTest {
     private fun useCase(practice: FakePracticeRepository, catalog: CatalogLoadResult) = RegenerateActiveBatchForLevel(
         practiceRepository = practice,
         composeNextBatch = ComposeNextBatch(),
-        obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
-            deviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-            catalogRepository = FakeCatalogRepository(catalog),
-        ),
+        obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(catalog)),
     )
 
     private fun snapshot(order: List<String>, progress: List<PhraseProgress>, sessionCount: Int = 9) =

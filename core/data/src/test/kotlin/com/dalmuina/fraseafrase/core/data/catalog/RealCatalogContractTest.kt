@@ -1,6 +1,7 @@
 package com.dalmuina.fraseafrase.core.data.catalog
 
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
@@ -11,6 +12,10 @@ import java.io.File
 // Contrato sobre el catálogo real empaquetado (ADR-0013, ADR-0019), ejecutado por idioma destino: la permanencia
 // de ids de uno es independiente de la de cualquier otro.
 class RealCatalogContractTest {
+
+    private companion object {
+        val PACKAGED_LOCALES = listOf("pt-PT", "pt-BR", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU")
+    }
 
     private fun catalogTextOf(targetLocale: String) =
         File("src/main/assets/catalog/phrases-$targetLocale.json").readText()
@@ -31,6 +36,30 @@ class RealCatalogContractTest {
 
         // Then
         result.shouldBeInstanceOf<CatalogParseResult.PhrasesParsed>()
+    }
+
+    // Scenario: Ids paralelos entre idiomas (spec: phrase-catalog) - todos los documentos empaquetados
+    @Test
+    fun `given all packaged phrase documents when checking parallel ids then every language has the same ids`() {
+        // Given
+        val docs = PACKAGED_LOCALES.associateWith(::currentIdsOf)
+
+        // When / Then
+        CatalogContract.parallelIdMismatches(docs).shouldBeEmpty()
+    }
+
+    // Scenario: El catálogo empaquetado no contiene documentos de traducción (spec: phrase-catalog)
+    @Test
+    fun `given the packaged catalog assets when checking their roots then none has a source locale`() {
+        // Given
+        val assets = File("src/main/assets/catalog").listFiles { f -> f.extension == "json" }.orEmpty()
+
+        // When
+        val withSourceLocale = assets.filter { "\"sourceLocale\"" in it.readText() }.map(File::getName)
+
+        // Then
+        assets.isNotEmpty() shouldBe true
+        withSourceLocale.shouldBeEmpty()
     }
 
     // Scenario: Ids publicados siguen presentes y en el mismo orden (spec: phrase-catalog)

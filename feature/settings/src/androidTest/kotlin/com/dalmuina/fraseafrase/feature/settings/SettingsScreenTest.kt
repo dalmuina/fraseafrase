@@ -354,6 +354,25 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithText("Русский (Россия)").assertIsDisplayed()
     }
 
+    // Scenario: El desplegable de destino excluye el idioma de origen (spec: settings-screen)
+    @Test
+    fun givenStateWithoutSourceLanguage_whenOpeningTheDropdown_thenSourceLanguageIsNotListed() {
+        // Given: el estado ofrece pt-PT y en-GB (es-ES es el origen y no viene en la lista)
+        setScreen(
+            loaded(
+                activeTargetLocale = LanguageTag("pt-PT"),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("en-GB")),
+            ),
+        )
+
+        // When: el usuario abre el desplegable
+        composeTestRule.onNodeWithText("Português (Portugal)").performClick()
+
+        // Then: aparece English (UK) y no Español (España)
+        composeTestRule.onNodeWithText("English (UK)").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Español (España)").assertCountEquals(0)
+    }
+
     // Scenario: El icono muestra el idioma activo en Ajustes (spec: language-indicator)
     @Test
     fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
