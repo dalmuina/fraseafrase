@@ -268,8 +268,6 @@ class PracticeSessionRouteTest {
 
     private class TestCatalogRepository(private val result: CatalogLoadResult) : CatalogRepository {
         override suspend fun availableTargetLocales(): List<LanguageTag> = listOf(LanguageTag("pt-PT"))
-        override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> =
-            listOf(LanguageTag("es-ES"))
         override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult = result
     }
 

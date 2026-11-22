@@ -7,37 +7,24 @@ import com.dalmuina.fraseafrase.core.domain.catalog.Topic
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 
 /**
- * Resultado de parsear uno de los dos tipos de documento de catálogo (frases destino o traducción).
- * A diferencia de [com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult], no es un subtipo
- * suyo: `CatalogLoadResult` es un `sealed interface` del dominio, declarado en `:core:domain`, y
- * Kotlin exige que todo subtipo directo de un tipo sellado se declare en el mismo módulo de
- * compilación que la declaración (design.md - "Dos tipos de documento JSON"). Además, una frase
- * destino sin `source` todavía no es un `CatalogPhrase` del dominio válido (exige `source` no
- * vacío), así que este resultado intermedio usa sus propios tipos ([TargetPhrase],
- * [CatalogTranslation]) hasta que `RoomCatalogDataSource` combine ambos tras el JOIN.
+ * Resultado de parsear un documento de frases del catálogo. A diferencia de
+ * [com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult], no es un subtipo suyo: es un `sealed interface`
+ * del dominio y Kotlin exige declarar sus subtipos directos en el mismo módulo. Además, una frase sin `source` no
+ * es un `CatalogPhrase` válido (exige `source` no vacío), así que este resultado usa [TargetPhrase] hasta que el
+ * self-JOIN de [CatalogDao.phrasesFor] aporte el texto de origen.
  */
 sealed interface CatalogParseResult {
 
     data class PhrasesParsed(val phrases: List<TargetPhrase>) : CatalogParseResult
 
-    data class TranslationsParsed(val translations: List<CatalogTranslation>) : CatalogParseResult
-
     data class Failed(val error: CatalogLoadError) : CatalogParseResult
 }
 
-/** Frase destino validada, sin traducción todavía: le falta el `source` que aporta un documento de traducción. */
+/** Frase validada de un documento, sin texto de origen todavía: lo aporta el self-JOIN con otro idioma. */
 data class TargetPhrase(
     val id: PhraseId,
     val level: CefrLevel,
     val topic: Topic,
     val targetLocale: LanguageTag,
     val target: String,
-)
-
-/** Traducción validada de una frase destino de [targetLocale], desde el idioma de origen [sourceLocale]. */
-data class CatalogTranslation(
-    val id: PhraseId,
-    val targetLocale: LanguageTag,
-    val sourceLocale: LanguageTag,
-    val source: String,
 )

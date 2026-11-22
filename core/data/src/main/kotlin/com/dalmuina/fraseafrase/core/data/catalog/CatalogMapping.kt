@@ -25,10 +25,3 @@ internal fun TargetPhrase.toEntity(position: Int): CatalogPhraseEntity = Catalog
     topic = topic.value,
     target = target,
 )
-
-internal fun CatalogTranslation.toEntity(): CatalogTranslationEntity = CatalogTranslationEntity(
-    id = id.value,
-    targetLocale = targetLocale.value,
-    sourceLocale = sourceLocale.value,
-    source = source,
-)

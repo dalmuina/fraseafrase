@@ -10,8 +10,5 @@ interface CatalogRepository {
     /** Idiomas destino cuyo catálogo se cargó correctamente. */
     suspend fun availableTargetLocales(): List<LanguageTag>
 
-    /** Idiomas de origen con contenido disponible para [targetLocale]. */
-    suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag>
-
     suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult
 }

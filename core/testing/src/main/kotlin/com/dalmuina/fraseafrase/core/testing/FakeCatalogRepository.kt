@@ -28,13 +28,6 @@ class FakeCatalogRepository private constructor(
     override suspend fun availableTargetLocales(): List<LanguageTag> =
         catalogs.filterValues { it is CatalogLoadResult.Loaded }.keys.toList()
 
-    override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> =
-        (catalogs[targetLocale] as? CatalogLoadResult.Loaded)
-            ?.phrases
-            ?.map { it.sourceLocale }
-            ?.distinct()
-            .orEmpty()
-
     override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult {
         lastPhrasesCall = targetLocale to sourceLocale
         val result = catalogs[targetLocale] ?: return CatalogLoadResult.Failed(CatalogLoadError.AssetUnreadable)

@@ -112,12 +112,7 @@ internal fun sessionViewModel(
 /** Catálogo cuyo resultado puede cambiar entre lecturas, para simular un catálogo que deja de cargarse. */
 internal class SwitchableCatalogRepository(var result: CatalogLoadResult) : CatalogRepository {
     override suspend fun availableTargetLocales(): List<LanguageTag> = listOf(FakeSettingsRepository.DEFAULT_LOCALE)
-    override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> = listOf(SOURCE_LOCALE)
     override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult = result
-
-    private companion object {
-        val SOURCE_LOCALE = LanguageTag("es-ES")
-    }
 }
 
 /** Igual que [sessionViewModel], pero con un catálogo cualquiera, por ejemplo uno que cambia durante el test. */

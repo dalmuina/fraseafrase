@@ -73,28 +73,28 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 > `RoomCatalogDataSourceTest` y `CatalogDatabaseTest` se eliminan con el código que cubrían (requisitos retirados
 > en el delta de `phrase-catalog`).
 
-- [ ] 3.1 Test: `CatalogDaoTest` - `phrasesFor(pt-PT, es-ES)` devuelve el `target` de `es-ES` como `source` por id con
+- [x] 3.1 Test: `CatalogDaoTest` - `phrasesFor(pt-PT, es-ES)` devuelve el `target` de `es-ES` como `source` por id con
   nivel y tema de `pt-PT`; un par sin fichero propio (`de-DE` desde `fr-FR`) devuelve todas las frases; un origen sin
   frases sembradas devuelve lista vacía (`phrase-catalog`: "El origen sale del texto destino del otro idioma", "Un
   par sin fichero propio está disponible", "Un idioma de origen con documento inválido no devuelve frases"). Debe
   fallar porque la consulta une con `catalog_translation`.
-- [ ] 3.2 Implementación: self-JOIN en `CatalogDao.phrasesFor`; `CatalogSeedVersionEntity` con clave
+- [x] 3.2 Implementación: self-JOIN en `CatalogDao.phrasesFor`; `CatalogSeedVersionEntity` con clave
   `target_locale`; `CatalogDatabase` v3 con `3.json` exportado; quitar `availableSourceLocales` del puerto y de los
   sitios de la nota (design D4). La entidad de traducción y sus métodos de DAO se borran en 3.4, junto con la
   siembra que los usa. Verificación: 3.1 en verde.
-- [ ] 3.3 Test: `RoomCatalogDataSourceTest` - primera siembra de `pt-PT`, `it-IT` y `es-ES` deja cada idioma
+- [x] 3.3 Test: `RoomCatalogDataSourceTest` - primera siembra de `pt-PT`, `it-IT` y `es-ES` deja cada idioma
   consultable con origen en cualquiera de los otros; resiembra por `schemaVersion` solo del idioma afectado; sin
   cambio no se resiembra; `CatalogDatabaseTest`: abrir una base v2 con la v3 la recrea y `PracticeDatabase` no
   cambia (`phrase-catalog`, requisito "Persistencia del catálogo de frases en Room", sus cuatro escenarios). Debe
   fallar por la siembra en dos pasadas.
-- [ ] 3.4 Implementación: siembra de una sola pasada en `RoomCatalogDataSource`; borrar `CatalogTranslationEntity`,
+- [x] 3.4 Implementación: siembra de una sola pasada en `RoomCatalogDataSource`; borrar `CatalogTranslationEntity`,
   los métodos de DAO `insertTranslations`, `deleteTranslationsFor`, `sourceLocalesFor` y `phraseIdsFor`,
   `TranslationParsing`, `parseTranslations`, `CatalogTranslation`, `TranslationsParsed` y
   `CatalogHeader.sourceLocale`/`isTranslation` de `CatalogJson`/`CatalogParseResult` (design D4). Verificación: 3.3
   en verde.
-- [ ] 3.5 Test: `CatalogContractTest` - `parallelIdMismatches` con ids iguales, con un id que falta y con un id de más
+- [x] 3.5 Test: `CatalogContractTest` - `parallelIdMismatches` con ids iguales, con un id que falta y con un id de más
   (`phrase-catalog`, requisito "Ids paralelos entre idiomas", tres escenarios). Debe fallar por función inexistente.
-- [ ] 3.6 Implementación: `parallelIdMismatches` en `CatalogContract` y su aplicación a los `phrases-*.json` reales en
+- [x] 3.6 Implementación: `parallelIdMismatches` en `CatalogContract` y su aplicación a los `phrases-*.json` reales en
   `RealCatalogContractTest` (design D5). Verificación: 3.5 en verde, `:core:data:check` y compilación de
   `androidTest` de `:feature:session` y `:feature:settings`.
 

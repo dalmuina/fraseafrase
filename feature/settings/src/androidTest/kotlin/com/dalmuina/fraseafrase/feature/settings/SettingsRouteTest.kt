@@ -130,8 +130,6 @@ class SettingsRouteTest {
     private class TestCatalogRepository(private val targetLocales: List<LanguageTag>) : CatalogRepository {
         override suspend fun availableTargetLocales(): List<LanguageTag> = targetLocales
 
-        override suspend fun availableSourceLocales(targetLocale: LanguageTag): List<LanguageTag> = emptyList()
-
         override suspend fun phrases(targetLocale: LanguageTag, sourceLocale: LanguageTag): CatalogLoadResult =
             CatalogLoadResult.Loaded(emptyList())
     }
