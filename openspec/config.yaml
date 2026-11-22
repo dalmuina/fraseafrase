@@ -65,4 +65,6 @@ rules:
     - Cada tarea de implementación va precedida de su tarea de test, que debe fallar antes de implementar.
     - Cada tarea referencia el escenario de la especificación que satisface.
     - Tareas pequeñas, completables y verificables de forma independiente.
-    - La última sección incluye - ejecutar tests, ktlint, detekt y verificación de cobertura Kover.
+    - Cada grupo (sección numerada) tiene como mucho 6 tareas de un único módulo; si una dependencia de compilación obliga a unir más, el tasks.md lo explica en una nota del grupo.
+    - Las tareas de contenido (assets, traducciones, ficheros de ids) van en su propio grupo, sin TDD, y no exigen leer los assets enteros.
+    - La última sección incluye - ejecutar tests, ktlint, detekt y verificación de cobertura Kover; la ejecuta la sesión principal, no un grupo de tdd-implementer.

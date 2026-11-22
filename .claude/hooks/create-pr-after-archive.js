@@ -76,7 +76,7 @@ function main() {
     whatChanges ? `## Resumen\n\n${whatChanges}` : `## Resumen\n\nCambio de OpenSpec \`${changeName}\`.`
   );
   bodyParts.push(
-    "## Plan de pruebas\n\n- [x] `./gradlew check` en verde (hook de pre-commit).\n- [x] `./gradlew koverVerify` en verde.\n- CI de la PR."
+    "## Plan de pruebas\n\n- [x] `./gradlew check` en verde (hook de pre-commit).\n- [ ] `./gradlew koverVerify` (lo ejecuta `code-reviewer`/`/opsx:verify`; confírmalo en la CI).\n- [ ] Tests instrumentados de las clases tocadas.\n- CI de la PR."
   );
   bodyParts.push("🤖 Generated with [Claude Code](https://claude.com/claude-code)");
   const body = bodyParts.join("\n\n");
