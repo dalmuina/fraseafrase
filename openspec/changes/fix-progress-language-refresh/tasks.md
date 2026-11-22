@@ -26,8 +26,8 @@
 
 ## 2. Verificación final (sesión principal)
 
-- [ ] 2.1 `./gradlew check` y `./gradlew koverVerify` en verde (tests, ktlint/detekt, lint y cobertura).
-- [ ] 2.2 Comprobación manual en la app:
+- [x] 2.1 `./gradlew check` y `./gradlew koverVerify` en verde (tests, ktlint/detekt, lint y cobertura).
+- [x] 2.2 Comprobación manual en la app:
   - Cambiar el idioma destino activo en Ajustes y volver a Progreso: cambian el icono y los recuentos.
   - Aplicar otro nivel CEFR y volver a Progreso: cambian el nivel y el total.
 
