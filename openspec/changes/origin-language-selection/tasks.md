@@ -148,7 +148,7 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
   `docs/adr/README.md`.
 - [x] 8.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio 90 %,
   presentación 80 %, global 70 %).
-- [ ] 8.3 Instalar la app de depuración y comprobar a mano: con el móvil en inglés las frases salen en inglés; con
+- [x] 8.3 Instalar la app de depuración y comprobar a mano: con el móvil en inglés las frases salen en inglés; con
   el móvil en japonés, en español; el desplegable de destino nunca ofrece el idioma de origen. Además, instalar encima de una
   versión anterior (catálogo v2, con progreso guardado de `pt-PT`): el catálogo se resiembra y el progreso no cambia.
 
