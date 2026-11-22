@@ -1,6 +1,6 @@
 # ADR-0024: Un fallo resta un acierto, no un nivel
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-22
 - **Sustituye a:** ADR-0017 (parcialmente, solo la regla de fallo: punto 3 de "Resolución al instante de la
   autoevaluación" y la regla "un fallo pone la racha a 0" heredada de ADR-0012/ADR-0015)

@@ -63,10 +63,10 @@ redactado en `docs/adr/0024-un-fallo-resta-un-acierto.md` (Propuesto).
 
 ## 3. Cierre y verificación (sesión principal)
 
-- [ ] 3.1 Líneas de estado (ADR-0001): ADR-0024 → `Aceptado`; ADR-0017 → `Sustituido por ADR-0018 (alcance del
+- [x] 3.1 Líneas de estado (ADR-0001): ADR-0024 → `Aceptado`; ADR-0017 → `Sustituido por ADR-0018 (alcance del
   MVP) y ADR-0024 (regla de fallo)`; añadir 0024 (`Aceptado`) a la tabla de `docs/adr/README.md` y actualizar la
   fila de 0017.
-- [ ] 3.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio
+- [x] 3.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio
   90 %, presentación 80 %, global 70 %).
 - [ ] 3.3 Instalar la app de depuración y comprobar a mano: una frase en Plata con racha 0 que se falla pasa a
   Bronce con "1 para Plata"; una frase con racha 2 que se falla mantiene su insignia y muestra un acierto más
