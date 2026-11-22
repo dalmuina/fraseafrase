@@ -134,7 +134,7 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 
 ## 7. Integración (`:app`)
 
-- [ ] 7.1 Test de regresión: `PersistenceWiringTest` (instrumentado, filtrado por clase) - el grafo de producción
+- [x] 7.1 Test de regresión: `PersistenceWiringTest` (instrumentado, filtrado por clase) - el grafo de producción
   resuelve `ObtainSourceLanguage` y `DefaultSourceLocale` vale `es-ES` (`phrase-catalog`: "El idioma del dispositivo
   no está disponible"). La provisión ya existe desde 1.4, así que pasa sin cambios de producción. Verificación:
   `:app:check`.
