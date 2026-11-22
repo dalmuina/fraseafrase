@@ -16,7 +16,13 @@ class ObtainCatalogPhrasesForActiveLanguage @Inject constructor(
 
     suspend operator fun invoke(targetLocale: LanguageTag): CatalogLoadResult {
         val available = catalogRepository.availableSourceLocales(targetLocale)
-        val sourceLocale = ResolveSourceLocale(deviceLocaleProvider.current(), targetLocale, available)
+        // Temporal hasta 2.4: conserva el comportamiento previo (excluye el destino de los candidatos).
+        val candidates = available.filterNot { it == targetLocale }
+        val device = deviceLocaleProvider.current()
+        val sourceLocale = candidates.firstOrNull { it == device }
+            ?: candidates.firstOrNull { it == LanguageTag("es-ES") }
+            ?: candidates.firstOrNull()
+            ?: device
         return catalogRepository.phrases(targetLocale, sourceLocale)
     }
 }

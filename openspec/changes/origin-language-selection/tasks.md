@@ -15,22 +15,22 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 > - `feature/session/src/androidTest/.../PracticeSessionRouteTest.kt`
 > - `feature/settings/src/androidTest/.../SettingsRouteTest.kt`
 
-- [ ] 1.1 Test: `ResolveSourceLocaleTest` reescrito con la firma `(device, default, available)`: dispositivo
+- [x] 1.1 Test: `ResolveSourceLocaleTest` reescrito con la firma `(device, default, available)`: dispositivo
   disponible → dispositivo; dispositivo no disponible → por defecto (`phrase-catalog`: "El idioma del dispositivo
   está disponible", "El idioma del dispositivo no está disponible"). Debe fallar por la firma.
-- [ ] 1.2 Implementación: `ResolveSourceLocale` sin literal y `DefaultSourceLocale` (design D1). Verificación: 1.1
+- [x] 1.2 Implementación: `ResolveSourceLocale` sin literal y `DefaultSourceLocale` (design D1). Verificación: 1.1
   en verde.
-- [ ] 1.3 Test: `ObtainSourceLanguageTest` - combina `FakeDeviceLocaleProvider` (pasa a mutable, `var locale`,
+- [x] 1.3 Test: `ObtainSourceLanguageTest` - combina `FakeDeviceLocaleProvider` (pasa a mutable, `var locale`,
   design D4), `availableTargetLocales()` y `DefaultSourceLocale`; el resultado no cambia con el destino activo y
   sigue al dispositivo cuando este cambia (`phrase-catalog`: "El idioma de origen no depende del idioma destino
   activo", "Un cambio del idioma del dispositivo cambia el origen"). Debe fallar por clase inexistente.
-- [ ] 1.4 Implementación: `ObtainSourceLanguage` (design D1) y `@Provides DefaultSourceLocale(LanguageTag("es-ES"))`
+- [x] 1.4 Implementación: `ObtainSourceLanguage` (design D1) y `@Provides DefaultSourceLocale(LanguageTag("es-ES"))`
   en `app/.../di/PersistenceModule.kt`. Verificación: 1.3 en verde, `:app:compileDebugKotlin`.
-- [ ] 1.5 Test: `ObtainActiveLanguageTest` - destino guardado distinto del origen se recupera; primera ejecución que
+- [x] 1.5 Test: `ObtainActiveLanguageTest` - destino guardado distinto del origen se recupera; primera ejecución que
   salta el origen; guardado igual al origen usa el primero distinto (`user-settings`, requisito "Idioma destino
   activo": "Primera ejecución salta el idioma de origen", "Un idioma destino guardado igual al origen usa el primero
   distinto del origen"). Debe fallar porque hoy delega sin excluir.
-- [ ] 1.6 Implementación: `ObtainActiveLanguage` según design D2 y adaptación de los cinco sitios de la nota.
+- [x] 1.6 Implementación: `ObtainActiveLanguage` según design D2 y adaptación de los cinco sitios de la nota.
   Verificación: 1.5 en verde, `:core:domain:check`, `:core:testing:check`, `:app:check` y `check` de
   `:feature:session`, `:feature:progress`, `:feature:settings` (incluye la compilación de `androidTest`).
 

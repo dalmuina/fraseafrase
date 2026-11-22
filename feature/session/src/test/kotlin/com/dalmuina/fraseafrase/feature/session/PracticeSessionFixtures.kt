@@ -4,8 +4,10 @@ import com.dalmuina.fraseafrase.core.domain.audio.PlayPhraseAudio
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
+import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
 import com.dalmuina.fraseafrase.core.domain.practice.GenerateSession
@@ -153,6 +155,14 @@ internal fun sessionViewModelWith(
         ),
         playPhraseAudio = PlayPhraseAudio(phrasePlayer),
         revertLastAnswer = RevertLastAnswer(practice),
-        obtainActiveLanguage = ObtainActiveLanguage(settingsRepository),
+        obtainActiveLanguage = ObtainActiveLanguage(
+            settingsRepository,
+            ObtainSourceLanguage(
+                FakeDeviceLocaleProvider(LanguageTag("es-ES")),
+                catalogRepository,
+                DefaultSourceLocale(LanguageTag("es-ES")),
+            ),
+            catalogRepository,
+        ),
     )
 }

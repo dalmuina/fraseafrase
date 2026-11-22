@@ -4,7 +4,10 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
+import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainAvailableLanguages
 import com.dalmuina.fraseafrase.core.domain.settings.ObtainUserSettings
@@ -83,7 +86,17 @@ class SettingsRouteTest {
         return SettingsViewModel(
             obtainUserSettings = ObtainUserSettings(repository),
             saveUserSettings = SaveUserSettings(repository),
-            obtainActiveLanguage = ObtainActiveLanguage(repository),
+            obtainActiveLanguage = ObtainActiveLanguage(
+                repository,
+                ObtainSourceLanguage(
+                    object : DeviceLocaleProvider {
+                        override fun current(): LanguageTag = LanguageTag("es-ES")
+                    },
+                    catalogRepository,
+                    DefaultSourceLocale(LanguageTag("es-ES")),
+                ),
+                catalogRepository,
+            ),
             obtainAvailableLanguages = obtainAvailableLanguages,
             selectActiveLanguage = SelectActiveLanguage(obtainAvailableLanguages, repository),
         )

@@ -15,9 +15,11 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
+import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
 import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.catalog.Topic
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
@@ -222,7 +224,15 @@ class PracticeSessionRouteTest {
             ),
             playPhraseAudio = PlayPhraseAudio(TestPhrasePlayer()),
             revertLastAnswer = RevertLastAnswer(practice),
-            obtainActiveLanguage = ObtainActiveLanguage(settingsRepository),
+            obtainActiveLanguage = ObtainActiveLanguage(
+                settingsRepository,
+                ObtainSourceLanguage(
+                    TestDeviceLocaleProvider,
+                    catalogRepository,
+                    DefaultSourceLocale(LanguageTag("es-ES")),
+                ),
+                catalogRepository,
+            ),
         )
     }
 
