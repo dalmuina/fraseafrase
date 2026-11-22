@@ -6,6 +6,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CatalogPhrase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogRepository
 import com.dalmuina.fraseafrase.core.domain.catalog.DefaultSourceLocale
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.catalog.ObtainCatalogPhrasesForActiveLanguage
 import com.dalmuina.fraseafrase.core.domain.catalog.ObtainSourceLanguage
 import com.dalmuina.fraseafrase.core.domain.practice.ActiveBatch
 import com.dalmuina.fraseafrase.core.domain.practice.AnswerPhrase
@@ -30,7 +31,6 @@ import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
-import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 /** Snapshot con una tanda activa de frases [order], en ese orden, y el progreso dado (por defecto, sin respuestas). */
@@ -104,9 +104,8 @@ internal fun sessionViewModel(
     sessionViewModelWith(
         practice = practice,
         catalogRepository = FakeCatalogRepository(catalog, targetLocale = activeTargetLocale),
-        settings = settings,
+        settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale),
         phrasePlayer = phrasePlayer,
-        activeTargetLocale = activeTargetLocale,
     )
 
 /** Catálogo cuyo resultado puede cambiar entre lecturas, para simular un catálogo que deja de cargarse. */
@@ -119,12 +118,19 @@ internal class SwitchableCatalogRepository(var result: CatalogLoadResult) : Cata
 internal fun sessionViewModelWith(
     practice: FakePracticeRepository,
     catalogRepository: CatalogRepository,
-    settings: UserSettings = UserSettings.DEFAULT,
+    settingsRepository: FakeSettingsRepository = FakeSettingsRepository(UserSettings.DEFAULT),
     phrasePlayer: FakePhrasePlayer = FakePhrasePlayer(),
-    activeTargetLocale: LanguageTag = FakeSettingsRepository.DEFAULT_LOCALE,
+    deviceLocaleProvider: FakeDeviceLocaleProvider = FakeDeviceLocaleProvider(LanguageTag("es-ES")),
 ): PracticeSessionViewModel {
-    val settingsRepository = FakeSettingsRepository(settings, defaultActiveTargetLocale = activeTargetLocale)
-    val obtainCatalogPhrases = anObtainCatalogPhrases(catalogRepository)
+    val obtainSourceLanguage = ObtainSourceLanguage(
+        deviceLocaleProvider,
+        catalogRepository,
+        DefaultSourceLocale(LanguageTag("es-ES")),
+    )
+    val obtainCatalogPhrases = ObtainCatalogPhrasesForActiveLanguage(
+        obtainSourceLanguage = obtainSourceLanguage,
+        catalogRepository = catalogRepository,
+    )
     val composeNextBatch = ComposeNextBatch()
     val regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
         practiceRepository = practice,
@@ -147,14 +153,6 @@ internal fun sessionViewModelWith(
         ),
         playPhraseAudio = PlayPhraseAudio(phrasePlayer),
         revertLastAnswer = RevertLastAnswer(practice),
-        obtainActiveLanguage = ObtainActiveLanguage(
-            settingsRepository,
-            ObtainSourceLanguage(
-                FakeDeviceLocaleProvider(LanguageTag("es-ES")),
-                catalogRepository,
-                DefaultSourceLocale(LanguageTag("es-ES")),
-            ),
-            catalogRepository,
-        ),
+        obtainActiveLanguage = ObtainActiveLanguage(settingsRepository, obtainSourceLanguage, catalogRepository),
     )
 }

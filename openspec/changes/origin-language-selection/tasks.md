@@ -123,12 +123,12 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 
 ## 6. Práctica: reflejar el cambio de origen (`:feature:session`)
 
-- [ ] 6.1 Test: `PracticeSessionViewModelTest` - `sessionViewModelWith` gana un parámetro `deviceLocaleProvider` y
+- [x] 6.1 Test: `PracticeSessionViewModelTest` - `sessionViewModelWith` gana un parámetro `deviceLocaleProvider` y
   usa `FakeCatalogRepository.withCatalogs` con `pt-PT`, `es-ES` y `en-GB`; con la tanda cargada con el dispositivo
   en `es-ES`, pasar el `FakeDeviceLocaleProvider` a `en-GB` y lanzar `Resume` muestra el texto `en-GB` sin revelar,
   mismas frases y rachas (`practice-session`: "Volver a Practicar tras cambiar el idioma del dispositivo muestra el
   nuevo texto de origen"). Debe fallar porque `Resume` solo compara ids.
-- [ ] 6.2 Implementación: `loadedBatch` con `LoadedItem(id, source)`, `hasSameBatchAs` compara ambos (design D7).
+- [x] 6.2 Implementación: `loadedBatch` con `LoadedItem(id, source)`, `hasSameBatchAs` compara ambos (design D7).
   Verificación: 6.1 en verde y el test existente de `Resume` sin cambios que conserva `revealed` sigue en verde
   (`practice-session`: "Volver a Practicar sin cambios conserva el estado"), `:feature:session:check`.
 
