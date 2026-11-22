@@ -84,9 +84,10 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
   siembra que los usa. Verificación: 3.1 en verde.
 - [x] 3.3 Test: `RoomCatalogDataSourceTest` - primera siembra de `pt-PT`, `it-IT` y `es-ES` deja cada idioma
   consultable con origen en cualquiera de los otros; resiembra por `schemaVersion` solo del idioma afectado; sin
-  cambio no se resiembra; `CatalogDatabaseTest`: abrir una base v2 con la v3 la recrea y `PracticeDatabase` no
-  cambia (`phrase-catalog`, requisito "Persistencia del catálogo de frases en Room", sus cuatro escenarios). Debe
-  fallar por la siembra en dos pasadas.
+  cambio no se resiembra (`phrase-catalog`, requisito "Persistencia del catálogo de frases en Room"; tres de sus
+  cuatro escenarios). Debe fallar por la siembra en dos pasadas. El cuarto escenario, "La actualización desde la
+  versión con traducciones no pierde progreso", no tiene test automático (`createCatalogDatabase` exige `Context` y
+  `core/data` no tiene `androidTest`): lo cubre la verificación manual 8.3.
 - [x] 3.4 Implementación: siembra de una sola pasada en `RoomCatalogDataSource`; borrar `CatalogTranslationEntity`,
   los métodos de DAO `insertTranslations`, `deleteTranslationsFor`, `sourceLocalesFor` y `phraseIdsFor`,
   `TranslationParsing`, `parseTranslations`, `CatalogTranslation`, `TranslationsParsed` y
@@ -147,8 +148,9 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
   `docs/adr/README.md`.
 - [x] 8.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio 90 %,
   presentación 80 %, global 70 %).
-- [x] 8.3 Instalar la app de depuración y comprobar a mano: con el móvil en inglés las frases salen en inglés; con
-  el móvil en japonés, en español; el desplegable de destino nunca ofrece el idioma de origen.
+- [ ] 8.3 Instalar la app de depuración y comprobar a mano: con el móvil en inglés las frases salen en inglés; con
+  el móvil en japonés, en español; el desplegable de destino nunca ofrece el idioma de origen. Además, instalar encima de una
+  versión anterior (catálogo v2, con progreso guardado de `pt-PT`): el catálogo se resiembra y el progreso no cambia.
 
 ## Workflow follow-up
 

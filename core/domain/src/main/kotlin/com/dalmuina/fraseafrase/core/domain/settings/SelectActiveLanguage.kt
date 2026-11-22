@@ -6,8 +6,8 @@ import javax.inject.Inject
 
 /**
  * Cambia el idioma destino activo a [targetLocale] (spec `user-settings`, "Cambio del idioma destino
- * activo"). Valida que [targetLocale] esté entre los idiomas destino disponibles; si no lo está, es un
- * error de programación y lanza [IllegalArgumentException]. Si coincide con el idioma de origen vigente
+ * activo"). Primero valida que [targetLocale] esté entre los idiomas destino disponibles; si no lo está,
+ * es un error de programación y lanza [IllegalArgumentException]. Después, si coincide con el idioma de origen vigente
  * devuelve [SelectLanguageResult.RejectedSourceLocale] sin guardar nada ("No se puede elegir como destino
  * el idioma de origen"); no lanza porque el origen puede cambiar con Ajustes abiertos.
  */

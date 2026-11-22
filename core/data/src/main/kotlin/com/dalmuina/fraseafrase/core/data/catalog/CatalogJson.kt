@@ -11,9 +11,8 @@ import kotlinx.serialization.json.Json
 /**
  * Parseo puro del documento de frases del catálogo JSON (ADR-0023). Convierte el texto en los tipos
  * intermedios de [CatalogParseResult], copiando el locale de la raíz a cada frase, y devuelve errores tipados en
- * lugar de excepciones. Los campos
- * son anulables para que la validación sea nuestra y no un fallo del deserializador: así cada motivo
- * de rechazo tiene su resultado.
+ * lugar de excepciones. Los campos son anulables para que la validación sea nuestra y no un fallo del
+ * deserializador: así cada motivo de rechazo tiene su resultado.
  */
 object CatalogJson {
 
