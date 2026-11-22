@@ -100,10 +100,10 @@ redactado en `docs/adr/0023-origen-del-dispositivo-y-texto-de-origen-desde-frase
 
 ## 4. Contenido: retirar los documentos de traducción (sesión principal, sin `tdd-implementer`)
 
-- [ ] 4.1 Test de guarda en `RealCatalogContractTest`: ningún asset de `catalog/` tiene `sourceLocale` en la raíz
+- [x] 4.1 Test de guarda en `RealCatalogContractTest`: ningún asset de `catalog/` tiene `sourceLocale` en la raíz
   (`phrase-catalog`: "El catálogo empaquetado no contiene documentos de traducción"). Falla mientras existan los
   `translations-*.json`.
-- [ ] 4.2 Borrar los 8 `core/data/src/main/assets/catalog/translations-*.json` con `git rm` (sin leerlos).
+- [x] 4.2 Borrar los 8 `core/data/src/main/assets/catalog/translations-*.json` con `git rm` (sin leerlos).
   Verificación: 4.1 y el contrato de ids paralelos en verde, `:core:data:check`.
 
 ## 5. Ajustes: destino sin el idioma de origen (`:feature:settings`)

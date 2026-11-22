@@ -48,6 +48,20 @@ class RealCatalogContractTest {
         CatalogContract.parallelIdMismatches(docs).shouldBeEmpty()
     }
 
+    // Scenario: El catálogo empaquetado no contiene documentos de traducción (spec: phrase-catalog)
+    @Test
+    fun `given the packaged catalog assets when checking their roots then none has a source locale`() {
+        // Given
+        val assets = File("src/main/assets/catalog").listFiles { f -> f.extension == "json" }.orEmpty()
+
+        // When
+        val withSourceLocale = assets.filter { "\"sourceLocale\"" in it.readText() }.map(File::getName)
+
+        // Then
+        assets.isNotEmpty() shouldBe true
+        withSourceLocale.shouldBeEmpty()
+    }
+
     // Scenario: Ids publicados siguen presentes y en el mismo orden (spec: phrase-catalog)
     @Test
     fun `given pt-PT released ids when checking the packaged catalog then the prefix is kept`() {
