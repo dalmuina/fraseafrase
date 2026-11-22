@@ -154,10 +154,24 @@ aciertos en la tanda activa ni cuando el nivel de consolidación ya es el máxim
 
 #### Scenario: Fallo reinicia el contador
 
-- **GIVEN** una tanda con la frase A de nivel 2 y racha 2
+- **GIVEN** una tanda con la frase A de nivel 2 y racha 1
 - **WHEN** el usuario revela A y se autoevalúa con fallo
 - **THEN** al mostrarse A de nuevo y revelarla, la pantalla muestra que le faltan 3 aciertos para la insignia
-  "Plata", porque el fallo bajó su nivel de consolidación a 1 (ADR-0015) antes de calcular el contador
+  "Oro", porque el fallo dejó su racha en 0 sin bajar su nivel (ADR-0024)
+
+#### Scenario: Fallo con racha mayor que 0 suma un acierto al contador
+
+- **GIVEN** una tanda con la frase A de nivel 2 y racha 2
+- **WHEN** el usuario revela A y se autoevalúa con fallo
+- **THEN** al mostrarse A de nuevo y revelarla, la pantalla muestra que le faltan 2 aciertos para la insignia
+  "Oro", porque el fallo solo restó un acierto a su racha (ADR-0024)
+
+#### Scenario: Fallo con racha 0 deja la frase a un acierto del nivel que tenía
+
+- **GIVEN** una tanda con la frase A de nivel 2 y racha 0
+- **WHEN** el usuario revela A y se autoevalúa con fallo
+- **THEN** al mostrarse A de nuevo y revelarla, la pantalla muestra que le falta 1 acierto para la insignia
+  "Plata", porque el fallo bajó su nivel a 1 con racha 2 (ADR-0024)
 
 #### Scenario: Racha de tres sigue mostrando el contador en 0
 
@@ -350,9 +364,15 @@ al nivel de consolidación actual de esa frase, incluida la insignia "sin rango"
 
 #### Scenario: Un fallo que baja el nivel actualiza la insignia
 
-- **GIVEN** una frase con nivel de consolidación 3 (insignia "Oro")
+- **GIVEN** una frase con nivel de consolidación 3 (insignia "Oro") y racha 0
 - **WHEN** el usuario la revela y se autoevalúa con fallo
 - **THEN** al volver a mostrarse esa frase, la pantalla muestra la insignia "Plata"
+
+#### Scenario: Un fallo con racha mayor que 0 mantiene la insignia
+
+- **GIVEN** una frase con nivel de consolidación 3 (insignia "Oro") y racha 1
+- **WHEN** el usuario la revela y se autoevalúa con fallo
+- **THEN** al volver a mostrarse esa frase, la pantalla sigue mostrando la insignia "Oro"
 
 ### Requirement: Controles de acción siempre visibles y pulsables
 
@@ -405,10 +425,17 @@ anterior, la pantalla MUST avanzar a la frase siguiente sin esperar ninguna tran
 
 #### Scenario: Un fallo que baja el nivel muestra el indicador
 
-- **GIVEN** una frase de nivel 3 (insignia "Oro")
+- **GIVEN** una frase de nivel 3 (insignia "Oro") con racha 0
 - **WHEN** el usuario la revela y se autoevalúa con fallo
-- **THEN** la insignia junto al nivel CEFR de esa frase transiciona de "Oro" a "Plata" (ADR-0015),
+- **THEN** la insignia junto al nivel CEFR de esa frase transiciona de "Oro" a "Plata" (ADR-0024),
   sin que la pantalla avance todavía a la frase siguiente
+
+#### Scenario: Un fallo con racha mayor que 0 no muestra el indicador
+
+- **GIVEN** una frase de nivel 3 (insignia "Oro") con racha 2
+- **WHEN** el usuario la revela y se autoevalúa con fallo
+- **THEN** la pantalla no muestra ninguna transición de insignia y avanza de inmediato a la frase
+  siguiente, porque el fallo solo restó un acierto a su racha y el nivel se mantiene en 3 (ADR-0024)
 
 #### Scenario: Un acierto que no certifica no muestra el indicador
 
@@ -426,10 +453,10 @@ anterior, la pantalla MUST avanzar a la frase siguiente sin esperar ninguna tran
 
 #### Scenario: Un fallo en nivel 0 no muestra el indicador
 
-- **GIVEN** una frase nueva de nivel 0 (insignia "sin rango")
+- **GIVEN** una frase nueva de nivel 0 (insignia "sin rango") con racha 0
 - **WHEN** el usuario la revela y se autoevalúa con fallo
 - **THEN** la pantalla no muestra ninguna transición de insignia y avanza de inmediato a la frase
-  siguiente, porque el nivel 0 no tiene nivel inferior al que bajar (ADR-0015)
+  siguiente, porque el nivel 0 no tiene nivel inferior al que bajar (ADR-0024)
 
 #### Scenario: El indicador desaparece sin intervención del usuario
 
