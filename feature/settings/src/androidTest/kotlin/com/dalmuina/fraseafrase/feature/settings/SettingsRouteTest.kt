@@ -59,7 +59,7 @@ class SettingsRouteTest {
     // idioma destino lo activa de inmediato")
     @Test
     fun givenAvailableLanguages_whenSelectingAnotherOne_thenItIsActivatedImmediately() {
-        // Given: pt-PT activo con pt-BR también disponible, y la pantalla montada
+        // Given: pt-PT activo con en-GB también disponible, y la pantalla montada
         val repository = TestSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
         val viewModel = settingsViewModel(repository, availableTargetLocales = listOf(LOCALE, OTHER_LOCALE))
         composeTestRule.setContent {
@@ -67,10 +67,10 @@ class SettingsRouteTest {
         }
         composeTestRule.waitForIdle()
 
-        // When: el usuario elige pt-BR en el desplegable, sin salir de la pantalla de ajustes
+        // When: el usuario elige en-GB en el desplegable, sin salir de la pantalla de ajustes
         viewModel.onAction(SettingsAction.SelectLanguage(OTHER_LOCALE))
 
-        // Then: una lectura posterior del idioma destino activo devuelve pt-BR
+        // Then: una lectura posterior del idioma destino activo devuelve en-GB
         composeTestRule.waitUntil(timeoutMillis = WAIT_TIMEOUT_MILLIS) {
             runBlocking { repository.activeTargetLocale() } == OTHER_LOCALE
         }
@@ -138,6 +138,6 @@ class SettingsRouteTest {
     private companion object {
         const val WAIT_TIMEOUT_MILLIS = 5_000L
         val LOCALE = LanguageTag("pt-PT")
-        val OTHER_LOCALE = LanguageTag("pt-BR")
+        val OTHER_LOCALE = LanguageTag("en-GB")
     }
 }

@@ -353,19 +353,19 @@ class ProgressScreenTest {
 
     // Scenario: El icono muestra el idioma activo en Progreso (spec: language-indicator)
     @Test
-    fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
-        // Given/When: la cabecera muestra el idioma destino activo pt-BR
+    fun givenActiveTargetLocaleEnGb_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
+        // Given/When: la cabecera muestra el idioma destino activo en-GB
         setScreen(
             ProgressUiState.Content(
                 totalAvailable = 6,
                 cefrLevel = CefrLevel.A1,
                 byLevel = allLevels(levelZero = 6),
-                activeTargetLocale = LanguageTag("pt-BR"),
+                activeTargetLocale = LanguageTag("en-GB"),
             ),
         )
 
-        // Then: la cabecera muestra el icono circular correspondiente a pt-BR
-        composeTestRule.onNodeWithContentDescription("pt-BR").assertIsDisplayed()
+        // Then: la cabecera muestra el icono circular correspondiente a en-GB
+        composeTestRule.onNodeWithContentDescription("en-GB").assertIsDisplayed()
     }
 
     // Scenario: Tocar el icono desde Progreso navega a Ajustes (spec: language-indicator)

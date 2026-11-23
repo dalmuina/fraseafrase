@@ -21,9 +21,9 @@ de mostrarse.
 
 #### Scenario: El icono muestra el idioma activo en Progreso y Ajustes
 
-- **GIVEN** el idioma destino activo `pt-BR`
+- **GIVEN** el idioma destino activo `en-GB`
 - **WHEN** el usuario abre la pantalla de Progreso o la de Ajustes
-- **THEN** la cabecera de esa pantalla muestra el icono circular correspondiente a `pt-BR`
+- **THEN** la cabecera de esa pantalla muestra el icono circular correspondiente a `en-GB`
 
 ### Requirement: El icono se actualiza tras cambiar de idioma
 
@@ -32,9 +32,9 @@ tres pantallas MUST mostrar el nuevo idioma destino activo la siguiente vez que 
 
 #### Scenario: El icono refleja el idioma recién elegido
 
-- **GIVEN** el idioma destino activo `pt-PT` y el usuario lo cambia a `pt-BR` desde Ajustes
+- **GIVEN** el idioma destino activo `pt-PT` y el usuario lo cambia a `en-GB` desde Ajustes
 - **WHEN** el usuario abre la pantalla de Practicar
-- **THEN** la cabecera muestra el icono circular correspondiente a `pt-BR`
+- **THEN** la cabecera muestra el icono circular correspondiente a `en-GB`
 
 ### Requirement: Tocar el icono navega a Ajustes
 

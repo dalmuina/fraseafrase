@@ -20,9 +20,9 @@ ser A1 y su tamaño de tanda N MUST ser 20.
 #### Scenario: Un idioma destino nuevo no hereda los ajustes de otro
 
 - **GIVEN** el idioma destino `pt-PT` con nivel CEFR B1 y N igual a 25 guardados, y el idioma
-  destino `pt-BR` sin ajustes guardados todavía
-- **WHEN** se leen los ajustes de `pt-BR`
-- **THEN** el nivel CEFR de `pt-BR` es A1 y su N es 20
+  destino `en-GB` sin ajustes guardados todavía
+- **WHEN** se leen los ajustes de `en-GB`
+- **THEN** el nivel CEFR de `en-GB` es A1 y su N es 20
 
 ### Requirement: Persistencia de los ajustes
 
@@ -38,9 +38,9 @@ valor, de forma independiente de los ajustes de cualquier otro idioma destino.
 #### Scenario: Los ajustes de dos idiomas destino no se mezclan
 
 - **GIVEN** el nivel CEFR B1 y N igual a 25 guardados para `pt-PT`, y el nivel CEFR A2 y N igual a
-  10 guardados para `pt-BR`
+  10 guardados para `en-GB`
 - **WHEN** se leen los ajustes de cada idioma destino
-- **THEN** `pt-PT` devuelve el nivel CEFR B1 y N igual a 25, y `pt-BR` devuelve el nivel CEFR A2 y N
+- **THEN** `pt-PT` devuelve el nivel CEFR B1 y N igual a 25, y `en-GB` devuelve el nivel CEFR A2 y N
   igual a 10
 
 ### Requirement: Fallback de N ante valores fuera de rango
@@ -120,9 +120,9 @@ otro idioma destino. Un guardado correcto MUST NOT lanzar error.
 
 #### Scenario: Guardar los ajustes de un idioma destino no modifica los de otro
 
-- **GIVEN** el nivel CEFR A1 y N igual a 20 guardados para `pt-BR`
+- **GIVEN** el nivel CEFR A1 y N igual a 20 guardados para `en-GB`
 - **WHEN** se guardan el nivel CEFR B2 y N igual a 15 para `pt-PT`
-- **THEN** una lectura posterior de los ajustes de `pt-BR` sigue devolviendo el nivel CEFR A1 y N
+- **THEN** una lectura posterior de los ajustes de `en-GB` sigue devolviendo el nivel CEFR A1 y N
   igual a 20
 
 ### Requirement: Guardado fallido no deja ajustes a medias
@@ -147,7 +147,7 @@ distinto del idioma de origen y MUST NOT lanzar error.
 
 #### Scenario: Primera ejecución usa el primer idioma destino disponible
 
-- **GIVEN** que no hay ningún idioma destino activo guardado, con `pt-PT`, `pt-BR` y `es-ES` disponibles
+- **GIVEN** que no hay ningún idioma destino activo guardado, con `pt-PT`, `en-GB` y `es-ES` disponibles
   en ese orden y `es-ES` como idioma de origen
 - **WHEN** se lee el idioma destino activo
 - **THEN** el idioma destino activo es `pt-PT`
@@ -161,14 +161,14 @@ distinto del idioma de origen y MUST NOT lanzar error.
 
 #### Scenario: El idioma destino activo guardado se recupera
 
-- **GIVEN** `pt-BR` guardado como idioma destino activo y `es-ES` como idioma de origen
+- **GIVEN** `en-GB` guardado como idioma destino activo y `es-ES` como idioma de origen
 - **WHEN** la app se reinicia y se lee el idioma destino activo
-- **THEN** el idioma destino activo es `pt-BR`
+- **THEN** el idioma destino activo es `en-GB`
 
 #### Scenario: Un idioma destino activo guardado que ya no está disponible usa el primero disponible
 
-- **GIVEN** `pt-BR` guardado como idioma destino activo, `es-ES` como idioma de origen, y un catálogo
-  donde `pt-BR` ya no está disponible pero `pt-PT` y `es-ES` sí, en ese orden
+- **GIVEN** `pt-BR` guardado como idioma destino activo (idioma retirado del catálogo), `es-ES` como idioma de
+  origen, y un catálogo donde `pt-BR` no está disponible pero `pt-PT` y `es-ES` sí, en ese orden
 - **WHEN** se lee el idioma destino activo
 - **THEN** el idioma destino activo es `pt-PT`
 
@@ -188,14 +188,14 @@ tanda activa de ningún idioma destino.
 #### Scenario: Cambiar el idioma destino activo
 
 - **GIVEN** `pt-PT` como idioma destino activo
-- **WHEN** se cambia el idioma destino activo a `pt-BR`
-- **THEN** una lectura posterior del idioma destino activo devuelve `pt-BR`
+- **WHEN** se cambia el idioma destino activo a `en-GB`
+- **THEN** una lectura posterior del idioma destino activo devuelve `en-GB`
 
 #### Scenario: Cambiar de idioma destino no toca el progreso de ninguno
 
-- **GIVEN** `pt-PT` activo con progreso guardado, y `pt-BR` con su propio progreso guardado
-- **WHEN** se cambia el idioma destino activo de `pt-PT` a `pt-BR`
-- **THEN** el progreso guardado de `pt-PT` y de `pt-BR` quedan exactamente igual que antes del cambio
+- **GIVEN** `pt-PT` activo con progreso guardado, y `en-GB` con su propio progreso guardado
+- **WHEN** se cambia el idioma destino activo de `pt-PT` a `en-GB`
+- **THEN** el progreso guardado de `pt-PT` y de `en-GB` quedan exactamente igual que antes del cambio
 
 #### Scenario: No se puede elegir como destino el idioma de origen
 
@@ -231,9 +231,9 @@ independientemente de los ajustes editables de ese idioma destino.
 #### Scenario: Los ajustes aplicados de un idioma destino no se mezclan con los de otro
 
 - **GIVEN** el nivel CEFR B1 y N igual a 25 registrados como ajustes aplicados de `pt-PT`
-- **WHEN** se registran el nivel CEFR A2 y N igual a 10 como ajustes aplicados de `pt-BR` y se leen
+- **WHEN** se registran el nivel CEFR A2 y N igual a 10 como ajustes aplicados de `en-GB` y se leen
   los de ambos idiomas destino
-- **THEN** `pt-PT` sigue devolviendo el nivel CEFR B1 y N igual a 25, y `pt-BR` devuelve el nivel
+- **THEN** `pt-PT` sigue devolviendo el nivel CEFR B1 y N igual a 25, y `en-GB` devuelve el nivel
   CEFR A2 y N igual a 10
 
 #### Scenario: Los ajustes aplicados son independientes de los ajustes editables

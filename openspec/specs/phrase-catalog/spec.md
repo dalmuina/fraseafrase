@@ -108,8 +108,8 @@ dispositivo si es uno de los idiomas disponibles; si no, el idioma de origen por
 
 #### Scenario: El idioma de origen no depende del idioma destino activo
 
-- **GIVEN** `pt-PT`, `pt-BR` y `es-ES` disponibles y un dispositivo con locale `es-ES`
-- **WHEN** se resuelve el idioma de origen con `pt-PT` activo y, después, con `pt-BR` activo
+- **GIVEN** `pt-PT`, `en-GB` y `es-ES` disponibles y un dispositivo con locale `es-ES`
+- **WHEN** se resuelve el idioma de origen con `pt-PT` activo y, después, con `en-GB` activo
 - **THEN** el idioma de origen es `es-ES` en ambos casos
 
 #### Scenario: Un cambio del idioma del dispositivo cambia el origen
@@ -164,10 +164,10 @@ uno afecte la carga de otro.
 
 #### Scenario: Dos idiomas destino conviven de forma independiente
 
-- **GIVEN** un documento de frases destino `pt-PT` válido y un documento de frases destino `pt-BR`
+- **GIVEN** un documento de frases destino `pt-PT` válido y un documento de frases destino `en-GB`
   con un error de validación
 - **WHEN** se cargan ambos
-- **THEN** el catálogo `pt-PT` se carga correctamente y el error de `pt-BR` no afecta a su carga
+- **THEN** el catálogo `pt-PT` se carga correctamente y el error de `en-GB` no afecta a su carga
 
 #### Scenario: El catálogo empaquetado no contiene documentos de traducción
 
@@ -330,3 +330,14 @@ idioma.
 - **WHEN** la app actualizada arranca
 - **THEN** el catálogo se vuelve a sembrar desde los documentos de frases y el progreso guardado de `pt-PT` no
   cambia
+
+### Requirement: Portugués europeo como única variante de portugués
+
+El catálogo empaquetado MUST contener un único documento de portugués, con `targetLocale` igual a `pt-PT`.
+El catálogo empaquetado MUST NOT contener ningún documento con `targetLocale` igual a `pt-BR`.
+
+#### Scenario: El catálogo empaquetado solo tiene portugués europeo
+
+- **GIVEN** los assets de catálogo empaquetados con la app
+- **WHEN** se enumeran los `targetLocale` de sus documentos
+- **THEN** `pt-PT` aparece una vez y `pt-BR` no aparece

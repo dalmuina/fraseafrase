@@ -32,7 +32,7 @@ import java.nio.file.Files
 class DataStoreSettingsDataSourceTest {
 
     private val ptPt = LanguageTag("pt-PT")
-    private val ptBr = LanguageTag("pt-BR")
+    private val enGb = LanguageTag("en-GB")
 
     private val cefrKeyPtPt = stringPreferencesKey("cefr_level_pt-PT")
     private val batchSizeTextPtPt = stringPreferencesKey("batch_size_pt-PT")
@@ -46,7 +46,7 @@ class DataStoreSettingsDataSourceTest {
     private fun freshFile(): java.io.File =
         Files.createTempDirectory("settings").resolve("settings.preferences_pb").toFile()
 
-    private fun availableLocales(locales: List<LanguageTag> = listOf(ptPt, ptBr)): FakeCatalogRepository =
+    private fun availableLocales(locales: List<LanguageTag> = listOf(ptPt, enGb)): FakeCatalogRepository =
         FakeCatalogRepository.withCatalogs(locales.associateWith { CatalogLoadResult.Loaded(emptyList()) })
 
     private fun newSource(
@@ -73,14 +73,14 @@ class DataStoreSettingsDataSourceTest {
 
     // Scenario: Un idioma destino nuevo no hereda los ajustes de otro (spec: user-settings)
     @Test
-    fun `given pt-PT with saved settings when reading pt-BR then returns the defaults`() = runTest {
+    fun `given pt-PT with saved settings when reading en-GB then returns the defaults`() = runTest {
         // Given
         val store = newStore(freshFile(), backgroundScope)
         val source = newSource(store)
         source.save(ptPt, UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25)))
 
         // When
-        val settings = source.settings(ptBr)
+        val settings = source.settings(enGb)
 
         // Then
         settings shouldBe UserSettings.DEFAULT
@@ -123,15 +123,15 @@ class DataStoreSettingsDataSourceTest {
 
     // Scenario: Los ajustes de dos idiomas destino no se mezclan (spec: user-settings)
     @Test
-    fun `given different settings saved for pt-PT and pt-BR when reading each then they do not mix`() = runTest {
+    fun `given different settings saved for pt-PT and en-GB when reading each then they do not mix`() = runTest {
         // Given
         val source = newSource(inMemoryStore())
         source.save(ptPt, UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25)))
-        source.save(ptBr, UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10)))
+        source.save(enGb, UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10)))
 
         // When / Then
         source.settings(ptPt) shouldBe UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25))
-        source.settings(ptBr) shouldBe UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10))
+        source.settings(enGb) shouldBe UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10))
     }
 
     // Scenario: N fuera de rango usa el valor por defecto (spec: user-settings)
@@ -227,16 +227,16 @@ class DataStoreSettingsDataSourceTest {
 
     // Scenario: Guardar los ajustes de un idioma destino no modifica los de otro (spec: user-settings)
     @Test
-    fun `given pt-BR with saved settings when saving pt-PT then pt-BR is unchanged`() = runTest {
+    fun `given en-GB with saved settings when saving pt-PT then en-GB is unchanged`() = runTest {
         // Given
         val source = newSource(inMemoryStore())
-        source.save(ptBr, UserSettings(cefrLevel = CefrLevel.A1, batchSize = BatchSize(20)))
+        source.save(enGb, UserSettings(cefrLevel = CefrLevel.A1, batchSize = BatchSize(20)))
 
         // When
         source.save(ptPt, UserSettings(cefrLevel = CefrLevel.B2, batchSize = BatchSize(15)))
 
         // Then
-        source.settings(ptBr) shouldBe UserSettings(cefrLevel = CefrLevel.A1, batchSize = BatchSize(20))
+        source.settings(enGb) shouldBe UserSettings(cefrLevel = CefrLevel.A1, batchSize = BatchSize(20))
     }
 
     // Scenario: Fallo de escritura no mezcla ajustes antiguos y nuevos (spec: user-settings)
@@ -283,7 +283,7 @@ class DataStoreSettingsDataSourceTest {
     fun `given no active target locale saved when reading it then returns the first available`() = runTest {
         // Given
         val store = newStore(freshFile(), backgroundScope)
-        val source = newSource(store, availableLocales(listOf(ptPt, ptBr)))
+        val source = newSource(store, availableLocales(listOf(ptPt, enGb)))
 
         // When / Then
         source.activeTargetLocale() shouldBe ptPt
@@ -291,14 +291,14 @@ class DataStoreSettingsDataSourceTest {
 
     // Scenario: El idioma destino activo guardado se recupera (spec: user-settings)
     @Test
-    fun `given pt-BR saved as active when reading it then returns pt-BR`() = runTest {
+    fun `given en-GB saved as active when reading it then returns en-GB`() = runTest {
         // Given
         val store = newStore(freshFile(), backgroundScope)
-        val source = newSource(store, availableLocales(listOf(ptPt, ptBr)))
-        source.setActiveTargetLocale(ptBr)
+        val source = newSource(store, availableLocales(listOf(ptPt, enGb)))
+        source.setActiveTargetLocale(enGb)
 
         // When / Then
-        source.activeTargetLocale() shouldBe ptBr
+        source.activeTargetLocale() shouldBe enGb
     }
 
     // Scenario: Un idioma destino activo guardado que ya no está disponible usa el primero disponible
@@ -307,6 +307,7 @@ class DataStoreSettingsDataSourceTest {
     fun `given pt-BR saved as active when pt-BR is no longer available then returns the first available`() = runTest {
         // Given
         val store = newStore(freshFile(), backgroundScope)
+        val ptBr = LanguageTag("pt-BR")
         val source = newSource(store, availableLocales(listOf(ptPt, ptBr)))
         source.setActiveTargetLocale(ptBr)
         val sourceWithoutPtBr = newSource(store, availableLocales(listOf(ptPt)))
@@ -317,16 +318,16 @@ class DataStoreSettingsDataSourceTest {
 
     // Scenario: Cambiar el idioma destino activo (spec: user-settings)
     @Test
-    fun `given pt-PT active when selecting pt-BR then a later read returns pt-BR`() = runTest {
+    fun `given pt-PT active when selecting en-GB then a later read returns en-GB`() = runTest {
         // Given
         val store = newStore(freshFile(), backgroundScope)
-        val source = newSource(store, availableLocales(listOf(ptPt, ptBr)))
+        val source = newSource(store, availableLocales(listOf(ptPt, enGb)))
 
         // When
-        source.setActiveTargetLocale(ptBr)
+        source.setActiveTargetLocale(enGb)
 
         // Then
-        source.activeTargetLocale() shouldBe ptBr
+        source.activeTargetLocale() shouldBe enGb
     }
 
     // Scenario: Sin ajustes aplicados registrados (spec: user-settings, "Ajustes aplicados a la tanda activa")
@@ -379,18 +380,18 @@ class DataStoreSettingsDataSourceTest {
     // Scenario: Los ajustes aplicados de un idioma destino no se mezclan con los de otro
     // (spec: user-settings, "Ajustes aplicados a la tanda activa")
     @Test
-    fun `given applied settings for pt-PT when recording different applied settings for pt-BR then they do not mix`() =
+    fun `given applied settings for pt-PT when recording different applied settings for en-GB then they do not mix`() =
         runTest {
             // Given
             val source = newSource(inMemoryStore())
             source.recordAppliedSettings(ptPt, UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25)))
 
             // When
-            source.recordAppliedSettings(ptBr, UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10)))
+            source.recordAppliedSettings(enGb, UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10)))
 
             // Then
             source.appliedSettings(ptPt) shouldBe UserSettings(cefrLevel = CefrLevel.B1, batchSize = BatchSize(25))
-            source.appliedSettings(ptBr) shouldBe UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10))
+            source.appliedSettings(enGb) shouldBe UserSettings(cefrLevel = CefrLevel.A2, batchSize = BatchSize(10))
         }
 
     // Scenario: Los ajustes aplicados son independientes de los ajustes editables

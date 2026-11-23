@@ -52,17 +52,17 @@ class ProgressViewModelTest {
 
     // Scenario: El icono muestra el idioma activo en Progreso (spec: language-indicator)
     @Test
-    fun `given pt-BR as the active target locale when opening progress then the ui state exposes it`() = runTest {
-        // Given: pt-BR como idioma destino activo, con un catálogo de seis frases
+    fun `given en-GB as the active target locale when opening progress then the ui state exposes it`() = runTest {
+        // Given: en-GB como idioma destino activo, con un catálogo de seis frases
         val catalog = loaded("A", "B", "C", "D", "E", "F")
 
         // When: el usuario abre la pantalla de progreso
-        val viewModel = progressViewModel(catalog, activeTargetLocale = LanguageTag("pt-BR"))
+        val viewModel = progressViewModel(catalog, activeTargetLocale = LanguageTag("en-GB"))
         advanceUntilIdle()
 
-        // Then: el estado expone pt-BR como idioma destino activo
+        // Then: el estado expone en-GB como idioma destino activo
         val state = viewModel.uiState.value.shouldBeInstanceOf<ProgressUiState.Content>()
-        state.activeTargetLocale shouldBe LanguageTag("pt-BR")
+        state.activeTargetLocale shouldBe LanguageTag("en-GB")
     }
 
     // Scenario: El total se actualiza si cambia el catálogo disponible (spec: progress-overview)
@@ -111,29 +111,29 @@ class ProgressViewModelTest {
     @Test
     fun `given progress opened when the active language changes and it resumes then it shows the new language`() =
         runTest {
-            // Given: pt-PT con seis frases y pt-BR con cuatro, y progreso abierto en pt-PT
+            // Given: pt-PT con seis frases y en-GB con cuatro, y progreso abierto en pt-PT
             val ptPt = LanguageTag("pt-PT")
-            val ptBr = LanguageTag("pt-BR")
+            val enGb = LanguageTag("en-GB")
             val settingsRepository = FakeSettingsRepository()
             val catalogRepository = FakeCatalogRepository.withCatalogs(
                 mapOf(
                     ptPt to loaded("A", "B", "C", "D", "E", "F"),
-                    ptBr to loaded("G", "H", "I", "J"),
+                    enGb to loaded("G", "H", "I", "J"),
                 ),
             )
             val viewModel = progressViewModel(settingsRepository, catalogRepository)
             advanceUntilIdle()
 
-            // When: se cambia el idioma activo a pt-BR y se vuelve a mostrar la pantalla
-            settingsRepository.setActiveTargetLocale(ptBr)
+            // When: se cambia el idioma activo a en-GB y se vuelve a mostrar la pantalla
+            settingsRepository.setActiveTargetLocale(enGb)
             viewModel.onAction(ProgressAction.Resume)
             advanceUntilIdle()
 
-            // Then: 4 frases disponibles, 4 en el nivel 0 y pt-BR como idioma activo
+            // Then: 4 frases disponibles, 4 en el nivel 0 y en-GB como idioma activo
             val state = viewModel.uiState.value.shouldBeInstanceOf<ProgressUiState.Content>()
             state.totalAvailable shouldBe 4
             state.byLevel[Level(0)] shouldBe 4
-            state.activeTargetLocale shouldBe ptBr
+            state.activeTargetLocale shouldBe enGb
         }
 
     // Scenario: Volver a Progreso tras aplicar otro nivel CEFR (spec: progress-overview)

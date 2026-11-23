@@ -14,7 +14,7 @@ import java.io.File
 class RealCatalogContractTest {
 
     private companion object {
-        val PACKAGED_LOCALES = listOf("pt-PT", "pt-BR", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU")
+        val PACKAGED_LOCALES = listOf("pt-PT", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU")
     }
 
     private fun catalogTextOf(targetLocale: String) =
@@ -29,7 +29,7 @@ class RealCatalogContractTest {
 
     // Scenario: Versión del esquema (spec: phrase-catalog) — cada idioma destino empaquetado carga por separado
     @ParameterizedTest
-    @ValueSource(strings = ["pt-PT", "pt-BR", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU"])
+    @ValueSource(strings = ["pt-PT", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU"])
     fun `given the packaged catalog of a target locale when parsing then it is loaded`(targetLocale: String) {
         // When
         val result = CatalogJson.parsePhrases(catalogTextOf(targetLocale))
@@ -74,17 +74,18 @@ class RealCatalogContractTest {
         CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
     }
 
-    // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)
+    // Scenario: El catálogo empaquetado solo tiene portugués europeo (spec: phrase-catalog)
     @Test
-    fun `given pt-BR with no released ids yet when checking the contract then it passes without requiring any id`() {
+    fun `given the packaged catalog when listing target locales then pt-PT appears once and pt-BR does not`() {
         // Given
-        val currentIds = currentIdsOf("pt-BR")
-        val releasedIds = releasedIdsOf("pt-BR")
+        val assets = File("src/main/assets/catalog").listFiles { f -> f.extension == "json" }.orEmpty()
 
-        // When / Then
-        releasedIds.shouldBeEmpty()
-        CatalogContract.retiredIds(releasedIds, currentIds).shouldBeEmpty()
-        CatalogContract.keepsReleasedPrefix(releasedIds, currentIds) shouldBe true
+        // When
+        val locales = assets.map { it.nameWithoutExtension.removePrefix("phrases-") }
+
+        // Then
+        locales.count { it == "pt-PT" } shouldBe 1
+        locales.contains("pt-BR") shouldBe false
     }
 
     // Scenario: Un idioma destino nuevo sin ids publicados no bloquea su primera carga (spec: phrase-catalog)

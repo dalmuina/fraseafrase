@@ -95,9 +95,9 @@ destino lo refleje, sin modificar los ajustes de ningún otro idioma destino.
 #### Scenario: Guardar tras cambiar de idioma destino persiste en el idioma destino elegido
 
 - **GIVEN** la pantalla de ajustes abierta con el idioma destino activo `pt-PT`
-- **WHEN** el usuario elige `pt-BR` como idioma destino, elige el nivel B2 y escribe 15 como tamaño
+- **WHEN** el usuario elige `en-GB` como idioma destino, elige el nivel B2 y escribe 15 como tamaño
   de tanda
-- **THEN** una lectura posterior de los ajustes de `pt-BR` devuelve el nivel CEFR B2 y N igual a 15,
+- **THEN** una lectura posterior de los ajustes de `en-GB` devuelve el nivel CEFR B2 y N igual a 15,
   y los ajustes de `pt-PT` no cambian
 
 ### Requirement: Alineación visual del stepper del tamaño de tanda
@@ -132,10 +132,10 @@ origen.
 
 #### Scenario: Elegir un idioma destino de la lista
 
-- **GIVEN** la pantalla de ajustes abierta con `pt-PT` y `pt-BR` disponibles y `pt-PT` como idioma
+- **GIVEN** la pantalla de ajustes abierta con `pt-PT` y `en-GB` disponibles y `pt-PT` como idioma
   destino activo
-- **WHEN** el usuario elige `pt-BR` en el desplegable
-- **THEN** la pantalla muestra `pt-BR` como idioma destino seleccionado
+- **WHEN** el usuario elige `en-GB` en el desplegable
+- **THEN** la pantalla muestra `en-GB` como idioma destino seleccionado
 
 #### Scenario: El desplegable de destino excluye el idioma de origen
 
@@ -173,8 +173,8 @@ N guardados para ese idioma destino, en vez de los del idioma destino mostrado a
 #### Scenario: Cambiar de idioma destino muestra sus propios ajustes
 
 - **GIVEN** la pantalla de ajustes abierta con `pt-PT` activo, nivel CEFR B1 y N igual a 25
-  guardados para `pt-PT`, y nivel CEFR A2 y N igual a 10 guardados para `pt-BR`
-- **WHEN** el usuario elige `pt-BR` en el desplegable
+  guardados para `pt-PT`, y nivel CEFR A2 y N igual a 10 guardados para `en-GB`
+- **WHEN** el usuario elige `en-GB` en el desplegable
 - **THEN** la pantalla muestra el nivel CEFR A2 y N igual a 10
 
 ### Requirement: Elegir un idioma destino lo activa de inmediato
@@ -186,6 +186,6 @@ de la pantalla de ajustes.
 #### Scenario: Elegir un idioma destino lo activa sin salir de ajustes
 
 - **GIVEN** la pantalla de ajustes abierta con `pt-PT` como idioma destino activo
-- **WHEN** el usuario elige `pt-BR` en el desplegable
-- **THEN** una lectura posterior del idioma destino activo devuelve `pt-BR`, aunque el usuario siga
+- **WHEN** el usuario elige `en-GB` en el desplegable
+- **THEN** una lectura posterior del idioma destino activo devuelve `en-GB`, aunque el usuario siga
   en la pantalla de ajustes

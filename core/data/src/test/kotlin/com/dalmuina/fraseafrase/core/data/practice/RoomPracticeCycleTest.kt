@@ -111,27 +111,27 @@ class RoomPracticeCycleTest {
 
     // Scenario: El primer uso de un idioma destino no crea tanda para otro (spec: practice-persistence)
     @Test
-    fun `given pt-PT with an active batch when obtaining pt-BR then pt-PT is not modified`() = runTest {
+    fun `given pt-PT with an active batch when obtaining en-GB then pt-PT is not modified`() = runTest {
         // Given: pt-PT ya tiene tanda activa compuesta
         obtain()
         val ptPtBefore = source.read(ptPt)
-        val ptBr = LanguageTag("pt-BR")
+        val enGb = LanguageTag("en-GB")
         val source2 = RoomPracticeDataSource(database, UnconfinedTestDispatcher())
-        val obtainPtBr = ObtainActiveBatch(
+        val obtainEnGb = ObtainActiveBatch(
             settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10))),
             practiceRepository = source2,
             regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
                 practiceRepository = source2,
                 composeNextBatch = ComposeNextBatch(),
-                obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(catalog, targetLocale = ptBr)),
+                obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(catalog, targetLocale = enGb)),
             ),
         )
 
-        // When: se obtiene la tanda activa de pt-BR por primera vez
-        val ptBrResult = obtainPtBr.invoke(ptBr)
+        // When: se obtiene la tanda activa de en-GB por primera vez
+        val enGbResult = obtainEnGb.invoke(enGb)
 
         // Then
-        ptBrResult.shouldBeInstanceOf<ActiveBatchResult.Created>()
+        enGbResult.shouldBeInstanceOf<ActiveBatchResult.Created>()
         source.read(ptPt) shouldBe ptPtBefore
     }
 }

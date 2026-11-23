@@ -602,12 +602,12 @@ class PracticeSessionScreenTest {
 
     // Scenario: El icono muestra el idioma activo en Practicar (spec: language-indicator)
     @Test
-    fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
-        // Given/When: la cabecera muestra el idioma destino activo pt-BR
-        composeTestRule.setScreen(practicing().copy(activeTargetLocale = LanguageTag("pt-BR")))
+    fun givenActiveTargetLocaleEnGb_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
+        // Given/When: la cabecera muestra el idioma destino activo en-GB
+        composeTestRule.setScreen(practicing().copy(activeTargetLocale = LanguageTag("en-GB")))
 
-        // Then: la cabecera muestra el icono circular correspondiente a pt-BR
-        composeTestRule.onNodeWithContentDescription("pt-BR").assertIsDisplayed()
+        // Then: la cabecera muestra el icono circular correspondiente a en-GB
+        composeTestRule.onNodeWithContentDescription("en-GB").assertIsDisplayed()
     }
 
     // Scenario: Tocar el icono desde Practicar navega a Ajustes (spec: language-indicator)
