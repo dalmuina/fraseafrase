@@ -111,7 +111,7 @@ class RoomCatalogDataSourceTest {
         val dataSource = source(inMemoryCatalogDatabase()) {
             listOf(
                 phraseDocument(targetLocale = "pt-PT", id = "id-1"),
-                phraseDocument(targetLocale = "pt-BR", id = "id-1"),
+                phraseDocument(targetLocale = "en-GB", id = "id-1"),
             )
         }
 
@@ -119,7 +119,7 @@ class RoomCatalogDataSourceTest {
         val available = dataSource.availableTargetLocales()
 
         // Then
-        available shouldContainExactlyInAnyOrder listOf(ptPt, LanguageTag("pt-BR"))
+        available shouldContainExactlyInAnyOrder listOf(ptPt, LanguageTag("en-GB"))
     }
 
     // Scenario: Un idioma con catálogo inválido no está disponible (spec: phrase-catalog)

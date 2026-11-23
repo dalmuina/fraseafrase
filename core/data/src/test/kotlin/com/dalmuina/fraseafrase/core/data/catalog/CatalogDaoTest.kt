@@ -90,13 +90,13 @@ class CatalogDaoTest {
         // Given
         val dao = inMemoryCatalogDatabase().catalogDao()
         dao.insertPhrases(listOf(phrase(id = "a", targetLocale = "pt-PT", target = "Bom dia")))
-        dao.insertPhrases(listOf(phrase(id = "b", targetLocale = "pt-BR", target = "Bom dia")))
+        dao.insertPhrases(listOf(phrase(id = "b", targetLocale = "en-GB", target = "Bom dia")))
 
         // When
         dao.deletePhrasesForTargetLocale("pt-PT")
 
         // Then
-        dao.targetLocales() shouldBe listOf("pt-BR")
+        dao.targetLocales() shouldBe listOf("en-GB")
     }
 
     // Scenario: Persistencia del catálogo en Room - versionado por idioma

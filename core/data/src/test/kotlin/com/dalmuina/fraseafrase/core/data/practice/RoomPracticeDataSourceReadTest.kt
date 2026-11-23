@@ -20,7 +20,7 @@ class RoomPracticeDataSourceReadTest {
     private lateinit var database: PracticeDatabase
     private lateinit var source: RoomPracticeDataSource
     private val ptPt = LanguageTag("pt-PT")
-    private val ptBr = LanguageTag("pt-BR")
+    private val enGb = LanguageTag("en-GB")
 
     @BeforeEach
     fun openDatabase() {
@@ -55,15 +55,15 @@ class RoomPracticeDataSourceReadTest {
         runTest {
             // Given
             database.phraseProgressDao().insert(entry(id = "a1-saludos-001", level = 3, targetLocale = "pt-PT"))
-            database.phraseProgressDao().insert(entry(id = "a1-saludos-001", level = 0, targetLocale = "pt-BR"))
+            database.phraseProgressDao().insert(entry(id = "a1-saludos-001", level = 0, targetLocale = "en-GB"))
 
             // When
             val ptPtLevel = source.read(ptPt).progress.single().level.value
-            val ptBrLevel = source.read(ptBr).progress.single().level.value
+            val enGbLevel = source.read(enGb).progress.single().level.value
 
             // Then
             ptPtLevel shouldBe 3
-            ptBrLevel shouldBe 0
+            enGbLevel shouldBe 0
         }
 
     // Scenario: Sin contador guardado el valor por defecto es 0 (spec: practice-persistence)
@@ -97,14 +97,14 @@ class RoomPracticeDataSourceReadTest {
 
     // Scenario: La tanda activa de un idioma destino no afecta a la de otro (spec: practice-persistence)
     @Test
-    fun `given an active batch for pt-PT when reading pt-BR then it reports no active batch`() = runTest {
+    fun `given an active batch for pt-PT when reading en-GB then it reports no active batch`() = runTest {
         // Given
         val dao = database.phraseProgressDao()
         dao.insert(entry(id = "A", batchPosition = 0, targetLocale = "pt-PT"))
         database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
 
         // When
-        val snapshot = source.read(ptBr)
+        val snapshot = source.read(enGb)
 
         // Then
         snapshot.activeBatch.shouldBeNull()

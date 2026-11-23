@@ -104,14 +104,14 @@ class RoomPracticeDataSourceWriteTest {
     // (spec: practice-persistence)
     @Test
     fun `given a failure for one locale then the other locale state is untouched`() = runTest {
-        // Given: pt-PT con un fallo inyectado al salir B de la tanda; pt-BR con su propia tanda activa intacta
-        val ptBr = LanguageTag("pt-BR")
+        // Given: pt-PT con un fallo inyectado al salir B de la tanda; en-GB con su propia tanda activa intacta
+        val enGb = LanguageTag("en-GB")
         val dao = database.phraseProgressDao()
         dao.insert(entry(id = "A", level = 0, batchPosition = 0, targetLocale = "pt-PT"))
         dao.insert(entry(id = "B", level = 0, batchPosition = 1, targetLocale = "pt-PT"))
-        dao.insert(entry(id = "X", level = 0, batchPosition = 0, targetLocale = "pt-BR"))
+        dao.insert(entry(id = "X", level = 0, batchPosition = 0, targetLocale = "en-GB"))
         database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
-        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-BR", capacity = 10))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "en-GB", capacity = 10))
         database.useWriterConnection { transactor ->
             transactor.executeSQL(
                 "CREATE TRIGGER fail_on_b BEFORE UPDATE ON phrase_progress " +
@@ -119,7 +119,7 @@ class RoomPracticeDataSourceWriteTest {
                     "BEGIN SELECT RAISE(ABORT, 'injected failure'); END",
             )
         }
-        val beforePtBr = source.read(ptBr)
+        val beforeEnGb = source.read(enGb)
 
         // When: falla la transacción de pt-PT
         shouldThrow<SQLiteException> {
@@ -133,8 +133,8 @@ class RoomPracticeDataSourceWriteTest {
             }
         }
 
-        // Then: pt-BR no se modifica
-        source.read(ptBr) shouldBe beforePtBr
+        // Then: en-GB no se modifica
+        source.read(enGb) shouldBe beforeEnGb
     }
 
     private fun entry(

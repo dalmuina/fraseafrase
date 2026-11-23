@@ -40,17 +40,17 @@ class PracticeSchemaTest {
 
     // Scenario: La misma posición es válida en idiomas destino distintos (spec: practice-persistence)
     @Test
-    fun `given a phrase at position 0 for pt-PT when saving a phrase at position 0 for pt-BR then is accepted`() =
+    fun `given a phrase at position 0 for pt-PT when saving a phrase at position 0 for en-GB then is accepted`() =
         runTest {
             // Given
             val dao = database.phraseProgressDao()
             dao.insert(progress(id = "A", level = 0, batchPosition = 0, targetLocale = "pt-PT"))
 
             // When
-            dao.insert(progress(id = "A", level = 0, batchPosition = 0, targetLocale = "pt-BR"))
+            dao.insert(progress(id = "A", level = 0, batchPosition = 0, targetLocale = "en-GB"))
 
             // Then
-            dao.all(targetLocale = "pt-BR").map { it.phraseId } shouldContainExactly listOf("A")
+            dao.all(targetLocale = "en-GB").map { it.phraseId } shouldContainExactly listOf("A")
         }
 
     // Scenario: Capacidad fuera de rango se rechaza (spec: practice-persistence)
@@ -79,16 +79,16 @@ class PracticeSchemaTest {
 
     // Scenario: La tanda activa de un idioma destino no afecta a la de otro (spec: practice-persistence)
     @Test
-    fun `given an active batch row for pt-PT when saving a row for pt-BR then both are accepted`() = runTest {
+    fun `given an active batch row for pt-PT when saving a row for en-GB then both are accepted`() = runTest {
         // Given
         database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-PT", capacity = 10))
 
         // When
-        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "pt-BR", capacity = 20))
+        database.activeBatchDao().insert(ActiveBatchEntity(targetLocale = "en-GB", capacity = 20))
 
         // Then
         database.activeBatchDao().byLocale("pt-PT").shouldNotBeNull()
-        database.activeBatchDao().byLocale("pt-BR").shouldNotBeNull()
+        database.activeBatchDao().byLocale("en-GB").shouldNotBeNull()
     }
 
     // Caracterización del esquema (tarea 8.6): estados válidos que deben aceptarse

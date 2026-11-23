@@ -17,20 +17,20 @@ Convención de este cambio: `pt-BR` → `en-GB` en los fixtures de tests donde e
 
 Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook de commit exige `check` en verde.
 
-- [ ] 2.1 Test: en `RealCatalogContractTest`, quitar `pt-BR` de `PACKAGED_LOCALES` y del `@ValueSource`, eliminar
+- [x] 2.1 Test: en `RealCatalogContractTest`, quitar `pt-BR` de `PACKAGED_LOCALES` y del `@ValueSource`, eliminar
   el test "given pt-BR with no released ids yet…" y añadir el test "given the packaged catalog when listing target
   locales then pt-PT appears once and pt-BR does not" (spec `phrase-catalog` → "El catálogo empaquetado solo
   tiene portugués europeo"). Ejecutar `./gradlew :core:data:test --tests "*RealCatalogContractTest"` y comprobar
   que el test nuevo falla porque `phrases-pt-BR.json` sigue empaquetado.
-- [ ] 2.2 Contenido: borrar `core/data/src/main/assets/catalog/phrases-pt-BR.json` y
+- [x] 2.2 Contenido: borrar `core/data/src/main/assets/catalog/phrases-pt-BR.json` y
   `core/data/src/test/resources/catalog/released-ids-pt-BR.txt` (sin leer el asset). Verificar el contrato en verde.
-- [ ] 2.3 Adaptar fixtures `pt-BR` → `en-GB` en `CatalogDaoTest` y `RoomCatalogDataSourceTest` (spec
+- [x] 2.3 Adaptar fixtures `pt-BR` → `en-GB` en `CatalogDaoTest` y `RoomCatalogDataSourceTest` (spec
   `phrase-catalog` → "Dos idiomas destino conviven de forma independiente").
-- [ ] 2.4 Adaptar `PracticeSchemaTest`, `RoomPracticeCycleTest`, `RoomPracticeDataSourceReadTest` y
+- [x] 2.4 Adaptar `PracticeSchemaTest`, `RoomPracticeCycleTest`, `RoomPracticeDataSourceReadTest` y
   `RoomPracticeDataSourceWriteTest` (specs `practice-persistence`: aislamiento de progreso, tanda y contador).
-- [ ] 2.5 Adaptar `DataStoreSettingsDataSourceTest`, conservando `pt-BR` literal solo en el test "pt-BR is no longer available then returns the first available" (spec `user-settings` → "Un idioma destino activo guardado que ya no está disponible usa el primero disponible") (spec `user-settings` → "Los ajustes de dos idiomas destino no
+- [x] 2.5 Adaptar `DataStoreSettingsDataSourceTest`, conservando `pt-BR` literal solo en el test "pt-BR is no longer available then returns the first available" (spec `user-settings` → "Un idioma destino activo guardado que ya no está disponible usa el primero disponible") (spec `user-settings` → "Los ajustes de dos idiomas destino no
   se mezclan").
-- [ ] 2.6 Ejecutar `./gradlew :core:data:check` en verde.
+- [x] 2.6 Ejecutar `./gradlew :core:data:check` en verde.
 
 ## 3. Design system: sin icono `pt-BR` (`:core:designsystem`)
 
