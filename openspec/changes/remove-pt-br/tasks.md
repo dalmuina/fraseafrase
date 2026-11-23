@@ -68,8 +68,8 @@ Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook d
 
 ## 7. Verificación final (la ejecuta la sesión principal)
 
-- [ ] 7.1 `Grep` insensible a mayúsculas de `pt-?br|pt_br` fuera de `openspec/changes/archive`, `build/` y
+- [x] 7.1 `Grep` insensible a mayúsculas de `pt-?br|pt_br` fuera de `openspec/changes/archive`, `build/` y
   `.gradle/`: solo deben quedar los casos de idioma retirado de `DataStoreSettingsDataSourceTest` (tarea 2.5) y menciones en
   `docs/` y ADR. Revisar `docs/pendientes-mvp.md` y actualizarlo solo si lista `pt-BR` como idioma disponible.
-- [ ] 7.2 `./gradlew check` (tests, ktlint, detekt, lint) y `./gradlew koverVerify`.
-- [ ] 7.3 `openspec validate remove-pt-br --strict`.
+- [x] 7.2 `./gradlew check` (tests, ktlint, detekt, lint) y `./gradlew koverVerify`.
+- [x] 7.3 `openspec validate remove-pt-br --strict`.
