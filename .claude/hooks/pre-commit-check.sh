@@ -10,8 +10,13 @@ case "$command" in
   *) exit 0 ;;
 esac
 
-repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
-cd "$repo_root" || exit 0
+# Resolve the repo from the project dir, not the caller's cwd. If it cannot be resolved, block instead of letting the
+# commit through without ./gradlew check.
+repo_root="$(git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --show-toplevel 2>/dev/null)"
+if [ -z "$repo_root" ] || ! cd "$repo_root"; then
+  echo "Bloqueado: no se pudo resolver la raíz del repositorio para ejecutar './gradlew check'." >&2
+  exit 2
+fi
 
 branch="$(git branch --show-current)"
 if [ "$branch" = "develop" ] || [ "$branch" = "master" ]; then
