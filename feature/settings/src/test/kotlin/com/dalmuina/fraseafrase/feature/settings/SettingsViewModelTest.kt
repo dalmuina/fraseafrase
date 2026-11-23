@@ -44,42 +44,42 @@ class SettingsViewModelTest {
     @Test
     fun `given an active target locale and available languages when the screen opens then the ui state shows them`() =
         runTest {
-            // Given: pt-PT como idioma destino activo con pt-BR también disponible
+            // Given: pt-PT como idioma destino activo con en-GB también disponible
             val repository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(25)))
 
             // When: el usuario abre la pantalla de ajustes
             val viewModel = settingsViewModel(
                 repository,
-                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("en-GB")),
             )
             advanceUntilIdle()
 
             // Then: la pantalla muestra pt-PT como idioma destino activo y ambos idiomas como disponibles
             val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
             state.activeTargetLocale shouldBe LanguageTag("pt-PT")
-            state.availableTargetLocales shouldBe listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR"))
+            state.availableTargetLocales shouldBe listOf(LanguageTag("pt-PT"), LanguageTag("en-GB"))
         }
 
     // Scenario: Cambiar de idioma destino muestra sus propios ajustes (spec: settings-screen)
     @Test
     fun `given settings per locale when a different language is selected then the shown cefr and batch size update`() =
         runTest {
-            // Given: pt-PT activo con CEFR B1/N=25, y pt-BR con CEFR A2/N=10
+            // Given: pt-PT activo con CEFR B1/N=25, y en-GB con CEFR A2/N=10
             val repository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(25)))
-            repository.save(LanguageTag("pt-BR"), UserSettings(CefrLevel.A2, BatchSize(10)))
+            repository.save(LanguageTag("en-GB"), UserSettings(CefrLevel.A2, BatchSize(10)))
             val viewModel = settingsViewModel(
                 repository,
-                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("en-GB")),
             )
             advanceUntilIdle()
 
-            // When: el usuario elige pt-BR en el desplegable
-            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            // When: el usuario elige en-GB en el desplegable
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("en-GB")))
             advanceUntilIdle()
 
             // Then: la pantalla muestra el nivel CEFR A2 y N igual a 10
             val state = viewModel.uiState.value.shouldBeInstanceOf<SettingsUiState.Loaded>()
-            state.activeTargetLocale shouldBe LanguageTag("pt-BR")
+            state.activeTargetLocale shouldBe LanguageTag("en-GB")
             state.cefrLevel shouldBe CefrLevel.A2
             state.batchSizeText shouldBe "10"
         }
@@ -93,16 +93,16 @@ class SettingsViewModelTest {
             val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
             val viewModel = settingsViewModel(
                 repository,
-                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("en-GB")),
             )
             advanceUntilIdle()
 
-            // When: el usuario elige pt-BR en el desplegable
-            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            // When: el usuario elige en-GB en el desplegable
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("en-GB")))
             advanceUntilIdle()
 
-            // Then: una lectura posterior del idioma destino activo devuelve pt-BR, sin ninguna acción adicional
-            repository.activeTargetLocale() shouldBe LanguageTag("pt-BR")
+            // Then: una lectura posterior del idioma destino activo devuelve en-GB, sin ninguna acción adicional
+            repository.activeTargetLocale() shouldBe LanguageTag("en-GB")
         }
 
     // Scenario: El desplegable de destino excluye el idioma de origen (spec: settings-screen)
@@ -238,24 +238,24 @@ class SettingsViewModelTest {
     @Test
     fun `given a different target locale selected when cefr and batch size change then they persist for that locale`() =
         runTest {
-            // Given: pt-PT activo con A1/20 por defecto, y pt-BR disponible
+            // Given: pt-PT activo con A1/20 por defecto, y en-GB disponible
             val repository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
             val viewModel = settingsViewModel(
                 repository,
-                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("en-GB")),
             )
             advanceUntilIdle()
 
-            // When: el usuario elige pt-BR, el nivel B2 y escribe 15 como tamaño de tanda
-            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("pt-BR")))
+            // When: el usuario elige en-GB, el nivel B2 y escribe 15 como tamaño de tanda
+            viewModel.onAction(SettingsAction.SelectLanguage(LanguageTag("en-GB")))
             advanceUntilIdle()
             viewModel.onAction(SettingsAction.SelectCefrLevel(CefrLevel.B2))
             viewModel.onAction(SettingsAction.ChangeBatchSizeText("15"))
             advanceUntilIdle()
 
-            // Then: una lectura posterior de pt-BR devuelve B2/15, pt-PT no cambia y pt-BR pasa a ser el activo
-            repository.settings(LanguageTag("pt-BR")) shouldBe UserSettings(CefrLevel.B2, BatchSize(15))
+            // Then: una lectura posterior de en-GB devuelve B2/15, pt-PT no cambia y en-GB pasa a ser el activo
+            repository.settings(LanguageTag("en-GB")) shouldBe UserSettings(CefrLevel.B2, BatchSize(15))
             repository.settings(LanguageTag("pt-PT")) shouldBe UserSettings(CefrLevel.A1, BatchSize(20))
-            repository.activeTargetLocale() shouldBe LanguageTag("pt-BR")
+            repository.activeTargetLocale() shouldBe LanguageTag("en-GB")
         }
 }

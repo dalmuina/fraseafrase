@@ -291,11 +291,11 @@ class SettingsScreenTest {
     // Scenario: Elegir un idioma destino de la lista (spec: settings-screen)
     @Test
     fun givenActiveLanguage_whenShowingTheScreen_thenTheLanguageDropdownShowsItPreselected() {
-        // Given/When: la pantalla muestra pt-PT como idioma activo entre pt-PT y pt-BR disponibles
+        // Given/When: la pantalla muestra pt-PT como idioma activo entre pt-PT y en-GB disponibles
         setScreen(
             loaded(
                 activeTargetLocale = LanguageTag("pt-PT"),
-                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR")),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("en-GB")),
             ),
         )
 
@@ -307,11 +307,11 @@ class SettingsScreenTest {
     // los idiomas destino (add-spanish-target-language)
     @Test
     fun givenEsEsAvailable_whenShowingTheScreen_thenTheLanguageDropdownShowsItsSpanishName() {
-        // Given/When: la pantalla muestra pt-PT como idioma activo con pt-PT, pt-BR y es-ES disponibles
+        // Given/When: la pantalla muestra pt-PT como idioma activo con pt-PT, en-GB y es-ES disponibles
         setScreen(
             loaded(
                 activeTargetLocale = LanguageTag("pt-PT"),
-                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("pt-BR"), LanguageTag("es-ES")),
+                availableTargetLocales = listOf(LanguageTag("pt-PT"), LanguageTag("en-GB"), LanguageTag("es-ES")),
             ),
         )
 
@@ -326,13 +326,12 @@ class SettingsScreenTest {
     // fr-FR y ru-RU disponibles entre los idiomas destino (add-multilingual-sources)
     @Test
     fun givenNewTargetLanguagesAvailable_whenShowingTheScreen_thenTheLanguageDropdownShowsTheirNames() {
-        // Given/When: la pantalla muestra pt-PT como idioma activo con los 8 idiomas disponibles
+        // Given/When: la pantalla muestra pt-PT como idioma activo con los 7 idiomas disponibles
         setScreen(
             loaded(
                 activeTargetLocale = LanguageTag("pt-PT"),
                 availableTargetLocales = listOf(
                     LanguageTag("pt-PT"),
-                    LanguageTag("pt-BR"),
                     LanguageTag("es-ES"),
                     LanguageTag("it-IT"),
                     LanguageTag("en-GB"),
@@ -375,12 +374,12 @@ class SettingsScreenTest {
 
     // Scenario: El icono muestra el idioma activo en Ajustes (spec: language-indicator)
     @Test
-    fun givenActiveTargetLocalePtBr_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
-        // Given/When: la cabecera muestra el idioma destino activo pt-BR
-        setScreen(loaded(activeTargetLocale = LanguageTag("pt-BR")))
+    fun givenActiveTargetLocaleEnGb_whenShowingTheScreen_thenTheLanguageBadgeIsDisplayed() {
+        // Given/When: la cabecera muestra el idioma destino activo en-GB
+        setScreen(loaded(activeTargetLocale = LanguageTag("en-GB")))
 
-        // Then: la cabecera muestra el icono circular correspondiente a pt-BR
-        composeTestRule.onNodeWithContentDescription("pt-BR").assertIsDisplayed()
+        // Then: la cabecera muestra el icono circular correspondiente a en-GB
+        composeTestRule.onNodeWithContentDescription("en-GB").assertIsDisplayed()
     }
 
     // Scenario: Tocar el icono estando ya en Ajustes no hace nada (spec: language-indicator)

@@ -7,7 +7,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 
 private val PtPt = LanguageTag("pt-PT")
-private val PtBr = LanguageTag("pt-BR")
+private val EnGb = LanguageTag("en-GB")
 
 @PreviewLightDark
 @Composable
@@ -24,7 +24,7 @@ private fun SettingsScreenValidPreview() {
         SettingsScreen(
             uiState = SettingsUiState.Loaded(
                 activeTargetLocale = PtPt,
-                availableTargetLocales = listOf(PtPt, PtBr),
+                availableTargetLocales = listOf(PtPt, EnGb),
                 cefrLevel = CefrLevel.B1,
                 batchSizeText = "25",
                 isBatchSizeValid = true,
@@ -41,7 +41,7 @@ private fun SettingsScreenInvalidBatchSizePreview() {
         SettingsScreen(
             uiState = SettingsUiState.Loaded(
                 activeTargetLocale = PtPt,
-                availableTargetLocales = listOf(PtPt, PtBr),
+                availableTargetLocales = listOf(PtPt, EnGb),
                 cefrLevel = CefrLevel.A1,
                 batchSizeText = "31",
                 isBatchSizeValid = false,

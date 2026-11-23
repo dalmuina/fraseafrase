@@ -12,13 +12,23 @@ class LanguageTagDsLanguageOptionMappingTest {
     fun `given a supported language tag when mapping it to a ds language option then it shows its display name`() {
         // Given/When/Then: cada código soportado se mapea a su nombre nativo visible
         LanguageTag("pt-PT").toDsLanguageOption().displayName shouldBe "Português (Portugal)"
-        LanguageTag("pt-BR").toDsLanguageOption().displayName shouldBe "Português (Brasil)"
         LanguageTag("es-ES").toDsLanguageOption().displayName shouldBe "Español (España)"
         LanguageTag("it-IT").toDsLanguageOption().displayName shouldBe "Italiano (Italia)"
         LanguageTag("en-GB").toDsLanguageOption().displayName shouldBe "English (UK)"
         LanguageTag("de-DE").toDsLanguageOption().displayName shouldBe "Deutsch (Deutschland)"
         LanguageTag("fr-FR").toDsLanguageOption().displayName shouldBe "Français (France)"
         LanguageTag("ru-RU").toDsLanguageOption().displayName shouldBe "Русский (Россия)"
+    }
+
+    // Scenario: El catálogo empaquetado solo tiene portugués europeo (spec: phrase-catalog) - pt-BR ya no
+    // tiene etiqueta propia y cae al comportamiento de código no reconocido
+    @Test
+    fun `given the retired pt-BR tag when mapping it then its value is used as the display name`() {
+        // Given/When: el código pt-BR, retirado del catálogo
+        val option = LanguageTag("pt-BR").toDsLanguageOption()
+
+        // Then: ya no tiene nombre propio, se muestra su código
+        option.displayName shouldBe "pt-BR"
     }
 
     // Scenario: Elegir un idioma destino de la lista (spec: settings-screen) - un código no reconocido

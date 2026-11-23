@@ -43,16 +43,16 @@ Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook d
 
 ## 4. Ajustes: sin etiqueta `pt-BR` (`:feature:settings`)
 
-- [ ] 4.1 Test: en `LanguageTagDsLanguageOptionMappingTest`, sustituir el caso `pt-BR` por `en-GB` si falta y
+- [x] 4.1 Test: en `LanguageTagDsLanguageOptionMappingTest`, sustituir el caso `pt-BR` por `en-GB` si falta y
   añadir que `pt-BR` ya no tiene etiqueta propia (cae al comportamiento de etiqueta desconocida existente;
   regresión de presentación asociada a spec `phrase-catalog` → "El catálogo empaquetado solo tiene portugués europeo").
   Ejecutar `./gradlew :feature:settings:test --tests "*LanguageTagDsLanguageOptionMappingTest"` y comprobar que falla.
-- [ ] 4.2 Quitar `"pt-BR" -> "Português (Brasil)"` de `LanguageTagDsLanguageOptionMapping` y pasar las previews de
+- [x] 4.2 Quitar `"pt-BR" -> "Português (Brasil)"` de `LanguageTagDsLanguageOptionMapping` y pasar las previews de
   `SettingsScreenPreviews` a `en-GB`. Verificar el test en verde.
-- [ ] 4.3 Adaptar `SettingsViewModelTest` (specs `settings-screen`: selección, activación inmediata y guardado por
+- [x] 4.3 Adaptar `SettingsViewModelTest` (specs `settings-screen`: selección, activación inmediata y guardado por
   idioma).
-- [ ] 4.4 Adaptar los `androidTest` `SettingsScreenTest` y `SettingsRouteTest`.
-- [ ] 4.5 Ejecutar `./gradlew :feature:settings:check` en verde.
+- [x] 4.4 Adaptar los `androidTest` `SettingsScreenTest` y `SettingsRouteTest`.
+- [x] 4.5 Ejecutar `./gradlew :feature:settings:check` en verde.
 
 ## 5. Práctica: fixtures (`:feature:session`)
 

@@ -16,7 +16,6 @@ internal fun LanguageTag.toDsLanguageOption(): DsLanguageOption = DsLanguageOpti
     code = value,
     displayName = when (value) {
         "pt-PT" -> "Português (Portugal)"
-        "pt-BR" -> "Português (Brasil)"
         "es-ES" -> "Español (España)"
         "it-IT" -> "Italiano (Italia)"
         "en-GB" -> "English (UK)"
