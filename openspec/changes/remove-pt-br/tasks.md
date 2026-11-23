@@ -56,9 +56,9 @@ Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook d
 
 ## 5. Práctica: fixtures (`:feature:session`)
 
-- [ ] 5.1 Adaptar `PracticeSessionViewModelTest` y el `androidTest` `PracticeSessionScreenTest` (spec
+- [x] 5.1 Adaptar `PracticeSessionViewModelTest` y el `androidTest` `PracticeSessionScreenTest` (spec
   `language-indicator`: icono del idioma activo).
-- [ ] 5.2 Ejecutar `./gradlew :feature:session:check` en verde.
+- [x] 5.2 Ejecutar `./gradlew :feature:session:check` en verde.
 
 ## 6. Progreso: fixtures (`:feature:progress`)
 
