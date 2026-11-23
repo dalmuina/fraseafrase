@@ -62,9 +62,9 @@ Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook d
 
 ## 6. Progreso: fixtures (`:feature:progress`)
 
-- [ ] 6.1 Adaptar `ProgressViewModelTest` y el `androidTest` `ProgressScreenTest` (spec `progress-overview` →
+- [x] 6.1 Adaptar `ProgressViewModelTest` y el `androidTest` `ProgressScreenTest` (spec `progress-overview` →
   "Volver a Progreso tras cambiar el idioma destino activo"; spec `language-indicator`).
-- [ ] 6.2 Ejecutar `./gradlew :feature:progress:check` en verde.
+- [x] 6.2 Ejecutar `./gradlew :feature:progress:check` en verde.
 
 ## 7. Verificación final (la ejecuta la sesión principal)
 
