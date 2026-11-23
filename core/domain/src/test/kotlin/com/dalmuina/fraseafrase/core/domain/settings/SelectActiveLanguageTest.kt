@@ -17,14 +17,14 @@ import org.junit.jupiter.api.Test
 class SelectActiveLanguageTest {
 
     private val ptPt = LanguageTag("pt-PT")
-    private val ptBr = LanguageTag("pt-BR")
+    private val enGb = LanguageTag("en-GB")
     private val esEs = LanguageTag("es-ES")
 
     private fun useCase(settingsRepository: FakeSettingsRepository): SelectActiveLanguage {
         val catalog = FakeCatalogRepository.withCatalogs(
             mapOf(
                 ptPt to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "a"))),
-                ptBr to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "b"))),
+                enGb to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "b"))),
                 esEs to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "c"))),
             ),
         )
@@ -41,16 +41,16 @@ class SelectActiveLanguageTest {
 
     // Scenario: Cambiar el idioma destino activo
     @Test
-    fun `given pt-PT active when selecting pt-BR then it is selected and a later read returns pt-BR`() = runTest {
+    fun `given pt-PT active when selecting en-GB then it is selected and a later read returns en-GB`() = runTest {
         // Given
         val settingsRepository = FakeSettingsRepository(defaultActiveTargetLocale = ptPt)
 
         // When
-        val result = useCase(settingsRepository).invoke(ptBr)
+        val result = useCase(settingsRepository).invoke(enGb)
 
         // Then
         result shouldBe SelectLanguageResult.Selected
-        settingsRepository.activeTargetLocale() shouldBe ptBr
+        settingsRepository.activeTargetLocale() shouldBe enGb
     }
 
     // Scenario: No se puede elegir como destino el idioma de origen

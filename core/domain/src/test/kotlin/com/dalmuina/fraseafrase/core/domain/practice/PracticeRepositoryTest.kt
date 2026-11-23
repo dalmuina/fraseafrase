@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class PracticeRepositoryTest {
 
     private val ptPt = LanguageTag("pt-PT")
-    private val ptBr = LanguageTag("pt-BR")
+    private val enGb = LanguageTag("en-GB")
 
     // Scenario: El progreso de dos idiomas destino para la misma frase no se mezcla
     @Test
@@ -23,19 +23,19 @@ class PracticeRepositoryTest {
         practice.transact(ptPt) { snapshot ->
             PracticeChange(snapshot.copy(progress = listOf(aPhraseProgress(id = "a1-saludos-001"))), Unit)
         }
-        practice.transact(ptBr) { snapshot ->
+        practice.transact(enGb) { snapshot ->
             PracticeChange(snapshot.copy(sessionCount = 7), Unit)
         }
 
         // When
         val ptPtSnapshot = practice.read(ptPt)
-        val ptBrSnapshot = practice.read(ptBr)
+        val enGbSnapshot = practice.read(enGb)
 
         // Then
         ptPtSnapshot.progress.map { it.id } shouldBe listOf(PhraseId("a1-saludos-001"))
         ptPtSnapshot.sessionCount shouldBe 0
-        ptBrSnapshot.progress shouldBe emptyList()
-        ptBrSnapshot.sessionCount shouldBe 7
+        enGbSnapshot.progress shouldBe emptyList()
+        enGbSnapshot.sessionCount shouldBe 7
     }
 
     // Scenario: La misma posición es válida en idiomas destino distintos
@@ -54,7 +54,7 @@ class PracticeRepositoryTest {
                 Unit,
             )
         }
-        practice.transact(ptBr) { snapshot ->
+        practice.transact(enGb) { snapshot ->
             PracticeChange(
                 snapshot.copy(
                     progress = listOf(aPhraseProgress(id = "A")),
@@ -66,6 +66,6 @@ class PracticeRepositoryTest {
 
         // Then
         practice.read(ptPt).activeBatch?.order shouldBe listOf(PhraseId("A"))
-        practice.read(ptBr).activeBatch?.order shouldBe listOf(PhraseId("A"))
+        practice.read(enGb).activeBatch?.order shouldBe listOf(PhraseId("A"))
     }
 }

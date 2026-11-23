@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class SettingsRepositoryTest {
 
     private val ptPt = LanguageTag("pt-PT")
-    private val ptBr = LanguageTag("pt-BR")
+    private val enGb = LanguageTag("en-GB")
 
     // Scenario: Un idioma destino nuevo no hereda los ajustes de otro
     @Test
@@ -22,7 +22,7 @@ class SettingsRepositoryTest {
         repository.save(ptPt, UserSettings(CefrLevel.B1, BatchSize(25)))
 
         // When
-        val result = repository.settings(ptBr)
+        val result = repository.settings(enGb)
 
         // Then
         result shouldBe UserSettings.DEFAULT
@@ -34,11 +34,11 @@ class SettingsRepositoryTest {
         // Given
         val repository = FakeSettingsRepository()
         repository.save(ptPt, UserSettings(CefrLevel.B1, BatchSize(25)))
-        repository.save(ptBr, UserSettings(CefrLevel.A2, BatchSize(10)))
+        repository.save(enGb, UserSettings(CefrLevel.A2, BatchSize(10)))
 
         // When / Then
         repository.settings(ptPt) shouldBe UserSettings(CefrLevel.B1, BatchSize(25))
-        repository.settings(ptBr) shouldBe UserSettings(CefrLevel.A2, BatchSize(10))
+        repository.settings(enGb) shouldBe UserSettings(CefrLevel.A2, BatchSize(10))
     }
 
     // Scenario: Primera ejecución usa el primer idioma destino disponible
@@ -61,9 +61,9 @@ class SettingsRepositoryTest {
         val repository = FakeSettingsRepository(defaultActiveTargetLocale = ptPt)
 
         // When
-        repository.setActiveTargetLocale(ptBr)
+        repository.setActiveTargetLocale(enGb)
 
         // Then
-        repository.activeTargetLocale() shouldBe ptBr
+        repository.activeTargetLocale() shouldBe enGb
     }
 }

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 class CatalogRepositoryTest {
 
     private val ptPt = LanguageTag("pt-PT")
-    private val ptBr = LanguageTag("pt-BR")
+    private val enGb = LanguageTag("en-GB")
 
     // Scenario: Dos idiomas destino cargados correctamente están disponibles
     @Test
@@ -21,7 +21,7 @@ class CatalogRepositoryTest {
             val repository = FakeCatalogRepository.withCatalogs(
                 mapOf(
                     ptPt to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "a"))),
-                    ptBr to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "b"))),
+                    enGb to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "b"))),
                 ),
             )
 
@@ -29,7 +29,7 @@ class CatalogRepositoryTest {
             val result = repository.availableTargetLocales()
 
             // Then
-            result shouldContainExactlyInAnyOrder listOf(ptPt, ptBr)
+            result shouldContainExactlyInAnyOrder listOf(ptPt, enGb)
         }
 
     // Scenario: Un idioma destino con catálogo inválido no está disponible
@@ -40,7 +40,7 @@ class CatalogRepositoryTest {
             val repository = FakeCatalogRepository.withCatalogs(
                 mapOf(
                     ptPt to CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "a"))),
-                    ptBr to CatalogLoadResult.Failed(CatalogLoadError.MalformedDocument),
+                    enGb to CatalogLoadResult.Failed(CatalogLoadError.MalformedDocument),
                 ),
             )
 

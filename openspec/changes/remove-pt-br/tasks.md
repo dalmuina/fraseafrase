@@ -7,12 +7,11 @@ Convención de este cambio: `pt-BR` → `en-GB` en los fixtures de tests donde e
 
 ## 1. Dominio: fixtures de tests (`:core:domain`)
 
-- [ ] 1.1 Sustituir `pt-BR` por `en-GB` como segundo idioma destino en `CatalogRepositoryTest` y
+- [x] 1.1 Sustituir `pt-BR` por `en-GB` como segundo idioma destino en `CatalogRepositoryTest` y
   `PracticeRepositoryTest` (specs `user-settings`/`practice-persistence`: aislamiento entre idiomas destino).
-- [ ] 1.2 En `SelectActiveLanguageTest` y `SettingsRepositoryTest`, mantener `pt-BR` solo en el caso "idioma
-  destino activo guardado que ya no está disponible" (spec `user-settings` → "Un idioma destino activo guardado
-  que ya no está disponible usa el primero disponible") y pasar el resto a `en-GB`.
-- [ ] 1.3 Ejecutar `./gradlew :core:domain:check` en verde.
+- [x] 1.2 Pasar a `en-GB` los fixtures `pt-BR` de `SelectActiveLanguageTest` y `SettingsRepositoryTest`. (El caso de
+  idioma retirado vive en `:core:data`, tarea 2.5.)
+- [x] 1.3 Ejecutar `./gradlew :core:domain:check` en verde.
 
 ## 2. Datos: catálogo sin `pt-BR` (`:core:data`)
 
@@ -29,7 +28,7 @@ Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook d
   `phrase-catalog` → "Dos idiomas destino conviven de forma independiente").
 - [ ] 2.4 Adaptar `PracticeSchemaTest`, `RoomPracticeCycleTest`, `RoomPracticeDataSourceReadTest` y
   `RoomPracticeDataSourceWriteTest` (specs `practice-persistence`: aislamiento de progreso, tanda y contador).
-- [ ] 2.5 Adaptar `DataStoreSettingsDataSourceTest` (spec `user-settings` → "Los ajustes de dos idiomas destino no
+- [ ] 2.5 Adaptar `DataStoreSettingsDataSourceTest`, conservando `pt-BR` literal solo en el test "pt-BR is no longer available then returns the first available" (spec `user-settings` → "Un idioma destino activo guardado que ya no está disponible usa el primero disponible") (spec `user-settings` → "Los ajustes de dos idiomas destino no
   se mezclan").
 - [ ] 2.6 Ejecutar `./gradlew :core:data:check` en verde.
 
@@ -70,7 +69,7 @@ Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook d
 ## 7. Verificación final (la ejecuta la sesión principal)
 
 - [ ] 7.1 `Grep` insensible a mayúsculas de `pt-?br|pt_br` fuera de `openspec/changes/archive`, `build/` y
-  `.gradle/`: solo deben quedar los casos de idioma retirado de los tests de dominio (grupo 1.2) y menciones en
+  `.gradle/`: solo deben quedar los casos de idioma retirado de `DataStoreSettingsDataSourceTest` (tarea 2.5) y menciones en
   `docs/` y ADR. Revisar `docs/pendientes-mvp.md` y actualizarlo solo si lista `pt-BR` como idioma disponible.
 - [ ] 7.2 `./gradlew check` (tests, ktlint, detekt, lint) y `./gradlew koverVerify`.
 - [ ] 7.3 `openspec validate remove-pt-br --strict`.

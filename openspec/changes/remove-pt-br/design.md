@@ -32,7 +32,7 @@ Decisión del usuario: no hay datos de usuario que conservar, así que no hay mi
 3. **Idioma guardado que desaparece.** El requisito "Idioma destino activo" ya cubre un guardado no disponible
    (cae al primero disponible). Ese escenario se conserva con `pt-BR` literal como idioma retirado: es la
    regresión de esta retirada y no necesita código nuevo. Los tests de dominio que lo ejercitan
-   (`SelectActiveLanguageTest`, `SettingsRepositoryTest`) mantienen `pt-BR` solo en ese caso.
+   (en `:core:data`, `DataStoreSettingsDataSourceTest`: "pt-BR is no longer available then returns the first available") mantienen `pt-BR` solo en ese caso.
 4. **Contrato de catálogo (`RealCatalogContractTest`).** Se quita `pt-BR` de `PACKAGED_LOCALES` y del
    `@ValueSource`, se elimina su test de "sin ids publicados" (lo cubre el de `es-ES`) y se borra
    `src/test/resources/catalog/released-ids-pt-BR.txt`. Se añade el test del requisito nuevo "Portugués europeo
