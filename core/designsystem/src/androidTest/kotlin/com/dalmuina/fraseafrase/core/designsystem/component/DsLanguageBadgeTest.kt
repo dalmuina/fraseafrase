@@ -33,16 +33,16 @@ class DsLanguageBadgeTest {
         composeTestRule.onNodeWithContentDescription("pt-PT").assertExists()
     }
 
-    // Scenario: El icono muestra el idioma activo en Progreso y Ajustes (language-indicator, pt-BR)
+    // Scenario: El icono muestra el idioma activo en Progreso y Ajustes (language-indicator, en-GB)
     @Test
-    fun givenPtBrWhenPaintingThenPtBrIconIsShown() {
+    fun givenEnGbInProgressAndSettingsWhenPaintingThenEnGbIconIsShown() {
         composeTestRule.setContent {
             AppTheme {
-                DsLanguageBadge(languageCode = "pt-BR")
+                DsLanguageBadge(languageCode = "en-GB")
             }
         }
 
-        composeTestRule.onNodeWithContentDescription("pt-BR").assertExists()
+        composeTestRule.onNodeWithContentDescription("en-GB").assertExists()
     }
 
     // Scenario: El icono muestra el idioma activo en Practicar (language-indicator, es-ES)
@@ -117,23 +117,23 @@ class DsLanguageBadgeTest {
         composeTestRule.onNodeWithContentDescription("ru-RU").assertExists()
     }
 
-    // Scenario: pt-PT y pt-BR no comparten representación (language-indicator)
+    // Scenario: pt-PT y en-GB no comparten representación (language-indicator)
     @Test
-    fun givenPtPtAndPtBrWhenPaintingThenIconsDiffer() {
+    fun givenPtPtAndEnGbWhenPaintingThenIconsDiffer() {
         composeTestRule.setContent {
             AppTheme {
                 DsLanguageBadge(languageCode = "pt-PT", modifier = Modifier.testTag("pt-pt-badge"))
-                DsLanguageBadge(languageCode = "pt-BR", modifier = Modifier.testTag("pt-br-badge"))
+                DsLanguageBadge(languageCode = "en-GB", modifier = Modifier.testTag("en-gb-badge"))
             }
         }
 
         val ptPtTag = composeTestRule.onNodeWithTag("pt-pt-badge")
             .fetchSemanticsNode()
             .config[SemanticsProperties.ContentDescription]
-        val ptBrTag = composeTestRule.onNodeWithTag("pt-br-badge")
+        val enGbTag = composeTestRule.onNodeWithTag("en-gb-badge")
             .fetchSemanticsNode()
             .config[SemanticsProperties.ContentDescription]
 
-        assertNotEquals(ptPtTag, ptBrTag)
+        assertNotEquals(ptPtTag, enGbTag)
     }
 }

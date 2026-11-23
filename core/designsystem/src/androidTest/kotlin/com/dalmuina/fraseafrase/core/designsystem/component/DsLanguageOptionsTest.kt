@@ -21,7 +21,7 @@ class DsLanguageOptionsTest {
 
     private val options = listOf(
         DsLanguageOption(code = "pt-PT", displayName = "Portugués (Portugal)"),
-        DsLanguageOption(code = "pt-BR", displayName = "Portugués (Brasil)")
+        DsLanguageOption(code = "en-GB", displayName = "Inglés (Reino Unido)")
     )
 
     // Scenario: Elegir un idioma destino de la lista (settings-screen). Verifica que se listan los
@@ -45,7 +45,7 @@ class DsLanguageOptionsTest {
         composeTestRule.onNodeWithText("Portugués (Portugal)").performClick()
 
         // Then: ambas opciones aparecen listadas, y la activa está marcada como seleccionada
-        composeTestRule.onNodeWithText("Portugués (Brasil)").assertExists()
+        composeTestRule.onNodeWithText("Inglés (Reino Unido)").assertExists()
         composeTestRule.onNodeWithContentDescription("pt-PT").assertIsSelected()
     }
 
@@ -63,11 +63,11 @@ class DsLanguageOptionsTest {
             }
         }
 
-        // When: se abre el desplegable y se elige pt-BR
+        // When: se abre el desplegable y se elige en-GB
         composeTestRule.onNodeWithText("Portugués (Portugal)").performClick()
-        composeTestRule.onNodeWithText("Portugués (Brasil)").performClick()
+        composeTestRule.onNodeWithText("Inglés (Reino Unido)").performClick()
 
-        // Then: la selección notificada es el código de pt-BR
-        assert(selected == "pt-BR")
+        // Then: la selección notificada es el código de en-GB
+        assert(selected == "en-GB")
     }
 }

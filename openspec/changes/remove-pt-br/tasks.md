@@ -34,12 +34,12 @@ Nota: el test rojo y el borrado del asset van en el mismo grupo porque el hook d
 
 ## 3. Design system: sin icono `pt-BR` (`:core:designsystem`)
 
-- [ ] 3.1 Quitar de `DsLanguageBadge` la rama `"pt-BR"` y su entrada en `AllLanguageCodes`, y borrar el drawable
+- [x] 3.1 Quitar de `DsLanguageBadge` la rama `"pt-BR"` y su entrada en `AllLanguageCodes`, y borrar el drawable
   `ic_flag_pt_br.xml` (cambio visual, sin test rojo previo según CLAUDE.md).
-- [ ] 3.2 Actualizar `DsLanguageBadgeTest` (escenario "El icono muestra el idioma activo en Progreso y Ajustes" con
+- [x] 3.2 Actualizar `DsLanguageBadgeTest` (escenario "El icono muestra el idioma activo en Progreso y Ajustes" con
   `en-GB`; el test "pt-PT y pt-BR no comparten representación" pasa a comparar `pt-PT` con `en-GB`) y
   `DsLanguageOptionsTest` (opción `en-GB`). Son `androidTest`: se compilan con `:core:designsystem:check`.
-- [ ] 3.3 Ejecutar `./gradlew :core:designsystem:check` en verde.
+- [x] 3.3 Ejecutar `./gradlew :core:designsystem:check` en verde.
 
 ## 4. Ajustes: sin etiqueta `pt-BR` (`:feature:settings`)
 
