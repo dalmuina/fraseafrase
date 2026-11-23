@@ -22,9 +22,9 @@ de cada idioma destino MUST ser igual al último guardado para ese idioma destin
 
 #### Scenario: El progreso de dos idiomas destino para la misma frase no se mezcla
 
-- **GIVEN** la frase `a1-saludos-001` con nivel 3 en el idioma destino `pt-PT` y nivel 0 en `pt-BR`
+- **GIVEN** la frase `a1-saludos-001` con nivel 3 en el idioma destino `pt-PT` y nivel 0 en `en-GB`
 - **WHEN** se consulta el progreso de esa frase en cada idioma destino
-- **THEN** `pt-PT` devuelve nivel 3 y `pt-BR` devuelve nivel 0
+- **THEN** `pt-PT` devuelve nivel 3 y `en-GB` devuelve nivel 0
 
 ### Requirement: Posición de la tanda activa
 
@@ -42,7 +42,7 @@ de idiomas destino distintos.
 #### Scenario: La misma posición es válida en idiomas destino distintos
 
 - **GIVEN** una frase de `pt-PT` en la posición 0 de su tanda activa
-- **WHEN** se guarda una frase de `pt-BR` en la posición 0 de su propia tanda activa
+- **WHEN** se guarda una frase de `en-GB` en la posición 0 de su propia tanda activa
 - **THEN** el guardado se completa sin error
 
 ### Requirement: Tanda activa única
@@ -67,8 +67,8 @@ tanda activa de cualquier otro idioma destino.
 #### Scenario: La tanda activa de un idioma destino no afecta a la de otro
 
 - **GIVEN** una tanda activa guardada para `pt-PT`
-- **WHEN** se consulta si hay tanda activa para `pt-BR`
-- **THEN** el resultado indica que no hay tanda activa para `pt-BR`
+- **WHEN** se consulta si hay tanda activa para `en-GB`
+- **THEN** el resultado indica que no hay tanda activa para `en-GB`
 
 ### Requirement: Orden de la tanda activa
 
@@ -98,15 +98,15 @@ por cambio de ajustes MUST NOT modificarlo.
 
 #### Scenario: Sin contador guardado el valor por defecto es 0
 
-- **GIVEN** que no hay ningún contador guardado para el idioma destino `pt-BR`
-- **WHEN** se consulta el contador de sesiones generadas de `pt-BR`
+- **GIVEN** que no hay ningún contador guardado para el idioma destino `en-GB`
+- **WHEN** se consulta el contador de sesiones generadas de `en-GB`
 - **THEN** su valor es 0
 
 #### Scenario: Generar sesión en un idioma destino no incrementa el contador de otro
 
-- **GIVEN** el contador de sesiones generadas en 7 para `pt-PT` y en 3 para `pt-BR`
+- **GIVEN** el contador de sesiones generadas en 7 para `pt-PT` y en 3 para `en-GB`
 - **WHEN** se genera sesión para `pt-PT`
-- **THEN** el contador de `pt-PT` queda en 8 y el de `pt-BR` sigue en 3
+- **THEN** el contador de `pt-PT` queda en 8 y el de `en-GB` sigue en 3
 
 ### Requirement: Composición atómica de la tanda siguiente
 
@@ -254,9 +254,9 @@ elegido para ese idioma destino.
 
 #### Scenario: El primer uso de un idioma destino no crea tanda para otro
 
-- **GIVEN** `pt-PT` con progreso y tanda activa ya existentes, y `pt-BR` sin progreso ni tanda
-- **WHEN** se obtiene la tanda activa de `pt-BR`
-- **THEN** se compone la primera tanda de `pt-BR` y la tanda activa de `pt-PT` no se modifica
+- **GIVEN** `pt-PT` con progreso y tanda activa ya existentes, y `en-GB` sin progreso ni tanda
+- **WHEN** se obtiene la tanda activa de `en-GB`
+- **THEN** se compone la primera tanda de `en-GB` y la tanda activa de `pt-PT` no se modifica
 
 ### Requirement: Existe una única instancia de `PracticeDatabase` en el grafo de la aplicación
 
