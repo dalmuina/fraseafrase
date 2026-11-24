@@ -29,7 +29,7 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (P
 > y de otros módulos, y el hook ejecuta `./gradlew check` global al commitear. Por eso 2.5 adapta en este mismo
 > grupo los tests de `:feature:session` y `:core:data`, sin cambiar su código de producción.
 
-- [ ] 2.1 Test: `ComposeNextBatchTest`, candidatas y prioridad. Se sustituyen los tests de cuotas y dominadas.
+- [x] 2.1 Test: `ComposeNextBatchTest`, candidatas y prioridad. Se sustituyen los tests de cuotas y dominadas.
   Un test por escenario de `practice-batch`:
   - "Candidatas a la tanda nueva": los seis escenarios.
   - "Prioridad de las pendientes": "Menor nivel va antes a igual retraso", "El retraso adelanta a una frase de
@@ -38,7 +38,7 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (P
   Se conservan los tests de invariantes y de ausencia de tanda. Los escenarios que ya pasan con el código
   actual (frase vencida, frase de sesión futura de nivel menor que 4, CEFR) se dejan como regresión. Los que
   deben fallar son los de orden por prioridad y "Una frase de nivel alto sin vencer no entra".
-- [ ] 2.2 Test: `ComposeNextBatchTest`, número y reparto de nuevas. Un test por escenario de `practice-batch`:
+- [x] 2.2 Test: `ComposeNextBatchTest`, número y reparto de nuevas. Un test por escenario de `practice-batch`:
   - "Número de frases nuevas según el aprendizaje": los siete escenarios.
   - "Reparto de las nuevas en la tanda": los tres escenarios.
   - "Composición de la tanda o ausencia de tanda": "Primera tanda con catálogo disponible" (10 de 15) y "Tanda
@@ -46,11 +46,11 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (P
   - "Frases nuevas por nivel CEFR": "Solo nuevas del nivel elegido".
 
   Deben fallar por el número de nuevas y por su posición.
-- [ ] 2.3 Implementación: reescribir `ComposeNextBatch` según design D2. Incluye: candidatas, prioridad
+- [x] 2.3 Implementación: reescribir `ComposeNextBatch` según design D2. Incluye: candidatas, prioridad
   `nivel − retraso`, `techo`/`hueco` con aritmética entera, reparto de las nuevas, y eliminar `Quotas`, `Take`
   y las constantes de cuotas y dominadas. KDoc de `BatchComposition` sin "dominadas". Verificación: 2.1 y 2.2
   en verde.
-- [ ] 2.4 Tests de casos de uso de `:core:domain` que fijan el tamaño o el orden de la tanda compuesta:
+- [x] 2.4 Tests de casos de uso de `:core:domain` que fijan el tamaño o el orden de la tanda compuesta:
   `GenerateSessionTest`, `ObtainActiveBatchTest`, `CloseThenObtainTest`, `ObtainPracticeSessionTest` y
   `RegenerateActiveBatchForLevelTest`. Se ajustan al resultado nuevo con el comentario de escenario o
   ADR-0025. En concreto:
@@ -60,7 +60,7 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (P
   - `ObtainActiveBatchTest` cubre `practice-persistence` "Primer uso crea la primera tanda" con las 10
     primeras frases (hoy afirma 15, `ObtainActiveBatchTest.kt:82-83`).
   - `GenerateSessionTest` cubre "Generar sesión incrementa el contador y compone en un paso". Verificación: `./gradlew :core:domain:check`.
-- [ ] 2.5 Tests de otros módulos:
+- [x] 2.5 Tests de otros módulos:
   - `PracticeSessionCloseTest` o `PracticeSessionViewModelTest`: cubrir el escenario de `practice-session`
     "Generar sesión muestra la tanda siguiente con sus arrastradas primero" (nuevo resultado: A, N1–N4, C) y ajustar los que
     fijan el orden o el tamaño anterior.

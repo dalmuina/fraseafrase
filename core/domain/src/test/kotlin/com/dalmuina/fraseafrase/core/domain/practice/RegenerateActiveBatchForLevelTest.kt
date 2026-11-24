@@ -81,39 +81,31 @@ class RegenerateActiveBatchForLevelTest {
         practice.read().sessionCount shouldBe 9
     }
 
-    // Scenario: La tanda siguiente se compone por cuotas con el nuevo nivel
+    // Scenario: La tanda siguiente se compone por cuotas con el nuevo nivel (spec: practice-batch), con el
+    // resultado nuevo del delta: mismas reglas que una generación de sesión (ADR-0025)
     @Test
-    fun `given material for the new level when composing the next batch then it uses the same quotas as a session`() =
+    fun `given material for the new level when composing the next batch then it uses the same rules as a session`() =
         runTest {
-            // Given: material suficiente de a reforzar y dominadas (B1) y nuevas (B1), sin tanda activa
-            val reinforce = (1..11).map { "reinforce-$it" }
-            val reinforceProgress = reinforce.map { aPhraseProgress(id = it, level = Level(1), dueAtSession = 0) }
-            val mastered = (1..6).map { "mastered-$it" }
-            val masteredProgress = mastered.map {
-                aPhraseProgress(id = it, level = Level(4), streak = Streak(0), dueAtSession = 100)
-            }
+            // Given: doce pendientes B1 de nivel 1 con el mismo retraso, ninguna de nivel 0, y veinte nuevas B1
+            val pending = (1..12).map { "pending-$it" }
+            val pendingProgress = pending.map { aPhraseProgress(id = it, level = Level(1), dueAtSession = 0) }
             val practice = FakePracticeRepository(
-                PracticeSnapshot(
-                    progress = reinforceProgress + masteredProgress,
-                    activeBatch = null,
-                    sessionCount = 0,
-                ),
+                PracticeSnapshot(progress = pendingProgress, activeBatch = null, sessionCount = 0),
             )
             val newPhrases = (1..20).map { "new-b1-$it" }
             val catalog = CatalogLoadResult.Loaded(
                 newPhrases.map { aCatalogPhrase(id = it, level = CefrLevel.B1) } +
-                    (reinforce + mastered).map { aCatalogPhrase(id = it, level = CefrLevel.B1) },
+                    pending.map { aCatalogPhrase(id = it, level = CefrLevel.B1) },
             )
 
             // When
             val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(20))
 
-            // Then: mismas cuotas que una generación de sesión con N=20: 4 nuevas, 11 a reforzar, 5 dominadas
+            // Then: N=20 con pendientes de nivel 1: 8 nuevas (40 %) y 12 pendientes
             val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
             val ids = created.batch.entries.map { it.id.value }
-            ids.count { it.startsWith("new-b1-") } shouldBe 4
-            ids.count { it in reinforce } shouldBe 11
-            ids.count { it in mastered } shouldBe 5
+            ids.count { it.startsWith("new-b1-") } shouldBe 8
+            ids.count { it in pending } shouldBe 12
         }
 
     // Scenario: El progreso de un nivel CEFR abandonado se conserva y vuelve a ofrecerse al volver a ese nivel

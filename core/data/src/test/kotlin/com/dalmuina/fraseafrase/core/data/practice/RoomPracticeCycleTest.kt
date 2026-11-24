@@ -103,9 +103,9 @@ class RoomPracticeCycleTest {
 
         // Then
         first.shouldBeInstanceOf<ActiveBatchResult.Created>()
-        first.batch.entries.map { it.id.value } shouldContainExactly listOf("A", "B", "C", "Z")
+        first.batch.entries.map { it.id.value } shouldContainExactly listOf("B", "C", "Z", "A")
         second.shouldBeInstanceOf<ActiveBatchResult.Existing>()
-        second.batch.entries.map { it.id.value } shouldContainExactly listOf("A", "B", "C", "Z")
+        second.batch.entries.map { it.id.value } shouldContainExactly listOf("B", "C", "Z", "A")
         source.read(ptPt) shouldBe stateAfterFirst
     }
 

@@ -174,9 +174,9 @@ orden de catálogo.
 - **WHEN** se compone la tanda
 - **THEN** el orden es P1, P2, N1, P3, N2, P4, N3, P5, N4, P6
 
-#### Scenario: Las nuevas nunca quedan todas al final
+#### Scenario: Con dos o más pendientes las nuevas no quedan todas al final
 
-- **GIVEN** una tanda compuesta con al menos una pendiente y al menos una nueva
+- **GIVEN** una tanda compuesta con al menos dos pendientes y al menos una nueva
 - **WHEN** se compone la tanda
 - **THEN** la última posición de la tanda la ocupa una pendiente
 

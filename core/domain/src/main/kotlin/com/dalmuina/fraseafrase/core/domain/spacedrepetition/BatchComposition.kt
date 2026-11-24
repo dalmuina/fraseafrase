@@ -9,6 +9,6 @@ sealed interface BatchComposition {
     /** Tanda creada con las frases disponibles. */
     data class Composed(val batch: PracticeBatch) : BatchComposition
 
-    /** No hay a reforzar, dominadas ni frases nuevas disponibles: no se crea tanda. */
+    /** No hay pendientes ni frases nuevas disponibles: no se crea tanda. */
     data object NothingAvailable : BatchComposition
 }

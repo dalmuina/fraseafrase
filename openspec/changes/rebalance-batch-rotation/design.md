@@ -75,7 +75,7 @@ Pasos:
    - `nuevas = min(disponibles, techo, max(hueco, N − pendientes))`
    - `pendientesTomadas = min(pendientes, N − nuevas)`
 4. **Reparto de las nuevas.** Si `p > 0`, la nueva `i` va en la posición `(i + 1) × (p + k) / (k + 1)`, con
-   división entera. Las posiciones son distintas y nunca la última, porque `p ≥ 1` hace que el paso sea ≥ 1.
+   división entera. Las posiciones son distintas. Con `p ≥ 2` nunca es la última, así que una pendiente cierra la tanda; con `p == 1` la última puede ser nueva (p. ej. P, N, N, N), y es aceptable.
    Las pendientes ocupan el resto en su orden. Si `p == 0`, las nuevas van en orden de catálogo.
 5. **Resultado.** Las pendientes se reinician en la tanda (`answeredInBatch = false`, igual que hoy). Las
    nuevas se crean con nivel 0, racha 0 y `dueAtSession` 0. Si no hay entradas, `NothingAvailable`.

@@ -7,7 +7,8 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchComposition.No
 import javax.inject.Inject
 
 /**
- * Compone la tanda siguiente (ADR-0012, ADR-0017). Función pura: la sesión actual llega como argumento,
+ * Compone la tanda siguiente (ADR-0012, ADR-0025): pendientes por prioridad y nuevas según el
+ * aprendizaje, sin bloques fijos. Función pura: la sesión actual llega como argumento,
  * no de un reloj. Las precondiciones de entrada son errores de programación y lanzan
  * [IllegalArgumentException].
  */
@@ -25,71 +26,48 @@ class ComposeNextBatch @Inject constructor() {
         val progressIds = progress.map { it.id }.toSet()
         val catalogIndex = catalog.withIndex().associate { it.value.id to it.index }
 
-        val reinforceCandidates = progress
-            .filter { it.dueAtSession <= currentSession && catalogById.getValue(it.id).level == cefrLevel }
-            .sortedBy { catalogIndex.getValue(it.id) }
-        val masteredCandidates = progress
-            .filter {
-                it.level.value >= MASTERED_LEVEL &&
-                    it.dueAtSession > currentSession &&
-                    catalogById.getValue(it.id).level == cefrLevel
-            }
-            .sortedBy { catalogIndex.getValue(it.id) }
+        val inLevel = progress.filter { catalogById.getValue(it.id).level == cefrLevel }
+        val pending = inLevel
+            .filter { it.dueAtSession <= currentSession }
+            .sortedWith(
+                compareBy<PhraseProgress> { it.level.value - (currentSession - it.dueAtSession) }
+                    .thenBy { catalogIndex.getValue(it.id) },
+            )
+        val learningCount = inLevel.count { it.level.value == 0 }
         val newCandidates = catalog.filter { it.level == cefrLevel && it.id !in progressIds }
 
-        val take = quotasOf(size).distribute(
-            reinforceCandidates.size,
-            newCandidates.size,
-            masteredCandidates.size,
-        )
-
-        val reinforced = reinforceCandidates.take(take.reinforce)
-        val mastered = masteredCandidates.take(take.mastered)
+        val newCount = newCountOf(size.value, pending.size, learningCount, newCandidates.size)
+        val taken = pending.take(size.value - newCount).map { it.restartedInBatch() }
         val new = newCandidates
-            .take(take.new)
+            .take(newCount)
             .map { PhraseProgress(it.id, Level(0), Streak(0), answeredInBatch = false, dueAtSession = 0) }
 
-        val entries = (reinforced + mastered).map { it.restartedInBatch() } + new
+        val entries = interleave(taken, new)
         if (entries.isEmpty()) return NothingAvailable
         return Composed(PracticeBatch(entries, size))
     }
 
-    /** Cuotas por bloque sobre el tamaño N de la tanda (ADR-0012, ADR-0017, design D1/D3). */
-    private fun quotasOf(size: BatchSize): Quotas {
-        val new = (size.value * NEW_RATIO).toInt()
-        val reinforce = (size.value * REINFORCE_RATIO).toInt()
-        val mastered = size.value - new - reinforce
-        return Quotas(new = new, reinforce = reinforce, mastered = mastered)
+    /** Número de nuevas según el aprendizaje (design D2.3); aritmética entera para evitar errores de Double. */
+    private fun newCountOf(size: Int, pending: Int, learning: Int, available: Int): Int {
+        val cap = size * LEARNING_CAP_NUMERATOR / LEARNING_CAP_DENOMINATOR
+        val max40 = size * PENDING_CAP_NUMERATOR / PENDING_CAP_DENOMINATOR
+        val ceiling = if (pending == 0) cap else max40
+        val gap = maxOf(0, cap - learning)
+        return minOf(available, ceiling, maxOf(gap, size - pending))
     }
 
     /**
-     * Reparto de hueco entre bloques cuando alguno no alcanza su cuota: primero se toma hasta la cuota de
-     * cada bloque con sus propios candidatos; el hueco restante se reparte en el orden a reforzar, nuevas,
-     * dominadas, entre los bloques con candidatos sobrantes.
+     * Reparto de las nuevas (design D2.4): con `p` pendientes y `k` nuevas, la nueva `i` va en la posición
+     * `(i + 1) * (p + k) / (k + 1)`. Sin pendientes, las nuevas van en orden de catálogo.
      */
-    private data class Quotas(val new: Int, val reinforce: Int, val mastered: Int) {
-
-        fun distribute(reinforceAvailable: Int, newAvailable: Int, masteredAvailable: Int): Take {
-            val reinforceBase = minOf(reinforce, reinforceAvailable)
-            val newBase = minOf(new, newAvailable)
-            val masteredBase = minOf(mastered, masteredAvailable)
-            var hole = (reinforce + new + mastered) - (reinforceBase + newBase + masteredBase)
-
-            val reinforceExtra = minOf(hole, reinforceAvailable - reinforceBase)
-            hole -= reinforceExtra
-            val newExtra = minOf(hole, newAvailable - newBase)
-            hole -= newExtra
-            val masteredExtra = minOf(hole, masteredAvailable - masteredBase)
-
-            return Take(
-                reinforce = reinforceBase + reinforceExtra,
-                new = newBase + newExtra,
-                mastered = masteredBase + masteredExtra,
-            )
-        }
+    private fun interleave(pending: List<PhraseProgress>, new: List<PhraseProgress>): List<PhraseProgress> {
+        if (pending.isEmpty()) return new
+        val p = pending.size
+        val k = new.size
+        val newPositions = new.indices.associate { i -> (i + 1) * (p + k) / (k + 1) to new[i] }
+        val pendingIterator = pending.iterator()
+        return (0 until p + k).map { position -> newPositions[position] ?: pendingIterator.next() }
     }
-
-    private data class Take(val reinforce: Int, val new: Int, val mastered: Int)
 
     private fun requireConsistentInputs(progress: List<PhraseProgress>, catalog: List<CatalogPhrase>) {
         val progressIds = progress.map { it.id }.toSet()
@@ -106,13 +84,16 @@ class ComposeNextBatch @Inject constructor() {
     private fun PhraseProgress.restartedInBatch(): PhraseProgress = copy(answeredInBatch = false)
 
     companion object {
-        /** Nivel de consolidación mínimo para considerar una frase dominada (design D1). */
-        private const val MASTERED_LEVEL = 4
+        /** Numerador de la fracción de N que limita nuevas sin pendientes y el grupo de nivel 0 (1/2). */
+        private const val LEARNING_CAP_NUMERATOR = 1
 
-        /** Proporción de N para la cuota de nuevas (design D1). */
-        private const val NEW_RATIO = 0.20
+        /** Denominador de la fracción de [LEARNING_CAP_NUMERATOR]. */
+        private const val LEARNING_CAP_DENOMINATOR = 2
 
-        /** Proporción de N para la cuota de a reforzar; dominadas se lleva el resto (design D1). */
-        private const val REINFORCE_RATIO = 0.55
+        /** Numerador de la fracción de N que limita las nuevas cuando hay pendientes (2/5). */
+        private const val PENDING_CAP_NUMERATOR = 2
+
+        /** Denominador de la fracción de [PENDING_CAP_NUMERATOR]. */
+        private const val PENDING_CAP_DENOMINATOR = 5
     }
 }

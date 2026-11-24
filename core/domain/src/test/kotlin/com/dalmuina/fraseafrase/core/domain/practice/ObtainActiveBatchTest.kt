@@ -68,7 +68,7 @@ class ObtainActiveBatchTest {
         result.batch.entries.map { it.id.value } shouldBe listOf("A", "B")
     }
 
-    // Scenario: Primera tanda con catálogo disponible (spec: practice-batch)
+    // Scenario: Primera tanda con catálogo disponible (spec: practice-batch, practice-persistence): 10 de 15
     @Test
     fun `given an empty database when obtaining the batch then creates the first batch with new phrases`() = runTest {
         // Given
@@ -79,8 +79,8 @@ class ObtainActiveBatchTest {
 
         // Then
         result.shouldBeInstanceOf<ActiveBatchResult.Created>()
-        result.batch.entries.map { it.id.value } shouldBe (1..15).map { "a1-%02d".format(it) }
-        practice.read().activeBatch.shouldNotBeNull().order.size shouldBe 15
+        result.batch.entries.map { it.id.value } shouldBe (1..10).map { "a1-%02d".format(it) }
+        practice.read().activeBatch.shouldNotBeNull().order.size shouldBe 10
     }
 
     // Scenario: Catálogo vacío sin progreso no crea tanda (spec: practice-batch)
