@@ -73,12 +73,12 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (P
 
 ## 3. Cierre y verificación (sesión principal)
 
-- [ ] 3.1 Líneas de estado (ADR-0001):
+- [x] 3.1 Líneas de estado (ADR-0001):
   - ADR-0025 → `Aceptado`.
   - ADR-0017 → `Sustituido por ADR-0018 (alcance del MVP), ADR-0021 (filtro CEFR), ADR-0024 (regla de fallo) y
     ADR-0025 (acierto sin certificar y composición)`.
   - Añadir 0025 a la tabla de `docs/adr/README.md` y actualizar la fila de 0017.
-- [ ] 3.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio
+- [x] 3.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio
   90 %, presentación 80 %, global 70 %).
 - [ ] 3.3 Comprobación manual con `assembleDebug`, N = 10 y 4 o 5 sesiones generadas:
   - las frases rotan;
@@ -86,6 +86,7 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (P
   - una frase Oro acertada sin certificar no reaparece en la sesión siguiente.
 
   Si no hay dispositivo, indicarlo en la tarea.
+  Sin dispositivo en esta sesión: pendiente de comprobación manual por el usuario (también los instrumentados de 2.5).
 
 ## Workflow follow-up
 
