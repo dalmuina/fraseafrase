@@ -9,17 +9,17 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (P
 > `dueAtSession = sesión + 1` tras un acierto sin certificar en nivel ≥ 3, se adaptan en este mismo grupo,
 > sin tocar código de producción fuera de `:core:domain`.
 
-- [ ] 1.1 Test: `ReviewScheduleTest` - `given levels 0 to 5 when computing the within level wait then it is 1 1 1
+- [x] 1.1 Test: `ReviewScheduleTest` - `given levels 0 to 5 when computing the within level wait then it is 1 1 1
   2 4 and 8` (`spaced-repetition`: "Espera intra-nivel de cada nivel"). Debe fallar por compilación o aserción
   (no existe `withinLevelWaitFor`).
-- [ ] 1.2 Implementación: `ReviewSchedule.withinLevelWaitFor(level)` = `max(1, enfriamiento / 2)`, con 1 para el
+- [x] 1.2 Implementación: `ReviewSchedule.withinLevelWaitFor(level)` = `max(1, enfriamiento / 2)`, con 1 para el
   nivel 0, más KDoc con ADR-0025 (design D1). Verificación: 1.1 en verde.
-- [ ] 1.3 Test: `PhraseProgressTest` - `given a level 3 phrase with streak 1 when a hit is recorded at session
+- [x] 1.3 Test: `PhraseProgressTest` - `given a level 3 phrase with streak 1 when a hit is recorded at session
   10 then dueAtSession is 12` y `given a level 5 phrase with streak 0 when a hit is recorded at session 10 then
   dueAtSession is 18` (`spaced-repetition`: "Acierto que no certifica en nivel 3 espera dos sesiones" y "… en
   nivel 5 espera ocho sesiones"). Se mantiene el test de nivel 1 → 11 ("Acierto que no certifica fija la sesión
   siguiente"). Debe fallar por `dueAtSession` 11 en los dos nuevos.
-- [ ] 1.4 Implementación: `PhraseProgress.recordHit` usa `ReviewSchedule.withinLevelWaitFor(level)` en la rama
+- [x] 1.4 Implementación: `PhraseProgress.recordHit` usa `ReviewSchedule.withinLevelWaitFor(level)` en la rama
   que no certifica; se actualiza el KDoc de `record` (ADR-0025). Verificación: 1.3 en verde y
   `./gradlew :core:domain:check`.
 

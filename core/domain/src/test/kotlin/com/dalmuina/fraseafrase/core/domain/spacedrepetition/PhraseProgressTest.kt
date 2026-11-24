@@ -224,6 +224,50 @@ class PhraseProgressTest {
         updated.dueAtSession shouldBe 11
     }
 
+    // Scenario: Acierto que no certifica en nivel 3 espera dos sesiones
+    // (spec: Acierto que no certifica en nivel 3 espera dos sesiones)
+    @Test
+    fun `given a level 3 phrase with streak 1 when a hit is recorded at session 10 then dueAtSession is 12`() {
+        // Given
+        val progress = PhraseProgress(
+            id = PhraseId("p-1"),
+            level = Level(3),
+            streak = Streak(1),
+            answeredInBatch = false,
+            dueAtSession = 10,
+        )
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 10)
+
+        // Then
+        updated.level shouldBe Level(3)
+        updated.streak shouldBe Streak(2)
+        updated.dueAtSession shouldBe 12
+    }
+
+    // Scenario: Acierto que no certifica en nivel 5 espera ocho sesiones
+    // (spec: Acierto que no certifica en nivel 5 espera ocho sesiones)
+    @Test
+    fun `given a level 5 phrase with streak 0 when a hit is recorded at session 10 then dueAtSession is 18`() {
+        // Given
+        val progress = PhraseProgress(
+            id = PhraseId("p-1"),
+            level = Level(5),
+            streak = Streak(0),
+            answeredInBatch = false,
+            dueAtSession = 10,
+        )
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 10)
+
+        // Then
+        updated.level shouldBe Level(5)
+        updated.streak shouldBe Streak(1)
+        updated.dueAtSession shouldBe 18
+    }
+
     // Scenario: Una frase nueva certificada por primera vez pasa a nivel 1 (spec: Resolución de la autoevaluación)
     @Test
     fun `given a level 0 phrase with streak 2 when recording a hit then it certifies to level 1 at session 11`() {

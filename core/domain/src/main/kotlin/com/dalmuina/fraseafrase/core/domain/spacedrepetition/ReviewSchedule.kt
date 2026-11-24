@@ -16,4 +16,11 @@ object ReviewSchedule {
     fun cooldownSessionsFor(level: Level): Int = requireNotNull(COOLDOWN_SESSIONS[level.value]) {
         "No cooldown is defined for level ${level.value}"
     }
+
+    /**
+     * Número de sesiones que una frase que no certifica espera dentro de su nivel (ADR-0025). Se deriva
+     * de [cooldownSessionsFor] (la mitad, como mínimo 1) para que haya una sola fuente de verdad: el nivel
+     * 0 no tiene enfriamiento y espera 1 sesión.
+     */
+    fun withinLevelWaitFor(level: Level): Int = maxOf(1, (COOLDOWN_SESSIONS[level.value] ?: 0) / 2)
 }
