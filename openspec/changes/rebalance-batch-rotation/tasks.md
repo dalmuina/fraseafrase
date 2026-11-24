@@ -1,7 +1,7 @@
 # Tasks
 
 Escenarios: `specs/<capacidad>/spec.md` de este cambio. Decisiones: `design.md` (D1–D4). ADR-0025 ya está
-redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (Propuesto).
+redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (Aceptado).
 
 ## 1. Espera intra-nivel tras un acierto que no certifica (`:core:domain`)
 
