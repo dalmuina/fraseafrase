@@ -250,7 +250,8 @@ elegido para ese idioma destino.
 - **GIVEN** una base de datos sin progreso ni tanda para el idioma destino `pt-PT`, un catálogo de
   `pt-PT` con quince frases A1 y el nivel elegido A1 con N igual a 20 para `pt-PT`
 - **WHEN** se obtiene la tanda activa de `pt-PT`
-- **THEN** el resultado es `Created` con quince frases en orden de catálogo, todas de nivel 0
+- **THEN** el resultado es `Created` con las diez primeras frases en orden de catálogo, todas de nivel 0
+  (la primera tanda se llena hasta la mitad de N, ADR-0025)
 
 #### Scenario: El primer uso de un idioma destino no crea tanda para otro
 

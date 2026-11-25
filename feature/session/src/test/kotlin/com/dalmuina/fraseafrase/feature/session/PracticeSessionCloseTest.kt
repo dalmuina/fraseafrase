@@ -39,9 +39,10 @@ class PracticeSessionCloseTest {
     private fun certifiedWithFarCooldown(id: String): PhraseProgress =
         aPhraseProgress(id = id, level = Level(1), streak = Streak(0), answeredInBatch = true, dueAtSession = 100)
 
-    // Scenario: Generar sesión compone la tanda a reforzar en orden de catálogo (spec: practice-batch)
+    // Scenario: Generar sesión muestra la tanda siguiente con sus arrastradas primero (spec: practice-session;
+    // resultado nuevo: A, N1-N4, C)
     @Test
-    fun `given C and A pending when generating session then the next batch reinforces them in catalog order`() =
+    fun `given C and A pending when generating session then the next batch interleaves new phrases between them`() =
         runTest {
             // Given: tanda C y A sin certificar; catálogo con A, C y 8 frases nuevas de A1; N igual a 10
             val newIds = (1..8).map { "N$it" }
@@ -57,9 +58,9 @@ class PracticeSessionCloseTest {
             viewModel.onAction(PracticeSessionAction.GenerateSession)
             advanceUntilIdle()
 
-            // Then: a reforzar entra en el orden del catálogo (A antes que C), seguido de las nuevas
+            // Then: pendientes en orden de catálogo (A antes que C) con 4 nuevas repartidas entre ellas
             viewModel.practicing().current.id.value shouldBe "A"
-            practice.activeOrder() shouldBe listOf("A", "C") + newIds
+            practice.activeOrder() shouldBe listOf("A", "N1", "N2", "N3", "N4", "C")
         }
 
     // Scenario: Generar sesión con todas certificadas y en enfriamiento deja la tanda siguiente sin reforzarlas
