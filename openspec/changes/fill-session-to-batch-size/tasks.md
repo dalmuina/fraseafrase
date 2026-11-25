@@ -69,10 +69,10 @@ Ficheros: `spacedrepetition/ComposeNextBatch.kt` / `ComposeNextBatchTest.kt`, `p
 
 ## 4. Cierre y verificación (sesión principal)
 
-- [ ] 4.1 Líneas de estado (ADR-0001): ADR-0026 → `Aceptado`; ADR-0025 → `Sustituido por ADR-0026`; en
+- [x] 4.1 Líneas de estado (ADR-0001): ADR-0026 → `Aceptado`; ADR-0025 → `Sustituido por ADR-0026`; en
   `docs/adr/README.md`, fila de 0026 → `Aceptado` y fila de 0025 → `Sustituido por 0026`.
   Verificación: el README y las cabeceras coinciden.
-- [ ] 4.2 `./gradlew check` y `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
+- [x] 4.2 `./gradlew check` y `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
 - [ ] 4.3 Comprobación manual con `assembleDebug`, N = 10 y 3 o 4 sesiones: la primera tanda tiene 10 frases y
   las siguientes también mientras el nivel tenga 10 o más frases. Si no hay dispositivo, indicarlo en la tarea.
 

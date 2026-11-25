@@ -1,6 +1,6 @@
 # ADR-0025: Rotación de la tanda por prioridad y aprendizaje
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por ADR-0026 (relleno de la tanda y acierto en repaso adelantado)
 - **Fecha:** 2026-11-24
 - **Sustituye a:** ADR-0017 (parcialmente, en dos reglas: el `dueAtSession` de un acierto que no certifica y la
   composición de la tanda nueva por cuotas con bloque de dominadas). El filtro CEFR exacto de ADR-0021 y la
