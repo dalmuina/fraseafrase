@@ -73,7 +73,7 @@ Ficheros: `spacedrepetition/ComposeNextBatch.kt` / `ComposeNextBatchTest.kt`, `p
   `docs/adr/README.md`, fila de 0026 → `Aceptado` y fila de 0025 → `Sustituido por 0026`.
   Verificación: el README y las cabeceras coinciden.
 - [x] 4.2 `./gradlew check` y `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
-- [ ] 4.3 Comprobación manual con `assembleDebug`, N = 10 y 3 o 4 sesiones: la primera tanda tiene 10 frases y
+- [x] 4.3 Comprobación manual con `assembleDebug`, N = 10 y 3 o 4 sesiones: la primera tanda tiene 10 frases y
   las siguientes también mientras el nivel tenga 10 o más frases. Si no hay dispositivo, indicarlo en la tarea.
 
 ## Workflow follow-up
