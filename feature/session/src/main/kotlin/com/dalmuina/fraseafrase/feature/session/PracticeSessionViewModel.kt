@@ -174,7 +174,7 @@ class PracticeSessionViewModel @Inject constructor(
         activeTargetLocale = obtainActiveLanguage()
         val session = obtainPracticeSession(activeTargetLocale)
         if (onlyIfChanged && session.hasSameBatchAs(loadedBatch)) return
-        if (session is PracticeSessionResult.Ready) loadedBatch = session.items.map { LoadedItem(it.id, it.source) }
+        if (session is PracticeSessionResult.Ready) loadedBatch = session.items.map { it.toLoadedItem() }
         // Sin `previous` no hay ninguna autoevaluación de la que `pendingUndo` sea reflejo (carga inicial, Resume
         // tras un cambio externo de tanda o recarga tras generar sesión): se limpia para no apuntar a una frase
         // que puede ya no estar en la última posición de la tanda nueva (design D3).
@@ -251,12 +251,20 @@ class PracticeSessionViewModel @Inject constructor(
  */
 private data class PendingUndo(val answer: UndoableAnswer, val indexBefore: Int)
 
-/** Frase de la tanda cargada: id y texto de origen, para detectar también un cambio de idioma de origen (D7). */
-private data class LoadedItem(val id: PhraseId, val source: String)
+/**
+ * Frase de la tanda cargada: id, texto de origen e idioma destino, para detectar también un cambio de idioma de
+ * origen (D7 de `origin-language-selection`) o de idioma destino (D2 de `fix-concurrent-batch-composition`).
+ */
+private data class LoadedItem(val id: PhraseId, val source: String, val targetLocale: LanguageTag)
 
-/** Compara [this] con [loaded], la tanda ya cargada: distinta si cambió resultado, frase, orden, tamaño u origen. */
+private fun PracticeItem.toLoadedItem(): LoadedItem = LoadedItem(id, source, targetLocale)
+
+/**
+ * Compara [this] con [loaded], la tanda ya cargada: distinta si cambió resultado, frase, orden, tamaño, texto de
+ * origen o idioma destino.
+ */
 private fun PracticeSessionResult.hasSameBatchAs(loaded: List<LoadedItem>): Boolean =
-    this is PracticeSessionResult.Ready && items.map { LoadedItem(it.id, it.source) } == loaded
+    this is PracticeSessionResult.Ready && items.map { it.toLoadedItem() } == loaded
 
 private fun PracticeSessionUiState.Practicing?.nextIndex(): Int = when {
     this == null -> 1

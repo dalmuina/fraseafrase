@@ -34,13 +34,13 @@
 
 ## 2. La pantalla detecta el cambio de idioma destino (`:feature:session`)
 
-- [ ] 2.1 Test rojo del ViewModel (design D3): tanda `pt-PT` cargada y revelada, cambio del idioma destino activo a
+- [x] 2.1 Test rojo del ViewModel (design D3): tanda `pt-PT` cargada y revelada, cambio del idioma destino activo a
   `de-DE` con los mismos ids, orden y origen, y `Resume` → texto de destino de `de-DE`, sin revelar y
   `activeTargetLocale` `de-DE`. Escenario: practice-session → "Mismos ids y mismo origen en otro idioma destino
   muestran el texto del idioma nuevo". Verificar que falla porque el estado no se reemplaza.
-- [ ] 2.2 `LoadedItem(id, source, targetLocale)` en `PracticeSessionViewModel.kt` y comparación en `hasSameBatchAs`
+- [x] 2.2 `LoadedItem(id, source, targetLocale)` en `PracticeSessionViewModel.kt` y comparación en `hasSameBatchAs`
   (design D2); actualizar sus comentarios. Verificar 2.1 en verde.
-- [ ] 2.3 `./gradlew :feature:session:check -q --console=plain` en verde (`PracticeSessionSourceLanguageTest` y
+- [x] 2.3 `./gradlew :feature:session:check -q --console=plain` en verde (`PracticeSessionSourceLanguageTest` y
   los tests de `Resume` existentes siguen pasando).
 
 ## 3. Verificación final (sesión principal)
