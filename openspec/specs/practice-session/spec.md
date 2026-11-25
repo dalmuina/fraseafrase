@@ -64,8 +64,8 @@ opción de generar la siguiente sesión, en vez de seguir mostrando frases para 
 mostrar también, de la tanda que se acaba de completar, el número de frases autoevaluadas con acierto, el
 número autoevaluadas con fallo y el número de frases cuyo nivel de consolidación subió en algún momento
 durante esa tanda, y MUST ofrecer un enlace para ir a la pantalla de Progreso sin generar sesión. Al generar
-sesión, la pantalla MUST mostrar la tanda siguiente, empezando por su primera frase; las frases a reforzar
-MUST aparecer en orden de catálogo, delante de las nuevas (`practice-batch`). Mientras haya una respuesta en
+sesión, la pantalla MUST mostrar la tanda siguiente, empezando por su primera frase, en el orden en que la
+compone `practice-batch`: pendientes por prioridad y nuevas repartidas entre ellas (ADR-0025). Mientras haya una respuesta en
 curso, pedir generar sesión MUST NOT tener efecto.
 
 #### Scenario: Tanda completa muestra el mensaje positivo
@@ -105,15 +105,16 @@ curso, pedir generar sesión MUST NOT tener efecto.
 
 #### Scenario: Generar sesión muestra la tanda siguiente con sus arrastradas primero
 
-> El título es el heredado del requisito que este delta modifica; el resultado real está en el THEN: con
-> ADR-0017 ya no hay cola de arrastradas, así que el orden de las frases a reforzar es el de catálogo, no el
-> de una cola.
+> El título es el heredado del requisito que este delta modifica (OpenSpec no permite renombrar un escenario
+> dentro de MODIFIED). El resultado real está en el THEN: con ADR-0025, las pendientes van por prioridad y las
+> nuevas se reparten entre ellas.
 
-- **GIVEN** el mensaje de tanda completada, con dos frases candidatas a reforzar, A antes que C en el orden
-  de catálogo, sin dominadas, un catálogo con 8 frases nuevas del nivel elegido y N igual a 10
+- **GIVEN** el mensaje de tanda completada, con dos frases que serán pendientes en la sesión siguiente, A y
+  C, ambas de nivel 0 y con el mismo retraso, A antes que C en el orden de catálogo, un catálogo con 8 frases
+  nuevas del nivel elegido y N igual a 10
 - **WHEN** el usuario genera sesión
-- **THEN** la pantalla muestra la tanda siguiente con A en la primera posición, C en la segunda y las 8
-  frases nuevas a continuación
+- **THEN** la pantalla muestra la tanda siguiente con 6 frases: A en la primera posición, las 4 primeras
+  frases nuevas del catálogo en las posiciones 2 a 5 y C en la sexta
 
 #### Scenario: Generar sesión con todas certificadas deja la tanda siguiente sin arrastradas
 

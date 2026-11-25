@@ -80,13 +80,13 @@ redactado en `docs/adr/0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md` (A
   - Añadir 0025 a la tabla de `docs/adr/README.md` y actualizar la fila de 0017.
 - [x] 3.2 `./gradlew check` y `./gradlew koverVerify` en verde (tests, detekt/ktlint, lint y cobertura: dominio
   90 %, presentación 80 %, global 70 %).
-- [ ] 3.3 Comprobación manual con `assembleDebug`, N = 10 y 4 o 5 sesiones generadas:
+- [x] 3.3 Comprobación manual con `assembleDebug`, N = 10 y 4 o 5 sesiones generadas:
   - las frases rotan;
   - las nuevas aparecen repartidas;
   - una frase Oro acertada sin certificar no reaparece en la sesión siguiente.
 
   Si no hay dispositivo, indicarlo en la tarea.
-  Sin dispositivo en esta sesión: pendiente de comprobación manual por el usuario (también los instrumentados de 2.5).
+  Cambio verificado manualmente por el usuario (2026-11-25).
 
 ## Workflow follow-up
 
