@@ -5,15 +5,15 @@
 > Nota: grupo solo de tests y neutro (design D4): los datos nuevos pasan con el código actual y con el de
 > ADR-0026. Toca dos módulos para que el hook de commit siga en verde en los grupos siguientes. Mecánico.
 
-- [ ] 1.1 `ObtainPracticeSessionTest` (`:core:domain`), escenario "Catálogo agotado tras cerrar" de
+- [x] 1.1 `ObtainPracticeSessionTest` (`:core:domain`), escenario "Catálogo agotado tras cerrar" de
   `specs/practice-session/spec.md`: construir el catálogo sin frases del nivel CEFR elegido en vez de usar
   repasos futuros. Verificación: el test pasa sin cambios de producción.
-- [ ] 1.2 `CloseThenObtainTest` (`:core:domain`), escenario "Cierre sin composición posible deja la tanda sin
+- [x] 1.2 `CloseThenObtainTest` (`:core:domain`), escenario "Cierre sin composición posible deja la tanda sin
   activar" (spec `practice-persistence`, según el comentario del test): mismo ajuste (catálogo sin frases del
   nivel elegido). Verificación: pasa sin cambios de producción.
-- [ ] 1.3 `PracticeSessionCloseTest` (`:feature:session`), escenario "Sin frases disponibles al pedir el cierre":
+- [x] 1.3 `PracticeSessionCloseTest` (`:feature:session`), escenario "Sin frases disponibles al pedir el cierre":
   mismo ajuste.
-- [ ] 1.4 `PracticeSessionCloseTest` (`:feature:session`), escenario "Generar sesión muestra la tanda siguiente con
+- [x] 1.4 `PracticeSessionCloseTest` (`:feature:session`), escenario "Generar sesión muestra la tanda siguiente con
   sus arrastradas primero" de `specs/practice-session/spec.md`: catálogo con 4 frases nuevas y sin otra frase con
   progreso del nivel elegido; el orden esperado sigue siendo A, N1–N4, C. Verificación:
   `./gradlew :core:domain:check :feature:session:check` en verde sin cambios de producción.

@@ -218,7 +218,7 @@ class ObtainPracticeSessionTest {
     // Scenario: Catálogo agotado tras cerrar (spec: practice-session)
     @Test
     fun `given a closed batch and an exhausted catalog when opening the session then nothing to practice`() = runTest {
-        // Given: tanda de dos frases certificadas, con repaso muy futuro, y catálogo formado solo por ellas
+        // Given: tanda de dos frases certificadas, con repaso muy futuro, y catálogo sin frases del nivel elegido (A1)
         val practice = FakePracticeRepository(
             activeBatch(
                 order = listOf("A", "B"),
@@ -227,7 +227,10 @@ class ObtainPracticeSessionTest {
                 },
             ),
         )
-        val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"))
+        val catalog = loaded(
+            aCatalogPhrase(id = "A", level = CefrLevel.B1),
+            aCatalogPhrase(id = "B", level = CefrLevel.B1),
+        )
         clearActiveBatch(practice)
 
         // When

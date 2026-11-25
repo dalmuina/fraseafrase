@@ -11,6 +11,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.MainDispatcherExtension
+import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,8 +45,8 @@ class PracticeSessionCloseTest {
     @Test
     fun `given C and A pending when generating session then the next batch interleaves new phrases between them`() =
         runTest {
-            // Given: tanda C y A sin certificar; catálogo con A, C y 8 frases nuevas de A1; N igual a 10
-            val newIds = (1..8).map { "N$it" }
+            // Given: tanda C y A sin certificar; catálogo con A, C y 4 frases nuevas de A1; N igual a 10
+            val newIds = (1..4).map { "N$it" }
             val practice = FakePracticeRepository(activeBatchSnapshot(order = listOf("C", "A")))
             val viewModel = sessionViewModel(
                 practice,
@@ -111,8 +112,8 @@ class PracticeSessionCloseTest {
     @Test
     fun `given no active batch and no phrases left when generating session then the state is NothingToPractice`() =
         runTest {
-            // Given: la tanda A ya no está activa; A está en el catálogo con repaso futuro (sesión 2, cuando la
-            // siguiente sesión generada es la 1), así que no hay frases disponibles para componer otra tanda
+            // Given: la tanda A ya no está activa; A tiene repaso futuro (sesión 2, cuando la siguiente sesión
+            // generada es la 1) y el catálogo no tiene ninguna frase del nivel elegido (A1)
             val practice = FakePracticeRepository(
                 activeBatchSnapshot(
                     order = listOf("A"),
@@ -121,7 +122,10 @@ class PracticeSessionCloseTest {
                     ),
                 ),
             )
-            val viewModel = sessionViewModel(practice, catalogOf("A"))
+            val viewModel = sessionViewModel(
+                practice,
+                loaded(aCatalogPhrase(id = "A", level = CefrLevel.B1)),
+            )
             advanceUntilIdle()
             practice.transact { snapshot ->
                 PracticeChange(next = snapshot.copy(activeBatch = null), result = Unit)
