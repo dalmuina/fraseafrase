@@ -45,8 +45,8 @@
 
 ## 3. Verificación final (sesión principal)
 
-- [ ] 3.1 `./gradlew check -q --console=plain` en verde.
-- [ ] 3.2 `./gradlew koverVerify -q --console=plain` en verde (dominio 90 %, presentación 80 %, global 70 %).
+- [x] 3.1 `./gradlew check -q --console=plain` en verde.
+- [x] 3.2 `./gradlew koverVerify -q --console=plain` en verde (dominio 90 %, presentación 80 %, global 70 %).
 
 ## Workflow follow-up
 
