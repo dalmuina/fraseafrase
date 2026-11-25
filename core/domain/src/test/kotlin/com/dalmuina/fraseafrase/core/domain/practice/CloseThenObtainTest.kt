@@ -27,8 +27,10 @@ class CloseThenObtainTest {
 
     private val targetLocale = LanguageTag("pt-PT")
 
+    // A y B son de otro nivel CEFR: con repaso futuro del nivel elegido entrarían como repaso adelantado (ADR-0026)
     private val catalog = CatalogLoadResult.Loaded(
-        listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.A1) },
+        listOf("A", "B").map { aCatalogPhrase(id = it, level = CefrLevel.B1) } +
+            aCatalogPhrase(id = "C", level = CefrLevel.A1),
     )
 
     private fun obtain(practice: FakePracticeRepository, catalogResult: CatalogLoadResult = catalog) =

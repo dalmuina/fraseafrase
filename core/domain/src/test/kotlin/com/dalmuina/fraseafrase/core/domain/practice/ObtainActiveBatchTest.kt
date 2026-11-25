@@ -68,19 +68,21 @@ class ObtainActiveBatchTest {
         result.batch.entries.map { it.id.value } shouldBe listOf("A", "B")
     }
 
-    // Scenario: Primera tanda con catálogo disponible (spec: practice-batch, practice-persistence): 10 de 15
+    // Scenario: Primer uso crea la primera tanda (spec: practice-persistence, Primer uso)
     @Test
     fun `given an empty database when obtaining the batch then creates the first batch with new phrases`() = runTest {
         // Given
         val practice = FakePracticeRepository()
+        val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(20)))
 
         // When
-        val result = useCase(practice, a1Catalog(15)).invoke(targetLocale)
+        val result = useCase(practice, a1Catalog(15), settingsRepository).invoke(targetLocale)
 
         // Then
         result.shouldBeInstanceOf<ActiveBatchResult.Created>()
-        result.batch.entries.map { it.id.value } shouldBe (1..10).map { "a1-%02d".format(it) }
-        practice.read().activeBatch.shouldNotBeNull().order.size shouldBe 10
+        result.batch.entries.map { it.id.value } shouldBe (1..15).map { "a1-%02d".format(it) }
+        result.batch.entries.map { it.level }.toSet() shouldBe setOf(Level(0))
+        practice.read().activeBatch.shouldNotBeNull().order.size shouldBe 15
     }
 
     // Scenario: Catálogo vacío sin progreso no crea tanda (spec: practice-batch)

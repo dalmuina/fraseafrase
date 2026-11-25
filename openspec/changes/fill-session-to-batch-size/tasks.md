@@ -49,19 +49,19 @@ en la tanda"; `specs/practice-persistence/spec.md` → "Primer uso crea la prime
 Ficheros: `spacedrepetition/ComposeNextBatch.kt` / `ComposeNextBatchTest.kt`, `practice/ObtainActiveBatchTest.kt`,
 `practice/ObtainPracticeSessionTest.kt`. Design D1.
 
-- [ ] 3.1 Tests rojos en `ComposeNextBatchTest` para "Composición de la tanda o ausencia de tanda" y "Candidatas
+- [x] 3.1 Tests rojos en `ComposeNextBatchTest` para "Composición de la tanda o ausencia de tanda" y "Candidatas
   a la tanda nueva": reescribir los que contradicen ADR-0026 (primera tanda, sesión futura, nivel alto sin
   vencer, catálogo agotado) y añadir los nuevos. Verificación: fallan por tamaño o contenido de la tanda.
-- [ ] 3.2 Tests rojos en `ComposeNextBatchTest` para "Número de frases nuevas según el aprendizaje", "Orden del
+- [x] 3.2 Tests rojos en `ComposeNextBatchTest` para "Número de frases nuevas según el aprendizaje", "Orden del
   repaso adelantado" y "Las nuevas se reparten también entre el repaso adelantado". Verificación: fallan por
   falta de repaso adelantado o de nuevas de relleno.
-- [ ] 3.3 Tests rojos de casos de uso: "Primer uso crea la primera tanda" (`ObtainActiveBatchTest`, 15 frases) y
+- [x] 3.3 Tests rojos de casos de uso: "Primer uso crea la primera tanda" (`ObtainActiveBatchTest`, 15 frases) y
   "Frases con repaso futuro sin tanda" (`ObtainPracticeSessionTest`, muestra P). Verificación: fallan con el
   compositor actual.
-- [ ] 3.4 Implementar los cuatro tramos de design D1 en `ComposeNextBatch`, con una sola función de prioridad
+- [x] 3.4 Implementar los cuatro tramos de design D1 en `ComposeNextBatch`, con una sola función de prioridad
   para pendientes y repaso adelantado, y KDoc con ADR-0026. Verificación: 3.1–3.3 pasan y
   `./gradlew :core:domain:check` en verde.
-- [ ] 3.5 `:feature:session`, escenarios de `specs/practice-session/spec.md`: "Frases con repaso futuro sin tanda"
+- [x] 3.5 `:feature:session`, escenarios de `specs/practice-session/spec.md`: "Frases con repaso futuro sin tanda"
   (`PracticeSessionViewModelTest`: esperar la tanda con P en vez de `NothingToPractice`) y "Generar sesión con
   todas certificadas deja la tanda siguiente sin arrastradas" (`PracticeSessionCloseTest`, `given all phrases
   cooling down…`: catálogo A, B, N1, N2 y tanda esperada A, N1, N2, B con su progreso intacto); ajustar solo datos de otros tests que fijen el tamaño de

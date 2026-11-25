@@ -242,7 +242,7 @@ class ObtainPracticeSessionTest {
 
     // Scenario: Frases con repaso futuro sin tanda (spec: practice-session)
     @Test
-    fun `given only future reviews and no active batch when opening the session then nothing to practice`() = runTest {
+    fun `given only future reviews and no active batch when opening the session then shows them`() = runTest {
         // Given: catálogo cuya única frase P tiene nivel 1 con dueAtSession futuro y sin tanda activa
         val practice = FakePracticeRepository(
             PracticeSnapshot(
@@ -257,7 +257,8 @@ class ObtainPracticeSessionTest {
         val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
-        result shouldBe PracticeSessionResult.NothingToPractice
+        val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
+        ready.items.map { it.id.value } shouldBe listOf("P")
     }
 
     // Scenario: Tanda completa tras responder a todas sus frases (spec: practice-batch, Tanda completa)
