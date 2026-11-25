@@ -288,4 +288,73 @@ class PhraseProgressTest {
         updated.streak shouldBe Streak(0)
         updated.dueAtSession shouldBe 11
     }
+
+    // Scenario: Acierto en repaso adelantado no suma (spec: Acierto sobre una frase aún no pendiente)
+    @Test
+    fun `given a phrase not yet due when recording a hit then only answeredInBatch changes`() {
+        // Given
+        val progress = notYetDue(level = 2, streak = 1)
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 12)
+
+        // Then
+        updated shouldBe progress.copy(answeredInBatch = true)
+    }
+
+    // Scenario: Acierto en repaso adelantado con racha 2 no certifica
+    // (spec: Acierto sobre una frase aún no pendiente)
+    @Test
+    fun `given a phrase not yet due with streak 2 when recording a hit then it does not certify`() {
+        // Given
+        val progress = notYetDue(level = 1, streak = 2)
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 12)
+
+        // Then
+        updated shouldBe progress.copy(answeredInBatch = true)
+    }
+
+    // Scenario: Un segundo acierto en la misma sesión no suma (spec: Acierto sobre una frase aún no pendiente)
+    @Test
+    fun `given a phrase hit once in the session when recording a second hit then nothing else changes`() {
+        // Given
+        val hitOnce = PhraseProgress(
+            id = PhraseId("p-1"),
+            level = Level(1),
+            streak = Streak(0),
+            answeredInBatch = false,
+            dueAtSession = 10,
+        ).record(SelfAssessment.HIT, 10)
+
+        // When
+        val hitTwice = hitOnce.record(SelfAssessment.HIT, 10)
+
+        // Then
+        hitTwice.level shouldBe Level(1)
+        hitTwice.streak shouldBe Streak(1)
+        hitTwice.dueAtSession shouldBe 11
+    }
+
+    // Scenario: Fallo en repaso adelantado cuenta (spec: Acierto sobre una frase aún no pendiente)
+    @Test
+    fun `given a phrase not yet due when recording a miss then it loses a streak and is due next session`() {
+        // Given
+        val progress = notYetDue(level = 2, streak = 1)
+
+        // When
+        val updated = progress.record(SelfAssessment.MISS, 12)
+
+        // Then
+        updated shouldBe progress.copy(streak = Streak(0), answeredInBatch = true, dueAtSession = 13)
+    }
+
+    private fun notYetDue(level: Int, streak: Int): PhraseProgress = PhraseProgress(
+        id = PhraseId("p-1"),
+        level = Level(level),
+        streak = Streak(streak),
+        answeredInBatch = false,
+        dueAtSession = 14,
+    )
 }

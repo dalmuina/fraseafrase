@@ -135,6 +135,22 @@ class PracticeBatchTest {
         reverted.entries.map { it.id } shouldContainExactly listOf(PhraseId("A"), PhraseId("B"), PhraseId("C"))
     }
 
+    // Scenario: Revertir un acierto en repaso adelantado deja el progreso igual
+    // (spec: Acierto sobre una frase aún no pendiente)
+    @Test
+    fun `given an early review hit when reverting it then level streak and due session are unchanged`() {
+        // Given
+        val progressBefore = aPhraseProgress(id = "A", level = Level(2), streak = Streak(1), dueAtSession = 14)
+        val batch = PracticeBatch(entries = listOf(progressBefore), capacity = BatchSize(10))
+        val answered = batch.answer(PhraseId("A"), SelfAssessment.HIT, currentSession = 12)
+
+        // When
+        val reverted = answered.revertLastAnswer(PhraseId("A"), progressBefore)
+
+        // Then
+        reverted.entries shouldContainExactly listOf(progressBefore)
+    }
+
     // Scenario: No se puede revertir la posición tras una segunda autoevaluación (spec: practice-batch)
     @Test
     fun `given a batch where B was answered after A then reverting A throws IllegalArgumentException`() {

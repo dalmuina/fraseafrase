@@ -39,6 +39,9 @@ data class PhraseProgress(
      * racha sin cambiar de nivel; un fallo con racha 0 baja el nivel en 1 (si era mayor que 0) y deja la
      * racha a un acierto de recertificar ([CERTIFICATION_STREAK] - 1) (ADR-0024). Todo fallo fija la
      * sesión siguiente.
+     * Excepción (ADR-0026): un acierto sobre una frase aún no pendiente en [currentSession] (repaso
+     * adelantado, o ya respondida en la misma sesión) solo la marca como respondida; nivel, racha y
+     * [dueAtSession] no cambian. Un fallo sobre ella se resuelve como cualquier otro.
      * Es una función pura: la sesión llega como dato.
      */
     fun record(assessment: SelfAssessment, currentSession: Int): PhraseProgress = when (assessment) {
@@ -46,15 +49,17 @@ data class PhraseProgress(
         SelfAssessment.MISS -> recordMiss(currentSession)
     }
 
-    private fun recordHit(currentSession: Int): PhraseProgress {
-        val updatedStreak = streak.afterHit()
-        if (updatedStreak.value < CERTIFICATION_STREAK) {
-            return copy(
-                streak = updatedStreak,
-                answeredInBatch = true,
-                dueAtSession = currentSession + ReviewSchedule.withinLevelWaitFor(level),
-            )
-        }
+    private fun recordHit(currentSession: Int): PhraseProgress = when {
+        !isPendingAtSession(currentSession) -> copy(answeredInBatch = true)
+        streak.afterHit().value < CERTIFICATION_STREAK -> copy(
+            streak = streak.afterHit(),
+            answeredInBatch = true,
+            dueAtSession = currentSession + ReviewSchedule.withinLevelWaitFor(level),
+        )
+        else -> certify(currentSession)
+    }
+
+    private fun certify(currentSession: Int): PhraseProgress {
         val updatedLevel = Level(minOf(level.value + 1, Level.MAX_LEVEL))
         return copy(
             level = updatedLevel,

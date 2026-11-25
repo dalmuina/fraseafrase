@@ -26,14 +26,14 @@ Escenarios: `specs/spaced-repetition/spec.md` → requisito "Acierto sobre una f
 suma uno a la racha".
 Ficheros: `spacedrepetition/PhraseProgress.kt` / `PhraseProgressTest.kt`, `PracticeBatchTest.kt`. Design D2.
 
-- [ ] 2.1 Test rojo en `PhraseProgressTest`: "Acierto en repaso adelantado no suma", "Acierto en repaso
+- [x] 2.1 Test rojo en `PhraseProgressTest`: "Acierto en repaso adelantado no suma", "Acierto en repaso
   adelantado con racha 2 no certifica" y "Un segundo acierto en la misma sesión no suma". Verificación: fallan
   porque hoy la racha sube.
-- [ ] 2.2 Implementar en `PhraseProgress.recordHit`: con `dueAtSession > currentSession`, solo
+- [x] 2.2 Implementar en `PhraseProgress.recordHit`: con `dueAtSession > currentSession`, solo
   `answeredInBatch = true`; actualizar el KDoc de `record` (ADR-0026). Verificación: los tests de 2.1 pasan.
-- [ ] 2.3 Tests de caracterización "Fallo en repaso adelantado cuenta" (`PhraseProgressTest`) y "Revertir un
+- [x] 2.3 Tests de caracterización "Fallo en repaso adelantado cuenta" (`PhraseProgressTest`) y "Revertir un
   acierto en repaso adelantado deja el progreso igual" (`PracticeBatchTest`). Verificación: pasan sin más cambios.
-- [ ] 2.4 Si algún test existente de `:core:domain` o `:feature:session` acierta una frase con `dueAtSession`
+- [x] 2.4 Si algún test existente de `:core:domain` o `:feature:session` acierta una frase con `dueAtSession`
   futuro sin querer probar el repaso adelantado, ajustar solo sus datos. Verificación:
   `./gradlew :core:domain:check :feature:session:check` en verde.
 
