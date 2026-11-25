@@ -5,6 +5,10 @@ import com.dalmuina.fraseafrase.core.domain.settings.UserSettings
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchComposition
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 
+/** La tanda vigente de la instantánea como resultado, sin componer ninguna. */
+internal fun PracticeSnapshot.currentBatchResult(): ActiveBatchResult =
+    batch()?.let { ActiveBatchResult.Existing(it) } ?: ActiveBatchResult.NothingAvailable
+
 /**
  * Compone la tanda siguiente por cuotas a partir de [snapshot] y la guarda, o deja [snapshot] sin cambios si no
  * hay frases disponibles (ADR-0012, ADR-0017). Transición pura compartida por [GenerateSession],

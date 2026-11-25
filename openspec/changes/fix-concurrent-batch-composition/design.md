@@ -47,9 +47,18 @@ persistida. Vive en `:core:domain` (`practice/RegenerateActiveBatchForLevel.kt`)
 `change` de `transact`; no hay E/S nueva.
 
 `ObtainActiveBatch` guarda la instantánea leída y pasa `snapshot.activeBatch` (`ActiveBatch?`) como `expected` en las
-dos ramas que recomponen (sin tanda y ajustes aplicados distintos); `existing` sigue siendo `snapshot.batch()` para
-la rama `Existing`. Solo registra los ajustes aplicados cuando el resultado es
-`Created`, como hoy: si otra obtención ganó la carrera, es ella quien los registra.
+dos ramas que recomponen (sin tanda y ajustes aplicados distintos). Solo registra los ajustes aplicados cuando el
+resultado es `Created`, como hoy: si otra obtención ganó la carrera, es ella quien los registra.
+
+La rama que no recompone (hay tanda y los ajustes aplicados coinciden, o aún no había ninguno registrado) no devuelve
+la tanda de la primera lectura: hace un segundo `read()` después de consultar `appliedSettings` y devuelve
+`Existing` con esa tanda, o `NothingAvailable` si ya no hay ninguna. Sin él, si otra obtención recompone entre el
+primer `read()` y `appliedSettings`, la primera ve los ajustes ya al día y devuelve la tanda antigua. Cuesta una
+lectura más por obtención con tanda activa y no escribe en la tanda.
+
+Alternativa descartada para esa rama: leer `appliedSettings` antes del primer `read()`. Ahorra la lectura, pero si la
+otra obtención termina entre las dos, la primera combina ajustes antiguos con la tanda nueva como `expected` y la
+recompone una segunda vez.
 
 Alternativas descartadas:
 - `Mutex` en el caso de uso o en el repositorio: depende del ámbito de DI (singleton) para funcionar, no cubre dos
@@ -75,11 +84,12 @@ idioma nuevos). Vive en `:feature:session` (`PracticeSessionViewModel.kt`). Alte
   - Intercalación forzada en `ObtainActiveBatch`: un decorador local del test (`InterleavingPracticeRepository`)
     envuelve el fake y, en la primera llamada a `read()`, lee la instantánea del fake, ejecuta la acción inyectada
     (otra obtención completa) y devuelve la instantánea leída antes de la acción. Así la primera obtención decide
-    con "sin tanda" (o con la tanda A1) y escribe cuando la otra ya guardó la suya. Cubre los escenarios sin tanda
-    activa y de cambio de ajustes, con los datos de partida de la spec (4 frases de nivel 1 con `dueAtSession` 5):
-    sin ese progreso previo, ADR-0026 recompone la misma tanda y el test no podría fallar en rojo. El THEN que lo
-    hace fallar hoy es "exactamente una `Created` y otra `Existing`" (hoy las dos devuelven `Created`), además del
-    progreso (14 frases en vez de 10).
+    con "sin tanda" (o con la tanda A1) cuando la otra ya guardó la suya. Cubre los escenarios sin tanda activa y de
+    cambio de ajustes, con los datos de partida de la spec (4 frases de nivel 1 con `dueAtSession` 5): sin ese
+    progreso previo, ADR-0026 recompone la misma tanda y el test no podría fallar en rojo. Sin tanda activa falla
+    porque las dos devuelven `Created` (y el progreso tiene 14 frases en vez de 10). Con cambio de ajustes falla
+    porque la obtención tardía, que ya ve los ajustes nuevos como aplicados, devuelve `Existing` con la tanda A1 en
+    vez de la B1.
 - **Integración con Room real** (`:core:data`, nuevo `ConcurrentObtainPracticeSessionTest` en
   `src/test/.../practice`, con `inMemoryPracticeDatabase()` como `RoomPracticeCycleTest`): dos
   `async { obtainPracticeSession(ptPt) }` sobre `RoomPracticeDataSource`, a través de un decorador de test cuyo
@@ -102,6 +112,10 @@ No hay fakes nuevos en `:core:testing`: los decoradores son locales de cada test
 - [Una autoevaluación entre la lectura y la transacción rota el orden y la recomposición por ajustes se salta en esa
   obtención] → Se devuelve `Existing` con la tanda vigente; la comparación de ajustes se repite en cada obtención
   (requisito vigente), así que la siguiente obtención recompone.
+- [La tanda y los ajustes aplicados viven en almacenes distintos: una obtención que lea la tanda ya recompuesta
+  antes de que la otra ejecute `recordAppliedSettings` ve ajustes antiguos y la recompone otra vez] → Se acepta:
+  la ventana es mucho más estrecha que la actual y cerrarla exigiría meter los ajustes aplicados en la transacción
+  de la tanda, fuera de alcance.
 - [Instalaciones que ya sufrieron la carrera conservan progreso de frases no vistas] → Fuera de alcance; sin
   migración (proposal).
 - [La barrera del test de integración bloquea si solo una obtención llega a leer] → La barrera se libera al

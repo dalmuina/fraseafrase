@@ -17,6 +17,8 @@ import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
 import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -322,4 +324,147 @@ class ObtainActiveBatchTest {
             // Then
             settingsRepository.appliedSettings(targetLocale) shouldBe UserSettings(CefrLevel.A1, BatchSize(20))
         }
+
+    // Scenario: Dos obtenciones simultáneas sin tanda activa componen una sola tanda
+    @Test
+    fun `given no active batch when another obtention wins the race then only one batch is composed`() = runTest {
+        // Given: sin tanda activa y 4 frases A1 de nivel 1 con dueAtSession 5
+        val previous = (1..4).map { aPhraseProgress(id = "a1-%02d".format(it), level = Level(1), dueAtSession = 5) }
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(progress = previous, activeBatch = null, sessionCount = 0),
+        )
+        val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10)))
+
+        // When
+        val (late, winner) = obtainTwiceInterleaved(practice, a1Catalog(30), settingsRepository)
+
+        // Then
+        val created = winner.shouldBeInstanceOf<ActiveBatchResult.Created>()
+        val existing = late.shouldBeInstanceOf<ActiveBatchResult.Existing>()
+        val order = created.batch.entries.map { it.id }
+        order.size shouldBe 10
+        existing.batch.entries.map { it.id } shouldBe order
+        val stored = practice.read()
+        stored.activeBatch.shouldNotBeNull().order shouldBe order
+        stored.progress.map { it.id } shouldContainExactlyInAnyOrder order
+        order shouldContainAll previous.map { it.id }
+        stored.sessionCount shouldBe 0
+        settingsRepository.appliedSettings(targetLocale) shouldBe UserSettings(CefrLevel.A1, BatchSize(10))
+    }
+
+    // Scenario: Dos obtenciones simultáneas tras un cambio de ajustes recomponen una sola vez
+    @Test
+    fun `given changed settings when another obtention wins the race then the batch recomposes once`() = runTest {
+        // Given: tanda A1 aplicada, 4 frases B1 de nivel 1 con dueAtSession 5 y ajustes guardados en B1
+        val a1Ids = (1..10).map { "a1-%02d".format(it) }
+        val b1Pending = (1..4).map { "b1-%02d".format(it) }
+        val previous = a1Ids.map { aPhraseProgress(id = it) } +
+            b1Pending.map { aPhraseProgress(id = it, level = Level(1), dueAtSession = 5) }
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = previous,
+                activeBatch = ActiveBatch(order = a1Ids.map { PhraseId(it) }, capacity = BatchSize(10)),
+                sessionCount = 0,
+            ),
+        )
+        val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.B1, BatchSize(10)))
+        settingsRepository.recordAppliedSettings(targetLocale, UserSettings(CefrLevel.A1, BatchSize(10)))
+        val catalog = CatalogLoadResult.Loaded(
+            a1Ids.map { aCatalogPhrase(id = it, level = CefrLevel.A1) } +
+                (1..30).map { aCatalogPhrase(id = "b1-%02d".format(it), level = CefrLevel.B1) },
+        )
+
+        // When
+        val (late, winner) = obtainTwiceInterleaved(practice, catalog, settingsRepository)
+
+        // Then
+        val created = winner.shouldBeInstanceOf<ActiveBatchResult.Created>()
+        val existing = late.shouldBeInstanceOf<ActiveBatchResult.Existing>()
+        val order = created.batch.entries.map { it.id }
+        order.size shouldBe 10
+        order.all { it.value.startsWith("b1-") } shouldBe true
+        existing.batch.entries.map { it.id } shouldBe order
+        val stored = practice.read()
+        stored.activeBatch.shouldNotBeNull().order shouldBe order
+        val added = stored.progress.map { it.id } - previous.map { it.id }.toSet()
+        added.size shouldBe 6
+        order shouldContainAll added
+        settingsRepository.appliedSettings(targetLocale) shouldBe UserSettings(CefrLevel.B1, BatchSize(10))
+    }
+
+    // Scenario: La obtención que llega tarde sin tanda vigente devuelve que no hay frases (design D1, rama que no
+    // recompone)
+    @Test
+    fun `given the batch is emptied after being read when not recomposing then it returns nothing available`() =
+        runTest {
+            // Given: tanda activa con sus ajustes aplicados al día
+            val settingsRepository = FakeSettingsRepository(UserSettings(CefrLevel.A1, BatchSize(10)))
+            settingsRepository.recordAppliedSettings(targetLocale, UserSettings(CefrLevel.A1, BatchSize(10)))
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(aPhraseProgress(id = "a1-01")),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("a1-01")), capacity = BatchSize(10)),
+                    sessionCount = 0,
+                ),
+            )
+            val interleaving = InterleavingPracticeRepository(practice)
+            interleaving.afterFirstRead = { clearActiveBatch(practice) }
+            val obtain = ObtainActiveBatch(
+                settingsRepository = settingsRepository,
+                practiceRepository = interleaving,
+                regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+                    practiceRepository = interleaving,
+                    composeNextBatch = ComposeNextBatch(),
+                    obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(a1Catalog(3))),
+                ),
+            )
+
+            // When: la tanda se vacía justo después de la primera lectura
+            val result = obtain(targetLocale)
+
+            // Then
+            result shouldBe ActiveBatchResult.NothingAvailable
+            practice.read().activeBatch shouldBe null
+        }
+
+    /**
+     * Runs an obtention that, right after reading the practice snapshot, is overtaken by a second complete one.
+     * Returns the result of the late obtention first and the result of the winning one second.
+     */
+    private suspend fun obtainTwiceInterleaved(
+        practice: FakePracticeRepository,
+        catalog: CatalogLoadResult,
+        settingsRepository: FakeSettingsRepository,
+    ): Pair<ActiveBatchResult, ActiveBatchResult> {
+        val interleaving = InterleavingPracticeRepository(practice)
+        val obtain = ObtainActiveBatch(
+            settingsRepository = settingsRepository,
+            practiceRepository = interleaving,
+            regenerateActiveBatchForLevel = RegenerateActiveBatchForLevel(
+                practiceRepository = interleaving,
+                composeNextBatch = ComposeNextBatch(),
+                obtainCatalogPhrases = anObtainCatalogPhrases(FakeCatalogRepository(catalog)),
+            ),
+        )
+        var winner: ActiveBatchResult? = null
+        interleaving.afterFirstRead = { winner = obtain(targetLocale) }
+        val late = obtain(targetLocale)
+        return late to winner.shouldNotBeNull()
+    }
+
+    /** Runs [afterFirstRead] after taking the first snapshot, and still returns that now stale snapshot. */
+    private class InterleavingPracticeRepository(
+        private val delegate: PracticeRepository,
+    ) : PracticeRepository by delegate {
+
+        var afterFirstRead: (suspend () -> Unit)? = null
+
+        override suspend fun read(targetLocale: LanguageTag): PracticeSnapshot {
+            val snapshot = delegate.read(targetLocale)
+            val action = afterFirstRead
+            afterFirstRead = null
+            action?.invoke()
+            return snapshot
+        }
+    }
 }

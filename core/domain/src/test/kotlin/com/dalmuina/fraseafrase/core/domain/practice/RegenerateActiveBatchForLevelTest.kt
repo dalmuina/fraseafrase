@@ -52,7 +52,12 @@ class RegenerateActiveBatchForLevelTest {
             )
 
             // When
-            val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10))
+            val result = useCase(practice, catalog).invoke(
+                targetLocale,
+                CefrLevel.B1,
+                BatchSize(10),
+                practice.read().activeBatch,
+            )
             result.shouldBeInstanceOf<ActiveBatchResult.Created>()
 
             // Then
@@ -75,7 +80,7 @@ class RegenerateActiveBatchForLevelTest {
         val catalog = CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "A", level = CefrLevel.B1)))
 
         // When
-        useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10))
+        useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10), practice.read().activeBatch)
 
         // Then
         practice.read().sessionCount shouldBe 9
@@ -99,7 +104,12 @@ class RegenerateActiveBatchForLevelTest {
             )
 
             // When
-            val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(20))
+            val result = useCase(practice, catalog).invoke(
+                targetLocale,
+                CefrLevel.B1,
+                BatchSize(20),
+                practice.read().activeBatch,
+            )
 
             // Then: N=20 con pendientes de nivel 1: 8 nuevas (40 %) y 12 pendientes
             val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
@@ -126,11 +136,11 @@ class RegenerateActiveBatchForLevelTest {
             val sut = useCase(practice, catalog)
 
             // When: el usuario cambia el nivel CEFR elegido a A1, practica (compone con A1), y después vuelve a B1
-            val switchedToA1 = sut.invoke(targetLocale, CefrLevel.A1, BatchSize(10))
+            val switchedToA1 = sut.invoke(targetLocale, CefrLevel.A1, BatchSize(10), practice.read().activeBatch)
             val switchedToA1Batch = switchedToA1.shouldBeInstanceOf<ActiveBatchResult.Created>()
             switchedToA1Batch.batch.entries.map { it.id.value } shouldBe listOf("a1-phrase")
 
-            val switchedBackToB1 = sut.invoke(targetLocale, CefrLevel.B1, BatchSize(10))
+            val switchedBackToB1 = sut.invoke(targetLocale, CefrLevel.B1, BatchSize(10), practice.read().activeBatch)
 
             // Then: la frase de B1 conserva su nivel de consolidación y racha, y vuelve a ser candidata a la tanda
             val switchedBackBatch = switchedBackToB1.shouldBeInstanceOf<ActiveBatchResult.Created>()
@@ -153,9 +163,50 @@ class RegenerateActiveBatchForLevelTest {
             val catalog = CatalogLoadResult.Loaded(listOf(aCatalogPhrase(id = "A", level = CefrLevel.B1)))
 
             // When
-            useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10))
+            useCase(practice, catalog).invoke(targetLocale, CefrLevel.B1, BatchSize(10), practice.read().activeBatch)
 
             // Then: el desglose de la tanda anterior no se arrastra a la nueva composición
             practice.read().batchOutcome shouldBe BatchOutcome(hits = 0, misses = 0, levelUps = 0)
+        }
+
+    // Scenario: La obtención que llega tarde no recompone la tanda ya compuesta (spec: practice-persistence)
+    @Test
+    fun `given another batch than the observed one when regenerating then it returns the current one unchanged`() =
+        runTest {
+            // Given: se observó "sin tanda activa", pero ya hay guardada una tanda de diez frases
+            val ids = (1..10).map { "stored-%02d".format(it) }
+            val stored = snapshot(order = ids.reversed(), progress = ids.map { aPhraseProgress(id = it) })
+            val practice = FakePracticeRepository(stored)
+            val catalog = CatalogLoadResult.Loaded((ids + "new").map { aCatalogPhrase(it) })
+
+            // When
+            val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.A1, BatchSize(10), null)
+
+            // Then
+            val existing = result.shouldBeInstanceOf<ActiveBatchResult.Existing>()
+            existing.batch.entries.map { it.id.value } shouldBe ids.reversed()
+            practice.read() shouldBe stored
+        }
+
+    // Scenario: La obtención que llega tarde sin tanda vigente devuelve que no hay frases
+    @Test
+    fun `given the observed batch was emptied when regenerating then it returns nothing available unchanged`() =
+        runTest {
+            // Given: se observó una tanda con A, pero ya se ha vaciado
+            val observed = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(10))
+            val emptied = PracticeSnapshot(
+                progress = listOf(aPhraseProgress(id = "A")),
+                activeBatch = null,
+                sessionCount = 9,
+            )
+            val practice = FakePracticeRepository(emptied)
+            val catalog = CatalogLoadResult.Loaded(listOf("A", "new").map { aCatalogPhrase(it) })
+
+            // When
+            val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.A1, BatchSize(10), observed)
+
+            // Then
+            result shouldBe ActiveBatchResult.NothingAvailable
+            practice.read() shouldBe emptied
         }
 }
