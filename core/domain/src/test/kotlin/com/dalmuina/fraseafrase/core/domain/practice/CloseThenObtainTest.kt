@@ -27,8 +27,10 @@ class CloseThenObtainTest {
 
     private val targetLocale = LanguageTag("pt-PT")
 
+    // A y B son de otro nivel CEFR: con repaso futuro del nivel elegido entrarían como repaso adelantado (ADR-0026)
     private val catalog = CatalogLoadResult.Loaded(
-        listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.A1) },
+        listOf("A", "B").map { aCatalogPhrase(id = it, level = CefrLevel.B1) } +
+            aCatalogPhrase(id = "C", level = CefrLevel.A1),
     )
 
     private fun obtain(practice: FakePracticeRepository, catalogResult: CatalogLoadResult = catalog) =
@@ -53,8 +55,8 @@ class CloseThenObtainTest {
     // Scenario: Cierre sin composición posible deja la tanda sin activar (spec: practice-persistence)
     @Test
     fun `given a closed batch and no new phrases left when obtaining then returns NothingAvailable`() = runTest {
-        // Given: tanda con A y B certificadas y el catálogo solo tiene esas dos frases
-        val onlyAB = CatalogLoadResult.Loaded(listOf("A", "B").map { aCatalogPhrase(id = it, level = CefrLevel.A1) })
+        // Given: tanda con A y B certificadas y el catálogo solo tiene esas dos frases, ninguna del nivel elegido (A1)
+        val onlyAB = CatalogLoadResult.Loaded(listOf("A", "B").map { aCatalogPhrase(id = it, level = CefrLevel.B1) })
         val practice = FakePracticeRepository(
             PracticeSnapshot(
                 progress = listOf(certified("A"), certified("B")),

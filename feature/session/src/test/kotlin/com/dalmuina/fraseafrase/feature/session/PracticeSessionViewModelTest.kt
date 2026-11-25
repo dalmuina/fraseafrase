@@ -76,7 +76,7 @@ class PracticeSessionViewModelTest {
 
     // Scenario: Frases con repaso futuro sin tanda (spec: practice-session, "Estado vacío sin frases disponibles")
     @Test
-    fun `given only future reviews and no batch when opening the screen then the state is NothingToPractice`() =
+    fun `given only future reviews and no batch when opening the screen then that phrase is shown unrevealed`() =
         runTest {
             // Given: el catálogo tiene solo P, con nivel 1 y repaso pendiente a partir de la sesión 1; sin tanda
             // activa y sin sesiones generadas todavía (sessionCount 0)
@@ -94,7 +94,9 @@ class PracticeSessionViewModelTest {
 
             // Then
             viewModel.uiState.test {
-                awaitItem() shouldBe PracticeSessionUiState.NothingToPractice
+                val state = awaitItem().shouldBeInstanceOf<PracticeSessionUiState.Practicing>()
+                state.current.id.value shouldBe "P"
+                state.revealed shouldBe false
             }
         }
 

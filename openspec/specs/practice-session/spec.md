@@ -65,8 +65,8 @@ mostrar también, de la tanda que se acaba de completar, el número de frases au
 número autoevaluadas con fallo y el número de frases cuyo nivel de consolidación subió en algún momento
 durante esa tanda, y MUST ofrecer un enlace para ir a la pantalla de Progreso sin generar sesión. Al generar
 sesión, la pantalla MUST mostrar la tanda siguiente, empezando por su primera frase, en el orden en que la
-compone `practice-batch`: pendientes por prioridad y nuevas repartidas entre ellas (ADR-0025). Mientras haya una respuesta en
-curso, pedir generar sesión MUST NOT tener efecto.
+compone `practice-batch`: pendientes por prioridad, después el repaso adelantado, y nuevas repartidas entre
+ambos (ADR-0025, ADR-0026). Mientras haya una respuesta en curso, pedir generar sesión MUST NOT tener efecto.
 
 #### Scenario: Tanda completa muestra el mensaje positivo
 
@@ -110,22 +110,22 @@ curso, pedir generar sesión MUST NOT tener efecto.
 > nuevas se reparten entre ellas.
 
 - **GIVEN** el mensaje de tanda completada, con dos frases que serán pendientes en la sesión siguiente, A y
-  C, ambas de nivel 0 y con el mismo retraso, A antes que C en el orden de catálogo, un catálogo con 8 frases
-  nuevas del nivel elegido y N igual a 10
+  C, ambas de nivel 0 y con el mismo retraso, A antes que C en el orden de catálogo, un catálogo con 4 frases
+  nuevas del nivel elegido, sin otra frase con progreso del nivel elegido, y N igual a 10
 - **WHEN** el usuario genera sesión
 - **THEN** la pantalla muestra la tanda siguiente con 6 frases: A en la primera posición, las 4 primeras
   frases nuevas del catálogo en las posiciones 2 a 5 y C en la sexta
 
 #### Scenario: Generar sesión con todas certificadas deja la tanda siguiente sin arrastradas
 
-> El título es el heredado del requisito que este delta modifica: "arrastradas" ya no es un estado posible,
-> pero el resultado real (una tanda sin frases a reforzar) sigue siendo válido tal cual.
+> El título es el heredado del requisito que este delta modifica: "arrastradas" ya no es un estado posible.
+> Desde ADR-0026 las frases certificadas sin vencer entran como repaso adelantado si falta sitio.
 
-- **GIVEN** el mensaje de tanda completada de una tanda de dos frases, ambas certificadas con un enfriamiento
-  que no ha vencido, y un catálogo con frases nuevas del nivel elegido
+- **GIVEN** el mensaje de tanda completada de una tanda de dos frases, A y B, ambas certificadas con un
+  enfriamiento que no ha vencido, un catálogo A, B, N1, N2 del nivel elegido, en ese orden, y N igual a 10
 - **WHEN** el usuario genera sesión
-- **THEN** la pantalla muestra una tanda nueva sin ninguna frase a reforzar, compuesta con frases nuevas del
-  nivel elegido
+- **THEN** la pantalla muestra la tanda siguiente A, N1, N2, B, y A y B conservan su nivel, su racha y su
+  `dueAtSession`
 
 #### Scenario: Una respuesta en curso ignora la petición de generar sesión
 
@@ -210,29 +210,30 @@ Al abrir la pantalla sin tanda activa guardada, la pantalla MUST componer la pri
 
 ### Requirement: Estado vacío sin frases disponibles
 
-Si no hay arrastradas, pendientes ni frases nuevas, la pantalla MUST indicar que no hay frases para practicar y
-MUST NOT mostrar una tanda. En ese estado no MUST haber ninguna frase visible.
+Si el nivel CEFR elegido no tiene ninguna frase en el catálogo, la pantalla MUST indicar que no hay frases para
+practicar y MUST NOT mostrar una tanda. En ese estado no MUST haber ninguna frase visible. Si el nivel CEFR
+elegido tiene frases, aunque ninguna esté pendiente ni sea nueva, la pantalla MUST mostrar una tanda (ADR-0026).
 
 #### Scenario: Catálogo agotado tras cerrar
 
-- **GIVEN** una tanda generada y un catálogo sin frases nuevas, sin arrastradas y sin pendientes
+- **GIVEN** una tanda generada y un catálogo sin ninguna frase del nivel CEFR elegido
 - **WHEN** el usuario genera sesión
 - **THEN** la pantalla indica que no hay frases para practicar y no muestra ninguna frase
 
 #### Scenario: Sin frases disponibles al pedir el cierre
 
-- **GIVEN** la pantalla muestra una tanda, esa tanda ya no está activa y no hay frases disponibles para
-  componer otra
+- **GIVEN** la pantalla muestra una tanda, esa tanda ya no está activa y el catálogo no tiene ninguna frase del
+  nivel CEFR elegido
 - **WHEN** el usuario pide generar sesión
 - **THEN** la pantalla indica que no hay frases para practicar, no muestra el mensaje de tanda completada y no
   muestra ninguna frase
 
 #### Scenario: Frases con repaso futuro sin tanda
 
-- **GIVEN** un catálogo cuya única frase P tiene nivel 1 con repaso el 11-03-2026, y la fecha actual es
-  10-03-2026
-- **WHEN** el usuario abre la pantalla de práctica sin tanda activa
-- **THEN** la pantalla indica que no hay frases para practicar y no muestra ninguna frase
+- **GIVEN** un catálogo cuya única frase del nivel elegido, P, tiene nivel 1 y `dueAtSession` posterior a la
+  sesión actual, sin tanda activa
+- **WHEN** el usuario abre la pantalla de práctica
+- **THEN** la pantalla muestra P sin revelar y no indica que no haya frases para practicar
 
 ### Requirement: Error de catálogo
 

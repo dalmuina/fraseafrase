@@ -30,7 +30,8 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0022](0022-separar-frases-destino-de-sus-traducciones.md) | Separar las frases destino de sus traducciones en documentos y tablas independientes | Sustituido por 0023 |
 | [0023](0023-origen-del-dispositivo-y-texto-de-origen-desde-frases.md) | Origen del dispositivo y texto de origen desde las frases | Aceptado |
 | [0024](0024-un-fallo-resta-un-acierto.md) | Un fallo resta un acierto, no un nivel | Aceptado |
-| [0025](0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md) | Rotación de la tanda por prioridad y aprendizaje | Aceptado |
+| [0025](0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md) | Rotación de la tanda por prioridad y aprendizaje | Sustituido por 0026 |
+| [0026](0026-tanda-llena-hasta-n-con-repaso-adelantado.md) | Tanda llena hasta N con repaso adelantado | Aceptado |
 
 ## Plantilla
 

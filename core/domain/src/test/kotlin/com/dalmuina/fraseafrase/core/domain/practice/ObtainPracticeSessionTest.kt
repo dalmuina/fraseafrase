@@ -218,7 +218,7 @@ class ObtainPracticeSessionTest {
     // Scenario: Catálogo agotado tras cerrar (spec: practice-session)
     @Test
     fun `given a closed batch and an exhausted catalog when opening the session then nothing to practice`() = runTest {
-        // Given: tanda de dos frases certificadas, con repaso muy futuro, y catálogo formado solo por ellas
+        // Given: tanda de dos frases certificadas, con repaso muy futuro, y catálogo sin frases del nivel elegido (A1)
         val practice = FakePracticeRepository(
             activeBatch(
                 order = listOf("A", "B"),
@@ -227,7 +227,10 @@ class ObtainPracticeSessionTest {
                 },
             ),
         )
-        val catalog = loaded(aCatalogPhrase(id = "A"), aCatalogPhrase(id = "B"))
+        val catalog = loaded(
+            aCatalogPhrase(id = "A", level = CefrLevel.B1),
+            aCatalogPhrase(id = "B", level = CefrLevel.B1),
+        )
         clearActiveBatch(practice)
 
         // When
@@ -239,7 +242,7 @@ class ObtainPracticeSessionTest {
 
     // Scenario: Frases con repaso futuro sin tanda (spec: practice-session)
     @Test
-    fun `given only future reviews and no active batch when opening the session then nothing to practice`() = runTest {
+    fun `given only future reviews and no active batch when opening the session then shows them`() = runTest {
         // Given: catálogo cuya única frase P tiene nivel 1 con dueAtSession futuro y sin tanda activa
         val practice = FakePracticeRepository(
             PracticeSnapshot(
@@ -254,7 +257,8 @@ class ObtainPracticeSessionTest {
         val result = useCase(practice, catalog).invoke(targetLocale)
 
         // Then
-        result shouldBe PracticeSessionResult.NothingToPractice
+        val ready = result.shouldBeInstanceOf<PracticeSessionResult.Ready>()
+        ready.items.map { it.id.value } shouldBe listOf("P")
     }
 
     // Scenario: Tanda completa tras responder a todas sus frases (spec: practice-batch, Tanda completa)

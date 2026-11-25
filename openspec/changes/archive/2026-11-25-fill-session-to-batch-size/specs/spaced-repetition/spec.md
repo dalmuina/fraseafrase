@@ -1,0 +1,155 @@
+## ADDED Requirements
+
+### Requirement: Acierto sobre una frase aún no pendiente
+
+Un acierto sobre una frase cuyo `dueAtSession` es posterior a la sesión actual en el momento de responder
+(repaso adelantado, o una frase ya respondida en la misma sesión) MUST NOT cambiar su nivel, su racha ni su
+`dueAtSession`, y MUST marcarla como respondida en la tanda. Un fallo sobre esa frase MUST resolverse como
+cualquier otro fallo (ADR-0024, ADR-0026).
+
+#### Scenario: Acierto en repaso adelantado no suma
+
+- **GIVEN** una frase de nivel 2 con racha 1 y `dueAtSession` 14, sesión actual 12
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** la frase permanece en nivel 2, racha 1 y `dueAtSession` 14, y queda respondida en la tanda
+
+#### Scenario: Acierto en repaso adelantado con racha 2 no certifica
+
+- **GIVEN** una frase de nivel 1 con racha 2 y `dueAtSession` 14, sesión actual 12
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** la frase permanece en nivel 1, racha 2 y `dueAtSession` 14
+
+#### Scenario: Fallo en repaso adelantado cuenta
+
+- **GIVEN** una frase de nivel 2 con racha 1 y `dueAtSession` 14, sesión actual 12
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** la frase queda en nivel 2, racha 0 y `dueAtSession` 13
+
+#### Scenario: Un segundo acierto en la misma sesión no suma
+
+- **GIVEN** una frase de nivel 1 con racha 0 y `dueAtSession` 10, sesión actual 10, que el usuario autoevalúa con
+  acierto y queda con racha 1 y `dueAtSession` 11
+- **WHEN** el usuario vuelve a autoevaluarla con acierto en la misma sesión
+- **THEN** la frase permanece en nivel 1, racha 1 y `dueAtSession` 11
+
+#### Scenario: Revertir un acierto en repaso adelantado deja el progreso igual
+
+- **GIVEN** una frase de nivel 2 con racha 1 y `dueAtSession` 14, sesión actual 12, que el usuario autoevalúa con
+  acierto
+- **WHEN** se revierte esa autoevaluación
+- **THEN** la frase sigue en nivel 2, racha 1 y `dueAtSession` 14
+
+## MODIFIED Requirements
+
+### Requirement: Resolución de la autoevaluación
+
+Cada autoevaluación MUST resolverse al instante, sin esperar a generar la siguiente sesión. Salvo el acierto sobre
+una frase aún no pendiente (requisito "Acierto sobre una frase aún no pendiente"): un acierto que hace que la
+racha llegue a 3 MUST certificar la frase en ese momento, y un acierto que no certifica MUST fijar su
+`dueAtSession` en la sesión actual más la espera intra-nivel de su nivel (ADR-0025). Un fallo MUST restar
+un solo acierto (ADR-0024): con racha mayor que 0, la racha baja en 1 y el nivel no cambia; con racha 0 y
+nivel ≥ 1, el nivel baja en 1 y la racha queda en 2; con racha 0 y nivel 0, nivel y racha no cambian. Un
+fallo, en cualquier caso, MUST fijar su `dueAtSession` en la sesión siguiente.
+
+#### Scenario: Fallo en nivel 3 baja a nivel 2 y fija la sesión siguiente
+
+- **GIVEN** una frase de nivel 3 con racha 0, sesión actual 10
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** la frase queda en nivel 2, racha 2, y `dueAtSession` igual a 11
+
+#### Scenario: Fallo en nivel 1 baja a nivel 0 y fija la sesión siguiente
+
+- **GIVEN** una frase de nivel 1 con racha 0, sesión actual 10
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** la frase queda en nivel 0, racha 2, y `dueAtSession` igual a 11
+
+#### Scenario: Fallo con racha 0 en nivel 5 baja a nivel 4 con racha 2
+
+- **GIVEN** una frase de nivel 5 con racha 0, sesión actual 10
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** la frase queda en nivel 4, racha 2, y `dueAtSession` igual a 11
+
+#### Scenario: Fallo con racha mayor que 0 no baja de nivel
+
+- **GIVEN** una frase de nivel 3 con racha 2, sesión actual 10
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** la frase queda en nivel 3, racha 1, y `dueAtSession` igual a 11
+
+#### Scenario: Fallo en nivel 0 no cambia el nivel pero sí fija la sesión siguiente
+
+- **GIVEN** una frase de nivel 0 con racha 0, sesión actual 10
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** la frase permanece en nivel 0, racha 0, con `dueAtSession` igual a 11
+
+#### Scenario: Fallo en nivel 0 con racha mayor que 0 resta uno a la racha
+
+- **GIVEN** una frase de nivel 0 con racha 2, sesión actual 10
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** la frase queda en nivel 0, racha 1, y `dueAtSession` igual a 11
+
+#### Scenario: Acierto que certifica sube de nivel y entra en enfriamiento
+
+- **GIVEN** una frase de nivel 1 con racha 2, sesión actual 10
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** la frase queda en nivel 2, racha 0, y `dueAtSession` igual a 12 (sesión actual 10 más el
+  enfriamiento del nivel 2, que es 2 sesiones)
+
+#### Scenario: Acierto que no certifica fija la sesión siguiente
+
+- **GIVEN** una frase de nivel 1 con racha 0, sesión actual 10
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** la frase permanece en nivel 1, racha 1, y `dueAtSession` igual a 11 (sesión 10 más la espera
+  intra-nivel del nivel 1, que es 1 sesión)
+
+#### Scenario: Acierto que no certifica en nivel 3 espera dos sesiones
+
+- **GIVEN** una frase de nivel 3 con racha 1, sesión actual 10
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** la frase permanece en nivel 3, racha 2, y `dueAtSession` igual a 12
+
+#### Scenario: Acierto que no certifica en nivel 5 espera ocho sesiones
+
+- **GIVEN** una frase de nivel 5 con racha 0, sesión actual 10
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** la frase permanece en nivel 5, racha 1, y `dueAtSession` igual a 18
+
+#### Scenario: Una frase nueva certificada por primera vez pasa a nivel 1
+
+- **GIVEN** una frase de nivel 0 con racha 2, sesión actual 10
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** la frase queda en nivel 1, racha 0, y `dueAtSession` igual a 11 (sesión 10 + enfriamiento de
+  nivel 1, que es 1 sesión)
+
+### Requirement: Racha persistente entre sesiones
+
+Salvo el acierto sobre una frase aún no pendiente (requisito "Acierto sobre una frase aún no pendiente"), un
+acierto MUST incrementar en 1 la racha de una frase. Un fallo sobre una frase con racha mayor que 0 MUST
+restarle 1 a la racha (ADR-0024); el efecto de un fallo con racha 0 lo fija "Resolución de la
+autoevaluación". La racha MUST NOT reiniciarse por el solo hecho de que la frase entre en una tanda recién
+compuesta: persiste de una sesión generada a la siguiente.
+
+#### Scenario: Acierto suma uno a la racha
+
+- **GIVEN** una frase con racha 1 y `dueAtSession` igual o anterior a la sesión actual
+- **WHEN** el usuario se autoevalúa con acierto
+- **THEN** su racha pasa a 2
+
+#### Scenario: Fallo resta uno a la racha
+
+- **GIVEN** una frase de nivel 2 con racha 2
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** su racha pasa a 1 y su nivel sigue siendo 2
+
+#### Scenario: Fallo reinicia la racha
+
+- **GIVEN** una frase de nivel 2 con racha 1
+- **WHEN** el usuario se autoevalúa con fallo
+- **THEN** su racha pasa a 0 y su nivel sigue siendo 2
+
+#### Scenario: La racha sobrevive a una sesión generada de por medio
+
+- **GIVEN** una frase con racha 1 que, tras responderla, queda fuera de la tanda activa al generarse la
+  siguiente sesión
+- **WHEN** la frase vuelve a ofrecerse en una sesión posterior y la pantalla la muestra
+- **THEN** su racha sigue siendo 1, no 0
+
