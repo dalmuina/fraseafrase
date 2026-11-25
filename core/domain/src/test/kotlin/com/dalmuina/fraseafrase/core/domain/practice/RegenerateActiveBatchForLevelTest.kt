@@ -188,6 +188,25 @@ class RegenerateActiveBatchForLevelTest {
             practice.read() shouldBe stored
         }
 
+    // Scenario: La obtención que llega tarde no recompone la tanda ya compuesta (spec: practice-persistence),
+    // with a non-null observed batch that differs from the stored one
+    @Test
+    fun `given a previous batch was observed and replaced when regenerating then the stored one stays`() = runTest {
+        // Given: batch A was observed, but batch B is the one stored by now
+        val observed = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(10))
+        val stored = snapshot(order = listOf("B"), progress = listOf("A", "B").map { aPhraseProgress(id = it) })
+        val practice = FakePracticeRepository(stored)
+        val catalog = CatalogLoadResult.Loaded(listOf("A", "B", "new").map { aCatalogPhrase(it) })
+
+        // When
+        val result = useCase(practice, catalog).invoke(targetLocale, CefrLevel.A1, BatchSize(10), observed)
+
+        // Then
+        val existing = result.shouldBeInstanceOf<ActiveBatchResult.Existing>()
+        existing.batch.entries.map { it.id.value } shouldBe listOf("B")
+        practice.read() shouldBe stored
+    }
+
     // Scenario: La obtención que llega tarde sin tanda vigente devuelve que no hay frases
     @Test
     fun `given the observed batch was emptied when regenerating then it returns nothing available unchanged`() =
