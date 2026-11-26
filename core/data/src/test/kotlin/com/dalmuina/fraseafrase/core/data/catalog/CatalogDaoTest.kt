@@ -5,7 +5,7 @@ import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
-// Scenario: Persistencia del catálogo en Room (spec: phrase-catalog) — self-JOIN entre idiomas
+// Requirement: Persistencia y resembrado del catálogo en Room (spec: phrase-catalog) — self-JOIN entre idiomas
 class CatalogDaoTest {
 
     private fun phrase(
@@ -84,7 +84,7 @@ class CatalogDaoTest {
         found.shouldBeEmpty()
     }
 
-    // Scenario: Persistencia del catálogo en Room - el borrado de un idioma no afecta a otro
+    // Requirement: Persistencia y resembrado del catálogo en Room - el borrado de un idioma no afecta a otro
     @Test
     fun `given phrases of two target locales when deleting one locale then the other is kept`() = runTest {
         // Given
@@ -99,16 +99,16 @@ class CatalogDaoTest {
         dao.targetLocales() shouldBe listOf("en-GB")
     }
 
-    // Scenario: Persistencia del catálogo en Room - versionado por idioma
+    // Requirement: Persistencia y resembrado del catálogo en Room - huella de contenido por idioma
     @Test
-    fun `given seed versions of two locales when querying seedVersionFor then each is independent`() = runTest {
+    fun `given content hashes of two locales when querying seedVersionFor then each is independent`() = runTest {
         // Given
         val dao = inMemoryCatalogDatabase().catalogDao()
-        dao.upsertSeedVersion(CatalogSeedVersionEntity(targetLocale = "pt-PT", schemaVersion = 1))
-        dao.upsertSeedVersion(CatalogSeedVersionEntity(targetLocale = "es-ES", schemaVersion = 2))
+        dao.upsertSeedVersion(CatalogSeedVersionEntity(targetLocale = "pt-PT", contentHash = "pt-hash"))
+        dao.upsertSeedVersion(CatalogSeedVersionEntity(targetLocale = "es-ES", contentHash = "es-hash"))
 
         // When / Then
-        dao.seedVersionFor("pt-PT")?.schemaVersion shouldBe 1
-        dao.seedVersionFor("es-ES")?.schemaVersion shouldBe 2
+        dao.seedVersionFor("pt-PT")?.contentHash shouldBe "pt-hash"
+        dao.seedVersionFor("es-ES")?.contentHash shouldBe "es-hash"
     }
 }
