@@ -44,10 +44,10 @@ su verde, del renombrado.
 
 ## 3. :core:data: ids literales en los tests (tdd-implementer, haiku)
 
-- [ ] 3.1 Cambiar los ids literales de formato antiguo por su versión con `0000-` en `CatalogDaoTest`,
+- [x] 3.1 Cambiar los ids literales de formato antiguo por su versión con `0000-` en `CatalogDaoTest`,
   `CatalogDatabaseTest`, `CatalogJsonTest`, `RoomCatalogDataSourceTest` y `RoomPracticeDataSourceReadTest`. No se cambia
-  ninguna aserción más. Verificar con un Grep de `"[abc][12]-[a-z_]+-[0-9]{3}` en `core/data/src/test`, que no debe
-  devolver nada, y con `./gradlew :core:data:check`. (Scenarios: El origen sale del texto destino del otro idioma; Ids
+  ninguna aserción más. Verificar con un Grep de `"[abc][12]-[a-z_]+-[0-9]{3}` en `core/data/src/test`, que solo debe
+  devolver los ids sin bloque que `CatalogContractTest` usa a propósito (caso `MALFORMED`), y con `./gradlew :core:data:check`. (Scenarios: El origen sale del texto destino del otro idioma; Ids
   duplicados rechazan la carga; Resembrar un idioma no cambia el progreso guardado; El progreso de dos idiomas destino
   para la misma frase no se mezcla)
 

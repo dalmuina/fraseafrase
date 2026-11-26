@@ -38,11 +38,11 @@ class CatalogDatabaseTest {
     fun `given a phrase row when inserting another with the same id and target locale then it fails`() = runTest {
         // Given
         val dao = inMemoryCatalogDatabase().catalogDao()
-        dao.insertPhrases(listOf(phrase(id = "a1-saludos-001")))
+        dao.insertPhrases(listOf(phrase(id = "0000-a1-saludos-001")))
 
         // When / Then
         shouldThrow<SQLiteException> {
-            dao.insertPhrases(listOf(phrase(id = "a1-saludos-001", target = "otro texto")))
+            dao.insertPhrases(listOf(phrase(id = "0000-a1-saludos-001", target = "otro texto")))
         }
     }
 
@@ -51,10 +51,10 @@ class CatalogDatabaseTest {
     fun `given a phrase row when inserting the same id for another locale then both are kept`() = runTest {
         // Given
         val dao = inMemoryCatalogDatabase().catalogDao()
-        dao.insertPhrases(listOf(phrase(id = "a1-saludos-001", targetLocale = "pt-PT")))
+        dao.insertPhrases(listOf(phrase(id = "0000-a1-saludos-001", targetLocale = "pt-PT")))
 
         // When
-        dao.insertPhrases(listOf(phrase(id = "a1-saludos-001", targetLocale = "es-ES")))
+        dao.insertPhrases(listOf(phrase(id = "0000-a1-saludos-001", targetLocale = "es-ES")))
 
         // Then
         dao.targetLocales().toSet() shouldBe setOf("pt-PT", "es-ES")

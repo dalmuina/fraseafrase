@@ -56,8 +56,8 @@ class RoomPracticeDataSourceReadTest {
     fun `given the same phrase with different levels per locale when reading each locale then levels do not mix`() =
         runTest {
             // Given
-            database.phraseProgressDao().insert(entry(id = "a1-saludos-001", level = 3, targetLocale = "pt-PT"))
-            database.phraseProgressDao().insert(entry(id = "a1-saludos-001", level = 0, targetLocale = "en-GB"))
+            database.phraseProgressDao().insert(entry(id = "0000-a1-saludos-001", level = 3, targetLocale = "pt-PT"))
+            database.phraseProgressDao().insert(entry(id = "0000-a1-saludos-001", level = 0, targetLocale = "en-GB"))
 
             // When
             val ptPtLevel = source.read(ptPt).progress.single().level.value

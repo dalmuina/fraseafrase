@@ -22,7 +22,7 @@ class RoomCatalogDataSourceTest {
 
     private fun phraseDocument(
         targetLocale: String = "pt-PT",
-        id: String = "a1-saludos-001",
+        id: String = "0000-a1-saludos-001",
         target: String = "Bom dia",
     ) = """
         {
@@ -39,8 +39,8 @@ class RoomCatalogDataSourceTest {
           "schemaVersion": 1,
           "targetLocale": "$targetLocale",
           "phrases": [
-            { "id": "a1-saludos-001", "level": "A1", "topic": "saludos", "target": "$first" },
-            { "id": "a1-saludos-002", "level": "A1", "topic": "saludos", "target": "$second" }
+            { "id": "0000-a1-saludos-001", "level": "A1", "topic": "saludos", "target": "$first" },
+            { "id": "0000-a1-saludos-002", "level": "A1", "topic": "saludos", "target": "$second" }
           ]
         }
     """.trimIndent()
@@ -167,7 +167,7 @@ class RoomCatalogDataSourceTest {
         source(catalog) { listOf(phraseDocument(), phraseDocument(targetLocale = "es-ES", target = "Buenos días")) }
             .phrases(ptPt, esEs)
         val progress = PhraseProgressEntity(
-            phraseId = "a1-saludos-001",
+            phraseId = "0000-a1-saludos-001",
             targetLocale = "pt-PT",
             level = 2,
             streak = 1,

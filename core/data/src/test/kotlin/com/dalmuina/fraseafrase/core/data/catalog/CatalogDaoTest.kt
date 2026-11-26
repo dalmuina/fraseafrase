@@ -31,8 +31,8 @@ class CatalogDaoTest {
             val dao = inMemoryCatalogDatabase().catalogDao()
             dao.insertPhrases(
                 listOf(
-                    phrase(id = "a1-saludos-001", targetLocale = "pt-PT", target = "Bom dia", level = "A1"),
-                    phrase(id = "a1-saludos-001", targetLocale = "es-ES", target = "Buenos días", level = "A2"),
+                    phrase(id = "0000-a1-saludos-001", targetLocale = "pt-PT", target = "Bom dia", level = "A1"),
+                    phrase(id = "0000-a1-saludos-001", targetLocale = "es-ES", target = "Buenos días", level = "A2"),
                 ),
             )
 
@@ -41,7 +41,7 @@ class CatalogDaoTest {
 
             // Then
             val row = found.single()
-            row.phrase.id shouldBe "a1-saludos-001"
+            row.phrase.id shouldBe "0000-a1-saludos-001"
             row.phrase.target shouldBe "Bom dia"
             row.phrase.level shouldBe "A1"
             row.phrase.targetLocale shouldBe "pt-PT"
