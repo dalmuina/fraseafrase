@@ -7,8 +7,15 @@ import javax.inject.Inject
 /**
  * Devuelve la tanda activa de [targetLocale], recomponiéndola de inmediato si sus ajustes aplicados
  * (`SettingsRepository`) difieren de los ajustes guardados vigentes, o componiendo la primera si no hay
- * ninguna (ADR-0012, ADR-0013, spec `practice-persistence`, design D2 de `remove-settings-save-button`). La
+ * ninguna (ADR-0026, ADR-0019, spec `practice-persistence`, design D2 de `remove-settings-save-button`). La
  * comparación se repite en cada obtención para que sobreviva al cierre de la app.
+ *
+ * La recomposición se condiciona a la tanda leída aquí: si al escribir ya es otra, se devuelve la vigente sin
+ * recomponerla (ver [RegenerateActiveBatchForLevel]).
+ *
+ * Cuando no recompone, vuelve a leer la tanda después de consultar los ajustes aplicados, porque otra obtención
+ * puede haberla recompuesto entre ambas lecturas; devuelve [ActiveBatchResult.NothingAvailable] si ya no hay
+ * ninguna.
  */
 class ObtainActiveBatch @Inject constructor(
     private val settingsRepository: SettingsRepository,
@@ -18,13 +25,20 @@ class ObtainActiveBatch @Inject constructor(
 
     suspend operator fun invoke(targetLocale: LanguageTag): ActiveBatchResult {
         val settings = settingsRepository.settings(targetLocale)
-        val existing = practiceRepository.read(targetLocale).batch()
-        if (existing != null) {
+        val observed = practiceRepository.read(targetLocale)
+        if (observed.batch() != null) {
             val applied = settingsRepository.appliedSettings(targetLocale)
             if (applied == null) settingsRepository.recordAppliedSettings(targetLocale, settings)
-            if (applied == null || applied == settings) return ActiveBatchResult.Existing(existing)
+            if (applied == null || applied == settings) {
+                return practiceRepository.read(targetLocale).currentBatchResult()
+            }
         }
-        val result = regenerateActiveBatchForLevel(targetLocale, settings.cefrLevel, settings.batchSize)
+        val result = regenerateActiveBatchForLevel(
+            targetLocale,
+            settings.cefrLevel,
+            settings.batchSize,
+            expected = observed.activeBatch,
+        )
         if (result is ActiveBatchResult.Created) {
             settingsRepository.recordAppliedSettings(targetLocale, settings)
         }
