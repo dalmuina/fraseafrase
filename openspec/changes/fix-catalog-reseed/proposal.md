@@ -13,7 +13,7 @@ de publicar la 1.0.0 y antes de ampliar el catálogo (tarea A1 de `docs/plan-mvp
 - `schemaVersion` queda solo como versión del formato; ya no decide el resembrado.
 - La caché del catálogo guarda la huella en lugar de `schemaVersion` (`CatalogDatabase` pasa a la versión 4, destructiva).
 - Un documento nuevo que no valida conserva lo sembrado antes.
-- ADR-0028 (propuesto): sustituye la regla de resembrado por `schemaVersion` del ADR-0019.
+- ADR-0028: sustituye la regla de resembrado por `schemaVersion` del ADR-0019.
 
 ## Capabilities
 
