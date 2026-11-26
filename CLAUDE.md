@@ -24,7 +24,8 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
    ADR-0018. Filtro CEFR (nivel exacto): ADR-0021. Fallo: ADR-0024. Composición de la tanda y registro de respuestas:
    ADR-0027, que mantiene vigentes la espera intra-nivel y el reparto de nuevas del ADR-0025, y la tanda llena hasta
    N con repaso adelantado del ADR-0026. Terminología: tanda, sesión generada, nivel, racha, certificada, pendiente
-   (ya no hay frases arrastradas). Ids de frases: ADR-0029. Lo que esté fuera es un cambio posterior, no una mejora "de paso".
+   (ya no hay frases arrastradas). Ids de frases: ADR-0029. Migraciones de Room: ADR-0030. Lo que esté fuera es un cambio
+   posterior, no una mejora "de paso".
 5. **No amplíes el alcance.** Implementa exactamente lo que dice la tarea. Si ves algo mejorable, anótalo y avisa.
 
 ## Tipos de cambio
@@ -227,6 +228,7 @@ Para no llenar el contexto con logs, ejecuta Gradle con `-q --console=plain` y r
 - No desactives reglas de detekt ni bajes umbrales de cobertura para que algo pase; corrige el código o propón un ADR.
 - No edites ADR aceptados: solo se cambia su línea de estado a `Sustituido por ADR-XXXX` cuando un ADR nuevo lo sustituye (ver `docs/adr/README.md`). Un ADR `Propuesto` puede editarse.
 - No borres ni reutilices ids del catálogo de frases, y añade las frases nuevas siempre al final de la lista `phrases` (ADR-0013; test de contrato en `:core:data`). Los ids tienen el formato `<bloque>-<nivel>-<tema>-<nnn>` (ADR-0029): el bloque debe estar en `blocks.txt` y el tema en `topics.txt`, ambos en `core/data/src/test/resources/catalog/`.
+- No vuelvas a añadir `fallbackToDestructiveMigration()` (ni sus variantes) a `practice.db`: cada subida de versión lleva su migración y su test (ADR-0030).
 - No edites `openspec/specs/` a mano: los requisitos y escenarios solo cambian mediante deltas de OpenSpec; la única edición manual permitida es la sección `## Purpose`, que OpenSpec no gestiona con deltas, y siempre sin añadir comportamiento.
 
 ## Contexto y sesiones

@@ -126,7 +126,7 @@ class RoomPracticeDataSourceReadTest {
     }
 
     // Scenario: columnas nuevas de BatchOutcome en una base recién creada (design: "Contador de la tanda
-    // completada", precedente de fallbackToDestructiveMigration() de PracticeDatabase)
+    // completada", esquema v1 de PracticeDatabase)
     @Test
     fun `given a freshly created active batch when reading then the batch outcome is zero`() = runTest {
         // Given

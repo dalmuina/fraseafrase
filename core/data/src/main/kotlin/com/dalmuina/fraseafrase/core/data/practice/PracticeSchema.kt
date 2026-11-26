@@ -12,9 +12,8 @@ import androidx.sqlite.execSQL
  * Room no tiene CHECK en sus anotaciones, así que cada invariante es un trigger BEFORE INSERT y BEFORE UPDATE que
  * aborta la sentencia. Los triggers se crean en cada apertura con `IF NOT EXISTS`, no solo al crear la base: una
  * migración que recrea tablas los elimina sin aviso y Room no los conoce (design D5, revisión). Los UNIQUE de posición
- * sí son índices de Room. Desde `PracticeDatabase` v4 (ADR-0019, design "PracticeDatabase v4") ya no hay un trigger
- * de singleton de `active_batch`: la PK `target_locale` garantiza como máximo una fila por idioma destino sin
- * necesitar un trigger.
+ * sí son índices de Room. La PK `target_locale` de `active_batch` garantiza como máximo una fila por idioma destino,
+ * sin trigger de singleton (design "PracticeDatabase v4" de `add-multi-language-catalog`).
  */
 internal object PracticeSchema {
 
@@ -51,12 +50,13 @@ internal object PracticeSchema {
         }
 }
 
-/** Base de producción en el almacenamiento de la app. La crea `:app` mediante Hilt. */
+/**
+ * Base de producción en el almacenamiento de la app. La crea `:app` mediante Hilt. Sin fallback destructivo de
+ * migración (ADR-0030): una versión sin camino de migración hace fallar la apertura en vez de borrar el progreso
+ * del usuario.
+ */
 fun createPracticeDatabase(context: Context): PracticeDatabase =
     Room.databaseBuilder(context, PracticeDatabase::class.java, "practice.db")
         .setDriver(BundledSQLiteDriver())
         .addCallback(PracticeSchema.callback)
-        // Design D7 de `repeat-by-session-counter`: proyecto pre-1.0.0, sin usuarios en producción. La versión 1 se
-        // recrea en vez de migrarse: el progreso existente se pierde, igual que una instalación nueva.
-        .fallbackToDestructiveMigration()
         .build()

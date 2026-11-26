@@ -12,7 +12,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 fun createCatalogDatabase(context: Context): CatalogDatabase =
     Room.databaseBuilder(context, CatalogDatabase::class.java, "catalog.db")
         .setDriver(BundledSQLiteDriver())
-        // Proyecto pre-1.0.0, sin usuarios en producción: una futura subida de versión se recrea en vez de
-        // migrarse (mismo precedente que `createPracticeDatabase`).
+        // Caché sembrada desde los assets (ADR-0028): ante un cambio de versión del esquema se recrea y se vuelve a
+        // sembrar, sin perder datos del usuario (ADR-0030).
         .fallbackToDestructiveMigration()
         .build()
