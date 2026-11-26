@@ -1,6 +1,6 @@
 # ADR-0026: Tanda llena hasta N con repaso adelantado
 
-- **Estado:** Aceptado
+- **Estado:** Sustituido por ADR-0027
 - **Fecha:** 2026-11-25
 - **Sustituye a:** ADR-0025 (parcialmente, en la composición de la tanda nueva: el techo de la primera tanda y la
   regla de que una frase con progreso que aún no está pendiente no entra en la tanda) y en la resolución de un

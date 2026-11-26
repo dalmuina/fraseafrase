@@ -1,6 +1,6 @@
 # ADR-0027: Rotación anti-bloqueo de la tanda
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-26
 - **Sustituye a:** ADR-0026 (parcialmente, en el orden de relleno de la tanda nueva) y ADR-0025 (parcialmente, en
   el cálculo de nuevas: techo, hueco y `N − pendientes`). La prioridad `nivel + (dueAtSession − sesión actual)` de

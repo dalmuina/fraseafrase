@@ -87,14 +87,14 @@ Ficheros: `practice/PhraseProgressEntity.kt`, `practice/PracticeMapping.kt`, `pr
 
 ## 4. Cierre y verificación (sesión principal)
 
-- [ ] 4.1 Líneas de estado (ADR-0001): cabeceras ADR-0027 → `Aceptado`, ADR-0026 → `Sustituido por ADR-0027` y
+- [x] 4.1 Líneas de estado (ADR-0001): cabeceras ADR-0027 → `Aceptado`, ADR-0026 → `Sustituido por ADR-0027` y
   ADR-0025 → `Sustituido por ADR-0026 y ADR-0027`; en la columna Estado de `docs/adr/README.md`, 0027 → `Aceptado`,
   0026 → `Sustituido por 0027` y 0025 → `Sustituido por 0026 y 0027`. Verificación: el README y las cabeceras
   coinciden.
-- [ ] 4.2 `CLAUDE.md`, regla de oro 4: citar ADR-0027 para la composición de la tanda y el registro de respuestas.
+- [x] 4.2 `CLAUDE.md`, regla de oro 4: citar ADR-0027 para la composición de la tanda y el registro de respuestas.
   Verificación: la regla no remite a ADR-0026 como composición vigente.
-- [ ] 4.3 `./gradlew check` y `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
-- [ ] 4.4 Comprobación manual con `assembleDebug`, N = 10 y 5 o 6 sesiones: la app arranca sin progreso, la sesión
+- [x] 4.3 `./gradlew check` y `./gradlew koverVerify` en verde (dominio 90 %, presentación 80 %, global 70 %).
+- [x] 4.4 Comprobación manual con `assembleDebug`, N = 10 y 5 o 6 sesiones: la app arranca sin progreso, la sesión
   2 tiene 2 nuevas y una frase fallada vuelve en la sesión siguiente. Si no hay dispositivo, indicarlo en la tarea.
 
 ## Workflow follow-up
