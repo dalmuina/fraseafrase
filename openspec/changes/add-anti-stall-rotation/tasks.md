@@ -45,22 +45,22 @@ arrastradas".
 Ficheros: `spacedrepetition/BatchTranches.kt` (nuevo), `spacedrepetition/ComposeNextBatch.kt` /
 `ComposeNextBatchTest.kt`, `practice/RegenerateActiveBatchForLevelTest.kt`. Design D2, D3.
 
-- [ ] 2.1 Tests rojos en `ComposeNextBatchTest` para "Límite de frases nuevas por tanda" (ocho escenarios) y
+- [x] 2.1 Tests rojos en `ComposeNextBatchTest` para "Límite de frases nuevas por tanda" (ocho escenarios) y
   reescritura de los tests del requisito retirado "Número de frases nuevas según el aprendizaje" y de "Una frase de
   nivel alto sin vencer no entra". Verificación: fallan por el número de nuevas.
-- [ ] 2.2 Tests rojos en `ComposeNextBatchTest` para los seis escenarios de "Composición de la tanda por tramos" y
+- [x] 2.2 Tests rojos en `ComposeNextBatchTest` para los seis escenarios de "Composición de la tanda por tramos" y
   los tres de "Frases repetidas y falladas por volver" (la recomposición en la misma sesión se prueba componiendo con
   la sesión actual igual a la última sesión respondida). Los escenarios vigentes de "Prioridad de las pendientes" y
   "Orden del repaso adelantado" deben seguir en verde. Verificación: los nuevos fallan por el contenido o el orden
   de la tanda.
-- [ ] 2.3 Tests rojos en `ComposeNextBatchTest` para los cinco escenarios de "Frases en descanso" y en
+- [x] 2.3 Tests rojos en `ComposeNextBatchTest` para los cinco escenarios de "Frases en descanso" y en
   `RegenerateActiveBatchForLevelTest` para "La tanda siguiente se compone por cuotas con el nuevo nivel" (12
   pendientes y 8 nuevas). Verificación: fallan con el compositor actual.
-- [ ] 2.4 Implementar `BatchTranches` (tramos 1 a 7, límite de nuevas, definiciones de design D3) y simplificar
+- [x] 2.4 Implementar `BatchTranches` (tramos 1 a 7, límite de nuevas, definiciones de design D3) y simplificar
   `ComposeNextBatch` (sin techo ni hueco), con KDoc que cite ADR-0027. Verificación: 2.1–2.3 pasan, los tests de
   reparto y de repaso adelantado siguen en verde y `./gradlew :core:domain:check` en verde (sin desactivar reglas de
   detekt).
-- [ ] 2.5 Ajustar solo los datos de los tests de `:core:domain`, `:feature:session`, `:core:data` o `:app` que
+- [x] 2.5 Ajustar solo los datos de los tests de `:core:domain`, `:feature:session`, `:core:data` o `:app` que
   fijen el cálculo antiguo de nuevas, sin cambiar lo que prueban; comprobar que los dos escenarios de
   `practice-session` del encabezado siguen en verde con su resultado actual. Verificación: `./gradlew
   :core:domain:check :feature:session:check :core:data:check` en verde.

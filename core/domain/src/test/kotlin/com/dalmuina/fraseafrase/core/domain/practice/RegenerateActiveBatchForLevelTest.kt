@@ -118,7 +118,7 @@ class RegenerateActiveBatchForLevelTest {
     }
 
     // Scenario: La tanda siguiente se compone por cuotas con el nuevo nivel (spec: practice-batch), con el
-    // resultado nuevo del delta: mismas reglas que una generación de sesión (ADR-0025)
+    // resultado nuevo del delta: mismas reglas que una generación de sesión (ADR-0027)
     @Test
     fun `given material for the new level when composing the next batch then it uses the same rules as a session`() =
         runTest {
@@ -142,7 +142,7 @@ class RegenerateActiveBatchForLevelTest {
                 practice.read().activeBatch,
             )
 
-            // Then: N=20 con pendientes de nivel 1: 8 nuevas (40 %) y 12 pendientes
+            // Then: 12 pendientes y 8 nuevas (4 del límite y 4 para llenar la tanda)
             val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
             val ids = created.batch.entries.map { it.id.value }
             ids.count { it.startsWith("new-b1-") } shouldBe 8

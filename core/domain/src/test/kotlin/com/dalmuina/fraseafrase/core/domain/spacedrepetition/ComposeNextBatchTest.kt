@@ -5,6 +5,7 @@ import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchComposition.Composed
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anAnswerHistory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -66,20 +67,18 @@ class ComposeNextBatchTest {
 
     // Scenario: Una frase de nivel alto sin vencer no entra (spec: Candidatas a la tanda nueva)
     @Test
-    fun `given six pending and many new when composing size 10 then high level phrases not yet due do not enter`() {
+    fun `given eight pending and many new when composing size 10 then high level phrases not yet due do not enter`() {
         // Given
-        val pendingIds = (1..6).map { "P$it" }
-        val newIds = (1..20).map { "N%02d".format(it) }
-        val progress = pendingIds.map { aPhraseProgress(id = it, level = Level(1), dueAtSession = 20) } +
+        val pending = pendingPhrases(count = 8, level = 1)
+        val progress = pending +
             aPhraseProgress(id = "H5", level = Level(5), dueAtSession = 30) +
             aPhraseProgress(id = "H4", level = Level(4), dueAtSession = 25)
-        val catalog = (listOf("H5", "H4") + pendingIds + newIds).map { aCatalogPhrase(id = it) }
 
         // When
-        val result = compose(progress = progress, catalog = catalog, size = BatchSize(10), currentSession = 20)
+        val result = composeAtSession20(progress, size = 10)
 
         // Then
-        result.ids().toSet() shouldBe (pendingIds + newIds.take(4)).toSet()
+        result.ids().toSet() shouldBe (pending.map { it.id.value } + listOf("N01", "N02")).toSet()
     }
 
     // Scenario: Una pendiente de nivel CEFR inferior o superior no entra (spec: Candidatas a la tanda nueva)
@@ -220,28 +219,95 @@ class ComposeNextBatchTest {
         result.ids() shouldBe zeroIds + oneIds.take(5)
     }
 
-    // Scenario: Primera tanda de un nivel CEFR se llena hasta la mitad de N (spec: Número de frases nuevas
-    // según el aprendizaje)
+    // Scenario: Tras la primera tanda entran como mucho N/5 nuevas (spec: Límite de frases nuevas por tanda)
     @Test
-    fun `given no progress and thirty phrases with size 20 when composing then the batch has the first twenty`() {
-        // Given
-        val catalog = (1..30).map { aCatalogPhrase(id = "A1-%02d".format(it)) }
-
+    fun `given twelve consolidated pending when composing size 10 then there are 2 new and 8 pending`() {
         // When
-        val result = compose(catalog = catalog, size = BatchSize(20))
+        val ids = composeAtSession20(pendingPhrases(count = 12, level = 1), size = 10).ids()
 
         // Then
-        result.ids() shouldBe catalog.take(20).map { it.id.value }
+        ids.count { it.startsWith("N") } shouldBe 2
+        ids.count { it.startsWith("P") } shouldBe 8
+    }
+
+    // Scenario: Con N igual a 17 el límite es 3 nuevas (spec: Límite de frases nuevas por tanda)
+    @Test
+    fun `given twenty pending and size 17 when composing then there are 3 new and 14 pending`() {
+        // When
+        val ids = composeAtSession20(pendingPhrases(count = 20, level = 1), size = 17).ids()
+
+        // Then
+        ids.count { it.startsWith("N") } shouldBe 3
+        ids.count { it.startsWith("P") } shouldBe 14
+    }
+
+    // Scenario: Aprendizaje saturado no admite nuevas (spec: Límite de frases nuevas por tanda)
+    @Test
+    fun `given twelve level zero pending when composing size 10 then there are no new`() {
+        // When
+        val ids = composeAtSession20(pendingPhrases(count = 12, level = 0), size = 10).ids()
+
+        // Then
+        ids.count { it.startsWith("P") } shouldBe 10
+        ids.count { it.startsWith("N") } shouldBe 0
+    }
+
+    // Scenario: Con once frases de nivel 0 aún entran nuevas (spec: Límite de frases nuevas por tanda)
+    @Test
+    fun `given eleven level zero pending when composing size 10 then there are 2 new and 8 pending`() {
+        // When
+        val ids = composeAtSession20(pendingPhrases(count = 11, level = 0), size = 10).ids()
+
+        // Then
+        ids.count { it.startsWith("N") } shouldBe 2
+        ids.count { it.startsWith("P") } shouldBe 8
+    }
+
+    // Scenario: Las frases de nivel 0 de otro nivel CEFR no cuentan (spec: Límite de frases nuevas por tanda)
+    @Test
+    fun `given level zero phrases of another CEFR level when composing then they do not block the new ones`() {
+        // Given
+        val other = group("B", count = 12, level = 0, dueAtSession = 20)
+        val pending = pendingPhrases(count = 8, level = 1)
+        val newIds = (1..20).map { "N%02d".format(it) }
+        val catalog = other.map { aCatalogPhrase(id = it.id.value, level = CefrLevel.B1) } +
+            (pending.map { it.id.value } + newIds).map { aCatalogPhrase(id = it, level = CefrLevel.A1) }
+
+        // When
+        val result = compose(progress = other + pending, catalog = catalog, size = BatchSize(10), currentSession = 20)
+
+        // Then
+        result.ids().toSet() shouldBe (pending.map { it.id.value } + newIds.take(2)).toSet()
+    }
+
+    // Scenario: Primera tanda de un nivel CEFR con progreso en otro nivel (spec: Límite de frases nuevas por tanda)
+    @Test
+    fun `given progress only in another CEFR level when composing the first batch then it has ten new phrases`() {
+        // Given
+        val other = aPhraseProgress(id = "A1-1", level = Level(2), dueAtSession = 20)
+        val newPhrases = (1..15).map { aCatalogPhrase(id = "B1-%02d".format(it), level = CefrLevel.B1) }
+        val catalog = listOf(aCatalogPhrase(id = "A1-1", level = CefrLevel.A1)) + newPhrases
+
+        // When
+        val result = compose(
+            progress = listOf(other),
+            catalog = catalog,
+            cefrLevel = CefrLevel.B1,
+            size = BatchSize(10),
+            currentSession = 20,
+        )
+
+        // Then
+        result.ids() shouldBe newPhrases.take(10).map { it.id.value }
         result.composed().batch.entries.forEach { entry ->
             entry.level shouldBe Level(0)
             entry.streak shouldBe Streak(0)
         }
     }
 
-    // Scenario: Pocas pendientes admiten hasta el 40 % de N en nuevas (spec: Número de frases nuevas según
-    // el aprendizaje)
+    // Scenario: El repaso adelantado entra antes que más nuevas (spec: Límite de frases nuevas por tanda)
     @Test
-    fun `given three pending, five early and many new when composing size 10 then there are 3, 4 new and 3 early`() {
+    fun `given three pending, five early and many new when composing size 10 then there are 3, 5 early and 2 new`() {
         // Given
         val progress = pendingPhrases(count = 3, level = 1) + earlyPhrases(count = 5, level = 2)
 
@@ -249,125 +315,21 @@ class ComposeNextBatchTest {
         val ids = composeAtSession20(progress, size = 10).ids()
 
         // Then
-        ids.size shouldBe 10
         ids.count { it.startsWith("P") } shouldBe 3
-        ids.count { it.startsWith("N") } shouldBe 4
-        ids.count { it.startsWith("R") } shouldBe 3
+        ids.count { it.startsWith("R") } shouldBe 5
+        ids.count { it.startsWith("N") } shouldBe 2
     }
 
-    // Scenario: Sin repaso adelantado las nuevas completan la tanda (spec: Número de frases nuevas según el
-    // aprendizaje)
+    // Scenario: Las nuevas completan la tanda si no hay otras frases (spec: Límite de frases nuevas por tanda)
     @Test
-    fun `given three pending and no early review when composing size 10 then seven new complete the batch`() {
-        // Given
-        val progress = pendingPhrases(count = 3, level = 1)
-
+    fun `given three pending and no other phrase when composing size 10 then seven new complete the batch`() {
         // When
-        val ids = composeAtSession20(progress, size = 10).ids()
+        val ids = composeAtSession20(pendingPhrases(count = 3, level = 1), size = 10).ids()
 
         // Then
         ids.size shouldBe 10
         ids.count { it.startsWith("P") } shouldBe 3
         ids.filter { it.startsWith("N") } shouldBe (1..7).map { "N%02d".format(it) }
-    }
-
-    // Scenario: Las nuevas completan la tanda cuando se agota el repaso adelantado (spec: Número de frases
-    // nuevas según el aprendizaje)
-    @Test
-    fun `given three pending and two early when composing size 10 then five new complete the batch`() {
-        // Given
-        val progress = pendingPhrases(count = 3, level = 1) + earlyPhrases(count = 2, level = 2)
-
-        // When
-        val ids = composeAtSession20(progress, size = 10).ids()
-
-        // Then
-        ids.size shouldBe 10
-        ids.count { it.startsWith("P") } shouldBe 3
-        ids.count { it.startsWith("R") } shouldBe 2
-        ids.filter { it.startsWith("N") } shouldBe (1..5).map { "N%02d".format(it) }
-    }
-
-    // Scenario: Aprendizaje saturado no admite nuevas cuando las pendientes llenan la tanda (spec: Número de
-    // frases nuevas según el aprendizaje)
-    @Test
-    fun `given twelve pending with five at level zero when composing with size 10 then there are no new`() {
-        // Given
-        val progress = pendingWith(zeroCount = 5, otherCount = 7)
-        val catalog = catalogOf(progress)
-
-        // When
-        val result = compose(progress = progress, catalog = catalog, size = BatchSize(10), currentSession = 20)
-
-        // Then
-        val ids = result.ids()
-        ids.size shouldBe 10
-        ids.count { it.startsWith("N") } shouldBe 0
-    }
-
-    // Scenario: Aprendizaje con hueco admite nuevas aunque las pendientes llenen la tanda (spec: Número de
-    // frases nuevas según el aprendizaje)
-    @Test
-    fun `given twelve pending with two at level zero when composing with size 10 then there are 3 new and 7 pending`() {
-        // Given
-        val progress = pendingWith(zeroCount = 2, otherCount = 10)
-        val catalog = catalogOf(progress)
-
-        // When
-        val result = compose(progress = progress, catalog = catalog, size = BatchSize(10), currentSession = 20)
-
-        // Then
-        val ids = result.ids()
-        ids.count { it.startsWith("N") } shouldBe 3
-        ids.count { it.startsWith("N").not() } shouldBe 7
-    }
-
-    // Scenario: Aprendizaje consolidado admite el máximo de nuevas (spec: Número de frases nuevas según el
-    // aprendizaje)
-    @Test
-    fun `given twelve consolidated pending when composing with size 10 then there are 4 new and 6 pending`() {
-        // Given
-        val progress = pendingWith(zeroCount = 0, otherCount = 12)
-        val catalog = catalogOf(progress)
-
-        // When
-        val result = compose(progress = progress, catalog = catalog, size = BatchSize(10), currentSession = 20)
-
-        // Then
-        val ids = result.ids()
-        ids.count { it.startsWith("N") } shouldBe 4
-        ids.count { it.startsWith("N").not() } shouldBe 6
-    }
-
-    // Scenario: Cálculo de los límites con un N no divisible exactamente (spec: Número de frases nuevas según
-    // el aprendizaje)
-    @Test
-    fun `given size 17 and no pending when composing then there are 8 new and 9 early`() {
-        // Given
-        val progress = earlyPhrases(count = 20, level = 2)
-
-        // When
-        val ids = composeAtSession20(progress, size = 17).ids()
-
-        // Then
-        ids.count { it.startsWith("N") } shouldBe 8
-        ids.count { it.startsWith("R") } shouldBe 9
-    }
-
-    // Scenario: Con pendientes y N igual a 17 el techo es el 40 % (spec: Número de frases nuevas según el
-    // aprendizaje)
-    @Test
-    fun `given size 17 and one pending when composing then there are 6 new, 1 pending and 10 early`() {
-        // Given
-        val progress = pendingPhrases(count = 1, level = 2) + earlyPhrases(count = 20, level = 3)
-
-        // When
-        val ids = composeAtSession20(progress, size = 17).ids()
-
-        // Then
-        ids.count { it.startsWith("N") } shouldBe 6
-        ids.count { it.startsWith("P") } shouldBe 1
-        ids.count { it.startsWith("R") } shouldBe 10
     }
 
     // Scenario: Dos nuevas en una tanda de diez (spec: Reparto de las nuevas en la tanda)
@@ -635,10 +597,222 @@ class ComposeNextBatchTest {
         }
     }
 
-    /** Pending phrases due at session 20: Z-ids at level 0 first, then U-ids at level 1. */
-    private fun pendingWith(zeroCount: Int, otherCount: Int): List<PhraseProgress> =
-        (1..zeroCount).map { aPhraseProgress(id = "Z%02d".format(it), level = Level(0), dueAtSession = 20) } +
-            (1..otherCount).map { aPhraseProgress(id = "U%02d".format(it), level = Level(1), dueAtSession = 20) }
+    // Scenario: Una fallada en la sesión anterior entra la primera (spec: Composición de la tanda por tramos)
+    @Test
+    fun `given a phrase missed in the previous session when composing then it goes first despite its priority`() {
+        // Given
+        val missed = aPhraseProgress(id = "F", level = Level(2), dueAtSession = 20).answeredAt(19, missed = true)
+        val pending = group("P", count = 12, level = 0, dueAtSession = 20).map { it.answeredAt(17) }
+
+        // When
+        val result = composeAtSession20(pending + missed, size = 10)
+
+        // Then
+        result.ids() shouldBe listOf("F") + ids("P", 1..9)
+    }
+
+    // Scenario: Una fallada que no cupo vuelve en la sesión siguiente (spec: Composición de la tanda por tramos)
+    @Test
+    fun `given a phrase missed two sessions ago when composing then it takes the first position`() {
+        // Given
+        val missed = aPhraseProgress(id = "F", level = Level(2), dueAtSession = 20).answeredAt(19, missed = true)
+        val pending = group("P", count = 10, level = 0, dueAtSession = 21).map { it.answeredAt(17) }
+
+        // When
+        val result = composeWithoutNew(pending + missed, currentSession = 21)
+
+        // Then
+        result.ids().first() shouldBe "F"
+    }
+
+    // Scenario: Las falladas repetidas no superan el máximo de repetidas (spec: Composición de la tanda por tramos)
+    @Test
+    fun `given six missed repeated phrases when composing size 10 then only four of them enter`() {
+        // Given
+        val missed = group("F", count = 6, level = 0, dueAtSession = 20).map { it.answeredAt(19, missed = true) }
+        val pending = group("P", count = 6, level = 0, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(missed + pending)
+
+        // Then
+        result.ids() shouldBe ids("F", 1..4) + ids("P", 1..6)
+    }
+
+    // Scenario: Se completan las repetidas hasta el mínimo (spec: Composición de la tanda por tramos)
+    @Test
+    fun `given repeated phrases not yet due when composing size 10 then three of them enter before the pending`() {
+        // Given
+        val repeated = group("R", count = 5, level = 1, dueAtSession = 21).map { it.answeredAt(19) }
+        val pending = group("P", count = 10, level = 1, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(repeated + pending)
+
+        // Then
+        result.ids() shouldBe ids("R", 1..3) + ids("P", 1..7)
+    }
+
+    // Scenario: Las pendientes repetidas no superan el máximo de repetidas (spec: Composición de la tanda por
+    // tramos)
+    @Test
+    fun `given eight repeated pending when composing size 10 then four enter and early review fills the batch`() {
+        // Given
+        val repeated = group("R", count = 8, level = 0, dueAtSession = 20).map { it.answeredAt(19) }
+        val pending = group("P", count = 2, level = 0, dueAtSession = 20).map { it.answeredAt(15) }
+        val early = group("Q", count = 5, level = 1, dueAtSession = 22).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(repeated + pending + early)
+
+        // Then
+        result.ids() shouldBe ids("R", 1..4) + ids("P", 1..2) + ids("Q", 1..4)
+    }
+
+    // Scenario: El máximo de repetidas se supera solo para llenar la tanda (spec: Composición de la tanda por tramos)
+    @Test
+    fun `given almost only repeated phrases when composing size 10 then the maximum is exceeded to fill it`() {
+        // Given
+        val repeated = group("R", count = 9, level = 0, dueAtSession = 20).map { it.answeredAt(19) }
+        val pending = group("P", count = 1, level = 0, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(repeated + pending)
+
+        // Then
+        result.ids() shouldBe ids("R", 1..4) + "P1" + ids("R", 5..9)
+    }
+
+    // Scenario: Una fallada en la sesión actual vuelve al recomponer (spec: Frases repetidas y falladas por volver)
+    @Test
+    fun `given a phrase missed in the current session when recomposing then it takes the first position`() {
+        // Given
+        val missed = aPhraseProgress(id = "F", level = Level(2), dueAtSession = 21).answeredAt(20, missed = true)
+        val pending = group("P", count = 10, level = 0, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(pending + missed)
+
+        // Then
+        result.ids().first() shouldBe "F"
+    }
+
+    // Scenario: Una fallada hace tres sesiones no tiene preferencia (spec: Frases repetidas y falladas por volver)
+    @Test
+    fun `given a phrase missed three sessions ago when composing then it has no preference`() {
+        // Given
+        val missed = aPhraseProgress(id = "F", level = Level(3), dueAtSession = 18).answeredAt(17, missed = true)
+        val pending = group("P", count = 10, level = 0, dueAtSession = 20).map { it.answeredAt(16) }
+
+        // When
+        val result = composeWithoutNew(pending + missed)
+
+        // Then
+        result.ids() shouldBe ids("P", 1..10)
+    }
+
+    // Scenario: Una fallada que ya se respondió después no tiene preferencia (spec: Frases repetidas y falladas por
+    // volver)
+    @Test
+    fun `given a missed phrase answered correctly afterwards when composing then it has no preference`() {
+        // Given
+        val recovered = aPhraseProgress(id = "F", level = Level(3), dueAtSession = 21)
+            .copy(answerHistory = anAnswerHistory(18, lastMissSession = 17))
+        val pending = group("P", count = 10, level = 0, dueAtSession = 20).map { it.answeredAt(16) }
+
+        // When
+        val result = composeWithoutNew(pending + recovered)
+
+        // Then
+        result.ids() shouldBe ids("P", 1..10)
+    }
+
+    // Scenario: Una frase con seis sesiones seguidas descansa (spec: Frases en descanso)
+    @Test
+    fun `given a phrase answered six sessions in a row when composing then it does not enter`() {
+        // Given
+        val resting = aPhraseProgress(id = "D", level = Level(0), dueAtSession = 20)
+            .answeredAt(19, missed = true, consecutive = 6)
+        val pending = group("P", count = 10, level = 0, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(listOf(resting) + pending)
+
+        // Then
+        result.ids() shouldBe ids("P", 1..10)
+    }
+
+    // Scenario: Una frase con cinco sesiones seguidas puede entrar (spec: Frases en descanso)
+    @Test
+    fun `given a phrase answered five sessions in a row when composing then it enters`() {
+        // Given
+        val phrase = aPhraseProgress(id = "D", level = Level(0), dueAtSession = 20).answeredAt(19, consecutive = 5)
+        val pending = group("P", count = 10, level = 0, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(pending + phrase)
+
+        // Then
+        result.ids().contains("D") shouldBe true
+    }
+
+    // Scenario: Una frase en descanso vuelve tras una sesión sin responderla (spec: Frases en descanso)
+    @Test
+    fun `given a resting phrase not answered in the previous session when composing then it enters`() {
+        // Given
+        val phrase = aPhraseProgress(id = "D", level = Level(0), dueAtSession = 20).answeredAt(19, consecutive = 6)
+
+        // When
+        val result = composeWithoutNew(listOf(phrase), currentSession = 21)
+
+        // Then
+        result.ids() shouldBe listOf("D")
+    }
+
+    // Scenario: Las nuevas entran antes que una frase en descanso (spec: Frases en descanso)
+    @Test
+    fun `given a resting phrase and many new when composing size 10 then the new ones enter instead`() {
+        // Given
+        val resting = aPhraseProgress(id = "D", level = Level(0), dueAtSession = 20).answeredAt(19, consecutive = 6)
+        val pending = group("P", count = 3, level = 1, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeAtSession20(listOf(resting) + pending, size = 10)
+
+        // Then
+        result.ids().toSet() shouldBe (ids("P", 1..3) + (1..7).map { "N%02d".format(it) }).toSet()
+    }
+
+    // Scenario: Una frase en descanso entra si no hay otra para llenar la tanda (spec: Frases en descanso)
+    @Test
+    fun `given nothing else to fill the batch when composing then the resting phrase enters last`() {
+        // Given
+        val resting = aPhraseProgress(id = "D", level = Level(0), dueAtSession = 20).answeredAt(19, consecutive = 6)
+        val pending = group("P", count = 3, level = 1, dueAtSession = 20).map { it.answeredAt(15) }
+
+        // When
+        val result = composeWithoutNew(listOf(resting) + pending)
+
+        // Then
+        result.ids() shouldBe ids("P", 1..3) + "D"
+    }
+
+    private fun ids(prefix: String, range: IntRange): List<String> = range.map { "$prefix$it" }
+
+    private fun group(prefix: String, count: Int, level: Int, dueAtSession: Int): List<PhraseProgress> =
+        ids(prefix, 1..count).map { aPhraseProgress(id = it, level = Level(level), dueAtSession = dueAtSession) }
+
+    private fun PhraseProgress.answeredAt(session: Int, missed: Boolean = false, consecutive: Int = 1): PhraseProgress =
+        copy(answerHistory = anAnswerHistory(session, consecutive, session.takeIf { missed }))
+
+    /** Composes size 10 with a catalog holding only the progress phrases, in their order. */
+    private fun composeWithoutNew(progress: List<PhraseProgress>, currentSession: Int = 20): BatchComposition =
+        compose(
+            progress = progress,
+            catalog = progress.map { aCatalogPhrase(id = it.id.value) },
+            size = BatchSize(10),
+            currentSession = currentSession,
+        )
 
     /** Pending phrases P1..Pn, all due at session 20. */
     private fun pendingPhrases(count: Int, level: Int): List<PhraseProgress> =
