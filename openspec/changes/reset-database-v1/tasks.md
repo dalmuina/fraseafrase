@@ -28,9 +28,9 @@
 
 ## 2. Documentación (sesión principal)
 
-- [ ] 2.1 Aceptar ADR-0030: cambiar su estado a `Aceptado` en el ADR y en `docs/adr/README.md`. Verificar que el índice
+- [x] 2.1 Aceptar ADR-0030: cambiar su estado a `Aceptado` en el ADR y en `docs/adr/README.md`. Verificar que el índice
   y el ADR dicen lo mismo.
-- [ ] 2.2 `CLAUDE.md`: añadir "Migraciones de Room: ADR-0030" a la regla de oro 4 y, en "No hacer", una entrada:
+- [x] 2.2 `CLAUDE.md`: añadir "Migraciones de Room: ADR-0030" a la regla de oro 4 y, en "No hacer", una entrada:
   no volver a añadir `fallbackToDestructiveMigration()` a `practice.db`; cada subida de versión lleva su migración y
   su test (ADR-0030). Verificar que las referencias apuntan a ficheros que existen.
 

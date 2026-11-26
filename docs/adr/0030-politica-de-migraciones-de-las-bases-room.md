@@ -1,6 +1,6 @@
 # ADR-0030: Política de migraciones de las bases Room
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-26
 
 ## Contexto
