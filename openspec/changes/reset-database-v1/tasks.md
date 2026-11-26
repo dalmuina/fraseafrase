@@ -6,25 +6,25 @@
 > (design D2, "Tests"). La red de seguridad son los tests de Room que ya existen, más la comprobación del
 > `identityHash` de la tarea 1.4.
 
-- [ ] 1.1 Borrar `core/data/src/test/kotlin/com/dalmuina/fraseafrase/core/data/practice/PracticeMigrationTest.kt`.
+- [x] 1.1 Borrar `core/data/src/test/kotlin/com/dalmuina/fraseafrase/core/data/practice/PracticeMigrationTest.kt`.
   Cubría el escenario eliminado "Una base anterior se abre vacía" (`specs/practice-persistence/spec.md`, REMOVED).
   Ajustar el comentario de `RoomPracticeDataSourceReadTest.kt:129` para que no cite el fallback como precedente
   (design D5). Verificar con Grep que ningún test cita ya "Una base anterior se abre vacía" ni
   `fallbackToDestructiveMigration`.
-- [ ] 1.2 `PracticeDatabase`: `version = 1` y KDoc reescrito según design D5 (ADR-0030, que retoma la versión inicial 1
+- [x] 1.2 `PracticeDatabase`: `version = 1` y KDoc reescrito según design D5 (ADR-0030, que retoma la versión inicial 1
   del ADR-0013, ya sustituido; versión 1 = 1.0.0). `PracticeSchema.createPracticeDatabase`: quitar
   `.fallbackToDestructiveMigration()` y su comentario, y citar el ADR-0030 (design D2). Ajustar el KDoc de
   `PracticeSchema.kt:15-17` para que no cite "`PracticeDatabase` v4" (design D5). Verificar con Grep que `core/data/src/main/**/practice/` no contiene
   `fallbackToDestructiveMigration`.
-- [ ] 1.3 `CatalogDatabase`: `version = 1`. `CatalogSchema.createCatalogDatabase`: conservar
+- [x] 1.3 `CatalogDatabase`: `version = 1`. `CatalogSchema.createCatalogDatabase`: conservar
   `.fallbackToDestructiveMigration()` y cambiar su comentario a la justificación de caché sembrada desde assets
   (ADR-0028, ADR-0030; design D3). Verificar leyendo el diff.
-- [ ] 1.4 Los `identityHash` de referencia son `f083de87fdfc91362f55b8e4eeb10200` (catálogo, `4.json`) y
+- [x] 1.4 Los `identityHash` de referencia son `f083de87fdfc91362f55b8e4eeb10200` (catálogo, `4.json`) y
   `97f06cba0448b30e84a80bbbc1289a6a` (práctica, `5.json`). Borrar todos los `*.json` de `core/data/schemas/com.dalmuina.fraseafrase.core.data.catalog.CatalogDatabase/` y de
   `core/data/schemas/com.dalmuina.fraseafrase.core.data.practice.PracticeDatabase/`, y compilar `:core:data` para
   regenerarlos (design D1). Verificar que cada carpeta tiene solo `1.json`, con `"version": 1`, y que su
   `identityHash` coincide con el de referencia.
-- [ ] 1.5 `./gradlew :core:data:check` en verde.
+- [x] 1.5 `./gradlew :core:data:check` en verde.
 
 ## 2. Documentación (sesión principal)
 

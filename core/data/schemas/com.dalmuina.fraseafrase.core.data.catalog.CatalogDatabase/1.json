@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9655027616d756172988e9e7d755fa2d",
+    "identityHash": "f083de87fdfc91362f55b8e4eeb10200",
     "entities": [
       {
         "tableName": "catalog_phrase",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `target_locale` TEXT NOT NULL, `source_locale` TEXT NOT NULL, `position` INTEGER NOT NULL, `level` TEXT NOT NULL, `topic` TEXT NOT NULL, `target` TEXT NOT NULL, `source` TEXT NOT NULL, PRIMARY KEY(`id`, `target_locale`, `source_locale`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `target_locale` TEXT NOT NULL, `position` INTEGER NOT NULL, `level` TEXT NOT NULL, `topic` TEXT NOT NULL, `target` TEXT NOT NULL, PRIMARY KEY(`id`, `target_locale`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -17,12 +17,6 @@
           {
             "fieldPath": "targetLocale",
             "columnName": "target_locale",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sourceLocale",
-            "columnName": "source_locale",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -49,26 +43,19 @@
             "columnName": "target",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "source",
-            "columnName": "source",
-            "affinity": "TEXT",
-            "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
             "id",
-            "target_locale",
-            "source_locale"
+            "target_locale"
           ]
         }
       },
       {
         "tableName": "catalog_seed_version",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`target_locale` TEXT NOT NULL, `schema_version` INTEGER NOT NULL, PRIMARY KEY(`target_locale`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`target_locale` TEXT NOT NULL, `content_hash` TEXT NOT NULL, PRIMARY KEY(`target_locale`))",
         "fields": [
           {
             "fieldPath": "targetLocale",
@@ -77,9 +64,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "schemaVersion",
-            "columnName": "schema_version",
-            "affinity": "INTEGER",
+            "fieldPath": "contentHash",
+            "columnName": "content_hash",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -93,7 +80,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9655027616d756172988e9e7d755fa2d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f083de87fdfc91362f55b8e4eeb10200')"
     ]
   }
 }
