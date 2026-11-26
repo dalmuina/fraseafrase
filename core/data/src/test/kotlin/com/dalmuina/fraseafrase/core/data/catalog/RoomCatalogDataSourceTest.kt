@@ -192,6 +192,36 @@ class RoomCatalogDataSourceTest {
         practice.close()
     }
 
+    // Scenario: Primer arranque tras restaurar (spec: data-backup)
+    @Test
+    fun `given saved progress and no catalog when reading phrases then the catalog is seeded and progress is kept`() =
+        runTest {
+            // Given: base de catálogo vacía y progreso restaurado en la base de práctica
+            val catalog = inMemoryCatalogDatabase()
+            val practice = inMemoryPracticeDatabase()
+            val progress = PhraseProgressEntity(
+                phraseId = "0000-a1-saludos-001",
+                targetLocale = "pt-PT",
+                level = 2,
+                streak = 1,
+                answeredInBatch = false,
+                dueAtSession = 0,
+                batchPosition = null,
+            )
+            practice.phraseProgressDao().insert(progress)
+
+            // When
+            val result = source(catalog) {
+                listOf(phraseDocument(), phraseDocument(targetLocale = "es-ES", target = "Buenos días"))
+            }.phrases(ptPt, esEs)
+
+            // Then
+            result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+            result.phrases.map { it.target } shouldBe listOf("Bom dia")
+            practice.phraseProgressDao().all("pt-PT") shouldBe listOf(progress)
+            practice.close()
+        }
+
     // Scenario: Dos idiomas conviven de forma independiente (spec: phrase-catalog)
     @Test
     fun `given two language documents when seeding then both are available independently`() = runTest {
