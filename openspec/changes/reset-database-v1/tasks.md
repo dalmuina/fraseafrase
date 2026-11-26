@@ -36,7 +36,7 @@
 
 ## 3. Verificación (sesión principal)
 
-- [ ] 3.1 `./gradlew check` y `./gradlew koverVerify` en verde.
+- [x] 3.1 `./gradlew check` y `./gradlew koverVerify` en verde.
 
 ## Workflow follow-up
 
