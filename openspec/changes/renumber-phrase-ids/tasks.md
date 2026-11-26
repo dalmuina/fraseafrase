@@ -68,7 +68,7 @@ su verde, del renombrado.
 
 ## 6. Verificación (sesión principal)
 
-- [ ] 6.1 `./gradlew check` y `./gradlew koverVerify` en verde.
+- [x] 6.1 `./gradlew check` y `./gradlew koverVerify` en verde.
 
 ## Workflow follow-up
 
