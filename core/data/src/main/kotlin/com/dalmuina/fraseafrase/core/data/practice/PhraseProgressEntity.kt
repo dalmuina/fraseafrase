@@ -10,7 +10,8 @@ import androidx.room3.Index
  * tanda activa duerme en el progreso hasta su [dueAtSession]. La PK es `(phrase_id, target_locale)`: la misma frase
  * tiene progreso distinto en cada idioma destino. El UNIQUE de la posición es un índice de Room sobre
  * `(target_locale, batch_position)`: la misma posición es válida en idiomas destino distintos; el resto de
- * invariantes se aplican con triggers en [PracticeSchema].
+ * invariantes se aplican con triggers en [PracticeSchema]. Las tres últimas columnas guardan el registro de respuestas
+ * (ADR-0027); sin sesión respondida valen `NULL`, `0` y `NULL`.
  */
 @Entity(
     tableName = "phrase_progress",
@@ -32,4 +33,10 @@ data class PhraseProgressEntity(
     val dueAtSession: Int,
     @ColumnInfo(name = "batch_position")
     val batchPosition: Int?,
+    @ColumnInfo(name = "last_answered_session")
+    val lastAnsweredSession: Int? = null,
+    @ColumnInfo(name = "consecutive_sessions")
+    val consecutiveSessions: Int = 0,
+    @ColumnInfo(name = "last_miss_session")
+    val lastMissSession: Int? = null,
 )

@@ -73,15 +73,15 @@ Ficheros: `practice/PhraseProgressEntity.kt`, `practice/PracticeMapping.kt`, `pr
 `schemas/com.dalmuina.fraseafrase.core.data.practice.PracticeDatabase/5.json` (generado) / `PracticeRestartTest.kt`,
 `RoomPracticeDataSourceReadTest.kt`, `PracticeMigrationTest.kt`. Design D4.
 
-- [ ] 3.1 Test rojo en `PracticeRestartTest`: "El registro de respuestas sobrevive al reinicio" (una frase con
+- [x] 3.1 Test rojo en `PracticeRestartTest`: "El registro de respuestas sobrevive al reinicio" (una frase con
   registro y otra sin él). Verificación: falla porque el registro no se persiste.
-- [ ] 3.2 Test rojo en `RoomPracticeDataSourceReadTest`: una fila con `consecutive_sessions` mayor que 0, u otra con
+- [x] 3.2 Test rojo en `RoomPracticeDataSourceReadTest`: una fila con `consecutive_sessions` mayor que 0, u otra con
   `last_miss_session`, sin `last_answered_session` se rechaza al leerla. Verificación: falla porque las columnas no
   existen.
-- [ ] 3.3 Test rojo en `PracticeMigrationTest`: "Una base anterior se abre vacía" (v4 con una fila de `pt-PT`,
+- [x] 3.3 Test rojo en `PracticeMigrationTest`: "Una base anterior se abre vacía" (v4 con una fila de `pt-PT`,
   `identity_hash` de `4.json`, `PRAGMA user_version = 4`). Verificación: falla porque las columnas nuevas no
   existen.
-- [ ] 3.4 Implementar las tres columnas con valores por defecto en `PhraseProgressEntity`, el mapeo en ambos
+- [x] 3.4 Implementar las tres columnas con valores por defecto en `PhraseProgressEntity`, el mapeo en ambos
   sentidos en `PracticeMapping`, `PracticeDatabase.version = 5` con el KDoc del precedente, y commitear `5.json`
   generado por la build. Verificación: 3.1–3.3 pasan y `./gradlew :core:data:check` en verde.
 
