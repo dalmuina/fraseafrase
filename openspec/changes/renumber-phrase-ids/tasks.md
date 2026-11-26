@@ -27,18 +27,18 @@ Sin `tdd-implementer`. No se leen los assets enteros. Diseño: D2, D3 y D4. El s
 Nota: el grupo incluye los dos tests del contrato sobre los assets reales, porque su rojo depende de los ids antiguos y
 su verde, del renombrado.
 
-- [ ] 2.1 Generar con un script `core/data/src/test/resources/catalog/topics.txt`, con los temas distintos de
+- [x] 2.1 Generar con un script `core/data/src/test/resources/catalog/topics.txt`, con los temas distintos de
   `phrases-pt-PT.json` en orden alfabético, y crear `blocks.txt` con `0000`. Verificar que `topics.txt` tiene 114
   líneas y que los temas de los otros 6 assets son los mismos.
-- [ ] 2.2 En `RealCatalogContractTest`, añadir dos tests parametrizados por los 7 idiomas. El primero aplica
+- [x] 2.2 En `RealCatalogContractTest`, añadir dos tests parametrizados por los 7 idiomas. El primero aplica
   `idFormatViolations` con los dos registros y el segundo, `birthLabelMismatches` con `released-ids-<locale>.txt`.
   Actualizar el comentario de cabecera de la clase para que cite también ADR-0029. Comprobar que el primero falla
   con `MALFORMED` en los ids antiguos. (Scenarios: Los documentos empaquetados cumplen
   el formato; Las frases empaquetadas no publicadas coinciden con su id)
-- [ ] 2.3 Renombrar los ids de los 7 assets con el script de D3, que antepone `0000-` y exige 1000 sustituciones por
+- [x] 2.3 Renombrar los ids de los 7 assets con el script de D3, que antepone `0000-` y exige 1000 sustituciones por
   fichero. Verificar que `git diff --stat` muestra 1000 líneas cambiadas por asset y que un Grep de
   `"id": "[abc][12]-` sobre los assets no devuelve nada.
-- [ ] 2.4 Cambiar los 2 ids de `released-ids-pt-PT.txt` a `0000-a1-saludos-001` y `0000-a1-comida-001`. Verificar que
+- [x] 2.4 Cambiar los 2 ids de `released-ids-pt-PT.txt` a `0000-a1-saludos-001` y `0000-a1-comida-001`. Verificar que
   todo `RealCatalogContractTest` pasa (formato, etiqueta, paralelismo y prefijo publicado) con
   `./gradlew :core:data:check`.
 
