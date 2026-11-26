@@ -12,7 +12,7 @@ import javax.inject.Inject
 /**
  * Recompone la tanda activa al cambiar los ajustes de práctica (nivel CEFR y/o tamaño N) (ADR-0019, ADR-0026):
  * vacía la tanda activa sin resolución (sin certificar ni cambiar racha, nivel de consolidación ni `dueAtSession`
- * de ninguna frase) y compone de inmediato la tanda siguiente por cuotas con [cefrLevel] y [batchSize] recién
+ * de ninguna frase) y compone de inmediato la tanda siguiente con [cefrLevel] y [batchSize] recién
  * guardados, sin incrementar el contador de sesiones generadas. Sin tanda activa, compone directamente con los
  * nuevos valores.
  *

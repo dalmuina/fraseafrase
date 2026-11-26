@@ -1,7 +1,8 @@
 package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 
 /**
- * Racha de aciertos consecutivos de una frase dentro de la tanda (ADR-0012).
+ * Racha de una frase: aciertos acumulados hacia el siguiente nivel. Persiste entre tandas y un fallo le
+ * resta uno (ADR-0017, ADR-0024).
  */
 @JvmInline
 value class Streak(val value: Int) {

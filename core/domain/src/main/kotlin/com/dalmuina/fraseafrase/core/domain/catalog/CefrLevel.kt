@@ -1,7 +1,7 @@
 package com.dalmuina.fraseafrase.core.domain.catalog
 
 /**
- * Nivel CEFR de una frase del catálogo y nivel elegido por el usuario para las frases nuevas (ADR-0012).
+ * Nivel CEFR de una frase del catálogo y nivel elegido por el usuario para componer la tanda (ADR-0021).
  * No se llama `Level` porque ese nombre ya designa el nivel de consolidación 0–5 de `spacedrepetition`.
  */
 enum class CefrLevel {

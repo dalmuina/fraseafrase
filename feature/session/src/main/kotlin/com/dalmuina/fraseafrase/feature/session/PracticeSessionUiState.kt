@@ -18,7 +18,7 @@ sealed interface PracticeSessionUiState {
      * mientras es `true`, la pantalla muestra el mensaje de tanda completada en vez de [current] (design D7 de
      * `replace-batch-closure-with-session-generation`). [index] es la posición (1-based) de [current] dentro de la
      * vuelta actual a la tanda; [total] es su tamaño (design D1 de `add-practice-batch-indicator`).
-     * [remainingHitsForNextLevel] es cuántos aciertos consecutivos le faltan a [current] para la insignia
+     * [remainingHitsForNextLevel] es cuántos aciertos le faltan a [current] para la insignia
      * [nextLevelBadgeLabel] (spec: practice-session, "Aciertos para el próximo nivel visibles"). [badgeChange] es
      * el cambio de insignia a animar tras la última autoevaluación, o `null` si no hubo cambio de nivel visible
      * o ya se consumió (spec: add-level-change-animation, design D2). [canRevertLastAnswer] indica si hay una

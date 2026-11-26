@@ -8,8 +8,8 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.ComposeNextBatch
 import javax.inject.Inject
 
 /**
- * Genera la sesión siguiente en un único paso (ADR-0012, ADR-0017, design D4 de `repeat-by-session-counter`):
- * incrementa el contador de sesiones generadas y compone inmediatamente la tanda siguiente por cuotas, a
+ * Genera la sesión siguiente en un único paso (ADR-0017, ADR-0026, design D4 de `repeat-by-session-counter`):
+ * incrementa el contador de sesiones generadas y compone inmediatamente la tanda siguiente, a
  * partir del progreso ya resuelto (cada frase se resuelve al instante de su propia autoevaluación). No recibe
  * ningún aviso previo: al no haber expectativa que comprobar, no hay resultado de tipo "obsoleto". Sin tanda
  * activa, compone directamente.

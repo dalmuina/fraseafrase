@@ -26,7 +26,7 @@ sealed interface PracticeSessionResult {
         val batchOutcome: BatchOutcome,
     ) : PracticeSessionResult
 
-    /** No hay arrastradas, pendientes ni frases nuevas: no hay nada que practicar (ADR-0012). */
+    /** El nivel CEFR elegido no tiene frases en el catálogo: no hay nada que practicar (ADR-0026). */
     data object NothingToPractice : PracticeSessionResult
 
     /**

@@ -275,13 +275,13 @@ private fun PracticeSessionUiState.Practicing?.nextIndex(): Int = when {
 private fun PracticeSessionUiState.Practicing.isAnswerable(): Boolean =
     revealed && !busy && !completed
 
-/** Aciertos consecutivos que le faltan a la frase para certificar la racha de la tanda (spec: practice-session). */
+/** Aciertos de racha necesarios para certificar una frase (spec: practice-session). */
 private const val HITS_TO_CERTIFY = 3
 
 /** Nivel de consolidación máximo (spec: practice-session, ADR-0012/ADR-0015). */
 private const val MAX_CONSOLIDATION_LEVEL = 5
 
-/** Cuántos aciertos consecutivos le faltan a esta frase para la insignia del siguiente nivel. */
+/** Cuántos aciertos le faltan a esta frase para la insignia del siguiente nivel. */
 private fun PracticeItem.remainingHitsForNextLevel(): Int = (HITS_TO_CERTIFY - streak.value).coerceAtLeast(0)
 
 /** Nombre de la insignia del siguiente nivel de consolidación de esta frase (ADR-0010: UI usa `Int`, no `Level`). */

@@ -12,7 +12,7 @@ sealed interface ActiveBatchResult {
     /** No había tanda activa y se compuso y guardó una nueva. */
     data class Created(val batch: PracticeBatch) : ActiveBatchResult
 
-    /** No hay arrastradas, pendientes ni frases nuevas: no se crea tanda (ADR-0012). */
+    /** No hay tanda ni nada con que componerla: el nivel CEFR elegido no tiene frases (ADR-0026). */
     data object NothingAvailable : ActiveBatchResult
 
     /** El catálogo no se puede cargar, así que no se puede componer ninguna tanda. */
