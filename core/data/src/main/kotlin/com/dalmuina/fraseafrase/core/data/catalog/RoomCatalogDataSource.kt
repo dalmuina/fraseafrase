@@ -12,14 +12,16 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Catálogo sembrado en [CatalogDatabase] desde los documentos JSON empaquetados (ADR-0019, ADR-0023). Es la única
- * fuente del catálogo, así que implementa el puerto directamente. El sembrado ocurre una vez por instancia, antes
- * de servir cualquier consulta; un documento cuyo contenido no se pudo validar simplemente no siembra nada y no
- * bloquea el sembrado de los demás. El texto de origen sale de un self-JOIN entre idiomas.
+ * Catálogo sembrado en [CatalogDatabase] desde los documentos JSON empaquetados (ADR-0023, ADR-0028). Es la única
+ * fuente del catálogo, así que implementa el puerto directamente. El sembrado se comprueba una vez por instancia,
+ * antes de servir cualquier consulta, y solo reescribe los idiomas cuyo documento cambió desde la última siembra; un
+ * documento cuyo contenido no se pudo validar no siembra nada, conserva lo ya sembrado y no bloquea a los demás. El
+ * texto de origen sale de un self-JOIN entre idiomas.
  *
  * Es `@Singleton` por el mismo motivo que la antigua fuente de assets: una única siembra por proceso.
  */
@@ -66,25 +68,30 @@ class RoomCatalogDataSource internal constructor(
         }
     }
 
-    /** Un documento sin cabecera válida o que no valida por completo no siembra nada: no bloquea a los demás. */
+    /**
+     * Siembra el documento si su huella difiere de la guardada. Un documento sin cabecera válida o que no valida por
+     * completo no siembra nada: no bloquea a los demás y se vuelve a intentar en el siguiente arranque.
+     */
     private suspend fun seedDocument(text: String) {
         val header = CatalogJson.headerOf(text) ?: return
-        val existing = database.catalogDao().seedVersionFor(header.targetLocale)
-        val parsed = CatalogJson.parsePhrases(text).takeIf { existing?.schemaVersion != header.schemaVersion }
-        if (parsed is CatalogParseResult.PhrasesParsed) replaceLanguage(header, parsed)
+        val contentHash = sha256Of(text)
+        if (database.catalogDao().seedVersionFor(header.targetLocale)?.contentHash == contentHash) return
+        val parsed = CatalogJson.parsePhrases(text)
+        if (parsed is CatalogParseResult.PhrasesParsed) replaceLanguage(header.targetLocale, contentHash, parsed)
     }
 
-    private suspend fun replaceLanguage(header: CatalogHeader, parsed: CatalogParseResult.PhrasesParsed) {
+    private suspend fun replaceLanguage(
+        targetLocale: String,
+        contentHash: String,
+        parsed: CatalogParseResult.PhrasesParsed,
+    ) {
         val entities = parsed.phrases.mapIndexed { position, phrase -> phrase.toEntity(position) }
         database.useWriterConnection { transactor ->
             transactor.immediateTransaction {
-                database.catalogDao().deletePhrasesForTargetLocale(header.targetLocale)
+                database.catalogDao().deletePhrasesForTargetLocale(targetLocale)
                 database.catalogDao().insertPhrases(entities)
                 database.catalogDao().upsertSeedVersion(
-                    CatalogSeedVersionEntity(
-                        targetLocale = header.targetLocale,
-                        schemaVersion = header.schemaVersion,
-                    ),
+                    CatalogSeedVersionEntity(targetLocale = targetLocale, contentHash = contentHash),
                 )
             }
         }
@@ -92,6 +99,14 @@ class RoomCatalogDataSource internal constructor(
 
     private companion object {
         const val ASSETS_DIR = "catalog"
+        const val HASH_ALGORITHM = "SHA-256"
+        const val HEX_RADIX = 16
+
+        /** Huella en hexadecimal del texto de un documento. */
+        fun sha256Of(text: String): String =
+            MessageDigest.getInstance(HASH_ALGORITHM)
+                .digest(text.toByteArray(Charsets.UTF_8))
+                .joinToString("") { it.toUByte().toString(HEX_RADIX).padStart(2, '0') }
 
         fun readPackagedCatalogDocuments(context: Context): List<String> =
             context.assets.list(ASSETS_DIR).orEmpty()

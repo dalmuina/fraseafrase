@@ -1,5 +1,7 @@
 package com.dalmuina.fraseafrase.core.data.catalog
 
+import com.dalmuina.fraseafrase.core.data.practice.PhraseProgressEntity
+import com.dalmuina.fraseafrase.core.data.practice.inMemoryPracticeDatabase
 import com.dalmuina.fraseafrase.core.domain.catalog.CatalogLoadResult
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -19,16 +21,26 @@ class RoomCatalogDataSourceTest {
     private val itIt = LanguageTag("it-IT")
 
     private fun phraseDocument(
-        schemaVersion: Int = 1,
         targetLocale: String = "pt-PT",
         id: String = "a1-saludos-001",
         target: String = "Bom dia",
     ) = """
         {
-          "schemaVersion": $schemaVersion,
+          "schemaVersion": 1,
           "targetLocale": "$targetLocale",
           "phrases": [
             { "id": "$id", "level": "A1", "topic": "saludos", "target": "$target" }
+          ]
+        }
+    """.trimIndent()
+
+    private fun twoPhraseDocument(targetLocale: String, first: String, second: String) = """
+        {
+          "schemaVersion": 1,
+          "targetLocale": "$targetLocale",
+          "phrases": [
+            { "id": "a1-saludos-001", "level": "A1", "topic": "saludos", "target": "$first" },
+            { "id": "a1-saludos-002", "level": "A1", "topic": "saludos", "target": "$second" }
           ]
         }
     """.trimIndent()
@@ -64,9 +76,58 @@ class RoomCatalogDataSourceTest {
         (itFromEs as CatalogLoadResult.Loaded).phrases.single().target shouldBe "Buongiorno"
     }
 
-    // Scenario: Sin cambio de schemaVersion no se resiembra (spec: phrase-catalog)
+    // Scenario: Una frase añadida llega a una instalación ya sembrada (spec: phrase-catalog)
     @Test
-    fun `given an unchanged schemaVersion when seeding twice then the catalog is not re-seeded`() = runTest {
+    fun `given a seeded catalog when documents add a phrase then both phrases are returned in order`() = runTest {
+        // Given
+        val database = inMemoryCatalogDatabase()
+        source(database) {
+            listOf(
+                phraseDocument(targetLocale = "pt-PT", target = "Bom dia"),
+                phraseDocument(targetLocale = "es-ES", target = "Buenos días"),
+            )
+        }.phrases(ptPt, esEs)
+
+        // When
+        val result = source(database) {
+            listOf(
+                twoPhraseDocument("pt-PT", "Bom dia", "Boa noite"),
+                twoPhraseDocument("es-ES", "Buenos días", "Buenas noches"),
+            )
+        }.phrases(ptPt, esEs)
+
+        // Then
+        result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+        result.phrases.map { it.target to it.source } shouldBe
+            listOf("Bom dia" to "Buenos días", "Boa noite" to "Buenas noches")
+    }
+
+    // Scenario: Un texto corregido sustituye al anterior sin afectar a otros idiomas (spec: phrase-catalog)
+    @Test
+    fun `given a corrected text when seeding again then only that language is re-seeded`() = runTest {
+        // Given: it-IT con filas borradas a mano para detectar si se vuelve a sembrar
+        val database = inMemoryCatalogDatabase()
+        source(database) { threeLanguages() }.phrases(ptPt, esEs)
+        database.catalogDao().deletePhrasesForTargetLocale("it-IT")
+
+        // When
+        val result = source(database) {
+            listOf(
+                phraseDocument(targetLocale = "pt-PT", target = "Bom dia (corrigido)"),
+                phraseDocument(targetLocale = "it-IT", target = "Buongiorno"),
+                phraseDocument(targetLocale = "es-ES", target = "Buenos días"),
+            )
+        }.phrases(ptPt, esEs)
+
+        // Then
+        result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+        result.phrases.single().target shouldBe "Bom dia (corrigido)"
+        database.catalogDao().phrasesFor("it-IT", "es-ES").shouldBeEmpty()
+    }
+
+    // Scenario: Sin cambio de contenido no se vuelve a sembrar (spec: phrase-catalog)
+    @Test
+    fun `given identical documents when seeding twice then the catalog is not re-seeded`() = runTest {
         // Given
         val database = inMemoryCatalogDatabase()
         source(database) { threeLanguages() }.phrases(ptPt, esEs)
@@ -75,33 +136,60 @@ class RoomCatalogDataSourceTest {
         // When
         val result = source(database) { threeLanguages() }.phrases(ptPt, esEs)
 
-        // Then: la segunda instancia ve que el schemaVersion no cambió y no vuelve a insertar las filas borradas
+        // Then: la segunda instancia ve la misma huella y no vuelve a insertar las filas borradas
         result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
         result.phrases.shouldBeEmpty()
     }
 
-    // Scenario: Un cambio de schemaVersion vuelve a sembrar solo el idioma afectado (spec: phrase-catalog)
+    // Scenario: Un documento nuevo inválido conserva lo sembrado (spec: phrase-catalog)
     @Test
-    fun `given a changed schemaVersion when seeding again then only that language is re-seeded`() = runTest {
-        // Given: marca antigua de pt-PT; es-ES con filas borradas pero marca vigente
+    fun `given a seeded language when its new document is invalid then the seeded phrases are kept`() = runTest {
+        // Given
         val database = inMemoryCatalogDatabase()
         source(database) { threeLanguages() }.phrases(ptPt, esEs)
-        database.catalogDao().upsertSeedVersion(CatalogSeedVersionEntity(targetLocale = "pt-PT", schemaVersion = 0))
-        database.catalogDao().deletePhrasesForTargetLocale("es-ES")
+        val invalid = phraseDocument(targetLocale = "pt-PT", target = "Boa tarde")
+            .replace("\"level\": \"A1\"", "\"level\": \"Z9\"")
 
         // When
-        val dataSource = source(database) {
-            listOf(
-                phraseDocument(targetLocale = "pt-PT", target = "Bom dia (actualizado)"),
-                phraseDocument(targetLocale = "es-ES", target = "Buenos días"),
-            )
-        }
-        val result = dataSource.phrases(ptPt, itIt)
+        val result = source(database) { listOf(invalid) }.phrases(ptPt, esEs)
 
-        // Then: pt-PT se resiembra; es-ES no (sigue vacío); it-IT conserva sus filas
+        // Then
         result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
-        result.phrases.single().target shouldBe "Bom dia (actualizado)"
-        database.catalogDao().phrasesFor("pt-PT", "es-ES").shouldBeEmpty()
+        result.phrases.map { it.target } shouldBe listOf("Bom dia")
+    }
+
+    // Scenario: Resembrar un idioma no cambia el progreso guardado (spec: phrase-catalog)
+    @Test
+    fun `given saved progress when re-seeding its language then the progress is unchanged`() = runTest {
+        // Given
+        val catalog = inMemoryCatalogDatabase()
+        val practice = inMemoryPracticeDatabase()
+        source(catalog) { listOf(phraseDocument(), phraseDocument(targetLocale = "es-ES", target = "Buenos días")) }
+            .phrases(ptPt, esEs)
+        val progress = PhraseProgressEntity(
+            phraseId = "a1-saludos-001",
+            targetLocale = "pt-PT",
+            level = 2,
+            streak = 1,
+            answeredInBatch = false,
+            dueAtSession = 0,
+            batchPosition = null,
+        )
+        practice.phraseProgressDao().insert(progress)
+
+        // When
+        val result = source(catalog) {
+            listOf(
+                twoPhraseDocument("pt-PT", "Bom dia", "Boa noite"),
+                twoPhraseDocument("es-ES", "Buenos días", "Buenas noches"),
+            )
+        }.phrases(ptPt, esEs)
+
+        // Then
+        result.shouldBeInstanceOf<CatalogLoadResult.Loaded>()
+        result.phrases.size shouldBe 2
+        practice.phraseProgressDao().all("pt-PT") shouldBe listOf(progress)
+        practice.close()
     }
 
     // Scenario: Dos idiomas conviven de forma independiente (spec: phrase-catalog)
