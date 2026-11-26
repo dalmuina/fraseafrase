@@ -21,7 +21,7 @@ class PracticeMigrationTest {
     lateinit var directory: Path
 
     @Test
-    fun `given a v3 database with data when opening it as v4 then tables are empty with target_locale columns`() =
+    fun `given a v3 database with data when opening it now then tables are empty with target_locale columns`() =
         runTest {
             // Given: una base en fichero con el esquema v3 y una fila de progreso ya guardada
             val path = directory.resolve("practice.db").toString()
@@ -42,13 +42,13 @@ class PracticeMigrationTest {
                         "VALUES(42, 'f5a4dccb2f81d7cf92769abb64d00076')",
                 )
                 // Sin esto, Room ve `user_version = 0` (base nunca inicializada por Room) e intenta un `onCreate`
-                // que choca con las tablas v3 ya existentes, en vez de disparar la migración destructiva 3→4.
+                // que choca con las tablas v3 ya existentes, en vez de disparar la migración destructiva.
                 raw.execSQL("PRAGMA user_version = 3")
             } finally {
                 raw.close()
             }
 
-            // When: se abre la base con el esquema actual (v4), con migración destructiva habilitada
+            // When: se abre la base con el esquema actual, con migración destructiva habilitada
             val database = Room.databaseBuilder<PracticeDatabase>(path) { PracticeDatabase_Impl() }
                 .setDriver(BundledSQLiteDriver())
                 .addCallback(PracticeSchema.callback)

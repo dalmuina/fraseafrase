@@ -94,8 +94,8 @@ tienen sentido para componer.
 ### D4. Persistencia: tres columnas y versión 5 sin `Migration`
 
 `PhraseProgressEntity` (`:core:data`) gana `last_answered_session INTEGER NULL`, `consecutive_sessions INTEGER NOT
-NULL DEFAULT 0` y `last_miss_session INTEGER NULL`, con valores por defecto en Kotlin para no tocar las llamadas
-existentes. `PracticeMapping`:
+NULL` y `last_miss_session INTEGER NULL`, con valores por defecto en Kotlin (0 en `consecutive_sessions`) para no
+tocar las llamadas existentes. `PracticeMapping`:
 
 - `toDomain()`: `last_answered_session` nulo → `answerHistory = null`; si no, `AnswerHistory(...)`. Una fila con
   `consecutive_sessions > 0`, o con `last_miss_session` no nulo, sin sesión respondida lanza

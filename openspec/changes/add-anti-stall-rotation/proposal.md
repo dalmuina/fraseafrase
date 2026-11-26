@@ -19,7 +19,7 @@ pueden garantizar guardando cuándo se respondió y se falló cada frase.
   nivel CEFR sean menos de `N + floor(N/5)`; si no, 0. Sustituye a techo, hueco y `N − pendientes` de ADR-0025.
 - **BREAKING (datos):** `PracticeDatabase` pasa a la versión 5 con tres columnas nuevas en `phrase_progress`, sin
   `Migration`: actúa el `fallbackToDestructiveMigration()` ya configurado y se pierde el progreso guardado.
-- ADR-0027 (Propuesto) sustituye en parte a ADR-0025 y ADR-0026; se acepta al archivar.
+- ADR-0027 sustituye en parte a ADR-0025 y ADR-0026 (aceptado en la tarea 4.1).
 - Se actualizan `openspec/config.yaml` y `.claude/agents/android-architect.md`, que aún remitían a ADR-0012 como
   fuente única del método.
 
