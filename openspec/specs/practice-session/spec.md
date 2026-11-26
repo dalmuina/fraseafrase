@@ -65,8 +65,8 @@ mostrar también, de la tanda que se acaba de completar, el número de frases au
 número autoevaluadas con fallo y el número de frases cuyo nivel de consolidación subió en algún momento
 durante esa tanda, y MUST ofrecer un enlace para ir a la pantalla de Progreso sin generar sesión. Al generar
 sesión, la pantalla MUST mostrar la tanda siguiente, empezando por su primera frase, en el orden en que la
-compone `practice-batch`: pendientes por prioridad, después el repaso adelantado, y nuevas repartidas entre
-ambos (ADR-0025, ADR-0026). Mientras haya una respuesta en curso, pedir generar sesión MUST NOT tener efecto.
+compone `practice-batch`: las no nuevas en el orden de sus tramos y las nuevas repartidas entre ellas
+(ADR-0027). Mientras haya una respuesta en curso, pedir generar sesión MUST NOT tener efecto.
 
 #### Scenario: Tanda completa muestra el mensaje positivo
 
@@ -106,8 +106,8 @@ ambos (ADR-0025, ADR-0026). Mientras haya una respuesta en curso, pedir generar 
 #### Scenario: Generar sesión muestra la tanda siguiente con sus arrastradas primero
 
 > El título es el heredado del requisito que este delta modifica (OpenSpec no permite renombrar un escenario
-> dentro de MODIFIED). El resultado real está en el THEN: con ADR-0025, las pendientes van por prioridad y las
-> nuevas se reparten entre ellas.
+> dentro de MODIFIED). El resultado real está en el THEN: con ADR-0027, A y C entran antes que las nuevas
+> (repetidas, falladas por volver o pendientes); 2 nuevas entran en el límite y 2 más llenan la tanda.
 
 - **GIVEN** el mensaje de tanda completada, con dos frases que serán pendientes en la sesión siguiente, A y
   C, ambas de nivel 0 y con el mismo retraso, A antes que C en el orden de catálogo, un catálogo con 4 frases
@@ -119,7 +119,7 @@ ambos (ADR-0025, ADR-0026). Mientras haya una respuesta en curso, pedir generar 
 #### Scenario: Generar sesión con todas certificadas deja la tanda siguiente sin arrastradas
 
 > El título es el heredado del requisito que este delta modifica: "arrastradas" ya no es un estado posible.
-> Desde ADR-0026 las frases certificadas sin vencer entran como repaso adelantado si falta sitio.
+> Con ADR-0027, A y B entran como repetidas aunque aún no estén pendientes, y N1 y N2 se reparten entre ellas.
 
 - **GIVEN** el mensaje de tanda completada de una tanda de dos frases, A y B, ambas certificadas con un
   enfriamiento que no ha vencido, un catálogo A, B, N1, N2 del nivel elegido, en ese orden, y N igual a 10
