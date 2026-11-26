@@ -1,5 +1,7 @@
 package com.dalmuina.fraseafrase.core.domain.spacedrepetition
 
+import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anAnswerHistory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -180,6 +182,7 @@ class PhraseProgressTest {
         streak = Streak(streak),
         answeredInBatch = true,
         dueAtSession = 11,
+        answerHistory = anAnswerHistory(10, lastMissSession = 10),
     )
 
     // Scenario: Acierto que certifica sube de nivel y entra en enfriamiento (spec: Resolución de la autoevaluación)
@@ -299,7 +302,7 @@ class PhraseProgressTest {
         val updated = progress.record(SelfAssessment.HIT, 12)
 
         // Then
-        updated shouldBe progress.copy(answeredInBatch = true)
+        updated shouldBe progress.copy(answeredInBatch = true, answerHistory = anAnswerHistory(12))
     }
 
     // Scenario: Acierto en repaso adelantado con racha 2 no certifica
@@ -313,7 +316,7 @@ class PhraseProgressTest {
         val updated = progress.record(SelfAssessment.HIT, 12)
 
         // Then
-        updated shouldBe progress.copy(answeredInBatch = true)
+        updated shouldBe progress.copy(answeredInBatch = true, answerHistory = anAnswerHistory(12))
     }
 
     // Scenario: Un segundo acierto en la misma sesión no suma (spec: Acierto sobre una frase aún no pendiente)
@@ -347,8 +350,111 @@ class PhraseProgressTest {
         val updated = progress.record(SelfAssessment.MISS, 12)
 
         // Then
-        updated shouldBe progress.copy(streak = Streak(0), answeredInBatch = true, dueAtSession = 13)
+        updated shouldBe progress.copy(
+            streak = Streak(0),
+            answeredInBatch = true,
+            dueAtSession = 13,
+            answerHistory = anAnswerHistory(12, lastMissSession = 12),
+        )
     }
+
+    // Scenario: La primera respuesta inicia el registro (spec: Registro de respuestas por frase)
+    @Test
+    fun `given a never answered phrase when recording a hit at session 7 then the history starts`() {
+        // Given
+        val progress = aPhraseProgress(dueAtSession = 7)
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 7)
+
+        // Then
+        updated.answerHistory shouldBe anAnswerHistory(7, consecutiveSessions = 1, lastMissSession = null)
+    }
+
+    // Scenario: Responder en la sesión siguiente suma una sesión seguida (spec: Registro de respuestas por frase)
+    @Test
+    fun `given a phrase answered in the previous session when recording a hit then consecutive sessions add one`() {
+        // Given
+        val progress = answered(anAnswerHistory(6, consecutiveSessions = 3))
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 7)
+
+        // Then
+        updated.answerHistory shouldBe anAnswerHistory(7, consecutiveSessions = 4)
+    }
+
+    // Scenario: Una segunda respuesta en la misma sesión no suma (spec: Registro de respuestas por frase)
+    @Test
+    fun `given a phrase answered in this session when recording again then consecutive sessions do not change`() {
+        // Given
+        val progress = answered(anAnswerHistory(7, consecutiveSessions = 4))
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 7)
+
+        // Then
+        updated.answerHistory shouldBe anAnswerHistory(7, consecutiveSessions = 4)
+    }
+
+    // Scenario: Una sesión sin responderla reinicia las sesiones seguidas (spec: Registro de respuestas por frase)
+    @Test
+    fun `given a phrase skipped for a session when recording a hit then consecutive sessions restart at one`() {
+        // Given
+        val progress = answered(anAnswerHistory(4, consecutiveSessions = 5))
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 7)
+
+        // Then
+        updated.answerHistory shouldBe anAnswerHistory(7, consecutiveSessions = 1)
+    }
+
+    // Scenario: Un fallo registra la sesión fallada (spec: Registro de respuestas por frase)
+    @Test
+    fun `given a phrase without misses when recording a miss at session 7 then the last miss is session 7`() {
+        // Given
+        val progress = answered(anAnswerHistory(6))
+
+        // When
+        val updated = progress.record(SelfAssessment.MISS, 7)
+
+        // Then
+        updated.answerHistory shouldBe anAnswerHistory(7, consecutiveSessions = 2, lastMissSession = 7)
+    }
+
+    // Scenario: Un acierto conserva la última sesión fallada (spec: Registro de respuestas por frase)
+    @Test
+    fun `given a phrase missed at session 5 when recording a hit then the last miss stays at session 5`() {
+        // Given
+        val progress = answered(anAnswerHistory(5, lastMissSession = 5))
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 7)
+
+        // Then
+        updated.answerHistory shouldBe anAnswerHistory(7, consecutiveSessions = 1, lastMissSession = 5)
+    }
+
+    // Scenario: Un acierto en repaso adelantado también se registra (spec: Registro de respuestas por frase)
+    @Test
+    fun `given a phrase not yet due when recording a hit then only the history and answeredInBatch change`() {
+        // Given
+        val progress = aPhraseProgress(level = Level(2), streak = Streak(1), dueAtSession = 9)
+            .copy(answerHistory = anAnswerHistory(6, consecutiveSessions = 1))
+
+        // When
+        val updated = progress.record(SelfAssessment.HIT, 7)
+
+        // Then
+        updated shouldBe progress.copy(
+            answeredInBatch = true,
+            answerHistory = anAnswerHistory(7, consecutiveSessions = 2),
+        )
+    }
+
+    private fun answered(history: AnswerHistory): PhraseProgress =
+        aPhraseProgress(level = Level(2), dueAtSession = 7).copy(answerHistory = history)
 
     private fun notYetDue(level: Int, streak: Int): PhraseProgress = PhraseProgress(
         id = PhraseId("p-1"),

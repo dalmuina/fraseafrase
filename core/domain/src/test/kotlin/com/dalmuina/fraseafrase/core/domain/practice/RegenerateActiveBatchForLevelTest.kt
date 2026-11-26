@@ -13,6 +13,7 @@ import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anAnswerHistory
 import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -69,6 +70,36 @@ class RegenerateActiveBatchForLevelTest {
             stored["B"]!!.streak shouldBe Streak(0)
             stored["B"]!!.dueAtSession shouldBe 3
         }
+
+    // Scenario: Cambiar el nivel CEFR no toca el registro de respuestas
+    @Test
+    fun `given an active batch when changing the cefr level then no answer history changes`() = runTest {
+        // Given: session 9; A answered and missed in it (2 in a row), B last answered at session 7
+        val historyA = anAnswerHistory(9, consecutiveSessions = 2, lastMissSession = 9)
+        val historyB = anAnswerHistory(7)
+        val progress = listOf(
+            aPhraseProgress(id = "A", answeredInBatch = true, dueAtSession = 10).copy(answerHistory = historyA),
+            aPhraseProgress(id = "B").copy(answerHistory = historyB),
+        )
+        val practice = FakePracticeRepository(snapshot(order = listOf("A", "B"), progress = progress))
+        val catalog = CatalogLoadResult.Loaded(
+            listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.B1) },
+        )
+
+        // When
+        val result = useCase(practice, catalog).invoke(
+            targetLocale,
+            CefrLevel.B1,
+            BatchSize(10),
+            practice.read().activeBatch,
+        )
+
+        // Then
+        result.shouldBeInstanceOf<ActiveBatchResult.Created>()
+        val stored = practice.read().progress.associateBy { it.id.value }
+        stored["A"]!!.answerHistory shouldBe historyA
+        stored["B"]!!.answerHistory shouldBe historyB
+    }
 
     // Scenario: Cambiar el nivel CEFR no incrementa el contador de sesiones
     @Test

@@ -45,8 +45,8 @@ fallo), así que el registro se actualiza cualquiera que sea el resultado.
 
 - **Alternativa descartada:** tres campos sueltos en `PhraseProgress`. Permiten estados incoherentes (sesiones
   seguidas sin sesión respondida) y alargan un constructor con 172 llamadas en el código.
-- **Por qué con valor por defecto:** las llamadas existentes, `aPhraseProgress` y las frases nuevas compuestas
-  siguen compilando sin cambios; solo los tests que prueban el registro lo pasan.
+- **Por qué con valor por defecto:** las llamadas existentes (incluida `aPhraseProgress`) y las frases nuevas
+  compuestas siguen compilando sin cambios; solo los tests que prueban el registro lo asignan.
 
 ### D2. Composición por tramos en una clase interna aparte
 
@@ -124,8 +124,10 @@ copiando el patrón v3→v4 con el esquema y el `identity_hash` de `4.json`.
 | Mapeo y reinicio | Unitario con Room en fichero (`BundledSQLiteDriver`) | `PracticeRestartTest`, `RoomPracticeDataSourceReadTest`/`WriteTest` |
 | Esquema v5 | Unitario con Room | `PracticeMigrationTest` |
 
-Fakes: `FakePracticeRepository` no cambia. `aPhraseProgress` (`:core:testing`) gana `answerHistory: AnswerHistory? =
-null` y un builder `anAnswerHistory(lastAnsweredSession, consecutiveSessions = 1, lastMissSession = null)`.
+Fakes: `FakePracticeRepository` no cambia. `:core:testing` gana el builder
+`anAnswerHistory(lastAnsweredSession, consecutiveSessions = 1, lastMissSession = null)`. `aPhraseProgress` no gana
+parámetro (un sexto parámetro incumple `LongParameterList` de detekt): los tests usan
+`aPhraseProgress(...).copy(answerHistory = anAnswerHistory(...))`.
 
 ## Risks / Trade-offs
 

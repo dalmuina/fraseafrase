@@ -13,6 +13,7 @@ import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.FakeSettingsRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anAnswerHistory
 import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -70,6 +71,33 @@ class GenerateSessionTest {
             created.batch.entries.map { it.id.value } shouldContain "P"
             val order = practice.read().activeBatch?.order?.map { it.value }
             order.shouldNotBeNull() shouldContain "P"
+        }
+
+    // Scenario: Generar sesión no cambia el registro (spec: spaced-repetition)
+    @Test
+    fun `given an answered phrase when generating a session that includes it then its history does not change`() =
+        runTest {
+            // Given: P answered and missed at session 6, 2 sessions in a row, due at session 7
+            val history = anAnswerHistory(6, consecutiveSessions = 2, lastMissSession = 6)
+            val practice = FakePracticeRepository(
+                PracticeSnapshot(
+                    progress = listOf(
+                        aPhraseProgress(id = "P", answeredInBatch = true, dueAtSession = 7)
+                            .copy(answerHistory = history),
+                    ),
+                    activeBatch = ActiveBatch(order = listOf(PhraseId("P")), capacity = BatchSize(20)),
+                    sessionCount = 6,
+                ),
+            )
+
+            // When
+            val result = generateSession(practice, catalogIds = listOf("P")).invoke(targetLocale)
+
+            // Then
+            val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
+            created.batch.entries.map { it.id.value } shouldContain "P"
+            practice.read().sessionCount shouldBe 7
+            practice.read().progress.single().answerHistory shouldBe history
         }
 
     // Scenario: Generar sesión reinicia el desglose para la tanda siguiente (spec: practice-session)

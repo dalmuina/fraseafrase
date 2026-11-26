@@ -8,6 +8,7 @@ import com.dalmuina.fraseafrase.core.domain.spacedrepetition.SelfAssessment
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Streak
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anAnswerHistory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -40,6 +41,29 @@ class RevertLastAnswerTest {
             snapshot.activeBatch?.order shouldContainExactly listOf(PhraseId("A"), PhraseId("B"))
             snapshot.progress.first { it.id.value == "A" } shouldBe progressBefore
         }
+
+    // Scenario: Revertir un fallo restaura el registro de respuestas (spec: spaced-repetition)
+    @Test
+    fun `given a miss when reverting it then the answer history is restored`() = runTest {
+        // Given: A answered at session 9 (2 in a row), missed at session 8; current session 10
+        val historyBefore = anAnswerHistory(9, consecutiveSessions = 2, lastMissSession = 8)
+        val practice = FakePracticeRepository(
+            PracticeSnapshot(
+                progress = listOf(aPhraseProgress(id = "A").copy(answerHistory = historyBefore)),
+                activeBatch = ActiveBatch(order = listOf(PhraseId("A")), capacity = BatchSize(10)),
+                sessionCount = 10,
+            ),
+        )
+        val outcome = AnswerPhrase(practice).invoke(LanguageTag("pt-PT"), PhraseId("A"), SelfAssessment.MISS)
+        practice.read().progress.single().answerHistory shouldBe
+            anAnswerHistory(10, consecutiveSessions = 3, lastMissSession = 10)
+
+        // When
+        RevertLastAnswer(practice).invoke(LanguageTag("pt-PT"), outcome.undo)
+
+        // Then
+        practice.read().progress.single().answerHistory shouldBe historyBefore
+    }
 
     // Scenario: Una frase revertida no cuenta en el desglose (spec: practice-session)
     @Test

@@ -13,6 +13,7 @@ data class PhraseProgress(
     val streak: Streak,
     val answeredInBatch: Boolean,
     val dueAtSession: Int,
+    val answerHistory: AnswerHistory? = null,
 ) {
 
     init {
@@ -42,11 +43,17 @@ data class PhraseProgress(
      * Excepción (ADR-0026): un acierto sobre una frase aún no pendiente en [currentSession] (repaso
      * adelantado, o ya respondida en la misma sesión) solo la marca como respondida; nivel, racha y
      * [dueAtSession] no cambian. Un fallo sobre ella se resuelve como cualquier otro.
+     * Cualquiera que sea el resultado, también en el repaso adelantado, actualiza [answerHistory]
+     * (ADR-0027).
      * Es una función pura: la sesión llega como dato.
      */
-    fun record(assessment: SelfAssessment, currentSession: Int): PhraseProgress = when (assessment) {
-        SelfAssessment.HIT -> recordHit(currentSession)
-        SelfAssessment.MISS -> recordMiss(currentSession)
+    fun record(assessment: SelfAssessment, currentSession: Int): PhraseProgress {
+        val resolved = when (assessment) {
+            SelfAssessment.HIT -> recordHit(currentSession)
+            SelfAssessment.MISS -> recordMiss(currentSession)
+        }
+        val missed = assessment == SelfAssessment.MISS
+        return resolved.copy(answerHistory = answerHistory.afterAnswer(currentSession, missed))
     }
 
     private fun recordHit(currentSession: Int): PhraseProgress = when {

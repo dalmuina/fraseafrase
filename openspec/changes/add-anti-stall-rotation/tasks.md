@@ -2,7 +2,7 @@
 
 ## 1. Registro de respuestas al autoevaluar (`:core:domain`)
 
-> Nota: 1.2 toca también `:core:testing` (builders `aPhraseProgress` y `anAnswerHistory`), porque los tests de 1.3
+> Nota: 1.2 toca también `:core:testing` (builder `anAnswerHistory`), porque los tests de 1.3
 > y siguientes los necesitan para compilar. Sin cambios de comportamiento en la composición.
 
 Escenarios: `specs/spaced-repetition/spec.md` → "Invariantes del registro de respuestas" (salvo "Sesiones seguidas
@@ -13,18 +13,19 @@ Ficheros: `spacedrepetition/AnswerHistory.kt` (nuevo) / `AnswerHistoryTest.kt` (
 `spacedrepetition/PhraseProgress.kt` / `PhraseProgressTest.kt`, `core/testing/.../PhraseProgressBuilders.kt`.
 Design D1, D5.
 
-- [ ] 1.1 Test rojo en `AnswerHistoryTest`: "Sesión respondida negativa se rechaza", "Sesión respondida con cero
+- [x] 1.1 Test rojo en `AnswerHistoryTest`: "Sesión respondida negativa se rechaza", "Sesión respondida con cero
   sesiones seguidas se rechaza", "Sesión fallada posterior a la respondida se rechaza" y "Registro coherente se
   acepta". Verificación: no compila o falla porque `AnswerHistory` no existe.
-- [ ] 1.2 Implementar `AnswerHistory` con sus `require` y añadir `answerHistory: AnswerHistory? = null` como último
-  parámetro de `PhraseProgress`; en `:core:testing`, parámetro `answerHistory` en `aPhraseProgress` y builder
-  `anAnswerHistory`. Verificación: 1.1 pasa y `./gradlew :core:domain:check :core:testing:check` en verde.
-- [ ] 1.3 Tests rojos en `PhraseProgressTest` para los siete escenarios de "Registro de respuestas por frase" (primera
+- [x] 1.2 Implementar `AnswerHistory` con sus `require` y añadir `answerHistory: AnswerHistory? = null` como último
+  parámetro de `PhraseProgress`; en `:core:testing`, builder `anAnswerHistory`. `aPhraseProgress` no gana parámetro
+  (un sexto parámetro incumple `LongParameterList` de detekt): los tests usan `.copy(answerHistory = ...)`.
+  Verificación: 1.1 pasa y `./gradlew :core:domain:check :core:testing:check` en verde.
+- [x] 1.3 Tests rojos en `PhraseProgressTest` para los siete escenarios de "Registro de respuestas por frase" (primera
   respuesta, sesión siguiente, misma sesión, hueco, fallo, acierto que conserva el fallo, acierto en repaso
   adelantado). Verificación: fallan porque `record` no actualiza el registro.
-- [ ] 1.4 Implementar `AnswerHistory?.afterAnswer(session, missed)` y llamarla desde las tres ramas de
+- [x] 1.4 Implementar `AnswerHistory?.afterAnswer(session, missed)` y llamarla desde las tres ramas de
   `PhraseProgress.record`; actualizar el KDoc con ADR-0027. Verificación: 1.3 pasa.
-- [ ] 1.5 Tests de caracterización: "Revertir un fallo restaura el registro de respuestas" (`PracticeBatchTest` o
+- [x] 1.5 Tests de caracterización: "Revertir un fallo restaura el registro de respuestas" (`PracticeBatchTest` o
   `RevertLastAnswerTest`), "Generar sesión no cambia el registro" (`GenerateSessionTest`) y "Cambiar el nivel CEFR
   no toca el registro de respuestas" (`RegenerateActiveBatchForLevelTest`). Verificación: pasan sin más cambios de
   producción y `./gradlew :core:domain:check` en verde.
