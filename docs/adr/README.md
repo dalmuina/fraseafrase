@@ -33,6 +33,7 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0025](0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md) | Rotación de la tanda por prioridad y aprendizaje | Sustituido por 0026 y 0027 |
 | [0026](0026-tanda-llena-hasta-n-con-repaso-adelantado.md) | Tanda llena hasta N con repaso adelantado | Sustituido por 0027 |
 | [0027](0027-rotacion-anti-bloqueo-de-la-tanda.md) | Rotación anti-bloqueo de la tanda | Aceptado |
+| [0028](0028-resembrado-del-catalogo-por-huella-de-contenido.md) | Resembrado del catálogo por huella de contenido | Propuesto |
 
 ## Plantilla
 
