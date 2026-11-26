@@ -2,7 +2,7 @@
 
 ## 1. :app: reglas de copia de seguridad (tdd-implementer, haiku)
 
-- [ ] 1.1 Test rojo: crear `app/src/test/kotlin/com/dalmuina/fraseafrase/BackupRulesTest.kt` (design D4) con un test
+- [x] 1.1 Test rojo: crear `app/src/test/kotlin/com/dalmuina/fraseafrase/BackupRulesTest.kt` (design D4) con un test
   por escenario de `specs/data-backup/spec.md`: "Copia en la nube en Android 12 o superior", "Transferencia entre
   dispositivos en Android 12 o superior", "Copia completa en Android 8 a 11", "El manifiesto declara las reglas",
   "Ninguna regla excluye el progreso", "Ninguna regla excluye los ajustes" y "Las reglas no restringen la copia a una
@@ -10,14 +10,14 @@
   que cada fichero existe con un `withClue` explícito (p. ej. "falta src/main/res/xml/backup_rules.xml"). Ejecutar
   `./gradlew :app:test -q --console=plain` y comprobar que falla porque faltan los ficheros de reglas y los atributos
   del manifiesto, no por un error de compilación ni de ruta.
-- [ ] 1.2 Crear `app/src/main/res/xml/data_extraction_rules.xml` y `app/src/main/res/xml/backup_rules.xml` con las
+- [x] 1.2 Crear `app/src/main/res/xml/data_extraction_rules.xml` y `app/src/main/res/xml/backup_rules.xml` con las
   exclusiones de `catalog.db`, `catalog.db-wal`, `catalog.db-shm` y `catalog.db-journal` en el dominio `database`,
   sin `<include>` (design D1, D2, D3). Escenarios: los tres primeros y los tres últimos de 1.1.
-- [ ] 1.3 `app/src/main/AndroidManifest.xml`: mantener `android:allowBackup="true"` y añadir
+- [x] 1.3 `app/src/main/AndroidManifest.xml`: mantener `android:allowBackup="true"` y añadir
   `android:dataExtractionRules="@xml/data_extraction_rules"` con `tools:targetApi="31"`,
   `android:fullBackupContent="@xml/backup_rules"` y `xmlns:tools` (design D3). Escenario: "El manifiesto declara las
   reglas". `BackupRulesTest` en verde.
-- [ ] 1.4 `./gradlew :app:check -q --console=plain` en verde, sin avisos nuevos de lint sobre las reglas de copia
+- [x] 1.4 `./gradlew :app:check -q --console=plain` en verde, sin avisos nuevos de lint sobre las reglas de copia
   (`DataExtractionRules`, `FullBackupContent`, `UnusedAttribute`).
 
 ## 2. :core:data: restauración sin catálogo (tdd-implementer, haiku)

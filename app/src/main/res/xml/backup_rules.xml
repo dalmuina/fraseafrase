@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 8 a 11: copia completa. Solo exclusiones (sin include), igual que data_extraction_rules.xml.
+    El catálogo se regenera desde los assets, así que no se copia.
+-->
+<full-backup-content>
+    <exclude domain="database" path="catalog.db" />
+    <exclude domain="database" path="catalog.db-wal" />
+    <exclude domain="database" path="catalog.db-shm" />
+    <exclude domain="database" path="catalog.db-journal" />
+</full-backup-content>
