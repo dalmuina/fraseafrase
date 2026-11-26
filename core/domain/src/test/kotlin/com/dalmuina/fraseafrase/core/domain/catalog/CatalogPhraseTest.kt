@@ -11,7 +11,7 @@ class CatalogPhraseTest {
     @Test
     fun `given a complete catalog phrase when building it then keeps every field`() {
         // Given
-        val id = PhraseId("a1-saludos-001")
+        val id = PhraseId("0000-a1-saludos-001")
 
         // When
         val phrase = CatalogPhrase(
@@ -40,7 +40,7 @@ class CatalogPhraseTest {
         // When / Then
         shouldThrow<IllegalArgumentException> {
             CatalogPhrase(
-                id = PhraseId("a1-saludos-001"),
+                id = PhraseId("0000-a1-saludos-001"),
                 level = CefrLevel.A1,
                 topic = Topic("saludos"),
                 targetLocale = LanguageTag("pt-PT"),

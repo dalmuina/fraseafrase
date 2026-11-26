@@ -53,7 +53,7 @@ su verde, del renombrado.
 
 ## 4. :core:domain: ids literales en los tests (tdd-implementer, haiku)
 
-- [ ] 4.1 Cambiar los ids literales de formato antiguo por su versión con `0000-` en `CatalogPhraseTest` y
+- [x] 4.1 Cambiar los ids literales de formato antiguo por su versión con `0000-` en `CatalogPhraseTest` y
   `PracticeRepositoryTest`. Verificar con el mismo Grep en `core/domain/src/test` y con `./gradlew :core:domain:check`. (Scenarios: Campos obligatorios de cada frase, en
   `CatalogPhraseTest`; El progreso de dos idiomas destino para la misma frase no se mezcla, en `PracticeRepositoryTest`)
 

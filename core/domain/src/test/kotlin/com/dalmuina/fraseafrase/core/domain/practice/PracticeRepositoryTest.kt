@@ -21,7 +21,7 @@ class PracticeRepositoryTest {
         // Given
         val practice = FakePracticeRepository()
         practice.transact(ptPt) { snapshot ->
-            PracticeChange(snapshot.copy(progress = listOf(aPhraseProgress(id = "a1-saludos-001"))), Unit)
+            PracticeChange(snapshot.copy(progress = listOf(aPhraseProgress(id = "0000-a1-saludos-001"))), Unit)
         }
         practice.transact(enGb) { snapshot ->
             PracticeChange(snapshot.copy(sessionCount = 7), Unit)
@@ -32,7 +32,7 @@ class PracticeRepositoryTest {
         val enGbSnapshot = practice.read(enGb)
 
         // Then
-        ptPtSnapshot.progress.map { it.id } shouldBe listOf(PhraseId("a1-saludos-001"))
+        ptPtSnapshot.progress.map { it.id } shouldBe listOf(PhraseId("0000-a1-saludos-001"))
         ptPtSnapshot.sessionCount shouldBe 0
         enGbSnapshot.progress shouldBe emptyList()
         enGbSnapshot.sessionCount shouldBe 7
