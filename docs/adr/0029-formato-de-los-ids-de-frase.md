@@ -1,6 +1,6 @@
 # ADR-0029: Formato de los ids de frase
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-26
 
 ## Contexto

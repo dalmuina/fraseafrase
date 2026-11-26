@@ -59,9 +59,9 @@ su verde, del renombrado.
 
 ## 5. Documentación (sesión principal)
 
-- [ ] 5.1 Aceptar ADR-0029: cambiar su estado a `Aceptado` en el ADR y en `docs/adr/README.md`. Verificar que el índice
+- [x] 5.1 Aceptar ADR-0029: cambiar su estado a `Aceptado` en el ADR y en `docs/adr/README.md`. Verificar que el índice
   y el fichero coinciden.
-- [ ] 5.2 `CLAUDE.md`: añadir "Ids de frases: ADR-0029" a la regla de oro 4. En "No hacer", ampliar la regla de ids
+- [x] 5.2 `CLAUDE.md`: añadir "Ids de frases: ADR-0029" a la regla de oro 4. En "No hacer", ampliar la regla de ids
   para que cite el formato `<bloque>-<nivel>-<tema>-<nnn>`, el registro de bloques (`blocks.txt`) y la lista de temas
   (`topics.txt`) de `core/data/src/test/resources/catalog/`, además de ADR-0013 y ADR-0029. Verificar que las rutas
   citadas existen.
