@@ -38,13 +38,13 @@
 
 ## 3. Documentación (sesión principal)
 
-- [ ] 3.1 Aceptar ADR-0031: cambiar su estado a `Aceptado` en el ADR y en `docs/adr/README.md`. Verificar que el índice
+- [x] 3.1 Aceptar ADR-0031: cambiar su estado a `Aceptado` en el ADR y en `docs/adr/README.md`. Verificar que el índice
   y el ADR dicen lo mismo.
-- [ ] 3.2 `CLAUDE.md`: añadir "Copia de seguridad: ADR-0031" a la regla de oro 4 tras "Migraciones de Room: ADR-0030".
+- [x] 3.2 `CLAUDE.md`: añadir "Copia de seguridad: ADR-0031" a la regla de oro 4 tras "Migraciones de Room: ADR-0030".
 
 ## 4. Verificación (sesión principal)
 
-- [ ] 4.1 `./gradlew check` y `./gradlew koverVerify` en verde.
+- [x] 4.1 `./gradlew check` y `./gradlew koverVerify` en verde.
 
 ## Workflow follow-up
 

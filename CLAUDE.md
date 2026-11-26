@@ -24,7 +24,8 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
    ADR-0018. Filtro CEFR (nivel exacto): ADR-0021. Fallo: ADR-0024. Composición de la tanda y registro de respuestas:
    ADR-0027, que mantiene vigentes la espera intra-nivel y el reparto de nuevas del ADR-0025, y la tanda llena hasta
    N con repaso adelantado del ADR-0026. Terminología: tanda, sesión generada, nivel, racha, certificada, pendiente
-   (ya no hay frases arrastradas). Ids de frases: ADR-0029. Migraciones de Room: ADR-0030. Lo que esté fuera es un cambio
+   (ya no hay frases arrastradas). Ids de frases: ADR-0029. Migraciones de Room: ADR-0030. Copia de seguridad: ADR-0031. Lo que
+   esté fuera es un cambio
    posterior, no una mejora "de paso".
 5. **No amplíes el alcance.** Implementa exactamente lo que dice la tarea. Si ves algo mejorable, anótalo y avisa.
 

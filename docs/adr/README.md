@@ -36,7 +36,7 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0028](0028-resembrado-del-catalogo-por-huella-de-contenido.md) | Resembrado del catálogo por huella de contenido | Aceptado |
 | [0029](0029-formato-de-los-ids-de-frase.md) | Formato de los ids de frase | Aceptado |
 | [0030](0030-politica-de-migraciones-de-las-bases-room.md) | Política de migraciones de las bases Room | Aceptado |
-| [0031](0031-politica-de-copia-de-seguridad.md) | Política de copia de seguridad | Propuesto |
+| [0031](0031-politica-de-copia-de-seguridad.md) | Política de copia de seguridad | Aceptado |
 
 ## Plantilla
 

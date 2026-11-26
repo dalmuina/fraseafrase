@@ -1,6 +1,6 @@
 # ADR-0031: Política de copia de seguridad
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-26
 
 ## Contexto
