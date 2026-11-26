@@ -5,20 +5,20 @@
 Ficheros: `core/data/src/test/kotlin/com/dalmuina/fraseafrase/core/data/catalog/CatalogContract.kt` y
 `CatalogContractTest.kt`. Diseño: D1. Datos sintéticos, sin leer los assets.
 
-- [ ] 1.1 Tests en `CatalogContractTest` para `idFormatViolations`, con registro de bloques `{0000}` y temas
+- [x] 1.1 Tests en `CatalogContractTest` para `idFormatViolations`, con registro de bloques `{0000}` y temas
   `{saludos}`: `0000-a1-saludos-001` no devuelve nada; `a1-saludos-001` y `0000-a1-saludos-000` devuelven `MALFORMED`;
   `1000-a1-saludos-001` devuelve `UNKNOWN_BLOCK`; `0000-a1-viajes-001` devuelve `UNKNOWN_TOPIC`. Comprobar que fallan
   porque la función no existe. (Scenarios: Un id con formato válido cumple el contrato; Un id sin bloque incumple el
   contrato; Un id con número 000 incumple el contrato; Un bloque fuera del registro incumple el contrato; Un tema
   fuera de la lista incumple el contrato)
-- [ ] 1.2 Implementar `IdViolation`, `IdViolationReason` e `idFormatViolations` en `CatalogContract`, con la expresión
+- [x] 1.2 Implementar `IdViolation`, `IdViolationReason` e `idFormatViolations` en `CatalogContract`, con la expresión
   de D1, y actualizar el KDoc del objeto para citar ADR-0029. Verificar que los tests de 1.1 pasan.
-- [ ] 1.3 Tests en `CatalogContractTest` para `birthLabelMismatches`, con `TargetPhrase` construidas en el test:
+- [x] 1.3 Tests en `CatalogContractTest` para `birthLabelMismatches`, con `TargetPhrase` construidas en el test:
   `0000-a1-saludos-003` de nivel A2 y no publicada se devuelve; la misma frase de nivel A1 y tema `comida` se devuelve;
   `0000-a1-saludos-001` de nivel A2 y tema `comida`, publicada, no se devuelve. Comprobar que fallan porque la función
   no existe. (Scenarios: Una frase nueva cuyo nivel no coincide con su id incumple el contrato; Una frase nueva cuyo
   tema no coincide con su id incumple el contrato; Una frase publicada reclasificada conserva su id)
-- [ ] 1.4 Implementar `birthLabelMismatches` en `CatalogContract`. Verificar que los tests de 1.3 pasan y que
+- [x] 1.4 Implementar `birthLabelMismatches` en `CatalogContract`. Verificar que los tests de 1.3 pasan y que
   `./gradlew :core:data:check` está en verde.
 
 ## 2. :core:data: registros y renombrado de los assets (sesión principal, contenido)
