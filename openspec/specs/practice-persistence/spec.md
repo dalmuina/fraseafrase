@@ -323,16 +323,3 @@ contador de sesiones generadas.
   que ninguna escriba
 - **THEN** la tanda activa se recompone una sola vez con 10 frases B1, exactamente una obtención devuelve `Created` y
   la otra `Existing` con esa misma tanda, y el progreso solo añade las 6 frases B1 nuevas de esa tanda
-
-### Requirement: Descarte del estado guardado con un esquema anterior
-
-Al abrir una base de datos del estado del usuario guardada con un esquema anterior al que añade el registro de
-respuestas, el sistema MUST descartar todo su contenido (progreso, tanda activa y contador de sesiones de todos
-los idiomas destino) sin fallar, y MUST comportarse como en el primer uso (ADR-0027).
-
-#### Scenario: Una base anterior se abre vacía
-
-- **GIVEN** una base de datos guardada con el esquema anterior, con una fila de progreso de `pt-PT`
-- **WHEN** la app la abre con el esquema actual
-- **THEN** la apertura no falla, el progreso está vacío y la tabla de progreso tiene las columnas del registro de
-  respuestas
