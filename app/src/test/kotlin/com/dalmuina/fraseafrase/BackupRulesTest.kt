@@ -24,6 +24,12 @@ private val expectedCatalogExclusions = listOf(
     Exclusion("database", "catalog.db-journal"),
 ).sortedBy { it.path }
 
+private fun Exclusion.normalizedPath(): String = path.removePrefix("./")
+
+// An empty or "." path excludes everything in its domain.
+private fun Exclusion.coversWholeDomain(domain: String): Boolean =
+    this.domain == domain && normalizedPath() in listOf("", ".")
+
 private fun parseXml(path: String): Document {
     val file = File(path)
     withClue("falta $path") { file.exists() shouldBe true }
@@ -102,7 +108,9 @@ class BackupRulesTest {
     @Test
     fun `given the backup rules when searching exclusions of practice database then there are none`() {
         // Given / When
-        val progressExclusions = allExclusions().filter { it.path.startsWith("practice.db") }
+        val progressExclusions = allExclusions().filter {
+            it.normalizedPath().startsWith("practice.db") || it.coversWholeDomain("database")
+        }
 
         // Then
         progressExclusions shouldBe emptyList()
@@ -112,7 +120,9 @@ class BackupRulesTest {
     @Test
     fun `given the backup rules when searching exclusions of datastore then there are none`() {
         // Given / When
-        val settingsExclusions = allExclusions().filter { it.path.startsWith("datastore") }
+        val settingsExclusions = allExclusions().filter {
+            it.normalizedPath().startsWith("datastore") || it.coversWholeDomain("file")
+        }
 
         // Then
         settingsExclusions shouldBe emptyList()
