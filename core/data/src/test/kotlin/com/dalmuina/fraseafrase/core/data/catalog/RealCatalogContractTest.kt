@@ -9,8 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 
-// Contrato sobre el catálogo real empaquetado (ADR-0013, ADR-0019), ejecutado por idioma destino: la permanencia
-// de ids de uno es independiente de la de cualquier otro.
+// Contrato sobre el catálogo real empaquetado (ADR-0013, ADR-0019, ADR-0029), ejecutado por idioma destino: la
+// permanencia de ids de uno es independiente de la de cualquier otro.
 class RealCatalogContractTest {
 
     private companion object {
@@ -23,9 +23,13 @@ class RealCatalogContractTest {
     private fun releasedIdsOf(targetLocale: String) =
         File("src/test/resources/catalog/released-ids-$targetLocale.txt").readLines().filter(String::isNotBlank)
 
-    private fun currentIdsOf(targetLocale: String) =
-        (CatalogJson.parsePhrases(catalogTextOf(targetLocale)) as CatalogParseResult.PhrasesParsed)
-            .phrases.map { it.id.value }
+    private fun currentPhrasesOf(targetLocale: String) =
+        (CatalogJson.parsePhrases(catalogTextOf(targetLocale)) as CatalogParseResult.PhrasesParsed).phrases
+
+    private fun currentIdsOf(targetLocale: String) = currentPhrasesOf(targetLocale).map { it.id.value }
+
+    private fun registryOf(name: String) =
+        File("src/test/resources/catalog/$name.txt").readLines().filter(String::isNotBlank).toSet()
 
     // Scenario: Versión del esquema (spec: phrase-catalog) — cada idioma destino empaquetado carga por separado
     @ParameterizedTest
@@ -36,6 +40,39 @@ class RealCatalogContractTest {
 
         // Then
         result.shouldBeInstanceOf<CatalogParseResult.PhrasesParsed>()
+    }
+
+    // Scenario: Los documentos empaquetados cumplen el formato (spec: phrase-catalog)
+    @ParameterizedTest
+    @ValueSource(strings = ["pt-PT", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU"])
+    fun `given the packaged ids of a target locale when checking their format then none violates it`(
+        targetLocale: String,
+    ) {
+        // Given
+        val ids = currentIdsOf(targetLocale)
+
+        // When
+        val violations = CatalogContract.idFormatViolations(ids, registryOf("blocks"), registryOf("topics"))
+
+        // Then
+        violations.shouldBeEmpty()
+    }
+
+    // Scenario: Las frases empaquetadas no publicadas coinciden con su id (spec: phrase-catalog)
+    @ParameterizedTest
+    @ValueSource(strings = ["pt-PT", "es-ES", "it-IT", "en-GB", "de-DE", "fr-FR", "ru-RU"])
+    fun `given the unreleased phrases of a target locale when checking birth labels then all match`(
+        targetLocale: String,
+    ) {
+        // Given
+        val phrases = currentPhrasesOf(targetLocale)
+        val released = releasedIdsOf(targetLocale).toSet()
+
+        // When
+        val mismatches = CatalogContract.birthLabelMismatches(phrases, released)
+
+        // Then
+        mismatches.shouldBeEmpty()
     }
 
     // Scenario: Ids paralelos entre idiomas (spec: phrase-catalog) - todos los documentos empaquetados

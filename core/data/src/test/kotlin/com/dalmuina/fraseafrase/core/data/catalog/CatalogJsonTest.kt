@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class CatalogJsonTest {
 
     private val targetPhrase = """
-        { "id": "a1-saludos-001", "level": "A1", "topic": "saludos", "target": "Bom dia, tudo bem?" }
+        { "id": "0000-a1-saludos-001", "level": "A1", "topic": "saludos", "target": "Bom dia, tudo bem?" }
     """.trimIndent()
 
     private fun phraseDocument(
