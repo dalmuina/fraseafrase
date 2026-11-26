@@ -1,6 +1,6 @@
 # ADR-0019: Catálogo en Room, selección de idioma destino y origen derivado del dispositivo
 
-- **Estado:** Sustituido por ADR-0022 (formato de documento) y ADR-0023 (regla de origen)
+- **Estado:** Sustituido por ADR-0022 (formato de documento), ADR-0023 (regla de origen) y ADR-0028 (regla de resembrado)
 - **Fecha:** 2026-11-15
 - **Sustituye a:** ADR-0013 (solo la parte de almacenamiento del catálogo y la excepción de variante)
 - **Modifica a:** ADR-0003 (la variante deja de estar diferida; el origen deja de ser un literal fijo)

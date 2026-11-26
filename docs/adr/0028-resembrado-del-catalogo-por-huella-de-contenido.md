@@ -1,6 +1,6 @@
 # ADR-0028: Resembrado del catálogo por huella de contenido
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-26
 - **Sustituye a:** ADR-0019 (solo la regla "la siembra se repite cuando cambia el `schemaVersion` de un fichero")
 

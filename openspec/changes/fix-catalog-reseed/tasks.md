@@ -27,10 +27,10 @@
 
 ## 2. Documentación (sesión principal)
 
-- [ ] 2.1 Aceptar ADR-0028: estado en el ADR y en `docs/adr/README.md`; línea de estado de ADR-0019: "Sustituido por
+- [x] 2.1 Aceptar ADR-0028: estado en el ADR y en `docs/adr/README.md`; línea de estado de ADR-0019: "Sustituido por
   ADR-0022 (formato de documento), ADR-0023 (regla de origen) y ADR-0028 (regla de resembrado)"; su fila del índice:
   "Sustituido por 0022, 0023 y 0028". Verificar que el índice y los ficheros coinciden.
 
 ## 3. Verificación (sesión principal)
 
-- [ ] 3.1 `./gradlew check` y `./gradlew koverVerify` en verde.
+- [x] 3.1 `./gradlew check` y `./gradlew koverVerify` en verde.
