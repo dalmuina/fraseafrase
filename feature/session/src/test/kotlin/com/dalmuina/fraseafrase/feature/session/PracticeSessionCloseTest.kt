@@ -65,7 +65,8 @@ class PracticeSessionCloseTest {
         }
 
     // Scenario: Generar sesión con todas certificadas deja la tanda siguiente sin arrastradas (spec:
-    // practice-session; desde ADR-0026 las certificadas sin vencer entran como repaso adelantado)
+    // practice-session; ADR-0027: A y B no tienen aquí `answerHistory`, así que entran como repaso adelantado,
+    // tramo 4)
     @Test
     fun `given all phrases cooling down when generating session then they fill the next batch as early review`() =
         runTest {

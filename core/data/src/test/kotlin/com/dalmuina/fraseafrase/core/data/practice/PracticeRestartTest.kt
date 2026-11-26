@@ -3,7 +3,11 @@ package com.dalmuina.fraseafrase.core.data.practice
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
+import com.dalmuina.fraseafrase.core.domain.practice.PracticeChange
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
+import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anAnswerHistory
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -70,6 +74,30 @@ class PracticeRestartTest {
 
         // Then
         sessionCount shouldBe 7
+    }
+
+    // Scenario: El registro de respuestas sobrevive al reinicio (spec: practice-persistence)
+    @Test
+    fun `given answer histories saved in a file database when reopening it then they are kept`() = runTest {
+        // Given: una frase con registro de respuestas y otra sin él guardadas en la base en disco
+        val path = directory.resolve("practice.db").toString()
+        val ptPt = LanguageTag("pt-PT")
+        val history = anAnswerHistory(lastAnsweredSession = 12, consecutiveSessions = 3, lastMissSession = 11)
+        val first = fileDatabase(path)
+        RoomPracticeDataSource(first, UnconfinedTestDispatcher()).transact(ptPt) { snapshot ->
+            val phrases = listOf(aPhraseProgress(id = "A").copy(answerHistory = history), aPhraseProgress(id = "B"))
+            PracticeChange(next = snapshot.copy(progress = phrases), result = Unit)
+        }
+        first.close()
+
+        // When: se reabre la base y se lee el estado
+        val reopened = fileDatabase(path)
+        val progress = RoomPracticeDataSource(reopened, UnconfinedTestDispatcher()).read(ptPt).progress
+        reopened.close()
+
+        // Then
+        progress.single { it.id == PhraseId("A") }.answerHistory shouldBe history
+        progress.single { it.id == PhraseId("B") }.answerHistory.shouldBeNull()
     }
 
     private fun fileDatabase(path: String): PracticeDatabase =

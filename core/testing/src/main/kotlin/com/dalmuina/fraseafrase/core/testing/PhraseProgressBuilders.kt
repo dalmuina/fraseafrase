@@ -1,5 +1,6 @@
 package com.dalmuina.fraseafrase.core.testing
 
+import com.dalmuina.fraseafrase.core.domain.spacedrepetition.AnswerHistory
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.Level
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseId
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.PhraseProgress
@@ -22,4 +23,15 @@ fun aPhraseProgress(
     streak = streak,
     answeredInBatch = answeredInBatch,
     dueAtSession = dueAtSession,
+)
+
+/** Crea un [AnswerHistory] de prueba: respondida una sola sesión seguida y sin fallos. */
+fun anAnswerHistory(
+    lastAnsweredSession: Int,
+    consecutiveSessions: Int = 1,
+    lastMissSession: Int? = null,
+): AnswerHistory = AnswerHistory(
+    lastAnsweredSession = lastAnsweredSession,
+    consecutiveSessions = consecutiveSessions,
+    lastMissSession = lastMissSession,
 )

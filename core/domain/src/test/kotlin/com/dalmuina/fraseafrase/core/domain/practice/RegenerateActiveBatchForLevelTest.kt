@@ -13,6 +13,7 @@ import com.dalmuina.fraseafrase.core.testing.FakeCatalogRepository
 import com.dalmuina.fraseafrase.core.testing.FakePracticeRepository
 import com.dalmuina.fraseafrase.core.testing.aCatalogPhrase
 import com.dalmuina.fraseafrase.core.testing.aPhraseProgress
+import com.dalmuina.fraseafrase.core.testing.anAnswerHistory
 import com.dalmuina.fraseafrase.core.testing.anObtainCatalogPhrases
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -70,6 +71,36 @@ class RegenerateActiveBatchForLevelTest {
             stored["B"]!!.dueAtSession shouldBe 3
         }
 
+    // Scenario: Cambiar el nivel CEFR no toca el registro de respuestas
+    @Test
+    fun `given an active batch when changing the cefr level then no answer history changes`() = runTest {
+        // Given: session 9; A answered and missed in it (2 in a row), B last answered at session 7
+        val historyA = anAnswerHistory(9, consecutiveSessions = 2, lastMissSession = 9)
+        val historyB = anAnswerHistory(7)
+        val progress = listOf(
+            aPhraseProgress(id = "A", answeredInBatch = true, dueAtSession = 10).copy(answerHistory = historyA),
+            aPhraseProgress(id = "B").copy(answerHistory = historyB),
+        )
+        val practice = FakePracticeRepository(snapshot(order = listOf("A", "B"), progress = progress))
+        val catalog = CatalogLoadResult.Loaded(
+            listOf("A", "B", "C").map { aCatalogPhrase(id = it, level = CefrLevel.B1) },
+        )
+
+        // When
+        val result = useCase(practice, catalog).invoke(
+            targetLocale,
+            CefrLevel.B1,
+            BatchSize(10),
+            practice.read().activeBatch,
+        )
+
+        // Then
+        result.shouldBeInstanceOf<ActiveBatchResult.Created>()
+        val stored = practice.read().progress.associateBy { it.id.value }
+        stored["A"]!!.answerHistory shouldBe historyA
+        stored["B"]!!.answerHistory shouldBe historyB
+    }
+
     // Scenario: Cambiar el nivel CEFR no incrementa el contador de sesiones
     @Test
     fun `given the session counter at 9 when changing the cefr level then the counter stays at 9`() = runTest {
@@ -87,7 +118,7 @@ class RegenerateActiveBatchForLevelTest {
     }
 
     // Scenario: La tanda siguiente se compone por cuotas con el nuevo nivel (spec: practice-batch), con el
-    // resultado nuevo del delta: mismas reglas que una generación de sesión (ADR-0025)
+    // resultado nuevo del delta: mismas reglas que una generación de sesión (ADR-0027)
     @Test
     fun `given material for the new level when composing the next batch then it uses the same rules as a session`() =
         runTest {
@@ -111,7 +142,7 @@ class RegenerateActiveBatchForLevelTest {
                 practice.read().activeBatch,
             )
 
-            // Then: N=20 con pendientes de nivel 1: 8 nuevas (40 %) y 12 pendientes
+            // Then: 12 pendientes y 8 nuevas (4 del límite y 4 para llenar la tanda)
             val created = result.shouldBeInstanceOf<ActiveBatchResult.Created>()
             val ids = created.batch.entries.map { it.id.value }
             ids.count { it.startsWith("new-b1-") } shouldBe 8

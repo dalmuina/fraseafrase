@@ -1,8 +1,10 @@
 package com.dalmuina.fraseafrase.core.data.practice
 
+import androidx.room3.useWriterConnection
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import com.dalmuina.fraseafrase.core.domain.practice.BatchOutcome
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -156,6 +158,32 @@ class RoomPracticeDataSourceReadTest {
 
         // Then
         observed.forEach { snapshot -> (snapshot == before || snapshot == after) shouldBe true }
+    }
+
+    // Scenario: Sesiones seguidas sin sesión respondida se rechazan (spec: spaced-repetition)
+    @Test
+    fun `given consecutive sessions without an answered session when reading then the row is rejected`() = runTest {
+        // Given
+        database.phraseProgressDao().insert(entry(id = "A"))
+        execute("UPDATE phrase_progress SET consecutive_sessions = 2")
+
+        // When / Then
+        shouldThrow<IllegalArgumentException> { source.read(ptPt) }
+    }
+
+    // Invariante de la sesión fallada sin sesión respondida (design D4 de add-anti-stall-rotation)
+    @Test
+    fun `given a miss session without an answered session when reading then the row is rejected`() = runTest {
+        // Given
+        database.phraseProgressDao().insert(entry(id = "A"))
+        execute("UPDATE phrase_progress SET last_miss_session = 4")
+
+        // When / Then
+        shouldThrow<IllegalArgumentException> { source.read(ptPt) }
+    }
+
+    private suspend fun execute(sql: String) {
+        database.useWriterConnection { connection -> connection.usePrepared(sql) { it.step() } }
     }
 
     private fun entry(
