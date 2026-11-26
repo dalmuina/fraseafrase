@@ -25,15 +25,16 @@
 > Nota: test de caracterización (design D4). El comportamiento ya existe y no hay código de producción que cambiar,
 > así que no hay rojo previo; la prueba de que el test detecta el fallo es la mutación de la tarea 2.2.
 
-- [ ] 2.1 En `core/data/src/test/kotlin/com/dalmuina/fraseafrase/core/data/catalog/RoomCatalogDataSourceTest.kt`,
-  añadir `given saved progress and no catalog when reading phrases then the catalog is seeded and the progress is
-  unchanged`: base de práctica con un `PhraseProgressEntity` y base de catálogo vacía; al pedir frases, el resultado es
+- [x] 2.1 En `core/data/src/test/kotlin/com/dalmuina/fraseafrase/core/data/catalog/RoomCatalogDataSourceTest.kt`,
+  añadir `given saved progress and no catalog when reading phrases then the catalog is seeded and progress is
+  kept`: base de práctica con un `PhraseProgressEntity` y base de catálogo vacía; al pedir frases, el resultado es
   `Loaded` con las frases de los documentos y el progreso no cambia. Escenario: `specs/data-backup/spec.md` →
   "Primer arranque tras restaurar".
-- [ ] 2.2 Mutación: comentar la llamada a `ensureSeeded()` dentro de `phrases(...)` (`RoomCatalogDataSource.kt:56`; no
+- [x] 2.2 Mutación: comentar la llamada a `ensureSeeded()` dentro de `phrases(...)` (`RoomCatalogDataSource.kt:56`; no
   la de `availableTargetLocales()`, línea 50), comprobar que el test de 2.1 falla, restaurar la línea y comprobar que
   vuelve a verde. No commitear la mutación. Anotar aquí la evidencia (única prueba del escenario) con el formato
   "Evidencia: fallo observado: <mensaje> / verde tras restaurar". `./gradlew :core:data:check -q --console=plain` en verde.
+  Evidencia: fallo observado: `org.opentest4j.AssertionFailedError: Missing elements from index 0; expected:<["Bom dia"]> but was:<[]>` / verde tras restaurar (clase `RoomCatalogDataSourceTest` en verde).
 
 ## 3. Documentación (sesión principal)
 
