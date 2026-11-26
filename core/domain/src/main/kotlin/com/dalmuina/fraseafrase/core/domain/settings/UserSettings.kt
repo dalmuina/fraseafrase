@@ -3,7 +3,7 @@ package com.dalmuina.fraseafrase.core.domain.settings
 import com.dalmuina.fraseafrase.core.domain.catalog.CefrLevel
 import com.dalmuina.fraseafrase.core.domain.spacedrepetition.BatchSize
 
-/** Ajustes que afectan a la práctica: nivel CEFR de las frases nuevas y tamaño de tanda N (ADR-0012). */
+/** Ajustes que afectan a la práctica: nivel CEFR de la tanda y tamaño de tanda N (ADR-0021, ADR-0026). */
 data class UserSettings(val cefrLevel: CefrLevel, val batchSize: BatchSize) {
 
     companion object {

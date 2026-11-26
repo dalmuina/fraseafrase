@@ -1,9 +1,10 @@
 # Frase a Frase
 
 App Android para aprender portugués europeo (`pt-PT`) desde español. El usuario practica **tandas**
-de 10 a 30 frases en una lista circular, revela la traducción y se autoevalúa. Una frase con 3 aciertos
-seguidos queda certificada y se espacia con repetición espaciada; el usuario decide cuándo empezar una
-tanda nueva y las no certificadas se arrastran. Reglas completas en el ADR-0012.
+de 10 a 30 frases en una lista circular, revela la traducción y se autoevalúa. Con 3 aciertos una frase
+queda certificada y sube de nivel (0 a 5); un fallo le resta un solo acierto. El repaso se mide en sesiones
+generadas, no en días, y el usuario decide cuándo generar la siguiente. Reglas: ADR-0012 con las
+sustituciones posteriores (ver regla de oro 4).
 Offline-first, sin backend ni IA en tiempo de ejecución.
 
 ## Reglas de oro
@@ -19,7 +20,11 @@ Offline-first, sin backend ni IA en tiempo de ejecución.
    no exigen un test rojo previo; se verifican con `@PreviewLightDark` o un test de captura cuando aporte valor.
 3. **Los ADR mandan.** Lee `docs/adr/` antes de proponer o diseñar. Si algo contradice un ADR aceptado,
    para y propón un ADR nuevo que lo sustituya; no lo ignores ni lo edites.
-4. **Método y alcance del MVP: ADR-0012.** Usa su terminología (tanda, nivel, racha, certificada, pendiente, arrastrada). Lo que esté fuera es un cambio posterior, no una mejora "de paso".
+4. **Método y alcance del MVP: ADR-0012 y los ADR que lo han ido sustituyendo** (`docs/adr/README.md`). Alcance:
+   ADR-0018. Filtro CEFR (nivel exacto): ADR-0021. Fallo: ADR-0024. Composición de la tanda: ADR-0026, que mantiene
+   vigentes la espera intra-nivel, la prioridad y el cálculo de nuevas del ADR-0025. Terminología: tanda, sesión
+   generada, nivel, racha, certificada, pendiente (ya no hay frases arrastradas). Lo que esté fuera es un cambio
+   posterior, no una mejora "de paso".
 5. **No amplíes el alcance.** Implementa exactamente lo que dice la tarea. Si ves algo mejorable, anótalo y avisa.
 
 ## Tipos de cambio

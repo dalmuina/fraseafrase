@@ -257,7 +257,7 @@ class SettingsScreenTest {
         setScreen(loaded())
 
         // Then: se muestran los textos de ayuda del nivel CEFR y del tamaño de tanda
-        composeTestRule.onNodeWithText("Elige tu nivel. Solo verás frases de este nivel o inferiores.")
+        composeTestRule.onNodeWithText("Elige tu nivel. Solo verás frases de este nivel.")
             .assertIsDisplayed()
         composeTestRule.onNodeWithText("Mínimo 10 frases por sesión.").assertIsDisplayed()
     }

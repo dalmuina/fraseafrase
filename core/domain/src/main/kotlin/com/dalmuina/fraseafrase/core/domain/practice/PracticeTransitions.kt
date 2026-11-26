@@ -10,8 +10,8 @@ internal fun PracticeSnapshot.currentBatchResult(): ActiveBatchResult =
     batch()?.let { ActiveBatchResult.Existing(it) } ?: ActiveBatchResult.NothingAvailable
 
 /**
- * Compone la tanda siguiente por cuotas a partir de [snapshot] y la guarda, o deja [snapshot] sin cambios si no
- * hay frases disponibles (ADR-0012, ADR-0017). Transición pura compartida por [GenerateSession],
+ * Compone la tanda siguiente a partir de [snapshot] y la guarda, o deja [snapshot] sin cambios si no
+ * hay frases disponibles (ADR-0021, ADR-0026). Transición pura compartida por [GenerateSession],
  * [RegenerateActiveBatchForLevel] y [ObtainActiveBatch].
  */
 internal fun composeNextBatchInto(

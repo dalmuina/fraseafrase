@@ -3,7 +3,7 @@ package com.dalmuina.fraseafrase.core.domain.practice
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 
 /**
- * Puerto del estado del usuario: progreso, tanda activa y cola de arrastradas, independiente por idioma
+ * Puerto del estado del usuario: progreso, tanda activa y contador de sesiones, independiente por idioma
  * destino (ADR-0013, ADR-0019). Una fuente: Room 3.
  *
  * [transact] ejecuta la transición dentro de una única transacción de escritura: la lectura, el cálculo y la
