@@ -69,10 +69,10 @@ de cualquier otro idioma disponible.
 
 #### Scenario: El origen sale del texto destino del otro idioma
 
-- **GIVEN** un documento de frases `pt-PT` con la frase `a1-saludos-001` de texto "Bom dia" y nivel A1, y un
-  documento de frases `es-ES` con la frase `a1-saludos-001` de texto "Buenos días" y nivel A2
+- **GIVEN** un documento de frases `pt-PT` con la frase `0000-a1-saludos-001` de texto "Bom dia" y nivel A1, y un
+  documento de frases `es-ES` con la frase `0000-a1-saludos-001` de texto "Buenos días" y nivel A2
 - **WHEN** se consultan las frases de `pt-PT` con origen `es-ES`
-- **THEN** la frase `a1-saludos-001` tiene texto destino "Bom dia", texto de origen "Buenos días", nivel A1,
+- **THEN** la frase `0000-a1-saludos-001` tiene texto destino "Bom dia", texto de origen "Buenos días", nivel A1,
   `targetLocale` `pt-PT` y `sourceLocale` `es-ES`
 
 #### Scenario: Un par sin fichero propio está disponible
@@ -234,7 +234,7 @@ del mismo documento de frases.
 
 #### Scenario: Ids duplicados rechazan la carga
 
-- **GIVEN** un documento de frases destino con dos frases de id `a1-saludos-001`
+- **GIVEN** un documento de frases destino con dos frases de id `0000-a1-saludos-001`
 - **WHEN** se carga el catálogo
 - **THEN** la carga de ese documento falla e indica el id duplicado
 
@@ -347,6 +347,84 @@ ni las frases sembradas de otro idioma.
 
 #### Scenario: Resembrar un idioma no cambia el progreso guardado
 
-- **GIVEN** `pt-PT` ya sembrado con la frase `a1-saludos-001` y progreso guardado para ella con nivel 2 y 1 acierto
+- **GIVEN** `pt-PT` ya sembrado con la frase `0000-a1-saludos-001` y progreso guardado para ella con nivel 2 y 1
+  acierto
 - **WHEN** la app arranca con un documento de `pt-PT` que añade una segunda frase al final
-- **THEN** el progreso guardado de `a1-saludos-001` sigue con nivel 2 y 1 acierto
+- **THEN** el progreso guardado de `0000-a1-saludos-001` sigue con nivel 2 y 1 acierto
+
+### Requirement: Formato de los ids
+
+Cada `id` de frase destino MUST tener la forma `<bloque>-<nivel>-<tema>-<nnn>`: un bloque de 4 dígitos, un nivel
+CEFR en minúsculas (`a1`, `a2`, `b1`, `b2` o `c1`), un tema de letras minúsculas con palabras separadas por `_`, y
+un número de 3 dígitos entre `001` y `999`. El bloque MUST figurar en el registro de bloques y el tema MUST figurar
+en la lista cerrada de temas. El test de contrato MUST comprobarlo en todos los documentos de frases empaquetados.
+
+#### Scenario: Un id con formato válido cumple el contrato
+
+- **GIVEN** el registro de bloques `0000`, la lista de temas `saludos` y un documento con el id `0000-a1-saludos-001`
+- **WHEN** se ejecuta el test de contrato del formato
+- **THEN** la comprobación no devuelve ningún id
+
+#### Scenario: Un id sin bloque incumple el contrato
+
+- **GIVEN** el registro de bloques `0000`, la lista de temas `saludos` y un documento con el id `a1-saludos-001`
+- **WHEN** se ejecuta el test de contrato del formato
+- **THEN** la comprobación devuelve `a1-saludos-001` como id con formato inválido
+
+#### Scenario: Un id con número 000 incumple el contrato
+
+- **GIVEN** el registro de bloques `0000`, la lista de temas `saludos` y un documento con el id `0000-a1-saludos-000`
+- **WHEN** se ejecuta el test de contrato del formato
+- **THEN** la comprobación devuelve `0000-a1-saludos-000` como id con formato inválido
+
+#### Scenario: Un bloque fuera del registro incumple el contrato
+
+- **GIVEN** el registro de bloques `0000`, la lista de temas `saludos` y un documento con el id `1000-a1-saludos-001`
+- **WHEN** se ejecuta el test de contrato del formato
+- **THEN** la comprobación devuelve `1000-a1-saludos-001` como id con bloque no registrado
+
+#### Scenario: Un tema fuera de la lista incumple el contrato
+
+- **GIVEN** el registro de bloques `0000`, la lista de temas `saludos` y un documento con el id `0000-a1-viajes-001`
+- **WHEN** se ejecuta el test de contrato del formato
+- **THEN** la comprobación devuelve `0000-a1-viajes-001` como id con tema no registrado
+
+#### Scenario: Los documentos empaquetados cumplen el formato
+
+- **GIVEN** los documentos de frases empaquetados de los 7 idiomas, el registro de bloques y la lista de temas del
+  repositorio
+- **WHEN** se ejecuta el test de contrato del formato en cada documento
+- **THEN** ninguna comprobación devuelve ids
+
+### Requirement: Nivel y tema del id en las frases no publicadas
+
+En una frase destino cuyo `id` no figura en el fichero de ids publicados de su idioma, el nivel y el tema del `id`
+MUST coincidir con sus campos `level` y `topic`. En una frase publicada, el `id` MUST NOT cambiar aunque cambien
+`level` o `topic`: el nivel y el tema del id indican dónde nació la frase, y no se comprueban.
+
+#### Scenario: Una frase nueva cuyo nivel no coincide con su id incumple el contrato
+
+- **GIVEN** un documento con la frase `0000-a1-saludos-003`, de nivel A2 y tema `saludos`, que no está en los ids
+  publicados
+- **WHEN** se ejecuta el test de contrato de la etiqueta de nacimiento
+- **THEN** la comprobación devuelve `0000-a1-saludos-003`
+
+#### Scenario: Una frase nueva cuyo tema no coincide con su id incumple el contrato
+
+- **GIVEN** un documento con la frase `0000-a1-saludos-003`, de nivel A1 y tema `comida`, que no está en los ids
+  publicados
+- **WHEN** se ejecuta el test de contrato de la etiqueta de nacimiento
+- **THEN** la comprobación devuelve `0000-a1-saludos-003`
+
+#### Scenario: Una frase publicada reclasificada conserva su id
+
+- **GIVEN** un documento con la frase `0000-a1-saludos-001`, de nivel A2 y tema `comida`, que está en los ids
+  publicados
+- **WHEN** se ejecuta el test de contrato de la etiqueta de nacimiento
+- **THEN** la comprobación no devuelve ningún id
+
+#### Scenario: Las frases empaquetadas no publicadas coinciden con su id
+
+- **GIVEN** los documentos de frases empaquetados de los 7 idiomas y sus ficheros de ids publicados
+- **WHEN** se ejecuta el test de contrato de la etiqueta de nacimiento en cada documento
+- **THEN** ninguna comprobación devuelve ids

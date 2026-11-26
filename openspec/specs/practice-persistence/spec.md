@@ -31,7 +31,7 @@ progreso recuperado de cada idioma destino MUST ser igual al último guardado pa
 
 #### Scenario: El progreso de dos idiomas destino para la misma frase no se mezcla
 
-- **GIVEN** la frase `a1-saludos-001` con nivel 3 en el idioma destino `pt-PT` y nivel 0 en `en-GB`
+- **GIVEN** la frase `0000-a1-saludos-001` con nivel 3 en el idioma destino `pt-PT` y nivel 0 en `en-GB`
 - **WHEN** se consulta el progreso de esa frase en cada idioma destino
 - **THEN** `pt-PT` devuelve nivel 3 y `en-GB` devuelve nivel 0
 
