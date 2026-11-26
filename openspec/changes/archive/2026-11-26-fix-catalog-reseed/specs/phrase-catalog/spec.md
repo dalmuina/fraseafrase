@@ -6,7 +6,9 @@
 
 **Reason**: El resembrado dependía de un cambio de `schemaVersion`, que solo admite el valor 1: nunca podía ocurrir.
 **Migration**: La sustituye "Persistencia y resembrado del catálogo en Room". La caché del catálogo se recrea al
-actualizar; el progreso no cambia.
+actualizar; el progreso no cambia. El escenario "La actualización desde la versión con traducciones no pierde progreso"
+se elimina sin sustituto directo porque cubría una transición puntual ya superada; la conservación del progreso queda en
+"Resembrar un idioma no cambia el progreso guardado".
 
 ## ADDED Requirements
 
