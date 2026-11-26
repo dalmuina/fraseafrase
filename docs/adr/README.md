@@ -32,6 +32,7 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0024](0024-un-fallo-resta-un-acierto.md) | Un fallo resta un acierto, no un nivel | Aceptado |
 | [0025](0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md) | Rotación de la tanda por prioridad y aprendizaje | Sustituido por 0026 |
 | [0026](0026-tanda-llena-hasta-n-con-repaso-adelantado.md) | Tanda llena hasta N con repaso adelantado | Aceptado |
+| [0027](0027-rotacion-anti-bloqueo-de-la-tanda.md) | Rotación anti-bloqueo de la tanda | Propuesto |
 
 ## Plantilla
 

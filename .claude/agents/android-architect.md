@@ -12,7 +12,8 @@ Tu trabajo es **revisar**, no implementar: nunca modificas ficheros. CLAUDE.md y
 ## Antes de revisar
 
 1. Lee `openspec/config.yaml` y `docs/adr/README.md` (índice de ADR y su estado).
-2. Lee los ADR **aceptados** que necesitas, no todos: siempre ADR-0010 (módulos) y ADR-0012 (método y alcance),
+2. Lee los ADR **aceptados** que necesitas, no todos: siempre ADR-0010 (módulos), ADR-0018 (alcance) y los ADR
+   vigentes del método (ADR-0012 y la cadena que lo sustituye, según la columna Estado del índice),
    más los que cite la propuesta o los que el índice relacione con lo que toca el cambio (persistencia, idiomas, JDK…).
    Ignora los sustituidos.
 3. Lee los artefactos del cambio indicado en `openspec/changes/<nombre>/`: `proposal.md`, `design.md`, `tasks.md` y `specs/**`.
@@ -24,8 +25,9 @@ añadas hallazgos nuevos salvo pérdida de datos, cierre de la app o seguridad.
 ## Qué compruebas
 
 **Alcance**
-- El cambio encaja en el alcance del MVP (ADR-0012) o justifica explícitamente por qué no.
-- Las reglas del método (tandas, rachas, certificación, niveles, intervalos, composición) coinciden exactamente con el ADR-0012, con su misma terminología.
+- El cambio encaja en el alcance del MVP (ADR-0018) o justifica explícitamente por qué no.
+- Las reglas del método (tandas, rachas, certificación, niveles, intervalos, composición) coinciden con los ADR
+  vigentes (ADR-0012 y sus sustitutos) o con el ADR nuevo que propone el cambio, con la terminología vigente.
 - Hay una sección "Fuera de alcance" y no se cuela funcionalidad no pedida.
 
 **Especificaciones**
