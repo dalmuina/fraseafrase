@@ -210,7 +210,7 @@ Para no llenar el contexto con logs, ejecuta Gradle con `-q --console=plain` y r
 - **Niveles de hallazgo:**
     - **Bloqueante:** solo comportamiento incorrecto; escenario de spec sin test; contradicción entre artefactos que haría implementar algo mal; riesgo de pérdida de datos, cierre de la app o seguridad. Detiene el avance.
     - **Corregir:** errores reales sin impacto en el funcionamiento (redacción, formato, evidencias, comentarios). Se corrigen en una sola pasada, sin nueva revisión.
-    - **Descartar:** lo que no encaja en los anteriores. No se hace y no va a `docs/deuda-tecnica.md`, salvo que tenga un valor claro.
+    - **Descartar:** lo que no encaja en los anteriores. No se hace; si aun así tiene un valor claro, anótalo y avisa.
 - **Máximo dos rondas por fase.** La segunda verifica solo los bloqueantes de la primera, recibe el texto de las observaciones anteriores y no admite hallazgos nuevos, salvo pérdida de datos, cierre de la app o seguridad.
 - **Rigor proporcional:** según el Tipo (tabla "Tipos de cambio"). Vía rápida y contenido: sin `android-architect`
   y como mucho una ronda de `code-reviewer`. Ligero: una ronda de cada revisor. Normal: hasta dos rondas.

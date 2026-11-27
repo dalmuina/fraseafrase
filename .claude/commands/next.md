@@ -12,14 +12,14 @@ y, si no hay nada que decidir, ejecútalo. Un solo paso por invocación.
 - `.claude/handoff.md`: Tipo, Fase, Veredicto android-architect, Siguiente grupo, decisiones pendientes, siguiente paso
 - `openspec list` y, si hay cambio activo, **solo** las casillas de `tasks.md` (Grep `- \[ \]` / `- \[x\]`).
   No leas `proposal.md`, `design.md` ni `specs/**` enteros para diagnosticar.
-- `docs/deuda-tecnica.md` solo en la regla 3.
+- `docs/plan-mvp.md` solo en la regla 3.
 Si el handoff y el repositorio no coinciden, para y explica la discrepancia.
 
 ## 2. Reglas (aplica la primera que se cumpla)
 1. Hay decisiones pendientes o preguntas sin responder: lístalas con opciones y recomendación. No avances.
 2. Hay cambios sin commitear: indica qué falta para cerrar el grupo. No avances.
 3. Estás en develop o master: es un paso del usuario, crear `1.0.0/<cambio>` desde develop actualizado. Propón el
-   siguiente cambio a partir del handoff y de `docs/deuda-tecnica.md`, con su **Tipo** (tabla de CLAUDE.md). No crees ramas.
+   siguiente cambio a partir del handoff y de `docs/plan-mvp.md`, con su **Tipo** (tabla de CLAUDE.md). No crees ramas.
 4. **Tipo vía rápida o contenido:** no hay OpenSpec. Si no está hecho, impleméntalo en esta sesión; después
    `./gradlew :<módulo>:check` de los módulos tocados y un único commit. Opcional: una ronda de code-reviewer si el
    diff no es trivial. Tras el commit, resetea `.claude/handoff.md` a la plantilla mínima de CLAUDE.md (sección
