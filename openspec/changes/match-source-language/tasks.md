@@ -24,19 +24,19 @@ según el dispositivo".
 > Android y de los dos objetos anónimos de los tests instrumentados; por eso este grupo toca varios módulos y va en
 > un único commit.
 
-- [ ] 2.1 Test rojo en `ObtainSourceLanguageTest` (escenario "Se usa el siguiente idioma de la lista si el primero
+- [x] 2.1 Test rojo en `ObtainSourceLanguageTest` (escenario "Se usa el siguiente idioma de la lista si el primero
   no casa"): con `FakeDeviceLocaleProvider(listOf(eu-ES, en-US))` y `en-GB` disponible, el origen es `en-GB`.
   Verificar que falla porque el fake no acepta una lista.
-- [ ] 2.2 Cambiar el puerto a `preferred(): List<LanguageTag>` (design D1), el fake a `var locales` con constructor
+- [x] 2.2 Cambiar el puerto a `preferred(): List<LanguageTag>` (design D1), el fake a `var locales` con constructor
   secundario y `var locale` (design D5), y `ObtainSourceLanguage` para pasar `preferred()` entero. Verificar 2.1 en
   verde y que los escenarios existentes "El idioma de origen no depende del idioma destino activo" y "Un cambio del
   idioma del dispositivo cambia el origen" siguen en verde.
-- [ ] 2.3 Test rojo en `AndroidDeviceLocaleProviderTest`: con el seam devolviendo `[eu-ES, en-US]`, `preferred()`
+- [x] 2.3 Test rojo en `AndroidDeviceLocaleProviderTest`: con el seam devolviendo `[eu-ES, en-US]`, `preferred()`
   devuelve `[eu-ES, en-US]` en ese orden; y un `Locale` cuya etiqueta no cumple `LanguageTag.isWellFormed` no
   aparece en el resultado (design D2). Verificar que falla por compilación (seam y método nuevos).
-- [ ] 2.4 Implementar `AndroidDeviceLocaleProvider` con `LocaleList.getDefault()` y el seam `locales` (design D2).
+- [x] 2.4 Implementar `AndroidDeviceLocaleProvider` con `LocaleList.getDefault()` y el seam `locales` (design D2).
   Verificar 2.3 en verde.
-- [ ] 2.5 Actualizar el objeto `TestDeviceLocaleProvider` de `PracticeSessionRouteTest` y el objeto anónimo de
+- [x] 2.5 Actualizar el objeto `TestDeviceLocaleProvider` de `PracticeSessionRouteTest` y el objeto anónimo de
   `SettingsRouteTest` a
   `preferred() = listOf(LanguageTag("es-ES"))`. Verificar que compilan con
   `./gradlew :feature:session:compileDebugAndroidTestKotlin :feature:settings:compileDebugAndroidTestKotlin`, y
