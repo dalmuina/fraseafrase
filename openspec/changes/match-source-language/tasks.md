@@ -45,10 +45,10 @@ según el dispositivo".
 
 ## 3. Cierre y verificación (sesión principal)
 
-- [ ] 3.1 Pasar ADR-0032 a `Aceptado`, cambiar la línea de estado de ADR-0023 a `Sustituido por ADR-0032 (solo la
+- [x] 3.1 Pasar ADR-0032 a `Aceptado`, cambiar la línea de estado de ADR-0023 a `Sustituido por ADR-0032 (solo la
   regla "Idioma de origen")` y actualizar `docs/adr/README.md` (fila 0032 y estado de 0023). Verificar que el índice
   enlaza el fichero.
-- [ ] 3.2 Ejecutar `./gradlew check` y `./gradlew koverVerify` y verificar que pasan.
+- [x] 3.2 Ejecutar `./gradlew check` y `./gradlew koverVerify` y verificar que pasan.
 
 ## Workflow follow-up
 

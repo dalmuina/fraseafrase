@@ -1,6 +1,6 @@
 # ADR-0032: Idioma de origen por la lista de idiomas del dispositivo y el idioma base
 
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 - **Fecha:** 2026-11-28
 - **Sustituye a:** ADR-0023 (solo la regla "Idioma de origen")
 
