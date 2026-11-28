@@ -1,7 +1,7 @@
 package com.dalmuina.fraseafrase.core.domain.catalog
 
 /**
- * Resolves the source language (ADR-0003, ADR-0019) from the ordered [device] languages. For each one, in order,
+ * Resolves the source language (ADR-0003, ADR-0032) from the ordered [device] languages. For each one, in order,
  * it picks the identical tag in [available] or, failing that, the alphabetically first one with the same base
  * language. If none matches, it returns [default]. Pure function, with no language literals.
  */

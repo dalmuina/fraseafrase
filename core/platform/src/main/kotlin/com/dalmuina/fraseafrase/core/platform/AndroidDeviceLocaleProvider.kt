@@ -7,9 +7,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * Implementación Android del puerto [DeviceLocaleProvider] (ADR-0019): lee la lista de idiomas
- * configurada en el sistema, en su orden de preferencia. Mismo seam que `TextToSpeechPlayer` usa para
- * convertir [LanguageTag] a `Locale`, pero en sentido inverso. Sin estado ni corrutinas: no necesita
+ * Android implementation of the [DeviceLocaleProvider] port (ADR-0032): reads the language list
+ * configured in the system, in preference order. Same seam `TextToSpeechPlayer` uses to convert a
+ * [LanguageTag] into a `Locale`, in the opposite direction. No state or coroutines, so it needs no
  * dispatcher.
  */
 class AndroidDeviceLocaleProvider internal constructor(
