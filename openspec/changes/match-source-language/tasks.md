@@ -5,17 +5,17 @@ según el dispositivo".
 
 ## 1. Regla de resolución en el dominio (`:core:domain`)
 
-- [ ] 1.1 Test rojo en `LanguageTagTest` (fichero nuevo junto a `ResolveSourceLocaleTest`): `language` devuelve la subetiqueta de idioma (`en-US` → `en`, `en` →
+- [x] 1.1 Test rojo en `LanguageTagTest` (fichero nuevo junto a `ResolveSourceLocaleTest`): `language` devuelve la subetiqueta de idioma (`en-US` → `en`, `en` →
   `en`, `pt-BR` → `pt`). Base de los escenarios por idioma base. Verificar que falla porque `language` no existe.
-- [ ] 1.2 Añadir `LanguageTag.language` (design D3) y verificar el test de 1.1 en verde.
-- [ ] 1.3 Test rojo en `ResolveSourceLocaleTest` con la firma de lista (design D4), un test por escenario: "El
+- [x] 1.2 Añadir `LanguageTag.language` (design D3) y verificar el test de 1.1 en verde.
+- [x] 1.3 Test rojo en `ResolveSourceLocaleTest` con la firma de lista (design D4), un test por escenario: "El
   idioma del dispositivo está disponible", "El idioma del dispositivo no está disponible", "Otra región del mismo
   idioma usa el idioma disponible", "Español de otra región usa es-ES", "Portugués de Brasil usa pt-PT", "Un idioma
   sin región usa la variante disponible", "La coincidencia exacta gana a la del mismo idioma", "Varias variantes del
   mismo idioma se desempatan por orden alfabético", "Se usa el siguiente idioma de la lista si el primero no casa",
   "El primer idioma de la lista gana aunque solo case por idioma base", "Ningún idioma de la lista casa" y "Una
   lista de idiomas vacía usa el idioma por defecto". Verificar que fallan por la firma o el resultado.
-- [ ] 1.4 Implementar `ResolveSourceLocale` con lista (design D4); en `ObtainSourceLanguage` pasar provisionalmente
+- [x] 1.4 Implementar `ResolveSourceLocale` con lista (design D4); en `ObtainSourceLanguage` pasar provisionalmente
   `listOf(deviceLocaleProvider.current())`. Verificar 1.3 en verde y `./gradlew :core:domain:check`.
 
 ## 2. Puerto con la lista de idiomas del dispositivo (`:core:domain`, `:core:testing`, `:core:platform`)

@@ -10,7 +10,7 @@ class ObtainSourceLanguage @Inject constructor(
 ) {
 
     suspend operator fun invoke(): LanguageTag = ResolveSourceLocale(
-        deviceLocaleProvider.current(),
+        listOf(deviceLocaleProvider.current()),
         defaultSourceLocale.value,
         catalogRepository.availableTargetLocales(),
     )

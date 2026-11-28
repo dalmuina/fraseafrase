@@ -12,6 +12,10 @@ value class LanguageTag(val value: String) {
         require(isWellFormed(value)) { "Invalid BCP-47 language tag: '$value'" }
     }
 
+    /** Language subtag, without script or region (`en-US` and `en` both give `en`). */
+    val language: String
+        get() = value.substringBefore('-')
+
     companion object {
         private val BCP47_PATTERN = Regex("^[a-z]{2,3}(-[A-Za-z0-9]{1,8})*$")
 
