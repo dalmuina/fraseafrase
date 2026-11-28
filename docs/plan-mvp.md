@@ -18,7 +18,7 @@ rama, creada por el usuario desde `develop`.
 | D1 | Los ids se cambian ya, incluidos los de la base, para que los paquetes futuros no colisionen. Formato: `<bloque>-<nivel>-<tema>-<nnn>`, con `0000` para la base (`0000-a1-saludos-001`) y `1000`, `2000`… para los paquetes |
 | D2 | El idioma de origen se detecta por idioma aunque cambie la región: coincidencia exacta; si no, el mismo idioma (`en-US` → `en-GB`, `es-MX` → `es-ES`); si no, `es-ES` |
 | D3 | La app se traduce a todos los idiomas del catálogo: es, pt, en, fr, de, it, ru |
-| D7 | Las frases nuevas se eligen al azar dentro del nivel CEFR seleccionado, no en orden de catálogo |
+| D7 | ~~Las frases nuevas se eligen al azar dentro del nivel CEFR seleccionado~~ **Descartada** (2026-11-28): se mantiene el orden de catálogo |
 | D8 | El filtro futuro usará un registro de **categorías y subcategorías**. La subcategoría es el `topic` actual y cada una pertenece a una categoría. La categoría no va en el id ni en la frase. Nombres visibles en `strings.xml`. Se implementa después de la MVP1 |
 
 Sobre D2: el historial no muestra que la detección por idioma llegara a implementarse. Las tres versiones de
@@ -29,17 +29,21 @@ Sobre D2: el historial no muestra que la detección por idioma llegara a impleme
 
 En este orden: A1 (resembrado), A2 (ids nuevos) y A3 (versión 1) van seguidos.
 
+**Siguiente (2026-11-28): A6, y después A8 (incluye A9).** Con la regla del idioma de origen ya cerrada, A8 no tiene
+que convivir con la diferencia entre el idioma de la interfaz y el de las frases. La propuesta de `localize-interface`
+queda aparcada, sin aprobar ni commitear, y se revisa contra A6 antes de pasar por `android-architect`.
+
 | # | Cambio (rama `1.0.0/…`) | Tipo | Contenido | Hecho cuando |
 |---|---|---|---|---|
 | A1 | `fix-catalog-reseed` | normal | Resembrar cuando cambie la huella del contenido de cada documento, no `schemaVersion` (ADR-0028). Delta de `phrase-catalog` | Un test añade frases a un catálogo ya sembrado, las ve, y el progreso no cambia |
 | A2 | `renumber-phrase-ids` | normal | ADR con el formato de id (D1). Renombrar con script los 7 assets, `released-ids`, tests y escenarios (por delta). Test de contrato del formato y de la lista cerrada de temas (hoy 114) | Los 7 × 1000 ids cumplen el formato y siguen siendo paralelos |
 | A3 | `reset-database-v1` | normal | Ambas bases a `version = 1`, esquemas regenerados, fuera `PracticeMigrationTest` y el escenario "Una base anterior se abre vacía". Fuera `fallbackToDestructiveMigration()` en `practice.db`. ADR con la política de migraciones | `check` en verde y solo existe `1.json` por base |
 | A4 | `configure-backup-rules` | ligero | Excluir `catalog.db` de la copia de seguridad y decidir `practice.db` y ajustes | Restaurar una copia no deja un catálogo antiguo |
-| A5 | `check-duplicate-phrases` | ligero | Test de texto repetido por idioma, script para casi iguales y corrección de los repetidos actuales (`en-GB`, `fr-FR`, `ru-RU`) | Test en verde sin excepciones injustificadas |
+| A5 | `check-duplicate-phrases` | — | **Descartado** (2026-11-28) | — |
 | A6 | `match-source-language` | normal | Regla D2 en `ResolveSourceLocale`. ADR nuevo que sustituye esa regla del 0023 | Escenarios `en-US`, `es-MX`, `pt-BR` e idioma sin catálogo cubiertos |
-| A7 | `pick-new-phrases-randomly` | normal | D7. ADR que modifica el orden de las nuevas (0025/0027). La aleatoriedad entra en el dominio por un puerto, como el reloj | Tests deterministas; la tanda guardada no cambia al reabrir |
+| A7 | `pick-new-phrases-randomly` | — | **Descartado** (2026-11-28), junto con D7 | — |
 | A8 | `localize-interface` | normal | D3. `values-{pt,en,fr,de,it,ru}`; `values/` sigue en español. Mover a recursos las insignias de `DsLevelBadge`. Rehacer "Te faltan N aciertos…" (hoy en dos trozos) con plurales | Sin textos fijos y sin `MissingTranslation` |
-| A9 | `remove-hardcoded-locales` | vía rápida | Valores `pt-PT` por defecto en los `UiState` y ViewModels. Si cambia comportamiento, pasa a ligero | Sin literales de idioma en el estado de las features |
+| A9 | `remove-hardcoded-locales` | — | **Incluido en A8** (2026-11-28) | — |
 | A10 | `prepare-release-1-0` | ligero | Icono de la app (el manifiesto no declara ninguno), `versionName = 1.0.0`, prueba de `release` con R8 en dispositivo | APK firmado probado de principio a fin |
 | A11 | `freeze-released-ids` | contenido | Rellenar los siete `released-ids-*.txt` con los ids nuevos. **Último cambio antes de publicar** | El contrato protege las 7 × 1000 frases |
 
@@ -67,8 +71,7 @@ El bloque del id dice de qué paquete viene una frase; la categoría, de qué tr
 ## MVP2: paquetes temáticos de pago (1.1.0)
 
 **Aplazada** hasta resolver la MVP1. Las decisiones D4 (entrega), D5 (identificación) y D6 (entrada de un paquete
-en la tanda) siguen abiertas. D7 cubre parte de D6: las frases de un paquete competirían al azar con las nuevas de
-la base desde la primera tanda.
+en la tanda) siguen abiertas.
 
 | # | Cambio | Contenido |
 |---|---|---|
