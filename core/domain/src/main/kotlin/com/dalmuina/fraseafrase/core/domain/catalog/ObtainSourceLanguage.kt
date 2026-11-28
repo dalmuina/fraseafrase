@@ -2,7 +2,7 @@ package com.dalmuina.fraseafrase.core.domain.catalog
 
 import javax.inject.Inject
 
-/** Devuelve el idioma de origen vigente: el del dispositivo si hay catálogo en él, o el por defecto. */
+/** Returns the current source language: the first device language matching the catalog, or the default one. */
 class ObtainSourceLanguage @Inject constructor(
     private val deviceLocaleProvider: DeviceLocaleProvider,
     private val catalogRepository: CatalogRepository,
@@ -10,7 +10,7 @@ class ObtainSourceLanguage @Inject constructor(
 ) {
 
     suspend operator fun invoke(): LanguageTag = ResolveSourceLocale(
-        deviceLocaleProvider.current(),
+        deviceLocaleProvider.preferred(),
         defaultSourceLocale.value,
         catalogRepository.availableTargetLocales(),
     )

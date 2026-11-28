@@ -85,7 +85,7 @@ class SettingsRouteTest {
         val obtainAvailableLanguages = ObtainAvailableLanguages(catalogRepository)
         val obtainSourceLanguage = ObtainSourceLanguage(
             object : DeviceLocaleProvider {
-                override fun current(): LanguageTag = LanguageTag("es-ES")
+                override fun preferred(): List<LanguageTag> = listOf(LanguageTag("es-ES"))
             },
             catalogRepository,
             DefaultSourceLocale(LanguageTag("es-ES")),

@@ -28,7 +28,7 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0020](0020-respaldo-de-origen-sin-coincidir-con-el-destino.md) | El respaldo del idioma de origen nunca coincide con el idioma destino | Sustituido por 0023 |
 | [0021](0021-filtro-cefr-exacto-en-reforzar-y-dominadas.md) | Filtro CEFR exacto en "a reforzar" y "dominadas" | Aceptado |
 | [0022](0022-separar-frases-destino-de-sus-traducciones.md) | Separar las frases destino de sus traducciones en documentos y tablas independientes | Sustituido por 0023 |
-| [0023](0023-origen-del-dispositivo-y-texto-de-origen-desde-frases.md) | Origen del dispositivo y texto de origen desde las frases | Aceptado |
+| [0023](0023-origen-del-dispositivo-y-texto-de-origen-desde-frases.md) | Origen del dispositivo y texto de origen desde las frases | Sustituido por 0032 (solo la regla "Idioma de origen") |
 | [0024](0024-un-fallo-resta-un-acierto.md) | Un fallo resta un acierto, no un nivel | Aceptado |
 | [0025](0025-rotacion-de-tanda-por-prioridad-y-aprendizaje.md) | Rotación de la tanda por prioridad y aprendizaje | Sustituido por 0026 y 0027 |
 | [0026](0026-tanda-llena-hasta-n-con-repaso-adelantado.md) | Tanda llena hasta N con repaso adelantado | Sustituido por 0027 |
@@ -37,6 +37,7 @@ Un ADR `Propuesto` puede editarse. La única edición permitida a un ADR `Acepta
 | [0029](0029-formato-de-los-ids-de-frase.md) | Formato de los ids de frase | Aceptado |
 | [0030](0030-politica-de-migraciones-de-las-bases-room.md) | Política de migraciones de las bases Room | Aceptado |
 | [0031](0031-politica-de-copia-de-seguridad.md) | Política de copia de seguridad | Aceptado |
+| [0032](0032-origen-por-lista-de-idiomas-e-idioma-base.md) | Origen por la lista de idiomas del dispositivo y el idioma base | Aceptado |
 
 ## Plantilla
 

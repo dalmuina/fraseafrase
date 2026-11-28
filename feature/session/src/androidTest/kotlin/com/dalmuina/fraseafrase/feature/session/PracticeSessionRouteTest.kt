@@ -272,7 +272,7 @@ class PracticeSessionRouteTest {
     }
 
     private object TestDeviceLocaleProvider : DeviceLocaleProvider {
-        override fun current(): LanguageTag = LanguageTag("es-ES")
+        override fun preferred(): List<LanguageTag> = listOf(LanguageTag("es-ES"))
     }
 
     private class TestSettingsRepository(initial: UserSettings = UserSettings.DEFAULT) : SettingsRepository {

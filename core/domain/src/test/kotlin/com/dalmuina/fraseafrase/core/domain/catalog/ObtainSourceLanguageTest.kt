@@ -51,6 +51,30 @@ class ObtainSourceLanguageTest {
         result shouldBe esEs
     }
 
+    // Scenario: Se usa el siguiente idioma de la lista si el primero no casa
+    @Test
+    fun `given a first device language without match when obtaining source then the next one is used`() = runTest {
+        // Given
+        val enGb = LanguageTag("en-GB")
+        val useCase = ObtainSourceLanguage(
+            FakeDeviceLocaleProvider(listOf(LanguageTag("eu-ES"), LanguageTag("en-US"))),
+            FakeCatalogRepository.withCatalogs(
+                mapOf(
+                    esEs to CatalogLoadResult.Loaded(emptyList()),
+                    ptPt to CatalogLoadResult.Loaded(emptyList()),
+                    enGb to CatalogLoadResult.Loaded(emptyList()),
+                ),
+            ),
+            DefaultSourceLocale(esEs),
+        )
+
+        // When
+        val result = useCase()
+
+        // Then
+        result shouldBe enGb
+    }
+
     // Scenario: Un cambio del idioma del dispositivo cambia el origen
     @Test
     fun `given a device locale change when obtaining source then the source follows the device`() = runTest {

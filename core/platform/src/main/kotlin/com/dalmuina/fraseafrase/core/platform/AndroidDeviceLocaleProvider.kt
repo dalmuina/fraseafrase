@@ -1,21 +1,32 @@
 package com.dalmuina.fraseafrase.core.platform
 
+import android.os.LocaleList
 import com.dalmuina.fraseafrase.core.domain.catalog.DeviceLocaleProvider
 import com.dalmuina.fraseafrase.core.domain.catalog.LanguageTag
 import java.util.Locale
 import javax.inject.Inject
 
 /**
- * Implementación Android del puerto [DeviceLocaleProvider] (ADR-0019): lee el locale configurado en
- * el sistema. Mismo seam que `TextToSpeechPlayer` usa para convertir [LanguageTag] a `Locale`, pero en
- * sentido inverso. Sin estado ni corrutinas: no necesita dispatcher.
+ * Android implementation of the [DeviceLocaleProvider] port (ADR-0032): reads the language list
+ * configured in the system, in preference order. Same seam `TextToSpeechPlayer` uses to convert a
+ * [LanguageTag] into a `Locale`, in the opposite direction. No state or coroutines, so it needs no
+ * dispatcher.
  */
 class AndroidDeviceLocaleProvider internal constructor(
-    private val locale: () -> Locale,
+    private val locales: () -> List<Locale>,
 ) : DeviceLocaleProvider {
 
     @Inject
-    constructor() : this(locale = { Locale.getDefault() })
+    constructor() : this(
+        locales = {
+            val system = LocaleList.getDefault()
+            List(system.size()) { index -> system[index] }
+        },
+    )
 
-    override fun current(): LanguageTag = LanguageTag(locale().toLanguageTag())
+    // Malformed tags are dropped so that no system language can crash the app when building LanguageTag.
+    override fun preferred(): List<LanguageTag> = locales()
+        .map { it.toLanguageTag() }
+        .filter(LanguageTag::isWellFormed)
+        .map(::LanguageTag)
 }
